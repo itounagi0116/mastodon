@@ -103,7 +103,7 @@ RSpec.describe PostStatusService do
   end
 
   it 'creates a status with the given music' do
-    music = Fabricate(:album)
+    music = Fabricate(:track)
     status = create_status_with_options(music: music)
 
     expect(status).to be_persisted
