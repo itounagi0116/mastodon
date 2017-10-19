@@ -59,7 +59,7 @@ export function connectTimelineStream (timelineId, path, { shouldUpdateTimeline 
             const status = JSON.parse(data.payload);
             if (!shouldUpdateTimeline || shouldUpdateTimeline(status)) {
               dispatch(updateTimeline(timelineId, status));
-              if (status.track || status.album) {
+              if (status.track || status.album || (status.reblog && (status.reblog.track || status.reblog.album))) {
                 dispatch(updateTimeline(`${timelineId}:music`, status));
               }
             }
