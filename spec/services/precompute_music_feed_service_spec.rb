@@ -11,7 +11,7 @@ describe PrecomputeMusicFeedService do
       account = Fabricate(:account)
       followed_account = Fabricate(:account)
       Fabricate(:follow, account: account, target_account: followed_account)
-      music = Fabricate(:album)
+      music = Fabricate(:track)
       reblog = Fabricate(:status, account: followed_account, music: music)
       status = Fabricate(:status, account: account, reblog: reblog, music: music)
 
@@ -24,7 +24,6 @@ describe PrecomputeMusicFeedService do
       account = Fabricate(:account)
       followed_account = Fabricate(:account)
       Fabricate(:follow, account: account, target_account: followed_account)
-      music = Fabricate(:album)
       reblog = Fabricate(:status, account: followed_account, music: nil)
       status = Fabricate(:status, account: account, reblog: reblog, music: nil)
 
@@ -42,7 +41,7 @@ describe PrecomputeMusicFeedService do
       account = Fabricate(:account)
       muted_account = Fabricate(:account)
       Fabricate(:mute, account: account, target_account: muted_account)
-      music = Fabricate(:album)
+      music = Fabricate(:track)
       reblog = Fabricate(:status, account: muted_account, music: music)
       status = Fabricate(:status, account: account, reblog: reblog, music: music)
 
