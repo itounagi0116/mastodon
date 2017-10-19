@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { Canvas } from 'musicvideo-generator';
+import { BaseTexture } from 'pixi.js';
 import IconButton from '../icon_button';
 import Slider from '../slider';
 import { constructGeneratorOptions } from '../../util/musicvideo';
@@ -43,10 +44,13 @@ class Musicvideo extends ImmutablePureComponent {
     const { track, autoPlay } = this.props;
 
     // ジャケット画像
-    this.image = new Image();
-    this.image.addEventListener('load', this.updateCanvas, { once: false });
-    this.image.crossOrigin = 'anonymous';
-    this.image.src = convertToURL(track.getIn(['video', 'image'])) || defaultArtwork;
+    // Using BaseTexture "constructor" is important to prevent from associating
+    // the source URL and image element. The src attribute of the element is
+    // dynamic.
+    this.image = new BaseTexture(new Image());
+    this.image.source.addEventListener('load', this.handleLoadImage, { once: false });
+    this.image.source.crossOrigin = 'anonymous';
+    this.image.source.src = convertToURL(track.getIn(['video', 'image'])) || defaultArtwork;
 
     // コンテキスト作成
     const audioContext = new AudioContext;
@@ -89,9 +93,9 @@ class Musicvideo extends ImmutablePureComponent {
 
     if (image !== this.props.track.getIn(['video', 'image'])) {
       if (track.getIn(['video', 'image']) instanceof File) {
-        URL.revokeObjectURL(this.image.src);
+        URL.revokeObjectURL(this.image.source.src);
       }
-      this.image.src = convertToURL(image) || defaultArtwork;
+      this.image.source.src = convertToURL(image) || defaultArtwork;
     }
   }
 
@@ -116,7 +120,7 @@ class Musicvideo extends ImmutablePureComponent {
     clearInterval(this.timer);
 
     if (this.image) {
-      this.image.removeEventListener('load', this.updateCanvas);
+      this.image.source.removeEventListener('load', this.handleLoadImage);
     }
 
     if (this.audioElement) {
@@ -142,7 +146,7 @@ class Musicvideo extends ImmutablePureComponent {
     }
 
     if ((track.getIn(['video', 'image']) instanceof File)) {
-      URL.revokeObjectURL(this.image.src);
+      URL.revokeObjectURL(this.image.source.src);
     }
   }
 
@@ -150,6 +154,11 @@ class Musicvideo extends ImmutablePureComponent {
     this.generator.stop();
     this.setState({ paused: true });
     this.props.onEnded();
+  }
+
+  handleLoadImage = () => {
+    this.image.update();
+    this.updateCanvas();
   }
 
   handleTogglePaused = () => {
