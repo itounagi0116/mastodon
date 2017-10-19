@@ -407,6 +407,15 @@ export default class TrackCompose extends ImmutablePureComponent {
   render () {
     const { track } = this.props;
     const { trackMusicTitle, trackVideoImageTitle } = this.state;
+    const caution = {
+      height: '100px',
+      overflowY: 'scroll',
+      marginTop: '24px',
+      fontSize: 'var(--text10-font)',
+      backgroundColor: 'var(--textcolor)',
+      padding: 'var(--padding10)',
+      borderRadius: 'var(--radius)',
+    };
 
     return (
       <div className='track-compose'>
@@ -816,6 +825,21 @@ export default class TrackCompose extends ImmutablePureComponent {
                   )}
                 </Delay>
               </fieldset>
+
+              <div style={caution}>
+                <b>作品（画像、音源、楽曲、テキスト等を含む）のアップロードにおいて、下記の注意事項を守ることを誓います。</b><br />
+                <br />
+                １．この作品をインターネットで配信することが、第三者のいかなる権利も侵害しないこと。<br />
+                <br />
+                ２．マストドンというソフトウェアの仕様上、この作品が自動で他の様々なマストドンインスタンスにも複製され、配信されることに同意すること。<br />
+                （前提として、マストドンのソフトウェアの規約上、複製された作品を第三者が商用利用する行為は禁止されています。権利を侵害する行為は関連法令により罰せられることがあります。）<br />
+                <br />
+                ３．この楽曲のインターネットでの配信（インタラクティブ配信）に係る権利について、著作権等管理団体に管理委託または信託していないこと。<br />
+                <br />
+                ４．楽曲のアップロード後に、当該楽曲のインターネットでの配信（インタラクティブ配信）に係る権利の管理を第三者に委託した場合は、管理委託・信託契約の効力発生日前に、当サービスからアップロードした作品を削除すること。<br />
+                <br />
+                ５．他人の作品を許可なくアップロードしたことにより、当サービスまたは第三者に損害を与えたときは、当該アップロード者が一切の責任を負うものとし、当社はその一切の責任を負いません。
+              </div>
             </form>
           </div>
         </div>
