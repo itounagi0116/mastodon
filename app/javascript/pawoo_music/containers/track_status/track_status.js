@@ -21,6 +21,7 @@ const makeMapStateToProps = () => {
 
     return {
       status: status || getStatus(state, id),
+      trackId: state.getIn(['pawoo_music', 'tracks', 'trackId']),
     };
   };
 
@@ -35,11 +36,12 @@ export default class TrackStatus extends ImmutablePureComponent {
     muted: PropTypes.bool,
     prepend: PropTypes.node,
     hidden: PropTypes.bool,
+    trackId: PropTypes.string,
     dispatch: PropTypes.func.isRequired,
   };
 
   render () {
-    const { muted, hidden, prepend, status: originalStatus } = this.props;
+    const { muted, hidden, prepend, status: originalStatus, trackId } = this.props;
 
     if (!originalStatus) {
       return null;
@@ -54,7 +56,7 @@ export default class TrackStatus extends ImmutablePureComponent {
       return null;
     }
 
-    if (hidden) {
+    if (hidden && trackId && trackId !== status.getIn(['track', 'music'])) {
       return (
         <div>
           {status.getIn(['account', 'display_name']) || status.getIn(['account', 'username'])}
