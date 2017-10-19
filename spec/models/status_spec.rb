@@ -358,7 +358,7 @@ RSpec.describe Status, type: :model do
     end
 
     context 'with a musics_only option set' do
-      let!(:status_with_music) { Fabricate(:status, music: Fabricate(:album)) }
+      let!(:status_with_music) { Fabricate(:status, music: Fabricate(:track)) }
       let!(:status_without_music) { Fabricate(:status) }
 
       subject { Status.as_public_timeline(nil, false, true) }

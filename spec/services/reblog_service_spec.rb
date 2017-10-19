@@ -4,7 +4,7 @@ RSpec.describe ReblogService do
   let(:alice)  { Fabricate(:account, username: 'alice') }
   let(:bob)    { Fabricate(:account, username: 'bob', domain: 'example.com', salmon_url: 'http://salmon.example.com') }
   let(:status) { Fabricate(:status, account: bob, uri: 'tag:example.com;something:something') }
-  let(:status_with_music) { Fabricate(:status, music: Fabricate(:album)) }
+  let(:status_with_music) { Fabricate(:status, music: Fabricate(:track)) }
 
   subject { ReblogService.new }
 
