@@ -245,7 +245,7 @@ function dispatchNextPinnedStatusesTimeline(dispatch, timelineId, next) {
   }
 }
 
-function fetchGarellyRelationships(dispatch, statuses, getState) {
+export function fetchGarellyRelationships(dispatch, statuses, getState) {
   const me = getState().getIn(['meta', 'me']);
   if (!me) {
     return;
