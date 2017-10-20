@@ -73,7 +73,7 @@ class Track < ApplicationRecord
                        size: { less_than: 7.megabytes }
 
   def display_title
-    "#{title} - #{artist}"
+    "#{artist} - #{title}"
   end
 
   def min_size

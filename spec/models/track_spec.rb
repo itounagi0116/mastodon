@@ -6,7 +6,7 @@ describe Track, type: :model do
   describe '#display_title' do
     it 'returns title for display' do
       track = Fabricate(:track, title: 'title', artist: 'artist')
-      expect(track.display_title).to eq 'title - artist'
+      expect(track.display_title).to eq 'artist - title'
     end
   end
 
