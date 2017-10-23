@@ -30,8 +30,13 @@ export default class FollowButton extends ImmutablePureComponent {
   static propTypes = {
     account: ImmutablePropTypes.map.isRequired,
     me: PropTypes.number,
+    onlyFollow: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
   };
+
+  state = {
+    isChange: false,
+  }
 
   handleFollow = () => {
     const { dispatch, account } = this.props;
@@ -41,10 +46,12 @@ export default class FollowButton extends ImmutablePureComponent {
     } else {
       dispatch(followAccount(account.get('id')));
     }
+    this.setState({ isChange: true });
   }
 
   render () {
-    const { account, me } = this.props;
+    const { account, me, onlyFollow } = this.props;
+    const { isChange } = this.state;
 
     if (!me) {
       return (
@@ -55,7 +62,7 @@ export default class FollowButton extends ImmutablePureComponent {
     }
 
     if (me !== account.get('id') && account.get('relationship')) {
-      if (account.getIn(['relationship', 'requested'])) {
+      if (account.getIn(['relationship', 'requested']) && (!onlyFollow || isChange)) {
         return (
           <Button className='follow' disabled>
             <FormattedMessage id='account.requested' defaultMessage='Awaiting approval' />
@@ -63,6 +70,11 @@ export default class FollowButton extends ImmutablePureComponent {
         );
       } else if (!account.getIn(['relationship', 'blocking'])) {
         const type = (account.getIn(['relationship', 'following'])) ? 'unfollow' : 'follow';
+
+        if (onlyFollow && type !== 'follow' && !isChange) {
+          return null;
+        }
+
         const message = type === 'follow' ? (
           <FormattedMessage id='account.follow' defaultMessage='Follow' />
         ) : (

@@ -72,7 +72,7 @@ export default class TrackStatus extends ImmutablePureComponent {
         {prepend || <StatusPrepend className='prepend-inline' status={originalStatus} />}
         <div className='status-head'>
           <AccountContainer account={status.get('account')} />
-          <FollowButton id={status.getIn(['account', 'id'])} />
+          <FollowButton id={status.getIn(['account', 'id'])} onlyFollow />
         </div>
 
         <Track track={status.get('track')} />
