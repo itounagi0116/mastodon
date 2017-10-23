@@ -108,7 +108,7 @@ export default class GlobalNavi extends PureComponent {
       <div className='global-navi'>
         <div className='global-navi-center'>
           {!mobile && (
-            <Link to='/'><img className='logo' src={logo} alt='logo' /></Link>
+            <Link to='/timelines/public/local'><img className='logo' src={logo} alt='logo' /></Link>
           )}
           <SearchBox />
           {!isLogin && <LoginBox />}
