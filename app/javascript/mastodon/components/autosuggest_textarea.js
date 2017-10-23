@@ -78,6 +78,13 @@ export default class AutosuggestTextarea extends ImmutablePureComponent {
     hashTagTokenStart: 0,
   };
 
+  updateOnStates = [
+    'suggestionsHidden',
+    'selectedSuggestion',
+    'hashTagSuggestionsHidden',
+    'selectedHashTagSuggestion',
+  ]
+
   onChange = (e) => {
     const [ tokenStart, token ] = textAtCursorMatchesMentionToken(e.target.value, e.target.selectionStart);
 
