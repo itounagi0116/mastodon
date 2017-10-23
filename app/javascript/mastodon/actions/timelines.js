@@ -1,5 +1,6 @@
 import api, { getLinks } from '../api';
 import Immutable from 'immutable';
+import { fetchRelationships } from './accounts';
 
 export const TIMELINE_UPDATE  = 'TIMELINE_UPDATE';
 export const TIMELINE_DELETE  = 'TIMELINE_DELETE';
@@ -30,6 +31,14 @@ export function refreshTimelineSuccess(timeline, statuses, skipLoading, next) {
 export function updateTimeline(timeline, status) {
   return (dispatch, getState) => {
     const references = status.reblog ? getState().get('statuses').filter((item, itemId) => (itemId === status.reblog.id || item.get('reblog') === status.reblog.id)).map((_, itemId) => itemId) : [];
+
+    if (/.+:music$/.test(timeline)) {
+      const accountId = status.reblog ? status.reblog.account.id : status.account.id;
+
+      if (!getState().getIn(['relationships', accountId])) {
+        dispatch(fetchRelationships([accountId]));
+      }
+    }
 
     dispatch({
       type: TIMELINE_UPDATE,
@@ -92,6 +101,11 @@ export function refreshTimeline(timelineId, path, onlyMusics, params = {}) {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(refreshTimelineSuccess(timelineId, response.data, skipLoading, next ? next.uri : null));
 
+      // ギャラリーではフォロー情報を表示するので一括で取得しておく
+      if (onlyMusics) {
+        fetchGarellyRelationships(dispatch, response.data, getState);
+      }
+
       // PinnedStatusは表示のために例外的に全件取得する
       dispatchNextPinnedStatusesTimeline(dispatch, timelineId, next);
     }).catch(error => {
@@ -150,6 +164,11 @@ export function expandTimeline(timelineId, path, onlyMusics, params = {}) {
     api(getState).get(path, { params }).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(expandTimelineSuccess(timelineId, response.data, next ? next.uri : null));
+
+      // ギャラリーではフォロー情報を表示するので一括で取得しておく
+      if (onlyMusics) {
+        fetchGarellyRelationships(dispatch, response.data, getState);
+      }
 
       // PinnedStatusは表示のために例外的に全件取得する
       dispatchNextPinnedStatusesTimeline(dispatch, timelineId, next);
@@ -223,5 +242,19 @@ function dispatchNextPinnedStatusesTimeline(dispatch, timelineId, next) {
   if (matched && next) {
     const accountId = matched[1];
     setTimeout(() => dispatch(expandPinnedStatusesTimeline(accountId)), 300);
+  }
+}
+
+export function fetchGarellyRelationships(dispatch, statuses, getState) {
+  const me = getState().getIn(['meta', 'me']);
+  if (!me) {
+    return;
+  }
+
+  const accountIds = Immutable.Set(statuses.map((status) => (status.reblog ? status.reblog.account.id : status.account.id)));
+  const filteredAccountIds = accountIds.subtract(getState().get('relationships').keys()).delete(me);
+
+  if (filteredAccountIds.size > 0) {
+    dispatch(fetchRelationships(filteredAccountIds.toArray()));
   }
 }

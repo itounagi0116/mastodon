@@ -1,4 +1,5 @@
 import api, { getLinks } from '../api';
+import { fetchGarellyRelationships } from './timelines';
 
 export const FAVOURITED_STATUSES_FETCH_REQUEST = 'FAVOURITED_STATUSES_FETCH_REQUEST';
 export const FAVOURITED_STATUSES_FETCH_SUCCESS = 'FAVOURITED_STATUSES_FETCH_SUCCESS';
@@ -20,6 +21,11 @@ export function fetchFavouritedStatuses({ onlyMusics = null } = {}) {
     api(getState).get('/api/v1/favourites', { params }).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(fetchFavouritedStatusesSuccess(response.data, next ? next.uri : null, onlyMusics));
+
+      // ギャラリーではフォロー情報を表示するので一括で取得しておく
+      if (onlyMusics) {
+        fetchGarellyRelationships(dispatch, response.data, getState);
+      }
     }).catch(error => {
       dispatch(fetchFavouritedStatusesFail(error, onlyMusics));
     });
@@ -63,6 +69,11 @@ export function expandFavouritedStatuses({ onlyMusics = null } = {}) {
     api(getState).get(url).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(expandFavouritedStatusesSuccess(response.data, next ? next.uri : null, onlyMusics));
+
+      // ギャラリーではフォロー情報を表示するので一括で取得しておく
+      if (onlyMusics) {
+        fetchGarellyRelationships(dispatch, response.data, getState);
+      }
     }).catch(error => {
       dispatch(expandFavouritedStatusesFail(error, onlyMusics));
     });
