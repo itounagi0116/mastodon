@@ -61,20 +61,21 @@ export default class FollowButton extends ImmutablePureComponent {
       );
     }
 
-    if (me !== account.get('id') && account.get('relationship')) {
-      if (account.getIn(['relationship', 'requested']) && (!onlyFollow || isChange)) {
+    if (me !== account.get('id') && account.get('relationship') && !account.getIn(['relationship', 'blocking'])) {
+      const type = (account.getIn(['relationship', 'following'])) ? 'unfollow' : 'follow';
+      const requested = account.getIn(['relationship', 'requested']);
+
+      if (onlyFollow && !(type === 'follow' && !requested) && !isChange) {
+        return null;
+      }
+
+      if (requested) {
         return (
           <Button className='follow' disabled>
             <FormattedMessage id='account.requested' defaultMessage='Awaiting approval' />
           </Button>
         );
-      } else if (!account.getIn(['relationship', 'blocking'])) {
-        const type = (account.getIn(['relationship', 'following'])) ? 'unfollow' : 'follow';
-
-        if (onlyFollow && type !== 'follow' && !isChange) {
-          return null;
-        }
-
+      } else {
         const message = type === 'follow' ? (
           <FormattedMessage id='account.follow' defaultMessage='Follow' />
         ) : (
