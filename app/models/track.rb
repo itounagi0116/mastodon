@@ -41,6 +41,7 @@
 
 class Track < ApplicationRecord
   include Paginable
+  include MusicImageCropper
 
   before_save :truncate_title,       if: :title_changed?
   before_save :truncate_artist,      if: :artist_changed?
@@ -55,9 +56,8 @@ class Track < ApplicationRecord
   has_attached_file :video_image,
     styles: { original: '', small: '' },
     convert_options: {
-      all: '-strip',
-      original: ->(instance) { "-gravity center -crop \"#{instance.min_size}x#{instance.min_size}+0+0\" +repage -resize \"1280x1280>\"" },
-      small: ->(instance) { "-gravity center -crop \"#{instance.min_size}x#{instance.min_size}+0+0\" +repage -resize \"600x600>\"" },
+      original: ->(instance) { crop_option(instance.min_size(:video_image), '1280') },
+      small: ->(instance) { crop_option(instance.min_size(:video_image), '600') },
     }
 
   validates :title, presence: true
@@ -74,15 +74,6 @@ class Track < ApplicationRecord
 
   def display_title
     "#{artist} - #{title}"
-  end
-
-  def min_size
-    @min_size ||= begin
-      geometry = Paperclip::Geometry.from_file(video_image.queued_for_write[:original])
-      [geometry.height, geometry.width].min.to_i
-    end
-    Rails.logger.debug @min_size
-    @min_size
   end
 
   private

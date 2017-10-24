@@ -69,9 +69,8 @@ class Track extends ImmutablePureComponent {
       return null;
     }
 
-    const backgroundImage = (track.getIn(['video', 'image'])) ? track.getIn(['video', 'image']) : defaultArtwork;
     const thumbnailStyle = {
-      backgroundImage: `url('${backgroundImage}')`,
+      backgroundImage: `url('${track.getIn(['video', 'preview_url'], defaultArtwork)}')`,
     };
 
     return (

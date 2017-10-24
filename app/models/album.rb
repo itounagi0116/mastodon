@@ -14,13 +14,19 @@
 
 class Album < ApplicationRecord
   include Paginable
+  include MusicImageCropper
 
-  before_save :truncate_title,  if: :title_changed?
+  before_save :truncate_title, if: :title_changed?
 
   has_many :album_tracks, inverse_of: :album
   has_many :statuses, as: :music
 
-  has_attached_file :image
+  has_attached_file :image,
+    styles: { original: '', small: '' },
+    convert_options: {
+      original: ->(instance) { crop_option(instance.min_size(:image), '1280') },
+      small: ->(instance) { crop_option(instance.min_size(:image), '600') },
+    }
 
   validates_attachment :image,
                        presence: true,
@@ -30,6 +36,6 @@ class Album < ApplicationRecord
   private
 
   def truncate_title
-    self.title = self.title.slice(0, 128)
+    self.title = title.slice(0, 128)
   end
 end
