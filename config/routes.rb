@@ -251,6 +251,7 @@ Rails.application.routes.draw do
 
       resources :tracks, only: [:create, :update] do
         post :prepare_video, on: :member
+        put :play_video, on: :member
       end
     end
 

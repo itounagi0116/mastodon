@@ -6,10 +6,15 @@ export const TRACKS_GENERATE_REQUEST = 'TRACKS_GENERATE_REQUEST';
 export const TRACKS_GENERATE_SUCCESSS = 'TRACKS_GENERATE_SUCCESSS';
 export const TRACKS_GENERATE_FAIL = 'TRACKS_GENERATE_FAIL';
 
-export function playTrack(trackId) {
-  return {
-    type: TRACKS_PLAY,
-    value: trackId,
+export function playTrack(statusId, trackId) {
+  return function (dispatch, getState) {
+    api(getState).put(`/api/v1/tracks/${statusId}/play_video`).catch(error => {
+      console.error(error);
+    });
+    dispatch({
+      type: TRACKS_PLAY,
+      value: trackId,
+    });
   };
 }
 

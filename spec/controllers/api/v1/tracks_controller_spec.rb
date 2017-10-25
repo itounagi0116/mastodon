@@ -42,6 +42,7 @@ describe Api::V1::TracksController, type: :controller do
           },
           lightleaks: {
             alpha: 1,
+            interval: 1,
           },
           spectrum: {
             mode: 0,
@@ -67,7 +68,7 @@ describe Api::V1::TracksController, type: :controller do
         expect(status.music.title).to eq 'title'
         expect(status.music.artist).to eq 'artist'
         expect(status.music.text).to eq 'text'
-        expect(status.music.duration).to eq 177
+        expect(status.music.duration).to eq 2
         expect(status.music.video_blur_movement_band_bottom).to eq 50
         expect(status.music.video_blur_movement_band_top).to eq 300
         expect(status.music.video_blur_movement_threshold).to eq 165
@@ -93,27 +94,29 @@ describe Api::V1::TracksController, type: :controller do
         expect(body_as_json[:track][:video]).to eq video_params
       end
 
-      it 'joins given text and URL to create status text' do
+      it 'joins given artist, title, text and URL to create status text' do
+        artist = Faker::Name.name
         post :create,
-             params: { title: 'title', artist: Faker::Name.name, text: 'text', visibility: 'public', music: music }
+             params: { title: 'title', artist: artist, text: 'text', visibility: 'public', music: music }
 
         track = Track.find_by!(title: 'title', text: 'text')
         status = track.statuses.find_by!(reblog: nil)
-        expect(status.text).to eq 'text ' + short_account_status_url(user.account.username, status)
+        expect(status.text).to eq ["#{artist} - title", 'text', short_account_status_url(user.account.username, status)].join("\n")
       end
 
-      it 'uses URL as status text if the given text is blank' do
+      it 'uses artist, title and URL as status text if the given text is blank' do
+        artist = Faker::Name.name
         post :create,
-             params: { title: 'title', artist: Faker::Name.name, text: '', visibility: 'public', music: music }
+             params: { title: 'title', artist: artist, text: '', visibility: 'public', music: music }
 
         track = Track.find_by!(title: 'title', text: '')
         status = track.statuses.find_by!(reblog: nil)
-        expect(status.text).to eq short_account_status_url(user.account.username, status)
+        expect(status.text).to eq ["#{artist} - title", short_account_status_url(user.account.username, status)].join("\n")
       end
 
       it 'returns http success' do
         post :create,
-             params: { title: 'title', artist: Faker::Name.name, visibility: 'public', music: music }
+             params: { title: 'title', artist: Faker::Name.name, visibility: 'public', music: music, video: { image: image } }
 
         expect(response).to have_http_status :success
       end
@@ -155,6 +158,7 @@ describe Api::V1::TracksController, type: :controller do
           },
           lightleaks: {
             alpha: 1,
+            interval: 1,
           },
           spectrum: {
             mode: 0,
@@ -174,7 +178,7 @@ describe Api::V1::TracksController, type: :controller do
         expect(track.title).to eq 'updated title'
         expect(track.artist).to eq 'updated artist'
         expect(track.text).to eq 'updated text'
-        expect(track.duration).to eq 181
+        expect(track.duration).to eq 2
         expect(track.video_blur_movement_band_bottom).to eq 50
         expect(track.video_blur_movement_band_top).to eq 300
         expect(track.video_blur_movement_threshold).to eq 165
@@ -425,6 +429,24 @@ describe Api::V1::TracksController, type: :controller do
         post :prepare_video, params: { id: status }
         expect(response).to have_http_status :unauthorized
       end
+    end
+  end
+
+  describe 'PUT #play_video' do
+    let(:track) { Fabricate(:track) }
+    let(:status) { Fabricate(:status, music: track) }
+
+    subject {
+      put :play_video, params: { id: status }
+    }
+
+    it 'increment view_count' do
+      expect{ subject }.to change { track.reload.view_count }.by(1)
+    end
+
+    it 'returns http success' do
+      subject
+      expect(response).to have_http_status :success
     end
   end
 end

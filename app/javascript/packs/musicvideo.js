@@ -14,9 +14,9 @@ function loaded() {
   const ReactDOM = require('react-dom');
   const mountNode = document.getElementById('pawoo-music-musicvideo');
   const locale = JSON.parse(document.getElementById('pawoo-music-default-props').getAttribute('data-props')).locale;
-  const track = JSON.parse(mountNode.getAttribute('data-props')).track;
+  const { id, track } = JSON.parse(mountNode.getAttribute('data-props'));
 
-  ReactDOM.render(<MusicvideoEntry {...{ locale, track }} />, mountNode);
+  ReactDOM.render(<MusicvideoEntry {...{ locale, track, statusId: id }} />, mountNode);
 }
 
 function main() {

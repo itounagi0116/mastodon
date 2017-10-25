@@ -17,19 +17,19 @@ const store = configureStore();
 export default class MusicvideoEntry extends React.PureComponent {
 
   static propTypes = {
+    statusId: PropTypes.number.isRequired,
     track: PropTypes.object.isRequired,
     locale: PropTypes.string.isRequired,
   }
 
   render () {
-    const { locale } = this.props;
+    const { locale, track, statusId } = this.props;
 
-    const { track } = this.props;
     return (
       <IntlProvider locale={locale} messages={messages}>
         <Provider store={store}>
           <div className='app' style={{ width: 'var(--width-gallery)' }}>
-            <Track track={Immutable.fromJS(track)} />
+            <Track statusId={statusId} track={Immutable.fromJS(track)} />
           </div>
         </Provider>
       </IntlProvider>
