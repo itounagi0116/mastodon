@@ -78,7 +78,17 @@ fetch(url.format({ pathname: path.resolve(argv._[0]), protocol: 'file:' }))
   .then(audio => (new AudioContext).decodeAudioData(audio))
   .then(audio => {
     const emitter = new RgbaEmitter(audio, {
+      /*
+       * Video Views: Instagram Video | Facebook Ads Guide
+       * https://www.facebook.com/business/ads-guide/video-views/instagram-video-views
+       * > Frame rate: 30fps max
+       *
+       * Media Best Practices — Twitter Developers
+       * https://developer.twitter.com/en/docs/media/upload-media/uploading-media/media-best-practices
+       * > Frame rate should be 40fps or less
+       */
       fps: 30,
+
       image,
       blur,
       particle,
