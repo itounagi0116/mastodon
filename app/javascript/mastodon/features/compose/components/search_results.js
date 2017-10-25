@@ -56,7 +56,7 @@ export default class SearchResults extends ImmutablePureComponent {
       search_header = (
         <Link className='search-results__search-statuses' to={`/statuses/search/${searchKeyword}`}>
           <i className='fa fa-fw fa-search search-results__search-statuses-icon' />
-          <FormattedMessage id='search_results.search_toots' defaultMessage='Search toots with "{keyword}"' values={{ keyword: searchKeyword }} />
+          <FormattedMessage id='search_results.search_for_toots' defaultMessage='Search for toots with "{keyword}"' values={{ keyword: searchKeyword }} />
         </Link>
       );
     } else {
