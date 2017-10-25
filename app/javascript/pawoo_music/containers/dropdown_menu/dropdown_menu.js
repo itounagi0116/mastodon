@@ -58,6 +58,7 @@ export default class DropdownMenu extends React.PureComponent {
   static propTypes = {
     src: PropTypes.string.isRequired,
     items: PropTypes.array.isRequired,
+    title: PropTypes.string,
     isLogin: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
   };
@@ -142,12 +143,12 @@ export default class DropdownMenu extends React.PureComponent {
   }
 
   render () {
-    const { src, isLogin } = this.props;
+    const { src, title, isLogin } = this.props;
     const { expanded } = this.state;
 
     return (
       <div className={classNames('dropdown-menu', { active: expanded })}>
-        <IconButton className='dropdown-trigger' src={src} onClick={isLogin ? this.handleClick : this.handleRedirectLoginPage} />
+        <IconButton className='dropdown-trigger' src={src} title={title} onClick={isLogin ? this.handleClick : this.handleRedirectLoginPage} />
         {!mobile && expanded && (
           <DropdownContent onClose={this.handleClose}>
             {expanded && this.renderMenuItems()}
