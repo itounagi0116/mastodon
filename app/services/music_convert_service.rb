@@ -1,5 +1,5 @@
 class MusicConvertService < BaseService
-  def call(track)
+  def call(track, resolution)
     music_file = Tempfile.new
     begin
       track.music.copy_to_local_file :original, music_file.path
@@ -11,11 +11,11 @@ class MusicConvertService < BaseService
           track.video_image.copy_to_local_file :original, image_file.path
         end
 
-        musicvideo = open_musicvideo(track, music_file, image_file)
+        musicvideo = open_musicvideo(track, resolution, music_file, image_file)
 
         video_file = Tempfile.new(['music-', '.mp4'])
         begin
-          create_mp4 track, music_file, musicvideo, video_file
+          create_mp4 track, resolution, music_file, musicvideo, video_file
           video_file
         rescue
           video_file.unlink
@@ -31,16 +31,22 @@ class MusicConvertService < BaseService
 
   private
 
-  def open_musicvideo(track, music_file, image_file)
+  def open_musicvideo(track, resolution, music_file, image_file)
     args = [
       Rails.root.join('node_modules', '.bin', 'electron'), 'genmv', '--',
-      music_file.path, '--text-alpha', track.video_text_alpha,
-      '--text-color', track.video_text_color,
-      '--text-title', track.title, '--text-sub', track.artist,
+      music_file.path, '--resolution', resolution,
     ]
 
     if image_file.present?
       args.push '--image', image_file.path
+    end
+
+    if track.video_text_alpha != 0
+      args.push(
+        '--text-alpha', track.video_text_alpha,
+        '--text-color', track.video_text_color,
+        '--text-title', track.title, '--text-sub', track.artist
+      )
     end
 
     if track.video_blur_movement_band_top != 0 && track.video_blur_blink_band_top != 0
@@ -80,10 +86,10 @@ class MusicConvertService < BaseService
     IO.popen args.map(&:to_s)
   end
 
-  def create_mp4(track, music_file, musicvideo, video_file)
+  def create_mp4(track, resolution, music_file, musicvideo, video_file)
     Process.waitpid spawn(
       'ffmpeg', '-y', '-i', music_file.path, '-f', 'rawvideo',
-      '-framerate', '30', '-pixel_format', 'bgr32', '-video_size', '720x720',
+      '-framerate', '30', '-pixel_format', 'bgr32', '-video_size', resolution,
       '-i', 'pipe:', '-vf', 'format=yuv420p,vflip', '-ar', '44100', '-metadata',
       "title=#{track.title}", '-metadata', "artist=#{track.artist}",
       *Rails.configuration.x.ffmpeg_options, video_file.path, in: musicvideo

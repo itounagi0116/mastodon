@@ -10,6 +10,7 @@ import IconButton from '../icon_button';
 import Slider from '../slider';
 import { constructGeneratorOptions } from '../../util/musicvideo';
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
+import lightLeaks from '../../../light_leaks.mp4';
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -54,7 +55,12 @@ class Musicvideo extends ImmutablePureComponent {
 
     // コンテキスト作成
     const audioContext = new AudioContext;
-    this.generator = new Canvas(audioContext, constructGeneratorOptions(track, this.image), () => this.audioElement.currentTime);
+    this.generator = new Canvas(
+      audioContext,
+      constructGeneratorOptions(track, this.image),
+      lightLeaks,
+      () => this.audioElement.currentTime
+    );
 
     // オーディオ接続
     const { audioAnalyserNode } = this.generator;
