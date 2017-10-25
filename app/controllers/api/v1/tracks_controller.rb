@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
 class Api::V1::TracksController < Api::BaseController
+  include ObfuscateFilename
+
   before_action -> { doorkeeper_authorize! :write }, except: :show
   before_action :require_user!, except: :show
+
+  obfuscate_filename :music
+  obfuscate_filename [:video, :image]
 
   respond_to :json
 
