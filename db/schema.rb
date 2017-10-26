@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171020000000) do
+ActiveRecord::Schema.define(version: 20171000000000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -470,10 +470,6 @@ ActiveRecord::Schema.define(version: 20171020000000) do
     t.integer "video_spectrum_color", default: 0, null: false
     t.float "video_text_alpha", default: 0.0, null: false
     t.integer "video_text_color", default: 0, null: false
-    t.string "video_1920x1080_file_name"
-    t.string "video_1920x1080_content_type"
-    t.integer "video_1920x1080_file_size"
-    t.datetime "video_1920x1080_updated_at"
   end
 
   create_table "trend_ng_words", id: :serial, force: :cascade do |t|

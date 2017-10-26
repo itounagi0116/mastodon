@@ -407,17 +407,12 @@ describe Api::V1::TracksController, type: :controller do
       let(:status) { Fabricate(:status, account: user.account, music: track) }
 
       it 'queues rendering' do
-        post :prepare_video, params: { id: status, resolution: '720x720' }
-        expect(VideoPreparingWorker).to have_enqueued_sidekiq_job status.id, '720x720'
-      end
-
-      it 'returns 422 with invalid resolution' do
-        post :prepare_video, params: { id: status, resolution: 'invalid' }
-        expect(response).to have_http_status 422
+        post :prepare_video, params: { id: status }
+        expect(VideoPreparingWorker).to have_enqueued_sidekiq_job status.id
       end
 
       it 'returns http success' do
-        post :prepare_video, params: { id: status, resolution: '720x720' }
+        post :prepare_video, params: { id: status }
         expect(response).to have_http_status :success
       end
     end

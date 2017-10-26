@@ -5,21 +5,12 @@ class VideoPreparingWorker
 
   sidekiq_options queue: :video_preparer, unique_for: 16.minutes, retry: false
 
-  def perform(id, resolution)
+  def perform(id)
     status = Status.tracks_only.find(id)
 
-    video = MusicConvertService.new.call(status.music, resolution)
+    video = MusicConvertService.new.call(status.music)
     begin
-      key = case resolution
-            when '720x720'
-              :video
-            when '1920x1080'
-              :video_1920x1080
-            else
-              raise ArgumentError, 'resolution is expected to be 720x720 or 1920x1080, but it was ' + resolution
-            end
-
-      status.music.update! key => video
+      status.music.update! video: video
     ensure
       video.unlink
     end
