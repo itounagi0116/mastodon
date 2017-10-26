@@ -56,7 +56,6 @@ const mapStateToProps = (state) => ({
 export default class DropdownMenu extends React.PureComponent {
 
   static propTypes = {
-    strong: PropTypes.bool,
     src: PropTypes.string.isRequired,
     items: PropTypes.array.isRequired,
     title: PropTypes.string,
@@ -144,12 +143,12 @@ export default class DropdownMenu extends React.PureComponent {
   }
 
   render () {
-    const { strong, src, title, isLogin } = this.props;
+    const { src, title, isLogin } = this.props;
     const { expanded } = this.state;
 
     return (
       <div className={classNames('dropdown-menu', { active: expanded })}>
-        <IconButton className={classNames('dropdown-trigger', { strong })} src={src} title={title} onClick={isLogin ? this.handleClick : this.handleRedirectLoginPage} />
+        <IconButton className='dropdown-trigger' src={src} title={title} onClick={isLogin ? this.handleClick : this.handleRedirectLoginPage} />
         {!mobile && expanded && (
           <DropdownContent onClose={this.handleClose}>
             {expanded && this.renderMenuItems()}

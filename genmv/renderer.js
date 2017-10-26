@@ -28,13 +28,6 @@ function parseLimit(bottom, top, threshold) {
     undefined : { band, threshold: argv[threshold] };
 }
 
-function parseResolution(resolution) {
-  const [width, height] = resolution.split('x').map(Number);
-  return { width, height };
-}
-
-const resolution = parseResolution(argv.resolution);
-
 const blurMovement = parseLimit('blurMovementBandBottom',
                                 'blurMovementBandTop',
                                 'blurMovementThreshold');
@@ -95,7 +88,6 @@ fetch(url.format({ pathname: path.resolve(argv._[0]), protocol: 'file:' }))
        * > Frame rate should be 40fps or less
        */
       fps: 30,
-      resolution,
       image,
       blur,
       particle,

@@ -52,16 +52,7 @@ child({ music: :track }, if: ->(status) { !status.reblog? && status.music.is_a?(
   node :video do |track|
     hash = {}
 
-    if current_account && root_status.account_id == current_account.id
-      if track.video.present?
-        hash[:url_720x720] = full_asset_url(track.video.url(:original))
-      end
-
-      if track.video_1920x1080.present?
-        hash[:url_1920x1080] = full_asset_url(track.video_1920x1080.url(:original))
-      end
-    end
-
+    hash[:url] = full_asset_url(track.video.url(:original)) if track.video.present? && current_account && root_status.account_id == current_account.id
     if track.video_image.present?
       hash[:image] = full_asset_url(track.video_image.url(:original))
       hash[:preview_url] = full_asset_url(track.video_image.url(:small))

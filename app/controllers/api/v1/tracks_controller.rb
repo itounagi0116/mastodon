@@ -47,11 +47,8 @@ class Api::V1::TracksController < Api::BaseController
   end
 
   def prepare_video
-    resolution = params.require('resolution')
-    raise Mastodon::ValidationError if Track::RESOLUTIONS.exclude? resolution
-
     @status = Status.find_by!(id: params[:id], account: current_account, music_type: 'Track')
-    VideoPreparingWorker.perform_async @status.id, resolution
+    VideoPreparingWorker.perform_async @status.id
 
     render_empty
   end
