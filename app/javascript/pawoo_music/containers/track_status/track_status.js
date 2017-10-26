@@ -75,7 +75,7 @@ export default class TrackStatus extends ImmutablePureComponent {
           <FollowButton id={status.getIn(['account', 'id'])} onlyFollow />
         </div>
 
-        <Track statusId={status.get('id')} track={status.get('track')} />
+        <Track track={status.get('track')} />
 
         <StatusContent status={status.set('content', status.getIn(['track', 'content']))} />
 

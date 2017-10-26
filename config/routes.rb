@@ -172,6 +172,7 @@ Rails.application.routes.draw do
         member do
           get :context
           get :card
+          get :music
         end
 
         resource :pin, only: [:create, :destroy], controller: :pinned_statuses
@@ -251,7 +252,6 @@ Rails.application.routes.draw do
 
       resources :tracks, only: [:create, :update] do
         post :prepare_video, on: :member
-        put :play_video, on: :member
       end
     end
 

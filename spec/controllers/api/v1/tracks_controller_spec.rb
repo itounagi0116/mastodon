@@ -431,22 +431,4 @@ describe Api::V1::TracksController, type: :controller do
       end
     end
   end
-
-  describe 'PUT #play_video' do
-    let(:track) { Fabricate(:track) }
-    let(:status) { Fabricate(:status, music: track) }
-
-    subject {
-      put :play_video, params: { id: status }
-    }
-
-    it 'increment view_count' do
-      expect{ subject }.to change { track.reload.view_count }.by(1)
-    end
-
-    it 'returns http success' do
-      subject
-      expect(response).to have_http_status :success
-    end
-  end
 end

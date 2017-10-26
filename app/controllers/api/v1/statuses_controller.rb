@@ -2,11 +2,12 @@
 
 class Api::V1::StatusesController < Api::BaseController
   include Authorization
+  include RoutingHelper
 
   before_action :authorize_if_got_token, except:            [:create, :destroy]
   before_action -> { doorkeeper_authorize! :write }, only:  [:create, :destroy]
-  before_action :require_user!, except:  [:show, :context, :card]
-  before_action :set_status, only:       [:show, :context, :card]
+  before_action :require_user!, except:  [:show, :context, :card, :music]
+  before_action :set_status, only:       [:show, :context, :card, :music]
 
   respond_to :json
 
@@ -64,6 +65,16 @@ class Api::V1::StatusesController < Api::BaseController
     RemovalWorker.perform_async(@status.id)
 
     render_empty
+  end
+
+  def music
+    track = @status&.music
+
+    # Reraise in order to get a 404 instead of a 403 error code
+    raise ActiveRecord::RecordNotFound unless track&.is_a? Track
+
+    track.increment! :view_count
+    redirect_to full_asset_url(track.music.url(:original))
   end
 
   private

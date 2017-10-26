@@ -14,12 +14,12 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  onPlayTrack (statusId, trackId) {
-    dispatch(playTrack(statusId, trackId));
+  onPlayTrack (value) {
+    dispatch(playTrack(value));
   },
 
-  onStopTrack (trackId) {
-    dispatch(stopTrack(trackId));
+  onStopTrack (value) {
+    dispatch(stopTrack(value));
   },
 });
 
@@ -28,7 +28,6 @@ class Track extends ImmutablePureComponent {
 
   static propTypes = {
     track:  ImmutablePropTypes.map,
-    statusId: PropTypes.number.isRequired,
     trackId: PropTypes.string,
     onPlayTrack: PropTypes.func.isRequired,
     onStopTrack: PropTypes.func.isRequired,
@@ -50,13 +49,12 @@ class Track extends ImmutablePureComponent {
 
   handlePlayClick = () => {
     const { thumbnailView } = this.state;
-    const { statusId, track } = this.props;
 
     this.setState({ thumbnailView: !thumbnailView });
     if (thumbnailView) {
-      this.props.onPlayTrack(statusId, track.get('music'));
+      this.props.onPlayTrack(this.props.track.get('music'));
     } else {
-      this.props.onStopTrack(track.get('music'));
+      this.props.onStopTrack(this.props.track.get('music'));
     }
   }
 

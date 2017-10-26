@@ -125,5 +125,43 @@ RSpec.describe Api::V1::StatusesController, type: :controller do
         end
       end
     end
+
+    context 'with a public status but no track nor album' do
+      let(:status) { Fabricate(:status, music: nil, visibility: :public) }
+
+      it 'returns 404' do
+        get :music, params: { id: status.id }
+        expect(response).to have_http_status 404
+      end
+    end
+
+    context 'with a public status and an album' do
+      let(:album) { Fabricate(:album) }
+      let(:status) { Fabricate(:status, music: album, visibility: :public) }
+
+      it 'returns 404' do
+        get :music, params: { id: status.id }
+        expect(response).to have_http_status 404
+      end
+    end
+
+    context 'with a public status and a track' do
+      let(:track) { Fabricate(:track) }
+      let(:status) { Fabricate(:status, music: track, visibility: :public) }
+
+      describe 'GET #music' do
+        it 'redirects to music' do
+          get :music, params: { id: status.id }
+          expect(response).to have_http_status 302
+        end
+
+        it 'increments view_count' do
+          expect do
+            get :music, params: { id: status.id }
+            track.reload
+          end.to change { track.view_count }.by 1
+        end
+      end
+    end
   end
 end
