@@ -188,7 +188,7 @@ class PlayControl extends React.PureComponent {
   };
 
   static propTypes = {
-    trackId: PropTypes.string,
+    trackId: PropTypes.number,
     accessToken: PropTypes.string,
     streamingAPIBaseURL: PropTypes.string.isRequired,
     isAdmin: PropTypes.bool,
