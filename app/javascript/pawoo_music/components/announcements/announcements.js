@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import Link from 'react-router-dom/Link';
 import IconButton from '../icon_button';
+import { injectIntl } from 'react-intl';
 
 const storageKey = 'announcements_dismissed';
 
+@injectIntl
 class Announcements extends React.PureComponent {
 
-  static contextTypes = {
+  static propTypes = {
     intl: PropTypes.object.isRequired,
   };
 
@@ -34,7 +36,7 @@ class Announcements extends React.PureComponent {
       {
         id: 10,
         icon: '/announcements/icon_2x_360.png',
-        body: this.context.intl.formatMessage({
+        body: this.props.intl.formatMessage({
           id: 'pawoo_music.announcements.10',
           defaultMessage: 'Pawoo Musicをリニューアル！ MVの自動生成機能などをはじめ、新しいPawoo Musicをお楽しみください！',
         }),
@@ -56,7 +58,7 @@ class Announcements extends React.PureComponent {
 
   render () {
     return (
-      <ul className='announcements'>
+      <ul className='announcements' style={{ wordBreak: this.props.intl.locale === 'en' ? 'normal' : 'wrap-all' }}>
         {this.announcements.map(announcement => this.state.dismissed.indexOf(announcement.get('id')) === -1 && (
           <li key={announcement.get('id')}>
             <div className='announcements__body'>
