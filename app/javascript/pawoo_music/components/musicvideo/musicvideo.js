@@ -285,16 +285,14 @@ class Musicvideo extends ImmutablePureComponent {
 
   handleChangeCurrentTime = (lastSeekDestinationOffsetToMusicTime) => {
     this.offsetToAudioContextTime = lastSeekDestinationOffsetToMusicTime - this.generator.audioAnalyserNode.context.currentTime;
-    this.forceUpdate();
+    this.setState({ lastSeekDestinationOffsetToMusicTime });
     this.generator.initialize();
   };
 
-  handleAfterChangeCurrentTime = (lastSeekDestinationOffsetToMusicTime) => {
+  handleAfterChangeCurrentTime = () => {
     if (this.state.audioBufferSource !== null) {
       this.createAudioBufferSource(this.state.audioBuffer);
     }
-
-    this.setState({ lastSeekDestinationOffsetToMusicTime });
   }
 
   setCanvasContainerRef = (ref) => {
