@@ -28,7 +28,7 @@ class Track extends ImmutablePureComponent {
 
   static propTypes = {
     track:  ImmutablePropTypes.map,
-    trackId: PropTypes.string,
+    trackId: PropTypes.number,
     onPlayTrack: PropTypes.func.isRequired,
     onStopTrack: PropTypes.func.isRequired,
   };
