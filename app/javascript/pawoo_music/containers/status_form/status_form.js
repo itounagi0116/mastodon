@@ -340,7 +340,7 @@ export default class StatusForm extends ImmutablePureComponent {
             onSuggestionsClearRequested={this.onSuggestionsClearRequested}
             onSuggestionSelected={this.onSuggestionSelected}
             onPaste={onPaste}
-            autoFocus={false}
+            autoFocus={useModal}
             hash_tag_suggestions={this.props.hash_tag_suggestions}
             onHashTagSuggestionsFetchRequested={this.onHashTagSuggestionsFetchRequested}
             onHashTagSuggestionsClearRequested={this.onHashTagSuggestionsClearRequested}

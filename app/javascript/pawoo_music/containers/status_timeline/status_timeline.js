@@ -9,7 +9,6 @@ import { debounce } from 'lodash';
 import Timeline from '../../components/timeline';
 import StatusList from '../../components/status_list';
 import { scrollTopTimeline } from '../../../mastodon/actions/timelines';
-import { mountCompose, unmountCompose } from '../../../mastodon/actions/compose';
 import StatusFormContainer from '../status_form';
 import AccountContainer from '../account';
 
@@ -91,30 +90,6 @@ export default class StatusTimeline extends ImmutablePureComponent {
 
   static defaultProps = {
     withComposeForm: false,
-  }
-
-  componentDidMount () {
-    const { dispatch, withComposeForm } = this.props;
-    if (withComposeForm) {
-      dispatch(mountCompose());
-    }
-  }
-
-  componentDidUpdate (prevProps) {
-    const { dispatch, withComposeForm } = this.props;
-
-    if (prevProps.withComposeForm !== withComposeForm) {
-      if (withComposeForm) {
-        dispatch(mountCompose());
-      } else {
-        dispatch(unmountCompose());
-      }
-    }
-  }
-
-  componentWillUnmount () {
-    const { dispatch } = this.props;
-    dispatch(unmountCompose());
   }
 
   handleGalleryLoadMore = debounce(() => {
