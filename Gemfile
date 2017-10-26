@@ -70,7 +70,6 @@ gem 'webpacker', '~> 2.0'
 # extra
 gem 'exception_notification'
 gem 'slack-notifier'
-gem 'admin_script'
 gem 'activerecord-import'
 
 gem 'elasticsearch-model', '~> 5.0'
