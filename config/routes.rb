@@ -40,7 +40,7 @@ Rails.application.routes.draw do
 
   get '/users/:username', to: redirect('/@%{username}'), constraints: { username: /[^\/]+/ }
 
-  resources :accounts, path: 'users', only: [:show], param: :username, constraints: { username: /[^\/]+/ } do
+  resources :accounts, path: 'users', only: [:show], param: :username, constraints: { username: /((?!(\.atom|\.activitystreams2)$)[^\/])+/ } do
     resources :stream_entries, path: 'updates', only: [:show] do
       member do
         get :embed
