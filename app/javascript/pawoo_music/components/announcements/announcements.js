@@ -58,7 +58,7 @@ class Announcements extends React.PureComponent {
 
   render () {
     return (
-      <ul className='announcements' style={{ wordBreak: this.props.intl.locale === 'en' ? 'normal' : 'wrap-all' }}>
+      <ul className='announcements' style={{ wordBreak: this.props.intl.locale === 'en' ? 'normal' : 'break-all' }}>
         {this.announcements.map(announcement => this.state.dismissed.indexOf(announcement.get('id')) === -1 && (
           <li key={announcement.get('id')}>
             <div className='announcements__body'>

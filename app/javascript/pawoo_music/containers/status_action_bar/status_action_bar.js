@@ -49,7 +49,7 @@ const messages = defineMessages({
 
   generate_mv: { id: 'status.generate_mv', defaultMessage: 'Generate the video' },
   regenerate_mv: { id: 'status.regenerate_mv', defaultMessage: 'Regenerate the video' },
-  download_mv: { id: 'status.download_mv', defaultMessage: 'Download generated video' },
+  download_mv: { id: 'status.download_mv', defaultMessage: 'Download video' },
   editTrack: { id: 'status.edit_track', defaultMessage: 'Edit track' },
 
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
@@ -265,14 +265,14 @@ export default class StatusActionBar extends ImmutablePureComponent {
         <li>
           {(url) ? (
             <a href={url} download={downloadFilename}>
-              <IconButton className='clickable strong' src='download' />
+              <IconButton className='clickable strong' src='download' title={intl.formatMessage(messages.download_mv)} />
             </a>
           ) : (
-            <IconButton className='strong' src='download' onClick={this.handleGenerateMvClick} />
+            <IconButton className='strong' src='download' title={intl.formatMessage(messages.download_mv)} onClick={this.handleGenerateMvClick} />
           )}
         </li>
       );
-      editButton = <li><IconButton className='strong' src='edit' onClick={this.handleEditTrack} /></li>;
+      editButton = <li><IconButton className='strong' src='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} /></li>;
     }
 
 
