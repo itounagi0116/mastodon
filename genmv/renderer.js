@@ -28,6 +28,13 @@ function parseLimit(bottom, top, threshold) {
     undefined : { band, threshold: argv[threshold] };
 }
 
+function parseResolution(resolution) {
+  const [width, height] = resolution.split('x').map(Number);
+  return { width, height };
+}
+
+const resolution = parseResolution(argv.resolution);
+
 const blurMovement = parseLimit('blurMovementBandBottom',
                                 'blurMovementBandTop',
                                 'blurMovementThreshold');
@@ -79,6 +86,7 @@ fetch(url.format({ pathname: path.resolve(argv._[0]), protocol: 'file:' }))
   .then(audio => {
     const emitter = new RgbaEmitter(audio, {
       fps: 30,
+      resolution,
       image,
       blur,
       particle,
