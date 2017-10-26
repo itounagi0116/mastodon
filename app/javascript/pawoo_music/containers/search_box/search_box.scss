@@ -68,6 +68,8 @@
 
       li {
         display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
 
