@@ -29,7 +29,7 @@ export default class MusicvideoEntry extends React.PureComponent {
       <IntlProvider locale={locale} messages={messages}>
         <Provider store={store}>
           <div className='app'>
-            <Track track={Immutable.fromJS(track).set('id', statusId)} />
+            <Track track={Immutable.fromJS(track).set('id', statusId)} fitContain />
           </div>
         </Provider>
       </IntlProvider>
