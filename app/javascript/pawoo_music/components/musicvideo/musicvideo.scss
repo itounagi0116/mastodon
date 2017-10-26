@@ -44,10 +44,6 @@
       width:  var(--iconsize10);
       height: var(--iconsize10);
       cursor: pointer;
-
-      &.disabled {
-        cursor: not-allowed;
-      }
     }
 
     .icon-button {
