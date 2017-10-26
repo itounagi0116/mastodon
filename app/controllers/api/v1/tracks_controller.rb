@@ -47,7 +47,10 @@ class Api::V1::TracksController < Api::BaseController
   end
 
   def prepare_video
-    VideoPreparingWorker.perform_async @status.id
+    resolution = params.require('resolution')
+    raise Mastodon::ValidationError if Track::RESOLUTIONS.exclude? resolution
+
+    VideoPreparingWorker.perform_async @status.id, resolution
 
     render_empty
   end

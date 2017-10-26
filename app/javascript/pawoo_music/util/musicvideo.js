@@ -1,6 +1,7 @@
 import { isMobile } from './is_mobile';
 import isEqual from 'lodash/isEqual';
 
+const resolution = { width: 480, height: 480 };
 const fps = isMobile() ? 15 : 30;
 
 export function constructRgbObject (color, a) {
@@ -23,7 +24,7 @@ export function extractRgbFromRgbObject ({ r, g, b }) {
 export function constructGeneratorOptions(track, image) {
   const video = track.get('video');
 
-  const options = { fps, image };
+  const options = { resolution, fps, image };
 
   for (const [trackKey, optionKey] of [
     ['blur', 'blur'],
