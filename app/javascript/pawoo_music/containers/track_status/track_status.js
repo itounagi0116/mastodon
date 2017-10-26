@@ -36,7 +36,7 @@ export default class TrackStatus extends ImmutablePureComponent {
     muted: PropTypes.bool,
     prepend: PropTypes.node,
     hidden: PropTypes.bool,
-    trackId: PropTypes.string,
+    trackId: PropTypes.number,
     dispatch: PropTypes.func.isRequired,
   };
 
