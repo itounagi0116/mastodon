@@ -241,6 +241,7 @@
   "pawoo_music.track_compose.select_genre": "ジャンルタグを選択",
   "pawoo_music.track_compose.submit": "投稿する",
   "pawoo_music.track_compose.video": "動画",
+  "pawoo_music.track_compose.video.background_color": "背景色",
   "pawoo_music.track_compose.video.blink_threshold": "明度しきい値",
   "pawoo_music.track_compose.video.blur": "ブラー",
   "pawoo_music.track_compose.video.bottom_columns": "波1",

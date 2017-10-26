@@ -24,7 +24,12 @@ export function extractRgbFromRgbObject ({ r, g, b }) {
 export function constructGeneratorOptions(track, image) {
   const video = track.get('video');
 
-  const options = { resolution, fps, image };
+  const options = {
+    resolution,
+    fps,
+    backgroundColor: video.get('backgroundcolor'),
+    image,
+  };
 
   for (const [trackKey, optionKey] of [
     ['blur', 'blur'],

@@ -35,6 +35,8 @@ function parseResolution(resolution) {
 
 const resolution = parseResolution(argv.resolution);
 
+const backgroundColor = argv.backgroundcolor;
+
 const blurMovement = parseLimit('blurMovementBandBottom',
                                 'blurMovementBandTop',
                                 'blurMovementThreshold');
@@ -96,6 +98,7 @@ fetch(url.format({ pathname: path.resolve(argv._[0]), protocol: 'file:' }))
        */
       fps: 30,
       resolution,
+      backgroundColor,
       image,
       blur,
       particle,

@@ -42,6 +42,7 @@
 #  video_1920x1080_content_type     :string
 #  video_1920x1080_file_size        :integer
 #  video_1920x1080_updated_at       :datetime
+#  video_backgroundcolor            :integer          default(1513239), not null
 #
 
 class Track < ApplicationRecord

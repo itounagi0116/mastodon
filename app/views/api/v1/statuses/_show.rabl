@@ -49,7 +49,7 @@ child({ music: :track }, if: ->(status) { !status.reblog? && status.music.is_a?(
   node(:content) { |track| Formatter.instance.format_for_track(root_status) }
 
   node :video do |track|
-    hash = {}
+    hash = { backgroundcolor: track.video_backgroundcolor }
 
     if current_account && root_status.account_id == current_account.id
       if track.video.present?

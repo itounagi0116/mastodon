@@ -11,6 +11,7 @@ import {
   changeTrackComposeTrackArtist,
   changeTrackComposeTrackText,
   changeTrackComposeTrackMusic,
+  changeTrackComposeTrackVideoBackgroundColor,
   changeTrackComposeTrackVideoImage,
   changeTrackComposeTrackVideoBlurVisibility,
   changeTrackComposeTrackVideoBlurMovementThreshold,
@@ -93,6 +94,10 @@ const mapDispatchToProps = (dispatch) => ({
 
   onChangeTrackMusic (value) {
     dispatch(changeTrackComposeTrackMusic(value));
+  },
+
+  onChangeTrackVideoBackgroundColor (value) {
+    dispatch(changeTrackComposeTrackVideoBackgroundColor(value));
   },
 
   onChangeTrackVideoImage (value) {
@@ -186,6 +191,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     onChangeTrackArtist: PropTypes.func.isRequired,
     onChangeTrackText: PropTypes.func.isRequired,
     onChangeTrackMusic: PropTypes.func.isRequired,
+    onChangeTrackVideoBackgroundColor: PropTypes.func.isRequired,
     onChangeTrackVideoImage: PropTypes.func.isRequired,
     onChangeTrackVideoBlurVisibility: PropTypes.func.isRequired,
     onChangeTrackVideoBlurMovementThreshold: PropTypes.func.isRequired,
@@ -284,6 +290,14 @@ export default class TrackCompose extends ImmutablePureComponent {
         }
       });
     }
+  }
+
+  handleToggleBackgroundColorPickerVisible = () => {
+    this.setState({ visibleColorPicker: 'background' }, this.handleBindColorPickerHide);
+  }
+
+  handleChangeTrackVideoBackgroundColor = ({ rgb }) => {
+    this.props.onChangeTrackVideoBackgroundColor(extractRgbFromRgbObject(rgb));
   }
 
   handleChangeTrackVideoBlurVisibility = ({ target }) => {
@@ -569,6 +583,33 @@ export default class TrackCompose extends ImmutablePureComponent {
                   </div>
                 </legend>
               </fieldset>
+
+              <label className='track-compose-effect-color'>
+                <div className='horizontal'>
+                  <span className='text'>
+                    <FormattedMessage
+                      id='pawoo_music.track_compose.video.background_color'
+                      defaultMessage='Background color'
+                    />
+                  </span>
+                  <div className='track-compose-effect-color-wrap'>
+                    <div className='track-compose-effect-color-trigger' onClick={this.handleToggleBackgroundColorPickerVisible} role='button' tabIndex='-1'>
+                      <div className='track-compose-effect-color-trigger-body' style={{ backgroundColor: constructRgbCode(this.props.track.getIn(['video', 'backgroundcolor']), 1) }} />
+                    </div>
+                    <Delay>
+                      {this.state.visibleColorPicker === 'background' && (
+                        <div className='track-compose-effect-color-content'>
+                          <SketchPicker
+                            color={constructRgbObject(this.props.track.getIn(['video', 'backgroundcolor']), 1)}
+                            disableAlpha
+                            onChange={this.handleChangeTrackVideoBackgroundColor}
+                          />
+                        </div>
+                      )}
+                    </Delay>
+                  </div>
+                </div>
+              </label>
 
               {/* Spectrum */}
               <fieldset>
