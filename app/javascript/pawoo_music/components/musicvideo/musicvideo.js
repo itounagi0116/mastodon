@@ -69,7 +69,7 @@ class Musicvideo extends ImmutablePureComponent {
     audioAnalyserNode.connect(audioAnalyserNode.context.destination);
 
     // キャンバス更新
-    this.updateCanvas();
+    this.updateCanvas(track);
 
     // キャンバス初期化
     this.generator.initialize();
@@ -109,7 +109,7 @@ class Musicvideo extends ImmutablePureComponent {
     }
 
     if (track !== this.props.track) {
-      this.updateCanvas();
+      this.updateCanvas(track);
     }
   }
 
@@ -252,7 +252,7 @@ class Musicvideo extends ImmutablePureComponent {
 
   handleLoadImage = () => {
     this.image.update();
-    this.updateCanvas();
+    this.updateCanvas(this.props.track);
   }
 
   handleTogglePaused = () => {
@@ -299,9 +299,9 @@ class Musicvideo extends ImmutablePureComponent {
     this.canvasContainer = ref;
   }
 
-  updateCanvas = () => {
+  updateCanvas = (track) => {
     if (this.generator) {
-      this.generator.changeParams(constructGeneratorOptions(this.props.track, this.image));
+      this.generator.changeParams(constructGeneratorOptions(track, this.image));
     }
   }
 
