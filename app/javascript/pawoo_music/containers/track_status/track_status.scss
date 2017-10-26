@@ -16,6 +16,10 @@
     background: var(--color2);
   }
 
+  > * {
+    margin: var(--verticalspace20);
+  }
+
   .status-head {
     display: flex;
 

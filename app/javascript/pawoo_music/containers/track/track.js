@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import Musicvideo from '../../components/musicvideo';
+import classNames from 'classnames';
 import { playTrack, stopTrack } from '../../actions/tracks';
 
 import playIcon from '../../../images/pawoo_music/play.png';
@@ -27,6 +28,7 @@ const mapDispatchToProps = (dispatch) => ({
 class Track extends ImmutablePureComponent {
 
   static propTypes = {
+    fitContain: PropTypes.bool,
     track:  ImmutablePropTypes.map,
     trackId: PropTypes.number,
     onPlayTrack: PropTypes.func.isRequired,
@@ -64,18 +66,18 @@ class Track extends ImmutablePureComponent {
   };
 
   render() {
-    const { track } = this.props;
+    const { fitContain, track } = this.props;
     const { thumbnailView } = this.state;
     if (!track) {
       return null;
     }
 
     const thumbnailStyle = {
-      backgroundImage: `url('${track.getIn(['video', 'preview_url'], defaultArtwork)}')`,
+      backgroundImage: thumbnailView && `url('${track.getIn(['video', 'preview_url'], defaultArtwork)}')`,
     };
 
     return (
-      <div className='track'>
+      <div className={classNames('track', { 'fit-contain': fitContain })}>
         <div className='musicvideo-wrapper' style={thumbnailStyle}>
           {thumbnailView ? (
             <div className='thumbnail' role='button' tabIndex='0' aria-pressed='false' onClick={this.handlePlayClick}>
