@@ -173,6 +173,7 @@
   "status.cannot_favourite": "この投稿はお気に入りにできません",
   "status.delete": "削除",
   "status.download_mv": "{resolution} をダウンロード",
+  "status.download_mv_title": "動画をダウンロード",
   "status.edit_track": "トラックを編集",
   "status.favourite": "お気に入り",
   "status.generate_mv": "{resolution} を生成する",

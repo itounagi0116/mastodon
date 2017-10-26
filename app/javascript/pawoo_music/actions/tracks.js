@@ -22,7 +22,7 @@ export function stopTrack() {
 export function generateTrackMv(statusId, resolution) {
   return function (dispatch, getState) {
     dispatch(generateTrackMvRequest());
-    api(getState).post(`/api/v1/tracks/${statusId}/prepare_video`, { params: { resolution } }).then(() => {
+    api(getState).post(`/api/v1/tracks/${statusId}/prepare_video`, { resolution }).then(() => {
       dispatch(generateTrackMvSuccess());
     }).catch(error => {
       dispatch(generateTrackMvFail(error));

@@ -62,6 +62,7 @@ class Musicvideo extends ImmutablePureComponent {
     // the source URL and image element. The src attribute of the element is
     // dynamic.
     this.image.source.addEventListener('load', this.handleLoadImage, { once: false });
+    this.image.source.crossOrigin = 'anonymous';
     this.updateImage(track);
 
     // オーディオ接続
@@ -149,14 +150,12 @@ class Musicvideo extends ImmutablePureComponent {
     const image = track.getIn(['video', 'image']);
 
     if (image instanceof Blob) {
-      return URL.createObjectURL(image);
+      this.image.source.src = URL.createObjectURL(image);
+    } else if (typeof image === 'string') {
+      this.image.source.src = image;
+    } else {
+      this.image.source.src = defaultArtwork;
     }
-
-    if (typeof image === 'string') {
-      return image;
-    }
-
-    return defaultArtwork;
   }
 
   updateMusic = (track) => {
@@ -275,13 +274,23 @@ class Musicvideo extends ImmutablePureComponent {
     }
   }
 
-  handleChangeCurrentTime = (lastSeekDestinationOffsetToMusicTime) => {
-    this.offsetToAudioContextTime = lastSeekDestinationOffsetToMusicTime - this.generator.audioAnalyserNode.context.currentTime;
-    this.generator.initialize();
-
+  handleBeforeChangeCurrentTime = () => {
     if (this.state.audioBufferSource !== null) {
+      this.state.audioBufferSource.onended = null;
       this.state.audioBufferSource.stop();
 
+      this.generator.stop();
+    }
+  };
+
+  handleChangeCurrentTime = (lastSeekDestinationOffsetToMusicTime) => {
+    this.offsetToAudioContextTime = lastSeekDestinationOffsetToMusicTime - this.generator.audioAnalyserNode.context.currentTime;
+    this.forceUpdate();
+    this.generator.initialize();
+  };
+
+  handleAfterChangeCurrentTime = (lastSeekDestinationOffsetToMusicTime) => {
+    if (this.state.audioBufferSource !== null) {
       this.createAudioBufferSource(this.state.audioBuffer);
     }
 
@@ -322,9 +331,10 @@ class Musicvideo extends ImmutablePureComponent {
               max={audioBuffer === null ? 1 : audioBuffer.duration}
               step={0.1}
               value={this.calculateMusicCurrentTime()}
+              onBeforeChange={this.handleBeforeChangeCurrentTime}
               onChange={this.handleChangeCurrentTime}
+              onAfterChange={this.handleAfterChangeCurrentTime}
               disabled={!audioBuffer}
-              ref={this.setSeekbarRef}
             />
           </div>
         </div>
