@@ -50,9 +50,10 @@ const messages = defineMessages({
   resolution720x720: { id: 'status.resolution.720x720', defaultMessage: '720x720 (for Twitter, etc.)' },
   resolution1920x1080: { id: 'status.resolution.1920x1080', defaultMessage: '1920x1080 (for YouTube, etc.)' },
 
-  generate_mv: { id: 'status.generate_mv', defaultMessage: 'Generate the video' },
-  regenerate_mv: { id: 'status.regenerate_mv', defaultMessage: 'Regenerate the video' },
-  download_mv: { id: 'status.download_mv', defaultMessage: 'Download video' },
+  generate_mv: { id: 'status.generate_mv', defaultMessage: 'Generate {resolution}' },
+  regenerate_mv: { id: 'status.regenerate_mv', defaultMessage: 'Regenerate {resolution}' },
+  download_mv: { id: 'status.download_mv', defaultMessage: 'Download {resolution}' },
+  download_mv_title: { id: 'status.download_mv_title', defaultMessage: 'Download video' },
   editTrack: { id: 'status.edit_track', defaultMessage: 'Edit track' },
 
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
@@ -281,7 +282,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
         }
       }
 
-      downloadButton = <li><DropdownMenuContainer items={videoMenu} src='download' strong title={intl.formatMessage(messages.download_mv)} /></li>;
+      downloadButton = <li><DropdownMenuContainer items={videoMenu} src='download' strong title={intl.formatMessage(messages.download_mv_title)} /></li>;
       editButton = <li><IconButton className='strong' src='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} /></li>;
     }
 
