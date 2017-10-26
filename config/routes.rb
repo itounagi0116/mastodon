@@ -172,6 +172,7 @@ Rails.application.routes.draw do
         member do
           get :context
           get :card
+          get :music
         end
 
         resource :pin, only: [:create, :destroy], controller: :pinned_statuses

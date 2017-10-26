@@ -54,6 +54,10 @@ const normalizeStatus = (state, status) => {
     normalStatus.reblog = status.reblog.id;
   }
 
+  if (status.track) {
+    normalStatus.track.id = status.id;
+  }
+
   const searchContent = [status.spoiler_text, status.content].join(' ').replace(/<br \/>/g, '\n').replace(/<\/p><p>/g, '\n\n');
   normalStatus.search_index = new DOMParser().parseFromString(searchContent, 'text/html').documentElement.textContent;
 

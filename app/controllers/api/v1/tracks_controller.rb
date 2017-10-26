@@ -3,8 +3,9 @@
 class Api::V1::TracksController < Api::BaseController
   include ObfuscateFilename
 
-  before_action -> { doorkeeper_authorize! :write }, except: :show
-  before_action :require_user!, except: :show
+  before_action -> { doorkeeper_authorize! :write }
+  before_action :require_user!
+  before_action :set_status, only: [:update, :prepare_video]
 
   obfuscate_filename :music
   obfuscate_filename [:video, :image]
@@ -40,20 +41,22 @@ class Api::V1::TracksController < Api::BaseController
   end
 
   def update
-    @status = Status.find_by!(id: params[:id], account: current_account, music_type: 'Track')
     @status.music.update! track_attributes
 
     render 'api/v1/statuses/show'
   end
 
   def prepare_video
-    @status = Status.find_by!(id: params[:id], account: current_account, music_type: 'Track')
     VideoPreparingWorker.perform_async @status.id
 
     render_empty
   end
 
   private
+
+  def set_status
+    @status = Status.tracks_only.find_by!(id: params[:id], account: current_account)
+  end
 
   def track_attributes
     return @track_attributes if @track_attributes

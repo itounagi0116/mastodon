@@ -37,6 +37,7 @@
 #  video_spectrum_color             :integer          default(0), not null
 #  video_text_alpha                 :float            default(0.0), not null
 #  video_text_color                 :integer          default(0), not null
+#  view_count                       :integer          default(0), not null
 #
 
 class Track < ApplicationRecord

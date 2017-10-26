@@ -38,7 +38,7 @@ class Track extends ImmutablePureComponent {
   }
 
   componentWillReceiveProps = ({ trackId }) => {
-    if (!this.state.thumbnailView && trackId !== this.props.track.get('music')) {
+    if (!this.state.thumbnailView && trackId !== this.props.track.get('id')) {
       this.setState({ thumbnailView: true });
     }
   };
@@ -49,16 +49,17 @@ class Track extends ImmutablePureComponent {
 
   handlePlayClick = () => {
     const { thumbnailView } = this.state;
+
     this.setState({ thumbnailView: !thumbnailView });
     if (thumbnailView) {
-      this.props.onPlayTrack(this.props.track.get('music'));
+      this.props.onPlayTrack(this.props.track.get('id'));
     } else {
-      this.props.onStopTrack(this.props.track.get('music'));
+      this.props.onStopTrack(this.props.track.get('id'));
     }
   }
 
   handleEndTrack = () => {
-    this.props.onStopTrack(this.props.track.get('music'));
+    this.props.onStopTrack(this.props.track.get('id'));
     this.setState({ thumbnailView: true });
   };
 

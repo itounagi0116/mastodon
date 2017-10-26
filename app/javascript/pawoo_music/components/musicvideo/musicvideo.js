@@ -15,7 +15,31 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
 
-const convertToURL = (file) => ((file instanceof File) ? URL.createObjectURL(file) : file);
+function getImageURL(track) {
+  const image = track.getIn(['video', 'image']);
+
+  if (image instanceof Blob) {
+    return URL.createObjectURL(image);
+  }
+
+  if (typeof image === 'string') {
+    return image;
+  }
+
+  return defaultArtwork;
+}
+
+function getMusicURL(track) {
+  if (track.has('music') && track.get('music') !== null) {
+    return URL.createObjectURL(track.get('music'));
+  }
+
+  if (track.has('id') && track.get('id') !== null) {
+    return `/api/v1/statuses/${track.get('id')}/music`;
+  }
+
+  return null;
+}
 
 class Musicvideo extends ImmutablePureComponent {
 
@@ -33,7 +57,7 @@ class Musicvideo extends ImmutablePureComponent {
 
   state = {
     time: 0,
-    music: convertToURL(this.props.track.get('music')),
+    music: getMusicURL(this.props.track),
     paused: true,
     controls: false,
   };
@@ -50,7 +74,7 @@ class Musicvideo extends ImmutablePureComponent {
     this.image = new BaseTexture(new Image());
     this.image.source.addEventListener('load', this.handleLoadImage, { once: false });
     this.image.source.crossOrigin = 'anonymous';
-    this.image.source.src = convertToURL(track.getIn(['video', 'image'])) || defaultArtwork;
+    this.image.source.src = getImageURL(track);
 
     // コンテキスト作成
     const audioContext = new AudioContext;
@@ -84,24 +108,22 @@ class Musicvideo extends ImmutablePureComponent {
   }
 
   componentWillReceiveProps ({ track }) {
-    const music = track.get('music');
-    const image = track.getIn(['video', 'image']);
-
-    if (music !== this.props.track.get('music')) {
-      this.setState({ music: convertToURL(music) });
+    if (track.get('id') !== this.props.track.get('id') ||
+        track.get('music') !== this.props.track.get('music')) {
+      this.setState({ music: getMusicURL(track) });
     }
 
-    if (image !== this.props.track.getIn(['video', 'image'])) {
-      if (track.getIn(['video', 'image']) instanceof File) {
+    if (track.getIn(['video', 'image']) !== this.props.track.getIn(['video', 'image'])) {
+      if (track.getIn(['video', 'image']) instanceof Blob) {
         URL.revokeObjectURL(this.image.source.src);
       }
-      this.image.source.src = convertToURL(image) || defaultArtwork;
+      this.image.source.src = getImageURL(track);
     }
   }
 
   componentDidUpdate ({ track }, { music }) {
     if (music !== this.state.music) {
-      if (track.get('music') instanceof File) {
+      if (track.get('music') instanceof Blob) {
         URL.revokeObjectURL(music);
       }
 
@@ -141,11 +163,11 @@ class Musicvideo extends ImmutablePureComponent {
       this.audioAnalyser.disconnect();
     }
 
-    if ((track.get('music') instanceof File)) {
+    if ((track.get('music') instanceof Blob)) {
       URL.revokeObjectURL(music);
     }
 
-    if ((track.getIn(['video', 'image']) instanceof File)) {
+    if ((track.getIn(['video', 'image']) instanceof Blob)) {
       URL.revokeObjectURL(this.image.source.src);
     }
   }

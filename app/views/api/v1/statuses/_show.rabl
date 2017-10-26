@@ -47,7 +47,6 @@ child({ music: :track }, if: ->(status) { !status.reblog? && status.music.is_a?(
   attribute :title, :artist, :text
 
   node(:content) { |track| Formatter.instance.format_for_track(root_status) }
-  node(:music) { |track| full_asset_url(track.music.url(:original)) }
 
   node :video do |track|
     hash = {}
