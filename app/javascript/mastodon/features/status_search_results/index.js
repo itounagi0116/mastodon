@@ -58,7 +58,7 @@ class StatusSearchResults extends React.PureComponent {
   render () {
     const { statusIds, isLoading, params } = this.props;
     const keyword = params.keyword;
-    const column_header = <FormattedMessage id='column.search_toots' defaultMessage='Search: "{keyword}"' values={{ keyword }} />;
+    const column_header = <FormattedMessage id='column.search_for_toots' defaultMessage='Search for: "{keyword}"' values={{ keyword }} />;
 
     if (!statusIds && isLoading) {
       return (
@@ -85,7 +85,7 @@ class StatusSearchResults extends React.PureComponent {
           statusIds={statusIds}
           isLoading={isLoading}
           onScrollToBottom={this.handleScrollToBottom}
-          emptyMessage={<FormattedMessage id='empty_column.search_toots' defaultMessage='No toots found.' />}
+          emptyMessage={<FormattedMessage id='empty_column.search_for_toots' defaultMessage='No toots found.' />}
         />
       </Column>
     );
