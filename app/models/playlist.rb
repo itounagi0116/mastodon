@@ -184,7 +184,7 @@ class Playlist < ApplicationRecord
   end
 
   def remove_queue_items
-    redis.get(playlist_key)
+    redis.del(playlist_key)
   end
 
   def settings
