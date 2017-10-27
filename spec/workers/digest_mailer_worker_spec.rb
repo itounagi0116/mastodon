@@ -4,7 +4,8 @@ require 'rails_helper'
 
 describe DigestMailerWorker do
   describe 'perform' do
-    let(:user) { Fabricate(:user, last_emailed_at: 3.days.ago) }
+    let(:user) { Fabricate(:user, last_emailed_at: last_emailed_at) }
+    let(:last_emailed_at) { 3.days.ago }
 
     context 'for a user who receives digests' do
       it 'sends the email' do
@@ -25,7 +26,7 @@ describe DigestMailerWorker do
         described_class.perform_async(user.id)
 
         expect(NotificationMailer).not_to have_received(:digest)
-        expect(user.last_emailed_at).to be_within(1).of(3.days.ago)
+        expect(user.last_emailed_at).to be_within(1).of(last_emailed_at)
       end
     end
 
