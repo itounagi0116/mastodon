@@ -4,7 +4,7 @@ RSpec.describe Api::V1::NotificationsController, type: :controller do
   render_views
 
   let(:user)  { Fabricate(:user, account: Fabricate(:account, username: 'alice')) }
-  let(:token) { double acceptable?: true, resource_owner_id: user.id }
+  let(:token) { Fabricate(:accessible_access_token, resource_owner_id: user.id, scopes: 'read') }
   let(:other) { Fabricate(:user, account: Fabricate(:account, username: 'bob')) }
 
   before do
@@ -48,9 +48,10 @@ RSpec.describe Api::V1::NotificationsController, type: :controller do
       @mention_from_status = mentioning_status.mentions.first
       @favourite = FavouriteService.new.call(other.account, first_status)
       @follow = FollowService.new.call(other.account, 'alice')
-      @video_preparation_error = Fabricate(:video_preparation_error)
+      track = Fabricate(:track)
+      @video_preparation_error = Fabricate(:video_preparation_error, track: track)
       Fabricate(:notification, account: user.account, activity: @video_preparation_error)
-      @video_preparation_success = Fabricate(:track)
+      @video_preparation_success = Fabricate(:status, account: user.account, music: track)
       Fabricate(:notification, account: user.account, activity: @video_preparation_success)
     end
 

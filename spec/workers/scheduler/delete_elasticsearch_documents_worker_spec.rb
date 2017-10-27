@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Scheduler::DeleteElasticsearchDocumentsWorker do
-  describe '#perform', refresh_elasticsearch: true do
+  xdescribe '#perform', refresh_elasticsearch: true do
     subject do
       -> { described_class.new.perform }
     end

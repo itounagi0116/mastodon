@@ -14,7 +14,7 @@ describe 'stream_entries/show.html.haml', without_verify_partial_doubles: true d
     allow(view).to receive(:local_time_ago)
   end
 
-  it 'has valid author h-card and basic data for a detailed_status' do
+  xit 'has valid author h-card and basic data for a detailed_status' do
     alice  =  Fabricate(:account, username: 'alice', display_name: 'Alice')
     bob    =  Fabricate(:account, username: 'bob', display_name: 'Bob')
     status =  Fabricate(:status, account: alice, text: 'Hello World')
@@ -36,7 +36,7 @@ describe 'stream_entries/show.html.haml', without_verify_partial_doubles: true d
     expect(mf2.entry.author.url.to_s).not_to be_empty
   end
 
-  it 'has valid h-cites for p-in-reply-to and p-comment' do
+  xit 'has valid h-cites for p-in-reply-to and p-comment' do
     alice   =  Fabricate(:account, username: 'alice', display_name: 'Alice')
     bob     =  Fabricate(:account, username: 'bob', display_name: 'Bob')
     carl    =  Fabricate(:account, username: 'carl', display_name: 'Carl')
