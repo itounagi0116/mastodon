@@ -62,8 +62,8 @@ child({ music: :track }, if: ->(status) { !status.reblog? && status.music.is_a?(
     end
 
     if track.video_image.present?
-      hash[:image] = full_asset_url(track.video_image.url(:original))
-      hash[:preview_url] = full_asset_url(track.video_image.url(:small))
+      hash[:image] = full_asset_url(track.video_image.url(:small))
+      hash[:original_image] = full_asset_url(track.video_image.url(:original))
     end
 
     if track.video_blur_movement_band_top != 0 && track.video_blur_blink_band_top != 0

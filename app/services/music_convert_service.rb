@@ -8,7 +8,13 @@ class MusicConvertService < BaseService
       begin
         if track.video_image.present?
           image_file = Tempfile.new
-          track.video_image.copy_to_local_file :original, image_file.path
+          style = case resolution
+                  when '720x720'
+                    :small
+                  when '1920x1080'
+                    :original
+                  end
+          track.video_image.copy_to_local_file style, image_file.path
         end
 
         musicvideo = open_musicvideo(track, resolution, music_file, image_file)

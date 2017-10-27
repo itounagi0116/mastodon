@@ -64,7 +64,7 @@ class Track < ApplicationRecord
   has_attached_file :video_image,
     styles: { original: '', small: '' },
     convert_options: {
-      original: ->(instance) { crop_option(instance.min_size(:video_image), '1280') },
+      original: '-strip -quality 90',
       small: ->(instance) { crop_option(instance.min_size(:video_image), '600') },
     }
 
