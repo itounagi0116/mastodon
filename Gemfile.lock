@@ -545,6 +545,8 @@ GEM
     tilt (2.0.7)
     twitter-text (1.14.6)
       unf (~> 0.1.0)
+    type_attributes (0.1.1)
+      activemodel (>= 4.2.0)
     tzinfo (1.2.3)
       thread_safe (~> 0.1)
     tzinfo-data (1.2017.2)
@@ -671,6 +673,7 @@ DEPENDENCIES
   sprockets-rails (~> 3.2)
   statsd-instrument (~> 2.1)
   twitter-text (~> 1.14)
+  type_attributes
   tzinfo-data (~> 1.2017)
   uglifier (~> 3.2)
   webmock (~> 3.0)
