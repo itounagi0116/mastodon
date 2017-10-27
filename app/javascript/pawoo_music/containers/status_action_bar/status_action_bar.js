@@ -47,9 +47,13 @@ const messages = defineMessages({
   pin: { id: 'status.pin', defaultMessage: 'Pin to account page' },
   unpin: { id: 'status.unpin', defaultMessage: 'Unpin from account page' },
 
-  generate_mv: { id: 'status.generate_mv', defaultMessage: 'Generate the video' },
-  regenerate_mv: { id: 'status.regenerate_mv', defaultMessage: 'Regenerate the video' },
-  download_mv: { id: 'status.download_mv', defaultMessage: 'Download video' },
+  resolution720x720: { id: 'status.resolution.720x720', defaultMessage: '720x720 (for Twitter, etc.)' },
+  resolution1920x1080: { id: 'status.resolution.1920x1080', defaultMessage: '1920x1080 (for YouTube, etc.)' },
+
+  generate_mv: { id: 'status.generate_mv', defaultMessage: 'Generate {resolution}' },
+  regenerate_mv: { id: 'status.regenerate_mv', defaultMessage: 'Regenerate {resolution}' },
+  download_mv: { id: 'status.download_mv', defaultMessage: 'Download {resolution}' },
+  download_mv_title: { id: 'status.download_mv_title', defaultMessage: 'Download video' },
   editTrack: { id: 'status.edit_track', defaultMessage: 'Edit track' },
 
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
@@ -214,12 +218,12 @@ export default class StatusActionBar extends ImmutablePureComponent {
     dispatch(reblog(status));
   }
 
-  handleGenerateMvClick = () => {
+  handleGenerateMvClick = (resolution) => {
     const { dispatch, status, intl } = this.props;
     dispatch(openModal('CONFIRM', {
       message: <FormattedMessage id='confirmations.generate_mv.message' defaultMessage='Generating animation takes time. When generation is completed, a notification is sent by e-mail.' />,
       confirm: intl.formatMessage(messages.generateMvConfirm),
-      onConfirm: () => dispatch(generateTrackMv(status.get('id'))),
+      onConfirm: () => dispatch(generateTrackMv(status.get('id'), resolution)),
     }));
   }
 
@@ -245,7 +249,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
     const reblogDisabled = status.get('visibility') === 'private' || status.get('visibility') === 'direct' || schedule;
     const mutingConversation = status.get('muted');
 
-    let menu = [];
+    const moreMenu = [];
     // TODO: アイコンの設定
     let reblogIcon = 'repeat';
     // let replyIcon;
@@ -253,67 +257,65 @@ export default class StatusActionBar extends ImmutablePureComponent {
 
     let editButton     = null;
     let downloadButton = null;
-    let downloadFilename = null;
 
     if (status.getIn(['account', 'id']) === me  &&  status.get('track')) {
-      const url = status.getIn(['track', 'video', 'url']);
-      if (url) {
-        downloadFilename = `${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}.mp4`;
+      const videoMenu = [];
+
+      for (const resolution of ['720x720', '1920x1080']) {
+        const message = intl.formatMessage(messages['resolution' + resolution]);
+        const url = status.getIn(['track', 'video', 'url_' + resolution]);
+
+        if (url) {
+          videoMenu.push({
+            text: intl.formatMessage(messages.download_mv, { resolution: message }),
+            href: url,
+            download: `${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}_${resolution}.mp4`,
+          }, {
+            text: intl.formatMessage(messages.regenerate_mv, { resolution: message }),
+            action: () => this.handleGenerateMvClick(resolution),
+          });
+        } else {
+          videoMenu.push({
+            text: intl.formatMessage(messages.generate_mv, { resolution: message }),
+            action: () => this.handleGenerateMvClick(resolution),
+          });
+        }
       }
 
-      downloadButton = (
-        <li>
-          {(url) ? (
-            <a href={url} download={downloadFilename}>
-              <IconButton className='clickable strong' src='download' title={intl.formatMessage(messages.download_mv)} />
-            </a>
-          ) : (
-            <IconButton className='strong' src='download' title={intl.formatMessage(messages.download_mv)} onClick={this.handleGenerateMvClick} />
-          )}
-        </li>
-      );
+      downloadButton = <li><DropdownMenuContainer items={videoMenu} src='download' strong title={intl.formatMessage(messages.download_mv_title)} /></li>;
       editButton = <li><IconButton className='strong' src='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} /></li>;
     }
 
 
-    menu.push({ text: intl.formatMessage(messages.open), to: `/@${status.getIn(['account', 'acct'])}/${status.get('id')}` });
-    menu.push(null);
+    moreMenu.push({ text: intl.formatMessage(messages.open), to: `/@${status.getIn(['account', 'acct'])}/${status.get('id')}` });
+    moreMenu.push(null);
 
     if (withDismiss) {
-      menu.push({ text: intl.formatMessage(mutingConversation ? messages.unmuteConversation : messages.muteConversation), action: this.handleConversationMuteClick });
-      menu.push(null);
+      moreMenu.push({ text: intl.formatMessage(mutingConversation ? messages.unmuteConversation : messages.muteConversation), action: this.handleConversationMuteClick });
+      moreMenu.push(null);
     }
 
     if (status.getIn(['account', 'id']) === me) {
       if (['public', 'unlisted', 'private'].includes(status.get('visibility'))) {
         if (status.get('pinned')) {
-          menu.push({ text: intl.formatMessage(messages.unpin), action: this.handlePinClick });
+          moreMenu.push({ text: intl.formatMessage(messages.unpin), action: this.handlePinClick });
         } else {
-          menu.push({ text: intl.formatMessage(messages.pin), action: this.handlePinClick });
+          moreMenu.push({ text: intl.formatMessage(messages.pin), action: this.handlePinClick });
         }
       }
 
-      menu.push({ text: intl.formatMessage(messages.delete), action: this.handleDeleteClick });
+      moreMenu.push({ text: intl.formatMessage(messages.delete), action: this.handleDeleteClick });
 
       if (status.get('track')) {
-        const url = status.getIn(['track', 'video', 'url']);
-
-        menu.push(null);
-        menu.push({ text: intl.formatMessage(messages.editTrack), action: this.handleEditTrack });
-
-        if (url) {
-          menu.push({ text: intl.formatMessage(messages.download_mv), href: url, download: downloadFilename });
-          menu.push({ text: intl.formatMessage(messages.regenerate_mv), action: this.handleGenerateMvClick });
-        } else {
-          menu.push({ text: intl.formatMessage(messages.generate_mv), action: this.handleGenerateMvClick });
-        }
+        moreMenu.push(null);
+        moreMenu.push({ text: intl.formatMessage(messages.editTrack), action: this.handleEditTrack });
       }
     } else {
-      menu.push({ text: intl.formatMessage(messages.mention, { name: status.getIn(['account', 'username']) }), action: this.handleMentionClick });
-      menu.push(null);
-      menu.push({ text: intl.formatMessage(messages.mute, { name: status.getIn(['account', 'username']) }), action: this.handleMuteClick });
-      menu.push({ text: intl.formatMessage(messages.block, { name: status.getIn(['account', 'username']) }), action: this.handleBlockClick });
-      menu.push({ text: intl.formatMessage(messages.report, { name: status.getIn(['account', 'username']) }), action: this.handleReport });
+      moreMenu.push({ text: intl.formatMessage(messages.mention, { name: status.getIn(['account', 'username']) }), action: this.handleMentionClick });
+      moreMenu.push(null);
+      moreMenu.push({ text: intl.formatMessage(messages.mute, { name: status.getIn(['account', 'username']) }), action: this.handleMuteClick });
+      moreMenu.push({ text: intl.formatMessage(messages.block, { name: status.getIn(['account', 'username']) }), action: this.handleBlockClick });
+      moreMenu.push({ text: intl.formatMessage(messages.report, { name: status.getIn(['account', 'username']) }), action: this.handleReport });
     }
 
     if (status.get('visibility') === 'direct') {
@@ -342,7 +344,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
         <li><IconButton title={replyTitle} src='message-square' onClick={me ? this.handleReplyClick : this.handleRedirectLoginPage} /></li>
         <li><IconButton title={reblogTitle} src={reblogIcon} onClick={me ? this.handleReblogClick : this.handleRedirectLoginPage} disabled={reblogDisabled} active={reblogged} strokeWidth={reblogged ? 2 : 1} /></li>
         <li><IconButton title={favouriteTitle} src='heart' onClick={me ? this.handleFavouriteClick : this.handleRedirectLoginPage} disabled={favouriteDisabled} active={favourited} strokeWidth={favourited ? 2 : 1} /></li>
-        <li><DropdownMenuContainer items={menu} src='more-horizontal' title={moreTitle} /></li>
+        <li><DropdownMenuContainer items={moreMenu} src='more-horizontal' title={moreTitle} /></li>
         {editButton}
         {downloadButton}
       </ul>

@@ -1,9 +1,13 @@
 .musicvideo {
+  --controls-container-height: 40px;
+
   .canvas-container {
     cursor: pointer;
 
     canvas {
+      object-fit: contain;
       width: 100%;
+      height: 100%;
     }
   }
 
@@ -17,7 +21,7 @@
     transition: height 240ms ease-in-out;
 
     &.visible {
-      height: 40px;
+      height: var(--controls-container-height);
     }
   }
 
@@ -40,10 +44,6 @@
       width:  var(--iconsize10);
       height: var(--iconsize10);
       cursor: pointer;
-
-      &.disabled {
-        cursor: not-allowed;
-      }
     }
 
     .icon-button {

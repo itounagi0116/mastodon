@@ -38,9 +38,15 @@
 #  video_text_alpha                 :float            default(0.0), not null
 #  video_text_color                 :integer          default(0), not null
 #  view_count                       :integer          default(0), not null
+#  video_1920x1080_file_name        :string
+#  video_1920x1080_content_type     :string
+#  video_1920x1080_file_size        :integer
+#  video_1920x1080_updated_at       :datetime
 #
 
 class Track < ApplicationRecord
+  RESOLUTIONS = ['720x720', '1920x1080'].freeze
+
   include Paginable
   include MusicImageCropper
 
@@ -54,6 +60,7 @@ class Track < ApplicationRecord
 
   has_attached_file :music
   has_attached_file :video
+  has_attached_file :video_1920x1080
   has_attached_file :video_image,
     styles: { original: '', small: '' },
     convert_options: {

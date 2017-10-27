@@ -31,22 +31,33 @@ body {
   --grid:             4px;
   --minus-grid:       -4px;
 
+  // Values for vertical spaces
+  --verticalspace10-value: calc(var(--grid) * 1);
+  --verticalspace20-value: calc(var(--grid) * 2);
+  --verticalspace25-value: calc(var(--grid) * 3);
+  --verticalspace30-value: calc(var(--grid) * 6);
+  --verticalspace40-value: calc(var(--grid) * 16);
 
   // Vertical Spaces for 'margin' and 'padding'
-  --verticalspace10:  calc(var(--grid) * 1)  0 0 0;
-  --verticalspace20:  calc(var(--grid) * 2)  0 0 0;
-  --verticalspace25:  calc(var(--grid) * 3)  0 0 0;
-  --verticalspace30:  calc(var(--grid) * 6)  0 0 0;
-  --verticalspace40:  calc(var(--grid) * 16) 0 0 0;
+  --verticalspace10:       var(--verticalspace10-value) 0 0 0;
+  --verticalspace20:       var(--verticalspace20-value) 0 0 0;
+  --verticalspace25:       var(--verticalspace25-value) 0 0 0;
+  --verticalspace30:       var(--verticalspace30-value) 0 0 0;
+  --verticalspace40:       var(--verticalspace40-value) 0 0 0;
 
-  --verticalspace20-both: calc(var(--grid) * 2) 0;
-  --verticalspace30-both: calc(var(--grid) * 4) 0;
+  --verticalspace20-both:  var(--verticalspace20-value) 0;
+  --verticalspace30-both:  var(--verticalspace30-value) 0;
 
+
+  // Values for horizonal spaces
+  --rightspace5-value:     calc(var(--grid) * 1);
+  --rightspace10-value:    calc(var(--grid) * 2);
+  --rightspace15-value:    calc(var(--grid) * 3);
 
   // Horizontal Spaces for 'margin' and 'padding'
-  --rightspace5:      0 calc(var(--grid) * 1) 0 0;
-  --rightspace10:     0 calc(var(--grid) * 2) 0 0;
-  --rightspace15:     0 calc(var(--grid) * 3) 0 0;
+  --rightspace5:           0 var(--rightspace5-value) 0 0;
+  --rightspace10:          0 var(--rightspace10-value) 0 0;
+  --rightspace15:          0 var(--rightspace15-value) 0 0;
 
 
   // 'padding'
@@ -312,4 +323,8 @@ a:hover {
       }
     }
   }
+}
+
+.app.embed {
+  background-color: var(--color2);
 }
