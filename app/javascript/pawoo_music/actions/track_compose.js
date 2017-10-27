@@ -48,6 +48,8 @@ function appendMapToFormData(formData, prefix, value) {
 
 function appendParamToFormData(formData, prefix, value) {
   if (!value.get('visible')) {
+    // パラメータをオフにする
+    formData.append(prefix, '');
     return;
   }
 
@@ -124,6 +126,12 @@ export function submitTrackCompose() {
         if (getState().getIn(['timelines', 'public', 'loaded'])) {
           dispatch(updateTimeline('public', status));
           dispatch(updateTimeline('public:music', status));
+        }
+
+        const me = getState().getIn(['meta', 'me']);
+        if (getState().getIn(['timelines', `account:${me}`, 'loaded'])) {
+          dispatch(updateTimeline(`account:${me}`, status));
+          dispatch(updateTimeline(`account:${me}:music`, status));
         }
       }
     }).catch(function (error) {

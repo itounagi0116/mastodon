@@ -61,7 +61,7 @@ const normalizeStatus = (state, status) => {
   const searchContent = [status.spoiler_text, status.content].join(' ').replace(/<br \/>/g, '\n').replace(/<\/p><p>/g, '\n\n');
   normalStatus.search_index = new DOMParser().parseFromString(searchContent, 'text/html').documentElement.textContent;
 
-  return state.update(status.id, Immutable.Map(), map => map.mergeDeep(Immutable.fromJS(normalStatus)));
+  return state.update(status.id, Immutable.Map(), map => map.delete('track').mergeDeep(Immutable.fromJS(normalStatus)));
 };
 
 const normalizeStatuses = (state, statuses) => {
