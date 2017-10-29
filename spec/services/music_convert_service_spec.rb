@@ -23,4 +23,22 @@ describe MusicConvertService do
     expect(`ffprobe -v error -show_entries stream=width -of default=noprint_wrappers=1:nokey=1 #{file.path}`).to eq "1920\n"
     expect(`ffprobe -v error -show_entries stream=height -of default=noprint_wrappers=1:nokey=1 #{file.path}`).to eq "1080\n"
   end
+
+  it 'uses default artwork if artwork is missing' do
+    extend ActionDispatch::TestProcess
+
+    track = Fabricate(
+      :track,
+      title: 'title',
+      artist: 'artist',
+      music: fixture_file_upload('files/high.mp3'),
+      video_image: nil,
+    )
+
+    file = MusicConvertService.new.call(track, '1920x1080')
+
+    # See if the video stream actually exists.
+    expect(`ffprobe -v error -show_entries stream=width -of default=noprint_wrappers=1:nokey=1 #{file.path}`).to eq "1920\n"
+    expect(`ffprobe -v error -show_entries stream=height -of default=noprint_wrappers=1:nokey=1 #{file.path}`).to eq "1080\n"
+  end
 end
