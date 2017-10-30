@@ -859,7 +859,7 @@ export default class TrackCompose extends ImmutablePureComponent {
               <button className='cancel' onClick={this.handleCancel}>
                 <FormattedMessage id='pawoo_music.track_compose.cancel' defaultMessage='Cancel' />
               </button>
-              <PrivacyDropdown buttonClassName='privacy-toggle' value={track.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} />
+              {!track.get('id') && <PrivacyDropdown buttonClassName='privacy-toggle' value={track.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} />}
               <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
                 {track.get('id') ? (
                   <FormattedMessage id='pawoo_music.track_compose.save' defaultMessage='Save' />
