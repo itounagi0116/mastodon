@@ -53,6 +53,7 @@ import PrivacyDropdown from '../../../mastodon/features/compose/components/priva
 const messages = defineMessages({
   preview: { id: 'pawoo_music.track_compose.preview', defaultMessage: 'Video preview' },
   privacy: { id: 'pawoo_music.track_compose.privacy', defaultMessage: 'Privacy' },
+  select_genre: { id: 'pawoo_music.track_compose.select_genre', defaultMessage: 'Select genre tag' },
 });
 
 const allowedPrivacy = ['public', 'unlisted'];
@@ -535,7 +536,7 @@ export default class TrackCompose extends ImmutablePureComponent {
                     </label>
                   </div>
                   <div className='genre-selector'>
-                    <IconButton src='plus-circle' strokeWidth={2} />
+                    <IconButton src='plus-circle' strokeWidth={2} title={intl.formatMessage(messages.select_genre)} />
                     <div className='genre-list'>
                       {genreList.map((genre, i) => (
                         <div key={genre} data-index={i} className='genre-item' onClick={this.handleClickGenre} role='button' tabIndex={0} aria-pressed='false'>
