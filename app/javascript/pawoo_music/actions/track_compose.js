@@ -33,6 +33,7 @@ export const TRACK_COMPOSE_SUBMIT_FAIL = 'TRACK_COMPOSE_SUBMIT_FAIL';
 export const TRACK_COMPOSE_SHOW_MODAL = 'TRACK_COMPOSE_SHOW_MODAL';
 export const TRACK_COMPOSE_HIDE_MODAL = 'TRACK_COMPOSE_HIDE_MODAL';
 export const TRACK_COMPOSE_SET_DATA = 'TRACK_COMPOSE_SET_DATA';
+export const TRACK_COMPOSE_CHANGE_PRIVACY = 'TRACK_COMPOSE_CHANGE_PRIVACY';
 
 function appendMapToFormData(formData, prefix, value) {
   for (const [childKey, childValue] of value) {
@@ -343,5 +344,12 @@ export function setTrackComposeData(id, track) {
     type: TRACK_COMPOSE_SET_DATA,
     id,
     track,
+  };
+}
+
+export function changeTrackComposePrivacy(value) {
+  return {
+    type: TRACK_COMPOSE_CHANGE_PRIVACY,
+    value,
   };
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, defineMessages } from 'react-intl';
+import classNames from 'classnames';
 import IconButton from '../../../../pawoo_music/components/icon_button';
 
 const messages = defineMessages({
@@ -21,6 +22,9 @@ export default class PrivacyDropdown extends React.PureComponent {
 
   static propTypes = {
     value: PropTypes.string.isRequired,
+    text: PropTypes.string,
+    buttonClassName: PropTypes.string,
+    allowedPrivacy: PropTypes.array,
     onChange: PropTypes.func.isRequired,
     intl: PropTypes.object.isRequired,
   };
@@ -61,21 +65,34 @@ export default class PrivacyDropdown extends React.PureComponent {
   }
 
   render () {
-    const { value, intl } = this.props;
+    const { value, text, buttonClassName, allowedPrivacy, intl } = this.props;
     const { open } = this.state;
 
-    const options = [
+    let options = [
       { icon: 'users', value: 'public', shortText: intl.formatMessage(messages.public_short), longText: intl.formatMessage(messages.public_long) },
       { icon: 'home', value: 'unlisted', shortText: intl.formatMessage(messages.unlisted_short), longText: intl.formatMessage(messages.unlisted_long) },
       { icon: 'lock', value: 'private', shortText: intl.formatMessage(messages.private_short), longText: intl.formatMessage(messages.private_long) },
       { icon: 'mail', value: 'direct', shortText: intl.formatMessage(messages.direct_short), longText: intl.formatMessage(messages.direct_long) },
     ];
 
+    if (allowedPrivacy) {
+      options = options.filter(item => allowedPrivacy.includes(item.value));
+    }
+
     const valueOption = options.find(item => item.value === value);
 
     return (
       <div ref={this.setRef} className={`privacy-dropdown ${open ? 'active' : ''}`}>
-        <div className='privacy-dropdown__value'><IconButton className='privacy-dropdown__value-icon' src={valueOption.icon} title={intl.formatMessage(messages.change_privacy)} active={open} onClick={this.handleToggle} /></div>
+        <div className='privacy-dropdown__value'>
+          {text ? (
+            <button className={classNames('privacy-dropdown__value-button', buttonClassName)} onClick={this.handleToggle}>
+              <IconButton src={valueOption.icon} />
+              <span className='privacy-dropdown__value-button-text'>{text}</span>
+            </button>
+          ) : (
+            <IconButton className={classNames('privacy-dropdown__value-icon', buttonClassName)} src={valueOption.icon} title={intl.formatMessage(messages.change_privacy)} active={open} onClick={this.handleToggle} />
+          )}
+        </div>
         <div className='privacy-dropdown__dropdown'>
           {open && options.map(item =>
             <div role='button' tabIndex='0' key={item.value} data-index={item.value} onClick={this.handleClick} className={`privacy-dropdown__option ${item.value === value ? 'active' : ''}`}>

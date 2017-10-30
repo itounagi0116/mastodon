@@ -30,6 +30,7 @@ import {
   TRACK_COMPOSE_SHOW_MODAL,
   TRACK_COMPOSE_HIDE_MODAL,
   TRACK_COMPOSE_SET_DATA,
+  TRACK_COMPOSE_CHANGE_PRIVACY,
 } from '../actions/track_compose';
 import Immutable from 'immutable';
 
@@ -141,6 +142,8 @@ export default function track_compose(state = initialState, action) {
     return state.set('modal', false);
   case TRACK_COMPOSE_SET_DATA:
     return state.set('track', convertTrackData(action.track)).setIn(['track', 'id'], action.id);
+  case TRACK_COMPOSE_CHANGE_PRIVACY:
+    return state.setIn(['track', 'visibility'], action.value);
   default:
     return state;
   }
