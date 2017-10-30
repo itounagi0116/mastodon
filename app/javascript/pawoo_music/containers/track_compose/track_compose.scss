@@ -375,8 +375,11 @@
     button {
       display: inline-block;
       margin: var(--verticalspace30);
-      width: 120px;
+      width: auto;
       height: 40px;
+      padding: 0 20px;
+      margin-left: calc(var(--grid) * 2);
+      font-weight: bold;
 
       border-radius: 20px;
       background-color: var(--tootcolor);
@@ -384,6 +387,27 @@
 
       &.cancel {
         background-color: #585858;
+        font-weight: normal;
+      }
+
+      &.privacy-toggle {
+        display: flex;
+        color: var(--tootcolor);
+        background-color: var(--color1);
+
+        svg {
+          stroke-width: 2px;
+          stroke: var(--tootcolor);
+        }
+
+        .privacy-dropdown__value-button-text {
+          margin-left: 4px;
+        }
+      }
+
+      &.disabled {
+        background-color: #585858;
+        cursor: default;
       }
 
       & + button {
@@ -391,8 +415,13 @@
       }
 
       &:first-child {
-        margin-left: auto;
+        margin-right: auto;
+        margin-left: 0;
       }
+    }
+
+    .privacy-dropdown > .privacy-dropdown__dropdown{
+      bottom: 40px;
     }
   }
 }

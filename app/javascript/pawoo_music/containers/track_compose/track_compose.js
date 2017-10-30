@@ -29,6 +29,7 @@ import {
   changeTrackComposeTrackVideoTextVisibility,
   changeTrackComposeTrackVideoTextAlpha,
   changeTrackComposeTrackVideoTextColor,
+  changeTrackComposePrivacy,
   submitTrackCompose,
 } from '../../actions/track_compose';
 import {
@@ -47,10 +48,14 @@ import {
   validateIsFileMp3,
   validateIsFileImage,
 } from '../../util/musicvideo';
+import PrivacyDropdown from '../../../mastodon/features/compose/components/privacy_dropdown';
 
 const messages = defineMessages({
   preview: { id: 'pawoo_music.track_compose.preview', defaultMessage: 'Video preview' },
+  privacy: { id: 'pawoo_music.track_compose.privacy', defaultMessage: 'Privacy' },
 });
+
+const allowedPrivacy = ['public', 'unlisted'];
 
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
@@ -158,6 +163,10 @@ const mapDispatchToProps = (dispatch) => ({
 
   onChangeTrackComposeTrackVideoTextColor (value) {
     dispatch(changeTrackComposeTrackVideoTextColor(value));
+  },
+
+  onChangePrivacy (value) {
+    dispatch(changeTrackComposePrivacy(value));
   },
 
   onSubmit () {
@@ -396,6 +405,10 @@ export default class TrackCompose extends ImmutablePureComponent {
     }
   }
 
+  handleChangePrivacy = (value) => {
+    this.props.onChangePrivacy(value);
+  }
+
   setTrackMusicRef = (ref) => {
     this.trackMusicRef = ref;
   }
@@ -405,7 +418,7 @@ export default class TrackCompose extends ImmutablePureComponent {
   }
 
   render () {
-    const { track } = this.props;
+    const { track, intl } = this.props;
     const { trackMusicTitle, trackVideoImageTitle } = this.state;
     const caution = {
       height: '100px',
@@ -420,7 +433,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     return (
       <div className='track-compose'>
         <div className='content'>
-          <Musicvideo track={track} label={this.props.intl.formatMessage(messages.preview)} autoPlay={false} />
+          <Musicvideo track={track} label={intl.formatMessage(messages.preview)} autoPlay={false} />
           <div className='form-content'>
             <form>
 
@@ -841,16 +854,21 @@ export default class TrackCompose extends ImmutablePureComponent {
                 ５．他人の作品を許可なくアップロードしたことにより、当サービスまたは第三者に損害を与えたときは、当該アップロード者が一切の責任を負うものとし、当社はその一切の責任を負いません。
               </div>
             </form>
-          </div>
-        </div>
 
-        <div className='actions'>
-          <button className='cancel' onClick={this.handleCancel}>
-            <FormattedMessage id='column_back_button.label' defaultMessage='Back' />
-          </button>
-          <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
-            <FormattedMessage id='pawoo_music.track_compose.save' defaultMessage='Save' />
-          </button>
+            <div className='actions'>
+              <button className='cancel' onClick={this.handleCancel}>
+                <FormattedMessage id='pawoo_music.track_compose.cancel' defaultMessage='Cancel' />
+              </button>
+              <PrivacyDropdown buttonClassName='privacy-toggle' value={track.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} />
+              <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
+                {track.get('id') ? (
+                  <FormattedMessage id='pawoo_music.track_compose.save' defaultMessage='Save' />
+                ) : (
+                  <FormattedMessage id='pawoo_music.track_compose.submit' defaultMessage='Submit' />
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
