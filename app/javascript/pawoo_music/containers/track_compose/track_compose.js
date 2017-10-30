@@ -56,6 +56,7 @@ const messages = defineMessages({
 });
 
 const allowedPrivacy = ['public', 'unlisted'];
+const genreList = ['electronic', 'pop', 'rock', 'alternative', 'ambient', 'acoustic', 'world', 'hiphop', 'reggae', 'folk', 'jazz', 'funk', 'punk', 'metal', 'soundtrack'];
 
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
@@ -409,6 +410,13 @@ export default class TrackCompose extends ImmutablePureComponent {
     this.props.onChangePrivacy(value);
   }
 
+  handleClickGenre = (e) => {
+    const index = e.currentTarget.getAttribute('data-index');
+    const genre = genreList[index];
+
+    this.props.onChangeTrackText(`${this.props.track.get('text')} #${genre}`);
+  }
+
   setTrackMusicRef = (ref) => {
     this.trackMusicRef = ref;
   }
@@ -525,6 +533,16 @@ export default class TrackCompose extends ImmutablePureComponent {
                         value={this.props.track.get('text')}
                       />
                     </label>
+                  </div>
+                  <div className='genre-selector'>
+                    <IconButton src='plus-circle' strokeWidth={2} />
+                    <div className='genre-list'>
+                      {genreList.map((genre, i) => (
+                        <div key={genre} data-index={i} className='genre-item' onClick={this.handleClickGenre} role='button' tabIndex={0} aria-pressed='false'>
+                          {genre}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </legend>
 
