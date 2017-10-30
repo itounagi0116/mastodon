@@ -90,7 +90,10 @@ export function submitTrackCompose() {
     formData.append('title', track.get('title'));
     formData.append('artist', track.get('artist'));
     formData.append('text', track.get('text'));
-    formData.append('visibility', track.get('visibility'));
+
+    if (!id) {
+      formData.append('visibility', track.get('visibility'));
+    }
 
     if (image instanceof File) {
       formData.append('video[image]', image);
