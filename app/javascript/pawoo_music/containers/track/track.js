@@ -77,19 +77,14 @@ class Track extends ImmutablePureComponent {
     };
 
     return (
-      <div className={classNames('track', { 'fit-contain': fitContain })}>
-        <div className='musicvideo-wrapper' style={thumbnailStyle}>
-          {thumbnailView ? (
-            <div className='thumbnail' role='button' tabIndex='0' aria-pressed='false' onClick={this.handlePlayClick}>
-              <img className='playbutton' src={playIcon} alt='playbutton' />
-            </div>
-          ) : (
-            <Musicvideo track={track} onEnded={this.handleEndTrack} />
-          )}
-        </div>
-        <div className='credit'>
-          {`${track.get('artist')} - ${track.get('title')}`}
-        </div>
+      <div className={classNames('track', { 'fit-contain': fitContain })} style={thumbnailStyle}>
+        {thumbnailView ? (
+          <div className='thumbnail' role='button' tabIndex='0' aria-pressed='false' onClick={this.handlePlayClick}>
+            <img className='playbutton' src={playIcon} alt='playbutton' />
+          </div>
+        ) : (
+          <Musicvideo track={track} onEnded={this.handleEndTrack} />
+        )}
       </div>
     );
   }
