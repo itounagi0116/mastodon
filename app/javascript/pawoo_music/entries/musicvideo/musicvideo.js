@@ -5,9 +5,9 @@ import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import configureStore from '../../../mastodon/store/configureStore';
 import { getLocale } from '../../../mastodon/locales';
+import Logo from '../../components/logo';
 import Track from '../../containers/track';
 
-import logo from '../../../images/pawoo_music/pawoo_music.svg';
 import '../../containers/app/app.scss';
 
 const { localeData, messages } = getLocale();
@@ -32,7 +32,7 @@ export default class MusicvideoEntry extends React.PureComponent {
           <div className='app embed app-musicvideo'>
             <Track track={Immutable.fromJS(track).set('id', statusId)} fitContain />
             <div className='credit'>
-              <img alt='logo' src={logo} />
+              <Logo />
               {`${track.artist} - ${track.title}`}
             </div>
           </div>
