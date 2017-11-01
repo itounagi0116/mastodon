@@ -26,6 +26,7 @@ import { initReport } from '../../../mastodon/actions/reports';
 import { openModal } from '../../../mastodon/actions/modal';
 import { generateTrackMv } from '../../actions/tracks';
 import { showTrackComposeModal, setTrackComposeData } from '../../actions/track_compose';
+import { showAlbumComposeModal, setAlbumComposeData } from '../../actions/album_compose';
 import { isMobile } from '../../util/is_mobile';
 
 const messages = defineMessages({
@@ -55,6 +56,7 @@ const messages = defineMessages({
   download_mv: { id: 'status.download_mv', defaultMessage: 'Download {resolution}' },
   download_mv_title: { id: 'status.download_mv_title', defaultMessage: 'Download video' },
   editTrack: { id: 'status.edit_track', defaultMessage: 'Edit track' },
+  editAlbum: { id: 'status.edit_album', defaultMessage: 'Edit album' },
 
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
   deleteMessage: { id: 'confirmations.delete.message', defaultMessage: 'Are you sure you want to delete this status?' },
@@ -238,6 +240,18 @@ export default class StatusActionBar extends ImmutablePureComponent {
     }
   }
 
+  handleEditAlbum = () => {
+    const { dispatch, status } = this.props;
+
+    if (mobile) {
+      location.href = `/albums/${status.get('id')}/edit`;
+    } else {
+      dispatch(setAlbumComposeData(status.get('album')));
+      dispatch(showAlbumComposeModal());
+    }
+  }
+
+
   handleRedirectLoginPage = () => {
     location.href = '/auth/sign_in';
   }
@@ -258,32 +272,48 @@ export default class StatusActionBar extends ImmutablePureComponent {
     let editButton     = null;
     let downloadButton = null;
 
-    if (status.getIn(['account', 'id']) === me  &&  status.get('track')) {
-      const videoMenu = [];
+    if (status.getIn(['account', 'id']) === me) {
+      if (status.has('track')) {
+        const videoMenu = [];
 
-      for (const resolution of ['720x720', '1920x1080']) {
-        const message = intl.formatMessage(messages['resolution' + resolution]);
-        const url = status.getIn(['track', 'video', 'url_' + resolution]);
+        for (const resolution of ['720x720', '1920x1080']) {
+          const message = intl.formatMessage(messages['resolution' + resolution]);
+          const url = status.getIn(['track', 'video', 'url_' + resolution]);
 
-        if (url) {
-          videoMenu.push({
-            text: intl.formatMessage(messages.download_mv, { resolution: message }),
-            href: url,
-            download: `${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}_${resolution}.mp4`,
-          }, {
-            text: intl.formatMessage(messages.regenerate_mv, { resolution: message }),
-            action: () => this.handleGenerateMvClick(resolution),
-          });
-        } else {
-          videoMenu.push({
-            text: intl.formatMessage(messages.generate_mv, { resolution: message }),
-            action: () => this.handleGenerateMvClick(resolution),
-          });
+          if (url) {
+            videoMenu.push({
+              text: intl.formatMessage(messages.download_mv, { resolution: message }),
+              href: url,
+              download: `${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}_${resolution}.mp4`,
+            }, {
+              text: intl.formatMessage(messages.regenerate_mv, { resolution: message }),
+              action: () => this.handleGenerateMvClick(resolution),
+            });
+          } else {
+            videoMenu.push({
+              text: intl.formatMessage(messages.generate_mv, { resolution: message }),
+              action: () => this.handleGenerateMvClick(resolution),
+            });
+          }
         }
-      }
 
-      downloadButton = <li><DropdownMenuContainer items={videoMenu} src='download' strong title={intl.formatMessage(messages.download_mv_title)} /></li>;
-      editButton = <li><IconButton className='strong' src='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} /></li>;
+        downloadButton = (
+          <li>
+            <DropdownMenuContainer items={videoMenu} src='download' strong title={intl.formatMessage(messages.download_mv_title)} />
+          </li>
+        );
+        editButton = (
+          <li>
+            <IconButton className='strong' src='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} />
+          </li>
+        );
+      } else if(status.has('album')) {
+        editButton = (
+          <li>
+            <IconButton className='strong' src='edit' title={intl.formatMessage(messages.editAlbum)} onClick={this.handleEditAlbum} />
+          </li>
+        );
+      }
     }
 
 

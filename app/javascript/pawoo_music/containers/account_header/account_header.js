@@ -242,6 +242,10 @@ export default class AccountHeader extends ImmutablePureComponent {
             <strong><FormattedNumber value={account.get('tracks_count')} /></strong>
             <span><FormattedMessage id='account.tracks' defaultMessage='Tracks' /></span>
           </NavLink>
+          <NavLink to={`/@${account.get('acct')}/albums`} exact>
+            <strong><FormattedNumber value={account.get('albums_count')} /></strong>
+            <span><FormattedMessage id='account.albums' defaultMessage='Albums' /></span>
+          </NavLink>
           <NavLink to={`/users/${account.get('acct')}/followers`} exact>
             <strong><FormattedNumber value={account.get('followers_count')} />{extraInfo} </strong>
             <span><FormattedMessage id='account.followers' defaultMessage='Followers' /></span>

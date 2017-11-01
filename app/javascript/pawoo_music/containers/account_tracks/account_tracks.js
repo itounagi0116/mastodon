@@ -24,11 +24,11 @@ const makeMapStateToProps = () => {
     return {
       accountId,
       account: getAccount(state, accountId),
-      statusIds: state.getIn(['timelines', `account:${accountId}:music`, 'items'], Immutable.List()),
+      statusIds: state.getIn(['timelines', `account:${accountId}:track`, 'items'], Immutable.List()),
       me: state.getIn(['meta', 'me']),
-      isLoading: state.getIn(['timelines', `account:${accountId}:music`, 'isLoading']),
-      hasMore: !!state.getIn(['timelines', `account:${accountId}:music`, 'next']),
-      pinnedStatusIds: state.getIn(['timelines', `account:${accountId}:pinned_status:music`, 'items'], Immutable.List()),
+      isLoading: state.getIn(['timelines', `account:${accountId}:track`, 'isLoading']),
+      hasMore: !!state.getIn(['timelines', `account:${accountId}:track`, 'next']),
+      pinnedStatusIds: state.getIn(['timelines', `account:${accountId}:pinned_status:track`, 'items'], Immutable.List()),
     };
   };
 
@@ -36,7 +36,7 @@ const makeMapStateToProps = () => {
 };
 
 @connect(makeMapStateToProps)
-export default class AccountGallery extends PureComponent {
+export default class AccountTracks extends PureComponent {
 
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
@@ -62,8 +62,8 @@ export default class AccountGallery extends PureComponent {
     const { dispatch, accountId, account } = this.props;
     const displayName = displayNameEllipsis(account);
 
-    dispatch(refreshPinnedStatusTimeline(accountId, { onlyMusics: true }));
-    dispatch(refreshAccountTimeline(accountId, { onlyMusics: true }));
+    dispatch(refreshPinnedStatusTimeline(accountId, { onlyMusics: 'track' }));
+    dispatch(refreshAccountTimeline(accountId, { onlyMusics: 'track' }));
     dispatch(updateTimelineTitle(`${displayName} のタイムライン`)); /* TODO: intl */
     dispatch(changeFooterType('lobby_gallery'));
   }
@@ -75,8 +75,8 @@ export default class AccountGallery extends PureComponent {
       const { accountId, account } = nextProps;
       const displayName = displayNameEllipsis(account);
 
-      dispatch(refreshPinnedStatusTimeline(accountId, { onlyMusics: true }));
-      dispatch(refreshAccountTimeline(accountId, { onlyMusics: true }));
+      dispatch(refreshPinnedStatusTimeline(accountId, { onlyMusics: 'track' }));
+      dispatch(refreshAccountTimeline(accountId, { onlyMusics: 'track' }));
       dispatch(updateTimelineTitle(`${displayName} のタイムライン`)); /* TODO: intl */
     }
   }
@@ -84,7 +84,7 @@ export default class AccountGallery extends PureComponent {
   handleScrollToBottom = debounce(() => {
     const { dispatch, isLoading, hasMore, accountId } = this.props;
     if (!isLoading && hasMore) {
-      dispatch(expandAccountTimeline(accountId, { onlyMusics: true }));
+      dispatch(expandAccountTimeline(accountId, { onlyMusics: 'track' }));
     }
   }, 300, { leading: true })
 

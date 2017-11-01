@@ -15,6 +15,9 @@ export const ALBUM_COMPOSE_CHANGE_PRIVACY = 'ALBUM_COMPOSE_CHANGE_PRIVACY';
 export const ALBUM_COMPOSE_SUBMIT_REQUEST = 'ALBUM_COMPOSE_SUBMIT_REQUEST';
 export const ALBUM_COMPOSE_SUBMIT_SUCCESS = 'ALBUM_COMPOSE_SUBMIT_SUCCESS';
 export const ALBUM_COMPOSE_SUBMIT_FAIL = 'ALBUM_COMPOSE_SUBMIT_FAIL';
+export const ALBUM_COMPOSE_SHOW_MODAL = 'ALBUM_COMPOSE_SHOW_MODAL';
+export const ALBUM_COMPOSE_HIDE_MODAL = 'ALBUM_COMPOSE_HIDE_MODAL';
+export const ALBUM_COMPOSE_SET_DATA = 'ALBUM_COMPOSE_SET_DATA';
 
 export function submitAlbumCompose() {
   return function (dispatch, getState) {
@@ -96,6 +99,25 @@ export function submitAlbumComposeFail(error) {
     error,
   };
 };
+
+export function showAlbumComposeModal() {
+  return {
+    type: ALBUM_COMPOSE_SHOW_MODAL,
+  };
+};
+
+export function hideAlbumComposeModal() {
+  return {
+    type: ALBUM_COMPOSE_HIDE_MODAL,
+  };
+};
+
+export function setAlbumComposeData(album) {
+  return {
+    type: ALBUM_COMPOSE_SET_DATA,
+    album,
+  };
+}
 
 export function refreshTracks(accountId) {
   return function (dispatch, getState) {

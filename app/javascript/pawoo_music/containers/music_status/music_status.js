@@ -11,7 +11,7 @@ import AccountContainer from '../account';
 import StatusMeta from '../../components/status_meta';
 import StatusPrepend from '../../components/status_prepend';
 import TrackContainer from '../track';
-// import AlbumContainer from '../album';
+import AlbumContainer from '../album';
 import FollowButton from '../follow_button';
 
 const makeMapStateToProps = () => {
@@ -104,7 +104,7 @@ export default class MusicStatus extends ImmutablePureComponent {
         </div>
 
         {status.has('track') && <TrackContainer track={status.get('track')} />}
-        {/*status.has('album') && <AlbumContainer album={status.get('album')} />*/}
+        {status.has('album') && <AlbumContainer album={status.get('album')} />}
 
         <div className='credit'>{credit}</div>
         <StatusContent status={status.set('content', content)} />

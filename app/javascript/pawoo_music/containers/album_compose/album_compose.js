@@ -23,6 +23,7 @@ import {
   changeAlbumComposePrivacy,
   submitAlbumCompose,
 } from '../../actions/album_compose';
+import { fetchAlbumTracks } from '../../actions/albums';
 import { validateIsFileImage } from '../../util/musicvideo';
 import { makeGetAccount } from '../../../mastodon/selectors';
 
@@ -57,6 +58,10 @@ const makeMapStateToProps = () => {
 const mapDispatchToProps = (dispatch) => ({
   onMapId (id) {
     dispatch(refreshTracks(id));
+  },
+
+  onFetchAlbumTracks (id) {
+    dispatch(fetchAlbumTracks(id, { compose: true }));
   },
 
   onRegister (source, destination) {
@@ -104,6 +109,7 @@ export default class AlbumCompose extends ImmutablePureComponent {
     me: PropTypes.number.isRequired,
     album: ImmutablePropTypes.map.isRequired,
     onMapId: PropTypes.func.isRequired,
+    onFetchAlbumTracks: PropTypes.func.isRequired,
     tracks: ImmutablePropTypes.map.isRequired,
     error: PropTypes.any,
     isSubmitting: PropTypes.bool.isRequired,
@@ -129,8 +135,10 @@ export default class AlbumCompose extends ImmutablePureComponent {
   image = null;
 
   componentDidMount () {
-    this.props.onMapId(this.props.me);
-    this.updateImage(this.props.album);
+    const { me, album } = this.props;
+    this.props.onMapId(me);
+    this.props.onFetchAlbumTracks(album.get('id'));
+    this.updateImage(album);
   }
 
   componentWillReceiveProps ({ error, isSubmitting, album }) {
@@ -246,6 +254,10 @@ export default class AlbumCompose extends ImmutablePureComponent {
     const { tracks } = this.props;
     const track = tracks.getIn([item, 'track']);
 
+    if (!track) {
+      return null;
+    }
+
     return (
       <Draggable key={item} draggableId={item}>
         {(provided) => (
@@ -285,7 +297,7 @@ export default class AlbumCompose extends ImmutablePureComponent {
                       <span className='text'>
                         {albumImageTitle ? albumImageTitle : (
                           <FormattedMessage
-                            id='pawoo_music.album_compose.video.image'
+                            id='pawoo_music.album_compose.image'
                             defaultMessage='Image'
                           />
                         )}

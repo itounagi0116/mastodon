@@ -1,4 +1,5 @@
 {
+  "account.albums": "アルバム",
   "account.block": "ブロック",
   "account.block_domain": "{domain}全体を非表示",
   "account.disclaimer": "このユーザーは他のインスタンスに所属しているため、数字が正確で無い場合があります。",
@@ -175,6 +176,7 @@
   "status.delete": "削除",
   "status.download_mv": "{resolution} をダウンロード",
   "status.download_mv_title": "動画をダウンロード",
+  "status.edit_album": "アルバムを編集",
   "status.edit_track": "トラックを編集",
   "status.favourite": "お気に入り",
   "status.generate_mv": "{resolution} を生成する",

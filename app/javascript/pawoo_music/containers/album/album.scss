@@ -1,0 +1,44 @@
+.album {
+  .musicvideo-wrapper {
+    display: block;
+    position: relative;
+    box-shadow: var(--shadow);
+    background-size: cover;
+    background-position: center center;
+    background-color: #171717;
+
+    .thumbnail {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+
+      width:  var(--width-gallery);
+      height: var(--width-gallery); // aspect ratio 1:1
+
+      .playbutton {
+        display: block;
+        height:     var(--iconsize40);
+        width:      var(--iconsize40);
+      }
+
+      &:hover .playbutton {
+        opacity:    var(--hover-opacity);
+        transition: var(--hover-transition);
+      }
+    }
+
+    .canvas-container {
+      width: var(--width-gallery);
+      height: var(--width-gallery);
+    }
+  }
+
+  .album-track-info {
+    cursor: pointer;
+
+    &:hover {
+
+    }
+  }
+}

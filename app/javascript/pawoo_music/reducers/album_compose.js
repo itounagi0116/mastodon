@@ -14,11 +14,16 @@ import {
   ALBUM_COMPOSE_SUBMIT_REQUEST,
   ALBUM_COMPOSE_SUBMIT_SUCCESS,
   ALBUM_COMPOSE_SUBMIT_FAIL,
+  ALBUM_COMPOSE_SHOW_MODAL,
+  ALBUM_COMPOSE_HIDE_MODAL,
+  ALBUM_COMPOSE_SET_DATA,
 } from '../actions/album_compose';
+import { ALBUMS_FETCH_TRACKS_SUCCESSS } from '../actions/albums';
 
 const initialState = Immutable.fromJS({
   error: null,
   is_submitting: false,
+  modal: false,
   registeredTracks: [],
   unregisteredTracks: [],
   isTracksLoading: false,
@@ -36,6 +41,14 @@ const maegeTracks = (state, tracks) => {
     return tracks.reduce((map, track) => map.set(track.id, Immutable.fromJS(track)), mutable);
   });
 };
+
+function setAlbumData(state, album) {
+  return state.withMutations((map) => {
+    return ['id', 'image', 'title', 'text'].reduce((base, key) => {
+      return album.get(key) ? base.setIn(['album', key], album.get(key)) : base;
+    }, map);
+  });
+}
 
 export default function album_compose(state = initialState, action) {
   switch (action.type) {
@@ -112,6 +125,14 @@ export default function album_compose(state = initialState, action) {
     return initialState;
   case ALBUM_COMPOSE_SUBMIT_FAIL:
     return state.set('is_submitting', false).set('error', action.error);
+  case ALBUM_COMPOSE_SHOW_MODAL:
+    return state.set('modal', true);
+  case ALBUM_COMPOSE_HIDE_MODAL:
+    return state.set('modal', false);
+  case ALBUM_COMPOSE_SET_DATA:
+    return setAlbumData(state, action.album);
+  case ALBUMS_FETCH_TRACKS_SUCCESSS:
+    return action.compose ? state.set('registeredTracks', Immutable.List(action.statuses.map((status) => status.id))) : state;
   default:
     return state;
   }

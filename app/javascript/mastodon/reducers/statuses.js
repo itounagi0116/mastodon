@@ -39,6 +39,9 @@ import {
   SCHEDULED_STATUSES_FETCH_SUCCESS,
   SCHEDULED_STATUSES_EXPAND_SUCCESS,
 } from '../../pawoo_music/actions/schedules';
+import {
+  ALBUMS_FETCH_TRACKS_SUCCESSS,
+} from '../../pawoo_music/actions/albums';
 import Immutable from 'immutable';
 
 const normalizeStatus = (state, status) => {
@@ -56,6 +59,10 @@ const normalizeStatus = (state, status) => {
 
   if (status.track) {
     normalStatus.track.id = status.id;
+  }
+
+  if (status.album) {
+    normalStatus.album.id = status.id;
   }
 
   const searchContent = [status.spoiler_text, status.content].join(' ').replace(/<br \/>/g, '\n').replace(/<\/p><p>/g, '\n\n');
@@ -127,6 +134,7 @@ export default function statuses(state = initialState, action) {
   case SEARCH_FETCH_SUCCESS:
   case SCHEDULED_STATUSES_FETCH_SUCCESS:
   case SCHEDULED_STATUSES_EXPAND_SUCCESS:
+  case ALBUMS_FETCH_TRACKS_SUCCESSS:
     return normalizeStatuses(state, action.statuses);
   case TIMELINE_DELETE:
     return deleteStatus(state, action.id, action.references);
