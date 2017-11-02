@@ -255,7 +255,7 @@
   "pawoo_music.track_compose.video.image": "画像を選択",
   "pawoo_music.track_compose.video.interval": "間隔",
   "pawoo_music.track_compose.video.lightleaks": "ライトリーク",
-  "pawoo_music.track_compose.video.lightleaks_alpha": "不透明度",
+  "pawoo_music.track_compose.video.lightleaks_alpha": "明るさ",
   "pawoo_music.track_compose.video.limit_threshold": "しきい値",
   "pawoo_music.track_compose.video.movement_threshold": "ブレしきい値",
   "pawoo_music.track_compose.video.particle": "パーティクル",
