@@ -34,7 +34,8 @@ class MusicConvertService < BaseService
   def open_musicvideo(track, resolution, music_file, image_file)
     args = [
       Rails.root.join('node_modules', '.bin', 'electron'), 'genmv', '--',
-      music_file.path, '--resolution', resolution, '--image',
+      music_file.path, '--resolution', resolution,
+      '--backgroundcolor', track.video_backgroundcolor, '--image',
       if image_file.nil?
         Rails.root.join('app', 'javascript', 'images', 'pawoo_music', 'default_artwork.png')
       else

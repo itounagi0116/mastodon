@@ -9,6 +9,7 @@ export const TRACK_COMPOSE_TRACK_ARTIST_CHANGE = 'TRACK_COMPOSE_TRACK_ARTIST_CHA
 export const TRACK_COMPOSE_TRACK_TEXT_CHANGE = 'TRACK_COMPOSE_TRACK_TEXT_CHANGE';
 export const TRACK_COMPOSE_TRACK_VISIBILITY_CHANGE = 'TRACK_COMPOSE_TRACK_VISIBILITY_CHANGE';
 export const TRACK_COMPOSE_TRACK_MUSIC_CHANGE = 'TRACK_COMPOSE_TRACK_MUSIC_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_BACKGROUNDCOLOR_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_BACKGROUNDCOLOR_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_IMAGE_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_IMAGE_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_BLUR_VISIBLITY_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_BLUR_VISIBLITY_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_BLUR_MOVEMENT_THRESHOLD_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_BLUR_MOVEMENT_THRESHOLD_CHANGE';
@@ -94,6 +95,8 @@ export function submitTrackCompose() {
     if (!id) {
       formData.append('visibility', track.get('visibility'));
     }
+
+    formData.append('video[backgroundcolor]', track.getIn(['video', 'backgroundcolor']));
 
     if (image instanceof File) {
       formData.append('video[image]', image);
@@ -183,6 +186,13 @@ export function changeTrackComposeTrackText(value) {
     value,
   };
 };
+
+export function changeTrackComposeTrackVideoBackgroundColor(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_BACKGROUNDCOLOR_CHANGE,
+    value,
+  };
+}
 
 export function changeTrackComposeTrackVideoImage(value) {
   return {

@@ -11,6 +11,7 @@ import {
   changeTrackComposeTrackArtist,
   changeTrackComposeTrackText,
   changeTrackComposeTrackMusic,
+  changeTrackComposeTrackVideoBackgroundColor,
   changeTrackComposeTrackVideoImage,
   changeTrackComposeTrackVideoBlurVisibility,
   changeTrackComposeTrackVideoBlurMovementThreshold,
@@ -95,6 +96,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(changeTrackComposeTrackMusic(value));
   },
 
+  onChangeTrackVideoBackgroundColor (value) {
+    dispatch(changeTrackComposeTrackVideoBackgroundColor(value));
+  },
+
   onChangeTrackVideoImage (value) {
     dispatch(changeTrackComposeTrackVideoImage(value));
   },
@@ -155,15 +160,15 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(changeTrackComposeTrackVideoSpectrumColor(value));
   },
 
-  onChangeTrackComposeTrackVideoTextVisibility (value) {
+  onChangeTrackVideoTextVisibility (value) {
     dispatch(changeTrackComposeTrackVideoTextVisibility(value));
   },
 
-  onChangeTrackComposeTrackVideoTextAlpha (value) {
+  onChangeTrackVideoTextAlpha (value) {
     dispatch(changeTrackComposeTrackVideoTextAlpha(value));
   },
 
-  onChangeTrackComposeTrackVideoTextColor (value) {
+  onChangeTrackVideoTextColor (value) {
     dispatch(changeTrackComposeTrackVideoTextColor(value));
   },
 
@@ -176,6 +181,38 @@ const mapDispatchToProps = (dispatch) => ({
   },
 });
 
+class ColorTrigger extends ImmutablePureComponent {
+
+  static propTypes = {
+    alpha: PropTypes.number.isRequired,
+    color: PropTypes.number.isRequired,
+    onClick: PropTypes.func,
+  }
+
+  render () {
+    const { alpha, color, onClick } = this.props;
+    const depth = Math.round(((color & 0xff) + ((color >> 8) & 0xff) + ((color >> 16) & 0xff)) / 3);
+    const borderDepth = depth < 0xb0 ? 0x58 + depth : Math.max(0x58, 0x108 - depth);
+    const borderDepthHex = borderDepth.toString(16);
+
+    return (
+      <div
+        className='track-compose-effect-color-trigger'
+        onClick={onClick}
+        role='button'
+        style={{ borderColor: '#' + borderDepthHex.repeat(3) }}
+        tabIndex='-1'
+      >
+        <div
+          className='track-compose-effect-color-trigger-body'
+          style={{ backgroundColor: constructRgbCode(color, alpha) }}
+        />
+      </div>
+    );
+  }
+
+}
+
 @injectIntl
 @connect(makeMapStateToProps, mapDispatchToProps)
 export default class TrackCompose extends ImmutablePureComponent {
@@ -186,6 +223,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     onChangeTrackArtist: PropTypes.func.isRequired,
     onChangeTrackText: PropTypes.func.isRequired,
     onChangeTrackMusic: PropTypes.func.isRequired,
+    onChangeTrackVideoBackgroundColor: PropTypes.func.isRequired,
     onChangeTrackVideoImage: PropTypes.func.isRequired,
     onChangeTrackVideoBlurVisibility: PropTypes.func.isRequired,
     onChangeTrackVideoBlurMovementThreshold: PropTypes.func.isRequired,
@@ -201,9 +239,9 @@ export default class TrackCompose extends ImmutablePureComponent {
     onChangeTrackVideoSpectrumMode: PropTypes.func.isRequired,
     onChangeTrackVideoSpectrumAlpha: PropTypes.func.isRequired,
     onChangeTrackVideoSpectrumColor: PropTypes.func.isRequired,
-    onChangeTrackComposeTrackVideoTextVisibility: PropTypes.func.isRequired,
-    onChangeTrackComposeTrackVideoTextAlpha: PropTypes.func.isRequired,
-    onChangeTrackComposeTrackVideoTextColor: PropTypes.func.isRequired,
+    onChangeTrackVideoTextVisibility: PropTypes.func.isRequired,
+    onChangeTrackVideoTextAlpha: PropTypes.func.isRequired,
+    onChangeTrackVideoTextColor: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     tab: PropTypes.string.isRequired,
     track: ImmutablePropTypes.map.isRequired,
@@ -286,6 +324,14 @@ export default class TrackCompose extends ImmutablePureComponent {
     }
   }
 
+  handleToggleBackgroundColorPickerVisible = () => {
+    this.setState({ visibleColorPicker: 'background' }, this.handleBindColorPickerHide);
+  }
+
+  handleChangeTrackVideoBackgroundColor = ({ rgb }) => {
+    this.props.onChangeTrackVideoBackgroundColor(extractRgbFromRgbObject(rgb));
+  }
+
   handleChangeTrackVideoBlurVisibility = ({ target }) => {
     this.props.onChangeTrackVideoBlurVisibility(target.checked);
   }
@@ -343,12 +389,12 @@ export default class TrackCompose extends ImmutablePureComponent {
   }
 
   handleChangeTrackComposeTrackVideoTextVisibility = ({ target }) => {
-    this.props.onChangeTrackComposeTrackVideoTextVisibility(target.checked);
+    this.props.onChangeTrackVideoTextVisibility(target.checked);
   }
 
   handleChangeTrackComposeTrackVideoTextColor = ({ rgb }) => {
-    this.props.onChangeTrackComposeTrackVideoTextAlpha(rgb.a);
-    this.props.onChangeTrackComposeTrackVideoTextColor(extractRgbFromRgbObject(rgb));
+    this.props.onChangeTrackVideoTextAlpha(rgb.a);
+    this.props.onChangeTrackVideoTextColor(extractRgbFromRgbObject(rgb));
   }
 
   handleBindColorPickerHide = () => {
@@ -570,6 +616,35 @@ export default class TrackCompose extends ImmutablePureComponent {
                 </legend>
               </fieldset>
 
+              <label className='track-compose-effect-color'>
+                <div className='horizontal'>
+                  <span className='text'>
+                    <FormattedMessage
+                      id='pawoo_music.track_compose.video.background_color'
+                      defaultMessage='Background color'
+                    />
+                  </span>
+                  <div className='track-compose-effect-color-wrap'>
+                    <ColorTrigger
+                      alpha={1}
+                      color={this.props.track.getIn(['video', 'backgroundcolor'])}
+                      onClick={this.handleToggleBackgroundColorPickerVisible}
+                    />
+                    <Delay>
+                      {this.state.visibleColorPicker === 'background' && (
+                        <div className='track-compose-effect-color-content'>
+                          <SketchPicker
+                            color={constructRgbObject(this.props.track.getIn(['video', 'backgroundcolor']), 1)}
+                            disableAlpha
+                            onChange={this.handleChangeTrackVideoBackgroundColor}
+                          />
+                        </div>
+                      )}
+                    </Delay>
+                  </div>
+                </div>
+              </label>
+
               {/* Spectrum */}
               <fieldset>
                 <legend>
@@ -630,9 +705,11 @@ export default class TrackCompose extends ImmutablePureComponent {
                             />
                           </span>
                           <div className='track-compose-effect-color-wrap'>
-                            <div className='track-compose-effect-color-trigger' onClick={this.handleToggleSpectrumColorPickerVisible} role='button' tabIndex='-1'>
-                              <div className='track-compose-effect-color-trigger-body' style={{ backgroundColor: constructRgbCode(this.props.track.getIn(['video', 'spectrum', 'color']), this.props.track.getIn(['video', 'spectrum', 'alpha'])) }} />
-                            </div>
+                            <ColorTrigger
+                              alpha={this.props.track.getIn(['video', 'spectrum', 'alpha'])}
+                              color={this.props.track.getIn(['video', 'spectrum', 'color'])}
+                              onClick={this.handleToggleSpectrumColorPickerVisible}
+                            />
                             <Delay>
                               {this.state.visibleColorPicker === 'spectrum' && (
                                 <div className='track-compose-effect-color-content'>
@@ -739,9 +816,11 @@ export default class TrackCompose extends ImmutablePureComponent {
                             />
                           </span>
                           <div className='track-compose-effect-color-wrap'>
-                            <div className='track-compose-effect-color-trigger' onClick={this.handleToggleParticleColorPickerVisible} role='button' tabIndex='-1'>
-                              <div className='track-compose-effect-color-trigger-body' style={{ backgroundColor: constructRgbCode(this.props.track.getIn(['video', 'particle', 'color']), this.props.track.getIn(['video', 'particle', 'alpha'])) }} />
-                            </div>
+                            <ColorTrigger
+                              alpha={this.props.track.getIn(['video', 'particle', 'alpha'])}
+                              color={this.props.track.getIn(['video', 'particle', 'color'])}
+                              onClick={this.handleToggleParticleColorPickerVisible}
+                            />
                             <Delay>
                               {this.state.visibleColorPicker === 'particle' && (
                                 <div className='track-compose-effect-color-content'>
@@ -785,9 +864,11 @@ export default class TrackCompose extends ImmutablePureComponent {
                             />
                           </span>
                           <div className='track-compose-effect-color-wrap'>
-                            <div className='track-compose-effect-color-trigger' onClick={this.handleToggleTextColorPickerVisible} role='button' tabIndex='-1'>
-                              <div className='track-compose-effect-color-trigger-body' style={{ backgroundColor: constructRgbCode(this.props.track.getIn(['video', 'text', 'color']), this.props.track.getIn(['video', 'text', 'alpha'])) }} />
-                            </div>
+                            <ColorTrigger
+                              alpha={this.props.track.getIn(['video', 'text', 'alpha'])}
+                              color={this.props.track.getIn(['video', 'text', 'color'])}
+                              onClick={this.handleToggleTextColorPickerVisible}
+                            />
                             <Delay>
                               {this.state.visibleColorPicker === 'text' && (
                                 <div className='track-compose-effect-color-content'>
@@ -826,7 +907,7 @@ export default class TrackCompose extends ImmutablePureComponent {
                         <span className='text'>
                           <FormattedMessage
                             id='pawoo_music.track_compose.video.lightleaks_alpha'
-                            defaultMessage='Light leaks alpha'
+                            defaultMessage='Opacity'
                           />
                         </span>
                         <Slider

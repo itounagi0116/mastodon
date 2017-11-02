@@ -70,6 +70,14 @@ class Api::V1::TracksController < Api::BaseController
       attributes.merge! duration: music_duration.ceil
     end
 
+    case params.dig('video', 'backgroundcolor')
+    when nil
+    when ''
+      raise Mastodon::ValidationError
+    else
+      attributes.merge! video_backgroundcolor: params.dig('video', 'backgroundcolor')
+    end
+
     case params.dig('video', 'image')
     when nil
     when ''

@@ -44,12 +44,6 @@ class Musicvideo extends ImmutablePureComponent {
   };
 
   cancelMusic = noop;
-  generator = new Canvas(
-    new AudioContext,
-    constructGeneratorOptions(this.props.track, null),
-    lightLeaks,
-    this.calculateMusicCurrentTime
-  );
   image = new BaseTexture(new Image());
   offsetToAudioContextTime = 0;
 
@@ -304,6 +298,13 @@ class Musicvideo extends ImmutablePureComponent {
       this.generator.changeParams(constructGeneratorOptions(track, this.image));
     }
   }
+
+  generator = new Canvas(
+    new AudioContext,
+    constructGeneratorOptions(this.props.track, null),
+    lightLeaks,
+    this.calculateMusicCurrentTime
+  );
 
   render() {
     const { label } = this.props;
