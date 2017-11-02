@@ -160,15 +160,15 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(changeTrackComposeTrackVideoSpectrumColor(value));
   },
 
-  onChangeTrackComposeTrackVideoTextVisibility (value) {
+  onChangeTrackVideoTextVisibility (value) {
     dispatch(changeTrackComposeTrackVideoTextVisibility(value));
   },
 
-  onChangeTrackComposeTrackVideoTextAlpha (value) {
+  onChangeTrackVideoTextAlpha (value) {
     dispatch(changeTrackComposeTrackVideoTextAlpha(value));
   },
 
-  onChangeTrackComposeTrackVideoTextColor (value) {
+  onChangeTrackVideoTextColor (value) {
     dispatch(changeTrackComposeTrackVideoTextColor(value));
   },
 
@@ -207,9 +207,9 @@ export default class TrackCompose extends ImmutablePureComponent {
     onChangeTrackVideoSpectrumMode: PropTypes.func.isRequired,
     onChangeTrackVideoSpectrumAlpha: PropTypes.func.isRequired,
     onChangeTrackVideoSpectrumColor: PropTypes.func.isRequired,
-    onChangeTrackComposeTrackVideoTextVisibility: PropTypes.func.isRequired,
-    onChangeTrackComposeTrackVideoTextAlpha: PropTypes.func.isRequired,
-    onChangeTrackComposeTrackVideoTextColor: PropTypes.func.isRequired,
+    onChangeTrackVideoTextVisibility: PropTypes.func.isRequired,
+    onChangeTrackVideoTextAlpha: PropTypes.func.isRequired,
+    onChangeTrackVideoTextColor: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     tab: PropTypes.string.isRequired,
     track: ImmutablePropTypes.map.isRequired,
@@ -357,12 +357,12 @@ export default class TrackCompose extends ImmutablePureComponent {
   }
 
   handleChangeTrackComposeTrackVideoTextVisibility = ({ target }) => {
-    this.props.onChangeTrackComposeTrackVideoTextVisibility(target.checked);
+    this.props.onChangeTrackVideoTextVisibility(target.checked);
   }
 
   handleChangeTrackComposeTrackVideoTextColor = ({ rgb }) => {
-    this.props.onChangeTrackComposeTrackVideoTextAlpha(rgb.a);
-    this.props.onChangeTrackComposeTrackVideoTextColor(extractRgbFromRgbObject(rgb));
+    this.props.onChangeTrackVideoTextAlpha(rgb.a);
+    this.props.onChangeTrackVideoTextColor(extractRgbFromRgbObject(rgb));
   }
 
   handleBindColorPickerHide = () => {
