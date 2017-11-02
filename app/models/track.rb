@@ -53,6 +53,7 @@ class Track < ApplicationRecord
 
   before_save :truncate_title,       if: :title_changed?
   before_save :truncate_artist,      if: :artist_changed?
+  after_update :clear_cache
 
   has_many :album_tracks, inverse_of: :track
   has_many :statuses, as: :music
@@ -93,5 +94,12 @@ class Track < ApplicationRecord
 
   def truncate_artist
     self.artist = self.artist.slice(0, 128)
+  end
+
+  def clear_cache
+    # キャッシュにtrackの情報も保存されているためクリアする
+    statuses.find_each do |status|
+      Rails.cache.delete(status.cache_key)
+    end
   end
 end

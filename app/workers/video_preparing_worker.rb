@@ -38,9 +38,6 @@ class VideoPreparingWorker
 
     raise
   else
-    # キャッシュにmusicの情報も保存されているためクリアする
-    Rails.cache.delete(status.cache_key)
-
     # 再生成の場合は前回の通知を削除する
     Notification.find_by(activity_type: 'Track', activity_id: status.music.id, account: status.account)&.destroy
 
