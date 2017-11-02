@@ -867,7 +867,7 @@ export default class TrackCompose extends ImmutablePureComponent {
                         <span className='text'>
                           <FormattedMessage
                             id='pawoo_music.track_compose.video.lightleaks_alpha'
-                            defaultMessage='Light leaks alpha'
+                            defaultMessage='Opacity'
                           />
                         </span>
                         <Slider
