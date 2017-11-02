@@ -64,23 +64,35 @@ describe Api::V1::AlbumsController, type: :controller do
 
       let(:user) { Fabricate(:user) }
       let(:album) { Fabricate(:album) }
-      let(:status) { Fabricate(:status, account: user.account, music: album) }
 
-      it 'updates and renders albums' do
-        patch :update,
-              params: { id: status.id, title: 'updated title', text: 'updated text' }
+      context 'with status authored by self' do
+        let(:status) { Fabricate(:status, account: user.account, music: album) }
 
-        album.reload
-        expect(album.title).to eq 'updated title'
-        expect(album.text).to eq 'updated text'
-        expect(body_as_json[:id]).to eq status.id
-        expect(body_as_json[:album][:title]).to eq 'updated title'
-        expect(body_as_json[:album][:text]).to eq 'updated text'
+        it 'updates and renders albums' do
+          patch :update,
+                params: { id: status.id, title: 'updated title', text: 'updated text' }
+
+          album.reload
+          expect(album.title).to eq 'updated title'
+          expect(album.text).to eq 'updated text'
+          expect(body_as_json[:id]).to eq status.id
+          expect(body_as_json[:album][:title]).to eq 'updated title'
+          expect(body_as_json[:album][:text]).to eq 'updated text'
+        end
+
+        it 'returns http success' do
+          patch :update, params: { id: status.id }
+          expect(response).to have_http_status :success
+        end
       end
 
-      it 'returns http success' do
-        patch :update, params: { id: status.id }
-        expect(response).to have_http_status :success
+      context 'with status authored by another' do
+        let(:status) { Fabricate(:status, music: album) }
+
+        it 'returns http not found' do
+          patch :update, params: { id: status.id }
+          expect(response).to have_http_status :not_found
+        end
       end
     end
 
