@@ -6,6 +6,7 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import Musicvideo from '../../components/musicvideo';
 import classNames from 'classnames';
 import { playTrack, stopTrack } from '../../actions/tracks';
+import { constructRgbCode } from '../../util/musicvideo';
 
 import playIcon from '../../../images/pawoo_music/play.png';
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
@@ -73,7 +74,8 @@ class Track extends ImmutablePureComponent {
     }
 
     const thumbnailStyle = {
-      backgroundImage: thumbnailView && `url('${track.getIn(['video', 'preview_url'], defaultArtwork)}')`,
+      backgroundColor: constructRgbCode(track.getIn(['video', 'backgroundcolor']), 1),
+      backgroundImage: thumbnailView && `url('${track.getIn(['video', 'image'], defaultArtwork)}')`,
     };
 
     return (

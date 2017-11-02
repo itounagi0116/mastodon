@@ -51,7 +51,7 @@ class QueueItem
 
       item = new(
         info: status.music.display_title,
-        thumbnail_url: status.music.video_image.present? ? full_asset_url(status.music.video_image.url(:original)) : ApplicationController.helpers.asset_pack_path('pawoo_music/default_artwork.png', protocol: :request),
+        thumbnail_url: status.music.video_image.present? ? full_asset_url(status.music.video_image.url(:small)) : ApplicationController.helpers.asset_pack_path('pawoo_music/default_artwork.png', protocol: :request),
         music_url: full_asset_url(status.music.music.url(:original)),
         video_url: nil,
         link: link,

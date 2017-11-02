@@ -34,12 +34,19 @@ export default class StatusMeta extends ImmutablePureComponent {
       );
     }
 
+    const timestamp = <Timestamp absolute timestamp={status.get('created_at')} />;
+
     return (
       <div className='status-meta'>
-
-        <Link className='absolute-time' to={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}`}>
-          <Timestamp absolute timestamp={status.get('created_at')} />
-        </Link>
+        {(status.getIn(['account', 'acct']).indexOf('@') === -1) ? (
+          <Link className='absolute-time' to={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}`}>
+            {timestamp}
+          </Link>
+        ) : (
+          <a className='absolute-time' href={status.get('url')} target='_blank' rel='noopener'>
+            {timestamp}
+          </a>
+        )}
         {applicationLink}
         {' \u00A0 '}
         <span className='engagement'>

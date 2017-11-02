@@ -56,7 +56,7 @@ export default class TrackStatus extends ImmutablePureComponent {
       return null;
     }
 
-    if (hidden && trackId && trackId !== status.getIn(['track', 'music'])) {
+    if (hidden && trackId && trackId !== status.getIn(['track', 'id'])) {
       return (
         <div>
           {status.getIn(['account', 'display_name']) || status.getIn(['account', 'username'])}

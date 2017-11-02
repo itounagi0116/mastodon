@@ -126,6 +126,7 @@ body {
   --z-index-dropdown: 50;
   --z-index-navigation: 100;
   --z-index-lightbox_and-icon: 1000;
+  --z-index-nested-lightbox_and-icon: 2000;
   --z-index-playlist: 5000;
   --z-index-playlist-component: 5001;
   --z-index-playlist-tooltip: 5002;
@@ -177,7 +178,7 @@ a:hover {
   --width-gallery:        calc(var(--grid) * 120);
 
   --width-ago:            calc(var(--grid) * 6);
-  --width-contextmenu:    calc(var(--grid) * 46);
+  --width-contextmenu:    calc(var(--grid) * 56);
   --height-deck:          56px;
 
   .app-center {

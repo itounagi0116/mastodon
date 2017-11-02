@@ -6,6 +6,7 @@ import {
   TRACK_COMPOSE_TRACK_TEXT_CHANGE,
   TRACK_COMPOSE_TRACK_VISIBILITY_CHANGE,
   TRACK_COMPOSE_TRACK_MUSIC_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_BACKGROUNDCOLOR_CHANGE,
   TRACK_COMPOSE_TRACK_VIDEO_IMAGE_CHANGE,
   TRACK_COMPOSE_TRACK_VIDEO_BLUR_VISIBLITY_CHANGE,
   TRACK_COMPOSE_TRACK_VIDEO_BLUR_MOVEMENT_THRESHOLD_CHANGE,
@@ -30,6 +31,7 @@ import {
   TRACK_COMPOSE_SHOW_MODAL,
   TRACK_COMPOSE_HIDE_MODAL,
   TRACK_COMPOSE_SET_DATA,
+  TRACK_COMPOSE_CHANGE_PRIVACY,
 } from '../actions/track_compose';
 import Immutable from 'immutable';
 
@@ -45,6 +47,7 @@ const initialState = Immutable.fromJS({
     text: '',
     visibility: 'public',
     video: {
+      backgroundcolor: 0x171717,
       image: null,
       blur: {
         visible: false,
@@ -93,6 +96,8 @@ export default function track_compose(state = initialState, action) {
     return state.setIn(['track', 'visibility'], action.value);
   case TRACK_COMPOSE_TRACK_MUSIC_CHANGE:
     return state.setIn(['track', 'music'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_BACKGROUNDCOLOR_CHANGE:
+    return state.setIn(['track', 'video', 'backgroundcolor'], action.value);
   case TRACK_COMPOSE_TRACK_VIDEO_IMAGE_CHANGE:
     return state.setIn(['track', 'video', 'image'], action.value);
   case TRACK_COMPOSE_TRACK_VIDEO_BLUR_VISIBLITY_CHANGE:
@@ -141,6 +146,8 @@ export default function track_compose(state = initialState, action) {
     return state.set('modal', false);
   case TRACK_COMPOSE_SET_DATA:
     return state.set('track', convertTrackData(action.track)).setIn(['track', 'id'], action.id);
+  case TRACK_COMPOSE_CHANGE_PRIVACY:
+    return state.setIn(['track', 'visibility'], action.value);
   default:
     return state;
   }

@@ -9,6 +9,7 @@ export const TRACK_COMPOSE_TRACK_ARTIST_CHANGE = 'TRACK_COMPOSE_TRACK_ARTIST_CHA
 export const TRACK_COMPOSE_TRACK_TEXT_CHANGE = 'TRACK_COMPOSE_TRACK_TEXT_CHANGE';
 export const TRACK_COMPOSE_TRACK_VISIBILITY_CHANGE = 'TRACK_COMPOSE_TRACK_VISIBILITY_CHANGE';
 export const TRACK_COMPOSE_TRACK_MUSIC_CHANGE = 'TRACK_COMPOSE_TRACK_MUSIC_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_BACKGROUNDCOLOR_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_BACKGROUNDCOLOR_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_IMAGE_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_IMAGE_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_BLUR_VISIBLITY_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_BLUR_VISIBLITY_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_BLUR_MOVEMENT_THRESHOLD_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_BLUR_MOVEMENT_THRESHOLD_CHANGE';
@@ -33,6 +34,7 @@ export const TRACK_COMPOSE_SUBMIT_FAIL = 'TRACK_COMPOSE_SUBMIT_FAIL';
 export const TRACK_COMPOSE_SHOW_MODAL = 'TRACK_COMPOSE_SHOW_MODAL';
 export const TRACK_COMPOSE_HIDE_MODAL = 'TRACK_COMPOSE_HIDE_MODAL';
 export const TRACK_COMPOSE_SET_DATA = 'TRACK_COMPOSE_SET_DATA';
+export const TRACK_COMPOSE_CHANGE_PRIVACY = 'TRACK_COMPOSE_CHANGE_PRIVACY';
 
 function appendMapToFormData(formData, prefix, value) {
   for (const [childKey, childValue] of value) {
@@ -48,6 +50,8 @@ function appendMapToFormData(formData, prefix, value) {
 
 function appendParamToFormData(formData, prefix, value) {
   if (!value.get('visible')) {
+    // パラメータをオフにする
+    formData.append(prefix, '');
     return;
   }
 
@@ -87,7 +91,12 @@ export function submitTrackCompose() {
     formData.append('title', track.get('title'));
     formData.append('artist', track.get('artist'));
     formData.append('text', track.get('text'));
-    formData.append('visibility', track.get('visibility'));
+
+    if (!id) {
+      formData.append('visibility', track.get('visibility'));
+    }
+
+    formData.append('video[backgroundcolor]', track.getIn(['video', 'backgroundcolor']));
 
     if (image instanceof File) {
       formData.append('video[image]', image);
@@ -124,6 +133,12 @@ export function submitTrackCompose() {
         if (getState().getIn(['timelines', 'public', 'loaded'])) {
           dispatch(updateTimeline('public', status));
           dispatch(updateTimeline('public:music', status));
+        }
+
+        const me = getState().getIn(['meta', 'me']);
+        if (getState().getIn(['timelines', `account:${me}`, 'loaded'])) {
+          dispatch(updateTimeline(`account:${me}`, status));
+          dispatch(updateTimeline(`account:${me}:music`, status));
         }
       }
     }).catch(function (error) {
@@ -171,6 +186,13 @@ export function changeTrackComposeTrackText(value) {
     value,
   };
 };
+
+export function changeTrackComposeTrackVideoBackgroundColor(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_BACKGROUNDCOLOR_CHANGE,
+    value,
+  };
+}
 
 export function changeTrackComposeTrackVideoImage(value) {
   return {
@@ -335,5 +357,12 @@ export function setTrackComposeData(id, track) {
     type: TRACK_COMPOSE_SET_DATA,
     id,
     track,
+  };
+}
+
+export function changeTrackComposePrivacy(value) {
+  return {
+    type: TRACK_COMPOSE_CHANGE_PRIVACY,
+    value,
   };
 }

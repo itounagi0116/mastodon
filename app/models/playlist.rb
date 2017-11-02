@@ -184,7 +184,7 @@ class Playlist < ApplicationRecord
   end
 
   def remove_queue_items
-    Rails.cache.delete("exclude_domains_for:#{account_id}")
+    redis.del(playlist_key)
   end
 
   def settings

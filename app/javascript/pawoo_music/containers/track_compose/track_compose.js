@@ -11,6 +11,7 @@ import {
   changeTrackComposeTrackArtist,
   changeTrackComposeTrackText,
   changeTrackComposeTrackMusic,
+  changeTrackComposeTrackVideoBackgroundColor,
   changeTrackComposeTrackVideoImage,
   changeTrackComposeTrackVideoBlurVisibility,
   changeTrackComposeTrackVideoBlurMovementThreshold,
@@ -29,6 +30,7 @@ import {
   changeTrackComposeTrackVideoTextVisibility,
   changeTrackComposeTrackVideoTextAlpha,
   changeTrackComposeTrackVideoTextColor,
+  changeTrackComposePrivacy,
   submitTrackCompose,
 } from '../../actions/track_compose';
 import {
@@ -47,10 +49,16 @@ import {
   validateIsFileMp3,
   validateIsFileImage,
 } from '../../util/musicvideo';
+import PrivacyDropdown from '../../../mastodon/features/compose/components/privacy_dropdown';
 
 const messages = defineMessages({
   preview: { id: 'pawoo_music.track_compose.preview', defaultMessage: 'Video preview' },
+  privacy: { id: 'pawoo_music.track_compose.privacy', defaultMessage: 'Privacy' },
+  select_genre: { id: 'pawoo_music.track_compose.select_genre', defaultMessage: 'Select genre tag' },
 });
+
+const allowedPrivacy = ['public', 'unlisted'];
+const genreList = ['electronic', 'pop', 'rock', 'alternative', 'ambient', 'acoustic', 'world', 'hiphop', 'reggae', 'folk', 'jazz', 'funk', 'punk', 'metal', 'soundtrack'];
 
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
@@ -86,6 +94,10 @@ const mapDispatchToProps = (dispatch) => ({
 
   onChangeTrackMusic (value) {
     dispatch(changeTrackComposeTrackMusic(value));
+  },
+
+  onChangeTrackVideoBackgroundColor (value) {
+    dispatch(changeTrackComposeTrackVideoBackgroundColor(value));
   },
 
   onChangeTrackVideoImage (value) {
@@ -148,22 +160,58 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(changeTrackComposeTrackVideoSpectrumColor(value));
   },
 
-  onChangeTrackComposeTrackVideoTextVisibility (value) {
+  onChangeTrackVideoTextVisibility (value) {
     dispatch(changeTrackComposeTrackVideoTextVisibility(value));
   },
 
-  onChangeTrackComposeTrackVideoTextAlpha (value) {
+  onChangeTrackVideoTextAlpha (value) {
     dispatch(changeTrackComposeTrackVideoTextAlpha(value));
   },
 
-  onChangeTrackComposeTrackVideoTextColor (value) {
+  onChangeTrackVideoTextColor (value) {
     dispatch(changeTrackComposeTrackVideoTextColor(value));
+  },
+
+  onChangePrivacy (value) {
+    dispatch(changeTrackComposePrivacy(value));
   },
 
   onSubmit () {
     dispatch(submitTrackCompose());
   },
 });
+
+class ColorTrigger extends ImmutablePureComponent {
+
+  static propTypes = {
+    alpha: PropTypes.number.isRequired,
+    color: PropTypes.number.isRequired,
+    onClick: PropTypes.func,
+  }
+
+  render () {
+    const { alpha, color, onClick } = this.props;
+    const depth = Math.round(((color & 0xff) + ((color >> 8) & 0xff) + ((color >> 16) & 0xff)) / 3);
+    const borderDepth = depth < 0xb0 ? 0x58 + depth : Math.max(0x58, 0x108 - depth);
+    const borderDepthHex = borderDepth.toString(16);
+
+    return (
+      <div
+        className='track-compose-effect-color-trigger'
+        onClick={onClick}
+        role='button'
+        style={{ borderColor: '#' + borderDepthHex.repeat(3) }}
+        tabIndex='-1'
+      >
+        <div
+          className='track-compose-effect-color-trigger-body'
+          style={{ backgroundColor: constructRgbCode(color, alpha) }}
+        />
+      </div>
+    );
+  }
+
+}
 
 @injectIntl
 @connect(makeMapStateToProps, mapDispatchToProps)
@@ -175,6 +223,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     onChangeTrackArtist: PropTypes.func.isRequired,
     onChangeTrackText: PropTypes.func.isRequired,
     onChangeTrackMusic: PropTypes.func.isRequired,
+    onChangeTrackVideoBackgroundColor: PropTypes.func.isRequired,
     onChangeTrackVideoImage: PropTypes.func.isRequired,
     onChangeTrackVideoBlurVisibility: PropTypes.func.isRequired,
     onChangeTrackVideoBlurMovementThreshold: PropTypes.func.isRequired,
@@ -190,9 +239,9 @@ export default class TrackCompose extends ImmutablePureComponent {
     onChangeTrackVideoSpectrumMode: PropTypes.func.isRequired,
     onChangeTrackVideoSpectrumAlpha: PropTypes.func.isRequired,
     onChangeTrackVideoSpectrumColor: PropTypes.func.isRequired,
-    onChangeTrackComposeTrackVideoTextVisibility: PropTypes.func.isRequired,
-    onChangeTrackComposeTrackVideoTextAlpha: PropTypes.func.isRequired,
-    onChangeTrackComposeTrackVideoTextColor: PropTypes.func.isRequired,
+    onChangeTrackVideoTextVisibility: PropTypes.func.isRequired,
+    onChangeTrackVideoTextAlpha: PropTypes.func.isRequired,
+    onChangeTrackVideoTextColor: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     tab: PropTypes.string.isRequired,
     track: ImmutablePropTypes.map.isRequired,
@@ -275,6 +324,14 @@ export default class TrackCompose extends ImmutablePureComponent {
     }
   }
 
+  handleToggleBackgroundColorPickerVisible = () => {
+    this.setState({ visibleColorPicker: 'background' }, this.handleBindColorPickerHide);
+  }
+
+  handleChangeTrackVideoBackgroundColor = ({ rgb }) => {
+    this.props.onChangeTrackVideoBackgroundColor(extractRgbFromRgbObject(rgb));
+  }
+
   handleChangeTrackVideoBlurVisibility = ({ target }) => {
     this.props.onChangeTrackVideoBlurVisibility(target.checked);
   }
@@ -332,12 +389,12 @@ export default class TrackCompose extends ImmutablePureComponent {
   }
 
   handleChangeTrackComposeTrackVideoTextVisibility = ({ target }) => {
-    this.props.onChangeTrackComposeTrackVideoTextVisibility(target.checked);
+    this.props.onChangeTrackVideoTextVisibility(target.checked);
   }
 
   handleChangeTrackComposeTrackVideoTextColor = ({ rgb }) => {
-    this.props.onChangeTrackComposeTrackVideoTextAlpha(rgb.a);
-    this.props.onChangeTrackComposeTrackVideoTextColor(extractRgbFromRgbObject(rgb));
+    this.props.onChangeTrackVideoTextAlpha(rgb.a);
+    this.props.onChangeTrackVideoTextColor(extractRgbFromRgbObject(rgb));
   }
 
   handleBindColorPickerHide = () => {
@@ -396,6 +453,17 @@ export default class TrackCompose extends ImmutablePureComponent {
     }
   }
 
+  handleChangePrivacy = (value) => {
+    this.props.onChangePrivacy(value);
+  }
+
+  handleClickGenre = (e) => {
+    const index = e.currentTarget.getAttribute('data-index');
+    const genre = genreList[index];
+
+    this.props.onChangeTrackText(`${this.props.track.get('text')} #${genre}`);
+  }
+
   setTrackMusicRef = (ref) => {
     this.trackMusicRef = ref;
   }
@@ -405,7 +473,7 @@ export default class TrackCompose extends ImmutablePureComponent {
   }
 
   render () {
-    const { track } = this.props;
+    const { track, intl } = this.props;
     const { trackMusicTitle, trackVideoImageTitle } = this.state;
     const caution = {
       height: '100px',
@@ -420,7 +488,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     return (
       <div className='track-compose'>
         <div className='content'>
-          <Musicvideo track={track} label={this.props.intl.formatMessage(messages.preview)} autoPlay={false} />
+          <Musicvideo track={track} label={intl.formatMessage(messages.preview)} autoPlay={false} />
           <div className='form-content'>
             <form>
 
@@ -513,6 +581,16 @@ export default class TrackCompose extends ImmutablePureComponent {
                       />
                     </label>
                   </div>
+                  <div className='genre-selector'>
+                    <IconButton src='plus-circle' strokeWidth={2} title={intl.formatMessage(messages.select_genre)} />
+                    <div className='genre-list'>
+                      {genreList.map((genre, i) => (
+                        <div key={genre} data-index={i} className='genre-item' onClick={this.handleClickGenre} role='button' tabIndex={0} aria-pressed='false'>
+                          {genre}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </legend>
 
                 <legend>
@@ -537,6 +615,35 @@ export default class TrackCompose extends ImmutablePureComponent {
                   </div>
                 </legend>
               </fieldset>
+
+              <label className='track-compose-effect-color'>
+                <div className='horizontal'>
+                  <span className='text'>
+                    <FormattedMessage
+                      id='pawoo_music.track_compose.video.background_color'
+                      defaultMessage='Background color'
+                    />
+                  </span>
+                  <div className='track-compose-effect-color-wrap'>
+                    <ColorTrigger
+                      alpha={1}
+                      color={this.props.track.getIn(['video', 'backgroundcolor'])}
+                      onClick={this.handleToggleBackgroundColorPickerVisible}
+                    />
+                    <Delay>
+                      {this.state.visibleColorPicker === 'background' && (
+                        <div className='track-compose-effect-color-content'>
+                          <SketchPicker
+                            color={constructRgbObject(this.props.track.getIn(['video', 'backgroundcolor']), 1)}
+                            disableAlpha
+                            onChange={this.handleChangeTrackVideoBackgroundColor}
+                          />
+                        </div>
+                      )}
+                    </Delay>
+                  </div>
+                </div>
+              </label>
 
               {/* Spectrum */}
               <fieldset>
@@ -598,9 +705,11 @@ export default class TrackCompose extends ImmutablePureComponent {
                             />
                           </span>
                           <div className='track-compose-effect-color-wrap'>
-                            <div className='track-compose-effect-color-trigger' onClick={this.handleToggleSpectrumColorPickerVisible} role='button' tabIndex='-1'>
-                              <div className='track-compose-effect-color-trigger-body' style={{ backgroundColor: constructRgbCode(this.props.track.getIn(['video', 'spectrum', 'color']), this.props.track.getIn(['video', 'spectrum', 'alpha'])) }} />
-                            </div>
+                            <ColorTrigger
+                              alpha={this.props.track.getIn(['video', 'spectrum', 'alpha'])}
+                              color={this.props.track.getIn(['video', 'spectrum', 'color'])}
+                              onClick={this.handleToggleSpectrumColorPickerVisible}
+                            />
                             <Delay>
                               {this.state.visibleColorPicker === 'spectrum' && (
                                 <div className='track-compose-effect-color-content'>
@@ -707,9 +816,11 @@ export default class TrackCompose extends ImmutablePureComponent {
                             />
                           </span>
                           <div className='track-compose-effect-color-wrap'>
-                            <div className='track-compose-effect-color-trigger' onClick={this.handleToggleParticleColorPickerVisible} role='button' tabIndex='-1'>
-                              <div className='track-compose-effect-color-trigger-body' style={{ backgroundColor: constructRgbCode(this.props.track.getIn(['video', 'particle', 'color']), this.props.track.getIn(['video', 'particle', 'alpha'])) }} />
-                            </div>
+                            <ColorTrigger
+                              alpha={this.props.track.getIn(['video', 'particle', 'alpha'])}
+                              color={this.props.track.getIn(['video', 'particle', 'color'])}
+                              onClick={this.handleToggleParticleColorPickerVisible}
+                            />
                             <Delay>
                               {this.state.visibleColorPicker === 'particle' && (
                                 <div className='track-compose-effect-color-content'>
@@ -753,9 +864,11 @@ export default class TrackCompose extends ImmutablePureComponent {
                             />
                           </span>
                           <div className='track-compose-effect-color-wrap'>
-                            <div className='track-compose-effect-color-trigger' onClick={this.handleToggleTextColorPickerVisible} role='button' tabIndex='-1'>
-                              <div className='track-compose-effect-color-trigger-body' style={{ backgroundColor: constructRgbCode(this.props.track.getIn(['video', 'text', 'color']), this.props.track.getIn(['video', 'text', 'alpha'])) }} />
-                            </div>
+                            <ColorTrigger
+                              alpha={this.props.track.getIn(['video', 'text', 'alpha'])}
+                              color={this.props.track.getIn(['video', 'text', 'color'])}
+                              onClick={this.handleToggleTextColorPickerVisible}
+                            />
                             <Delay>
                               {this.state.visibleColorPicker === 'text' && (
                                 <div className='track-compose-effect-color-content'>
@@ -794,7 +907,7 @@ export default class TrackCompose extends ImmutablePureComponent {
                         <span className='text'>
                           <FormattedMessage
                             id='pawoo_music.track_compose.video.lightleaks_alpha'
-                            defaultMessage='Light leaks alpha'
+                            defaultMessage='Opacity'
                           />
                         </span>
                         <Slider
@@ -841,16 +954,21 @@ export default class TrackCompose extends ImmutablePureComponent {
                 ５．他人の作品を許可なくアップロードしたことにより、当サービスまたは第三者に損害を与えたときは、当該アップロード者が一切の責任を負うものとし、当社はその一切の責任を負いません。
               </div>
             </form>
-          </div>
-        </div>
 
-        <div className='actions'>
-          <button className='cancel' onClick={this.handleCancel}>
-            <FormattedMessage id='column_back_button.label' defaultMessage='Back' />
-          </button>
-          <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
-            <FormattedMessage id='pawoo_music.track_compose.save' defaultMessage='Save' />
-          </button>
+            <div className='actions'>
+              <button className='cancel' onClick={this.handleCancel}>
+                <FormattedMessage id='pawoo_music.track_compose.cancel' defaultMessage='Cancel' />
+              </button>
+              {!track.get('id') && <PrivacyDropdown buttonClassName='privacy-toggle' value={track.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} />}
+              <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
+                {track.get('id') ? (
+                  <FormattedMessage id='pawoo_music.track_compose.save' defaultMessage='Save' />
+                ) : (
+                  <FormattedMessage id='pawoo_music.track_compose.submit' defaultMessage='Submit' />
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );

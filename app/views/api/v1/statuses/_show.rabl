@@ -49,7 +49,7 @@ child({ music: :track }, if: ->(status) { !status.reblog? && status.music.is_a?(
   node(:content) { |track| Formatter.instance.format_for_track(root_status) }
 
   node :video do |track|
-    hash = {}
+    hash = { backgroundcolor: track.video_backgroundcolor }
 
     if current_account && root_status.account_id == current_account.id
       if track.video.present?
@@ -62,8 +62,8 @@ child({ music: :track }, if: ->(status) { !status.reblog? && status.music.is_a?(
     end
 
     if track.video_image.present?
-      hash[:image] = full_asset_url(track.video_image.url(:original))
-      hash[:preview_url] = full_asset_url(track.video_image.url(:small))
+      hash[:image] = full_asset_url(track.video_image.url(:small))
+      hash[:original_image] = full_asset_url(track.video_image.url(:original))
     end
 
     if track.video_blur_movement_band_top != 0 && track.video_blur_blink_band_top != 0

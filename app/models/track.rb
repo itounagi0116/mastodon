@@ -42,6 +42,7 @@
 #  video_1920x1080_content_type     :string
 #  video_1920x1080_file_size        :integer
 #  video_1920x1080_updated_at       :datetime
+#  video_backgroundcolor            :integer          default(1513239), not null
 #
 
 class Track < ApplicationRecord
@@ -64,7 +65,7 @@ class Track < ApplicationRecord
   has_attached_file :video_image,
     styles: { original: '', small: '' },
     convert_options: {
-      original: ->(instance) { crop_option(instance.min_size(:video_image), '1280') },
+      original: '-strip -quality 90',
       small: ->(instance) { crop_option(instance.min_size(:video_image), '600') },
     }
 

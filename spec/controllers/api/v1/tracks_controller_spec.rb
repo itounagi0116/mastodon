@@ -31,6 +31,7 @@ describe Api::V1::TracksController, type: :controller do
 
       it 'creates and renders status and track' do
         video_params = {
+          backgroundcolor: 0xffffff,
           blur: {
             movement: { band: { bottom: 50, top: 300 }, threshold: 165 },
             blink: { band: { bottom: 2000, top: 15000 }, threshold: 165 },
@@ -69,6 +70,7 @@ describe Api::V1::TracksController, type: :controller do
         expect(status.music.artist).to eq 'artist'
         expect(status.music.text).to eq 'text'
         expect(status.music.duration).to eq 2
+        expect(status.music.video_backgroundcolor).to eq 0xffffff
         expect(status.music.video_blur_movement_band_bottom).to eq 50
         expect(status.music.video_blur_movement_band_top).to eq 300
         expect(status.music.video_blur_movement_threshold).to eq 165
@@ -147,6 +149,7 @@ describe Api::V1::TracksController, type: :controller do
         status = Fabricate(:status, account: user.account, music: track)
 
         video_params = {
+          backgroundcolor: 0xbac010,
           blur: {
             movement: { band: { bottom: 50, top: 300 }, threshold: 165 },
             blink: { band: { bottom: 2000, top: 15000 }, threshold: 165 },
@@ -202,6 +205,26 @@ describe Api::V1::TracksController, type: :controller do
         expect(body_as_json[:track][:artist]).to eq 'updated artist'
         expect(body_as_json[:track][:text]).to eq 'updated text'
         expect(body_as_json[:track][:video]).to eq video_params
+      end
+
+      it 'returns http unprocessable entity if empty string is given as background color' do
+        track = Fabricate(:track)
+        status = Fabricate(:status, account: user.account, music: track)
+
+        patch :update, params: { id: status, video: { backgroundcolor: '' } }
+
+        expect(response).to have_http_status :unprocessable_entity
+      end
+
+      it 'does not change video background color and returns http success if nothing is given' do
+        track = Fabricate(:track, video_backgroundcolor: 0x171717)
+        status = Fabricate(:status, account: user.account, music: track)
+
+        patch :update, params: { id: status }
+
+        expect(response).to have_http_status :success
+        track.reload
+        expect(track.video_backgroundcolor).to eq 0x171717
       end
 
       it 'unsets video blur parameters if empty string is given' do

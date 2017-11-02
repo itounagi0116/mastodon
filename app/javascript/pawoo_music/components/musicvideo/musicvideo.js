@@ -5,6 +5,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import { defineMessages, injectIntl } from 'react-intl';
 import { Canvas } from 'musicvideo-generator';
 import { BaseTexture } from 'pixi.js';
 import IconButton from '../icon_button';
@@ -17,9 +18,16 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
 
+const messages = defineMessages({
+  play: { id: 'pawoo_music.musicvideo.play', defaultMessage: 'Play' },
+  pause: { id: 'pawoo_music.musicvideo.pause', defaultMessage: 'Pause' },
+});
+
+@injectIntl
 class Musicvideo extends ImmutablePureComponent {
 
   static propTypes = {
+    intl: PropTypes.object.isRequired,
     track: ImmutablePropTypes.map.isRequired,
     label: PropTypes.string,
     autoPlay: PropTypes.bool,
@@ -44,12 +52,6 @@ class Musicvideo extends ImmutablePureComponent {
   };
 
   cancelMusic = noop;
-  generator = new Canvas(
-    new AudioContext,
-    constructGeneratorOptions(this.props.track, null),
-    lightLeaks,
-    this.calculateMusicCurrentTime
-  );
   image = new BaseTexture(new Image());
   offsetToAudioContextTime = 0;
 
@@ -62,13 +64,14 @@ class Musicvideo extends ImmutablePureComponent {
     // the source URL and image element. The src attribute of the element is
     // dynamic.
     this.image.source.addEventListener('load', this.handleLoadImage, { once: false });
+    this.image.source.crossOrigin = 'anonymous';
     this.updateImage(track);
 
     // オーディオ接続
     audioAnalyserNode.connect(audioAnalyserNode.context.destination);
 
     // キャンバス更新
-    this.updateCanvas();
+    this.updateCanvas(track);
 
     // キャンバス初期化
     this.generator.initialize();
@@ -108,7 +111,7 @@ class Musicvideo extends ImmutablePureComponent {
     }
 
     if (track !== this.props.track) {
-      this.updateCanvas();
+      this.updateCanvas(track);
     }
   }
 
@@ -149,14 +152,12 @@ class Musicvideo extends ImmutablePureComponent {
     const image = track.getIn(['video', 'image']);
 
     if (image instanceof Blob) {
-      return URL.createObjectURL(image);
+      this.image.source.src = URL.createObjectURL(image);
+    } else if (typeof image === 'string') {
+      this.image.source.src = image;
+    } else {
+      this.image.source.src = defaultArtwork;
     }
-
-    if (typeof image === 'string') {
-      return image;
-    }
-
-    return defaultArtwork;
   }
 
   updateMusic = (track) => {
@@ -253,7 +254,7 @@ class Musicvideo extends ImmutablePureComponent {
 
   handleLoadImage = () => {
     this.image.update();
-    this.updateCanvas();
+    this.updateCanvas(this.props.track);
   }
 
   handleTogglePaused = () => {
@@ -275,31 +276,46 @@ class Musicvideo extends ImmutablePureComponent {
     }
   }
 
-  handleChangeCurrentTime = (lastSeekDestinationOffsetToMusicTime) => {
-    this.offsetToAudioContextTime = lastSeekDestinationOffsetToMusicTime - this.generator.audioAnalyserNode.context.currentTime;
-    this.generator.initialize();
-
+  handleBeforeChangeCurrentTime = () => {
     if (this.state.audioBufferSource !== null) {
+      this.state.audioBufferSource.onended = null;
       this.state.audioBufferSource.stop();
 
+      this.generator.stop();
+    }
+  };
+
+  handleChangeCurrentTime = (lastSeekDestinationOffsetToMusicTime) => {
+    this.offsetToAudioContextTime = lastSeekDestinationOffsetToMusicTime - this.generator.audioAnalyserNode.context.currentTime;
+    this.setState({ lastSeekDestinationOffsetToMusicTime });
+    this.generator.initialize();
+  };
+
+  handleAfterChangeCurrentTime = () => {
+    if (this.state.audioBufferSource !== null) {
       this.createAudioBufferSource(this.state.audioBuffer);
     }
-
-    this.setState({ lastSeekDestinationOffsetToMusicTime });
   }
 
   setCanvasContainerRef = (ref) => {
     this.canvasContainer = ref;
   }
 
-  updateCanvas = () => {
+  updateCanvas = (track) => {
     if (this.generator) {
-      this.generator.changeParams(constructGeneratorOptions(this.props.track, this.image));
+      this.generator.changeParams(constructGeneratorOptions(track, this.image));
     }
   }
 
+  generator = new Canvas(
+    new AudioContext,
+    constructGeneratorOptions(this.props.track, null),
+    lightLeaks,
+    this.calculateMusicCurrentTime
+  );
+
   render() {
-    const { label } = this.props;
+    const { intl, label } = this.props;
     const { audioBuffer, audioBufferSource } = this.state;
 
     return (
@@ -315,16 +331,17 @@ class Musicvideo extends ImmutablePureComponent {
         <div className={classNames('controls-container', { visible: audioBuffer !== null })}>
           <div className='controls'>
             <div className='toggle' onClick={this.handleTogglePaused} role='button' tabIndex='0' aria-pressed='false'>
-              {audioBufferSource === null ? <IconButton src='play' /> : <IconButton src='pause' />}
+              {audioBufferSource === null ? <IconButton src='play' title={intl.formatMessage(messages.play)} /> : <IconButton src='pause' title={intl.formatMessage(messages.pause)} />}
             </div>
             <Slider
               min={0}
               max={audioBuffer === null ? 1 : audioBuffer.duration}
               step={0.1}
               value={this.calculateMusicCurrentTime()}
+              onBeforeChange={this.handleBeforeChangeCurrentTime}
               onChange={this.handleChangeCurrentTime}
+              onAfterChange={this.handleAfterChangeCurrentTime}
               disabled={!audioBuffer}
-              ref={this.setSeekbarRef}
             />
           </div>
         </div>
