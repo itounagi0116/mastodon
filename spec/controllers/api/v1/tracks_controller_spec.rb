@@ -146,7 +146,7 @@ describe Api::V1::TracksController, type: :controller do
 
       it 'updates and renders music attributes' do
         track = Fabricate(:track)
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         video_params = {
           backgroundcolor: 0xbac010,
@@ -209,7 +209,7 @@ describe Api::V1::TracksController, type: :controller do
 
       it 'returns http unprocessable entity if empty string is given as background color' do
         track = Fabricate(:track)
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status, video: { backgroundcolor: '' } }
 
@@ -218,7 +218,7 @@ describe Api::V1::TracksController, type: :controller do
 
       it 'does not change video background color and returns http success if nothing is given' do
         track = Fabricate(:track, video_backgroundcolor: 0x171717)
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status }
 
@@ -237,7 +237,7 @@ describe Api::V1::TracksController, type: :controller do
           video_blur_blink_band_top: 15000,
           video_blur_blink_threshold: 165
         )
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status, video: { blur: '' } }
 
@@ -260,7 +260,7 @@ describe Api::V1::TracksController, type: :controller do
           video_blur_blink_band_top: 15000,
           video_blur_blink_threshold: 165
         )
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status }
 
@@ -282,7 +282,7 @@ describe Api::V1::TracksController, type: :controller do
           video_particle_alpha: 1,
           video_particle_color: 0xff0000
         )
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status, video: { particle: '' } }
 
@@ -303,7 +303,7 @@ describe Api::V1::TracksController, type: :controller do
           video_particle_alpha: 1,
           video_particle_color: 0xff0000
         )
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status }
 
@@ -317,7 +317,7 @@ describe Api::V1::TracksController, type: :controller do
 
       it 'unsets video lightleaks parameters if empty string is given' do
         track = Fabricate(:track, video_lightleaks_alpha: 1)
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status, video: { lightleaks: '' } }
 
@@ -327,7 +327,7 @@ describe Api::V1::TracksController, type: :controller do
 
       it 'does not change video lightleaks parameters if nothing is given' do
         track = Fabricate(:track, video_lightleaks_alpha: 1)
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status }
 
@@ -342,7 +342,7 @@ describe Api::V1::TracksController, type: :controller do
           video_spectrum_alpha: 1,
           video_spectrum_color: 0xff0000
         )
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status, video: { spectrum: '' } }
 
@@ -359,7 +359,7 @@ describe Api::V1::TracksController, type: :controller do
           video_spectrum_alpha: 1,
           video_spectrum_color: 0xff0000
         )
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status }
 
@@ -374,7 +374,7 @@ describe Api::V1::TracksController, type: :controller do
           video_text_alpha: 1,
           video_text_color: 0xffffff
         )
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status, video: { text: '' } }
 
@@ -388,7 +388,7 @@ describe Api::V1::TracksController, type: :controller do
           video_text_alpha: 1,
           video_text_color: 0xffffff
         )
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status }
 
@@ -399,7 +399,7 @@ describe Api::V1::TracksController, type: :controller do
 
       it 'returns http success' do
         track = Fabricate(:track)
-        status = Fabricate(:status, account: user.account, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
 
         patch :update, params: { id: status }
 
@@ -415,12 +415,22 @@ describe Api::V1::TracksController, type: :controller do
 
         expect(response).to have_http_status :not_found
       end
+
+      it 'returns http not found if the given ID is for a reblog' do
+        track = Fabricate(:track)
+        reblog = Fabricate(:status, music: track)
+        status = Fabricate(:status, account: user.account, music: track, reblog: reblog)
+
+        patch :update, params: { id: status }
+
+        expect(response).to have_http_status :not_found
+      end
     end
 
     context 'without write scope' do
       it 'returns http unauthorized' do
         track = Fabricate(:track)
-        status = Fabricate(:status, music: track)
+        status = Fabricate(:status, music: track, reblog: nil)
 
         patch :update, params: { id: status }
 
@@ -442,7 +452,7 @@ describe Api::V1::TracksController, type: :controller do
       let(:user) { Fabricate(:user) }
       let(:track) { Fabricate(:track) }
 
-      context 'with track authored by self' do
+      context 'with origin status authored by self' do
         let(:status) { Fabricate(:status, account: user.account, music: track) }
 
         it 'queues rendering' do
@@ -462,9 +472,19 @@ describe Api::V1::TracksController, type: :controller do
       end
 
       context 'with track authored by another' do
-        let(:status) { Fabricate(:status, music: track) }
+        let(:status) { Fabricate(:status, music: track, reblog: nil) }
 
         it 'returns not found' do
+          post :prepare_video, params: { id: status, resolution: '720x720' }
+          expect(response).to have_http_status :not_found
+        end
+      end
+
+      context 'with reblog' do
+        let(:reblog) { Fabricate(:status, music: track) }
+        let(:status) { Fabricate(:status, account: user.account, music: track, reblog: reblog) }
+
+        it 'returns http not found' do
           post :prepare_video, params: { id: status, resolution: '720x720' }
           expect(response).to have_http_status :not_found
         end

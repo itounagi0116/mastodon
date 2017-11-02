@@ -58,7 +58,7 @@ class Api::V1::TracksController < Api::BaseController
   private
 
   def set_status
-    @status = Status.tracks_only.find_by!(id: params[:id], account: current_account)
+    @status = Status.tracks_only.find_by!(id: params[:id], account: current_account, reblog: nil)
   end
 
   def track_attributes
