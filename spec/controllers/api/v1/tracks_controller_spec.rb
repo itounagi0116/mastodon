@@ -405,6 +405,16 @@ describe Api::V1::TracksController, type: :controller do
 
         expect(response).to have_http_status :success
       end
+
+      it 'returns http not found if the given ID is for a track authored by another' do
+        track = Fabricate(:track)
+        reblog = Fabricate(:status, music: track)
+        status = Fabricate(:status, music: track, reblog: nil)
+
+        patch :update, params: { id: status }
+
+        expect(response).to have_http_status :not_found
+      end
     end
 
     context 'without write scope' do
@@ -431,21 +441,33 @@ describe Api::V1::TracksController, type: :controller do
 
       let(:user) { Fabricate(:user) }
       let(:track) { Fabricate(:track) }
-      let(:status) { Fabricate(:status, account: user.account, music: track) }
 
-      it 'queues rendering' do
-        post :prepare_video, params: { id: status, resolution: '720x720' }
-        expect(VideoPreparingWorker).to have_enqueued_sidekiq_job status.id, '720x720'
+      context 'with track authored by self' do
+        let(:status) { Fabricate(:status, account: user.account, music: track) }
+
+        it 'queues rendering' do
+          post :prepare_video, params: { id: status, resolution: '720x720' }
+          expect(VideoPreparingWorker).to have_enqueued_sidekiq_job status.id, '720x720'
+        end
+
+        it 'returns 422 with invalid resolution' do
+          post :prepare_video, params: { id: status, resolution: 'invalid' }
+          expect(response).to have_http_status 422
+        end
+
+        it 'returns http success' do
+          post :prepare_video, params: { id: status, resolution: '720x720' }
+          expect(response).to have_http_status :success
+        end
       end
 
-      it 'returns 422 with invalid resolution' do
-        post :prepare_video, params: { id: status, resolution: 'invalid' }
-        expect(response).to have_http_status 422
-      end
+      context 'with track authored by another' do
+        let(:status) { Fabricate(:status, music: track) }
 
-      it 'returns http success' do
-        post :prepare_video, params: { id: status, resolution: '720x720' }
-        expect(response).to have_http_status :success
+        it 'returns not found' do
+          post :prepare_video, params: { id: status, resolution: '720x720' }
+          expect(response).to have_http_status :not_found
+        end
       end
     end
 
