@@ -5,6 +5,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import { defineMessages, injectIntl } from 'react-intl';
 import { Canvas } from 'musicvideo-generator';
 import { BaseTexture } from 'pixi.js';
 import IconButton from '../icon_button';
@@ -17,9 +18,16 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
 
+const messages = defineMessages({
+  play: { id: 'pawoo_music.musicvideo.play', defaultMessage: 'Play' },
+  pause: { id: 'pawoo_music.musicvideo.pause', defaultMessage: 'Pause' },
+});
+
+@injectIntl
 class Musicvideo extends ImmutablePureComponent {
 
   static propTypes = {
+    intl: PropTypes.object.isRequired,
     track: ImmutablePropTypes.map.isRequired,
     label: PropTypes.string,
     autoPlay: PropTypes.bool,
@@ -307,7 +315,7 @@ class Musicvideo extends ImmutablePureComponent {
   );
 
   render() {
-    const { label } = this.props;
+    const { intl, label } = this.props;
     const { audioBuffer, audioBufferSource } = this.state;
 
     return (
@@ -323,7 +331,7 @@ class Musicvideo extends ImmutablePureComponent {
         <div className={classNames('controls-container', { visible: audioBuffer !== null })}>
           <div className='controls'>
             <div className='toggle' onClick={this.handleTogglePaused} role='button' tabIndex='0' aria-pressed='false'>
-              {audioBufferSource === null ? <IconButton src='play' /> : <IconButton src='pause' />}
+              {audioBufferSource === null ? <IconButton src='play' title={intl.formatMessage(messages.play)} /> : <IconButton src='pause' title={intl.formatMessage(messages.pause)} />}
             </div>
             <Slider
               min={0}
