@@ -383,7 +383,7 @@ describe Api::V1::TracksController, type: :controller do
         expect(track.video_text_color).to eq 0
       end
 
-      it 'does not change video spectrum parameters if nothing is given' do
+      it 'does not change video text parameters if nothing is given' do
         track = Fabricate(:track,
           video_text_alpha: 1,
           video_text_color: 0xffffff
