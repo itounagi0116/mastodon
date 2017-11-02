@@ -121,6 +121,12 @@ child({ music: :track }, if: ->(status) { !status.reblog? && status.music.is_a?(
       }
     end
 
+    if track.video_banner_alpha != 0
+      hash[:banner] = {
+        alpha: track.video_banner_alpha,
+      }
+    end
+
     hash
   end
 end

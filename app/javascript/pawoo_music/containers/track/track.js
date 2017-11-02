@@ -80,7 +80,7 @@ class Track extends ImmutablePureComponent {
             <img className='playbutton' src={playIcon} alt='playbutton' />
           </div>
         ) : (
-          <Musicvideo track={track} />
+          <Musicvideo track={track.deleteIn(['video', 'banner'])} />
         )}
       </div>
     );

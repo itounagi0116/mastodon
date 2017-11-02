@@ -28,6 +28,8 @@ export const TRACK_COMPOSE_TRACK_VIDEO_SPECTRUM_COLOR_CHANGE = 'TRACK_COMPOSE_TR
 export const TRACK_COMPOSE_TRACK_VIDEO_TEXT_VISIBILITY_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_TEXT_VISIBILITY_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_TEXT_ALPHA_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_TEXT_ALPHA_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_TEXT_COLOR_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_TEXT_COLOR_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_BANNER_VISIBILITY_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_BANNER_VISIBILITY_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_BANNER_ALPHA_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_BANNER_ALPHA_CHANGE';
 export const TRACK_COMPOSE_SUBMIT_REQUEST = 'TRACK_COMPOSE_SUBMIT_REQUEST';
 export const TRACK_COMPOSE_SUBMIT_SUCCESS = 'TRACK_COMPOSE_SUBMIT_SUCCESS';
 export const TRACK_COMPOSE_SUBMIT_FAIL = 'TRACK_COMPOSE_SUBMIT_FAIL';
@@ -83,6 +85,7 @@ export function submitTrackCompose() {
     const lightLeaks = video.get('lightleaks');
     const spectrum = video.get('spectrum');
     const text = video.get('text');
+    const banner = video.get('banner');
     const id = track.get('id');
 
     if (music instanceof File) {
@@ -107,6 +110,7 @@ export function submitTrackCompose() {
     appendParamToFormData(formData, 'video[lightleaks]', lightLeaks);
     appendParamToFormData(formData, 'video[spectrum]', spectrum);
     appendParamToFormData(formData, 'video[text]', text);
+    appendParamToFormData(formData, 'video[banner]', banner);
 
     dispatch(submitTrackComposeRequest());
 
@@ -316,6 +320,20 @@ export function changeTrackComposeTrackVideoTextAlpha(value) {
 export function changeTrackComposeTrackVideoTextColor(value) {
   return {
     type: TRACK_COMPOSE_TRACK_VIDEO_TEXT_COLOR_CHANGE,
+    value,
+  };
+};
+
+export function changeTrackComposeTrackVideoBannerVisibility(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_BANNER_VISIBILITY_CHANGE,
+    value,
+  };
+};
+
+export function changeTrackComposeTrackVideoBannerAlpha(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_BANNER_ALPHA_CHANGE,
     value,
   };
 };

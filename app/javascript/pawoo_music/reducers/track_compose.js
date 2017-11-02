@@ -25,6 +25,8 @@ import {
   TRACK_COMPOSE_TRACK_VIDEO_TEXT_VISIBILITY_CHANGE,
   TRACK_COMPOSE_TRACK_VIDEO_TEXT_ALPHA_CHANGE,
   TRACK_COMPOSE_TRACK_VIDEO_TEXT_COLOR_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_BANNER_VISIBILITY_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_BANNER_ALPHA_CHANGE,
   TRACK_COMPOSE_SUBMIT_REQUEST,
   TRACK_COMPOSE_SUBMIT_SUCCESS,
   TRACK_COMPOSE_SUBMIT_FAIL,
@@ -68,6 +70,7 @@ const initialState = Immutable.fromJS({
         color: 0xffffff,
       },
       text: { visible: true, alpha: 0.9, color: 0xffffff },
+      banner: { visible: true, alpha: 1 },
     },
   },
 });
@@ -134,6 +137,10 @@ export default function track_compose(state = initialState, action) {
     return state.setIn(['track', 'video', 'text', 'alpha'], action.value);
   case TRACK_COMPOSE_TRACK_VIDEO_TEXT_COLOR_CHANGE:
     return state.setIn(['track', 'video', 'text', 'color'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_BANNER_VISIBILITY_CHANGE:
+    return state.setIn(['track', 'video', 'banner', 'visible'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_BANNER_ALPHA_CHANGE:
+    return state.setIn(['track', 'video', 'banner', 'alpha'], action.value);
   case TRACK_COMPOSE_SUBMIT_REQUEST:
     return state.set('is_submitting', true).set('error', initialState.get('error'));
   case TRACK_COMPOSE_SUBMIT_SUCCESS:

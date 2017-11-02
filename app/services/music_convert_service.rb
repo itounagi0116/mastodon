@@ -43,6 +43,13 @@ class MusicConvertService < BaseService
       end,
     ]
 
+    if track.video_banner_alpha != 0
+      args.push(
+        '--banner-image', Rails.root.join('app', 'made-with-pawoomusic.png'),
+        '--banner-alpha', track.video_banner_alpha
+      )
+    end
+
     if track.video_text_alpha != 0
       args.push(
         '--text-alpha', track.video_text_alpha,
