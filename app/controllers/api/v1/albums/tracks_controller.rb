@@ -153,7 +153,7 @@ class Api::V1::Albums::TracksController < Api::BaseController
   end
 
   def track_status
-    @track_status = Status.find_by!(
+    @track_status ||= Status.find_by!(
       id: params.require(:id),
       music_type: 'Track',
       reblog: nil
