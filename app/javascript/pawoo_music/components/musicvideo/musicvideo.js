@@ -31,12 +31,10 @@ class Musicvideo extends ImmutablePureComponent {
     track: ImmutablePropTypes.map.isRequired,
     label: PropTypes.string,
     autoPlay: PropTypes.bool,
-    onEnded: PropTypes.func,
   };
 
   static defaultProps = {
     autoPlay: true,
-    onEnded: noop,
   };
 
   /*
@@ -248,8 +246,6 @@ class Musicvideo extends ImmutablePureComponent {
     });
 
     this.generator.stop();
-
-    this.props.onEnded();
   }
 
   handleLoadImage = () => {
