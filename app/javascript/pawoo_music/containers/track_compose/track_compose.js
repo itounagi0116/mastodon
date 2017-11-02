@@ -181,6 +181,38 @@ const mapDispatchToProps = (dispatch) => ({
   },
 });
 
+class ColorTrigger extends ImmutablePureComponent {
+
+  static propTypes = {
+    alpha: PropTypes.number.isRequired,
+    color: PropTypes.number.isRequired,
+    onClick: PropTypes.func,
+  }
+
+  render () {
+    const { alpha, color, onClick } = this.props;
+    const depth = Math.round(((color & 0xff) + ((color >> 8) & 0xff) + ((color >> 16) & 0xff)) / 3);
+    const borderDepth = depth < 0xb0 ? 0x58 + depth : Math.max(0x58, 0x108 - depth);
+    const borderDepthHex = borderDepth.toString(16);
+
+    return (
+      <div
+        className='track-compose-effect-color-trigger'
+        onClick={onClick}
+        role='button'
+        style={{ borderColor: '#' + borderDepthHex.repeat(3) }}
+        tabIndex='-1'
+      >
+        <div
+          className='track-compose-effect-color-trigger-body'
+          style={{ backgroundColor: constructRgbCode(color, alpha) }}
+        />
+      </div>
+    );
+  }
+
+}
+
 @injectIntl
 @connect(makeMapStateToProps, mapDispatchToProps)
 export default class TrackCompose extends ImmutablePureComponent {
@@ -593,9 +625,11 @@ export default class TrackCompose extends ImmutablePureComponent {
                     />
                   </span>
                   <div className='track-compose-effect-color-wrap'>
-                    <div className='track-compose-effect-color-trigger' onClick={this.handleToggleBackgroundColorPickerVisible} role='button' tabIndex='-1'>
-                      <div className='track-compose-effect-color-trigger-body' style={{ backgroundColor: constructRgbCode(this.props.track.getIn(['video', 'backgroundcolor']), 1) }} />
-                    </div>
+                    <ColorTrigger
+                      alpha={1}
+                      color={this.props.track.getIn(['video', 'backgroundcolor'])}
+                      onClick={this.handleToggleBackgroundColorPickerVisible}
+                    />
                     <Delay>
                       {this.state.visibleColorPicker === 'background' && (
                         <div className='track-compose-effect-color-content'>
@@ -671,9 +705,11 @@ export default class TrackCompose extends ImmutablePureComponent {
                             />
                           </span>
                           <div className='track-compose-effect-color-wrap'>
-                            <div className='track-compose-effect-color-trigger' onClick={this.handleToggleSpectrumColorPickerVisible} role='button' tabIndex='-1'>
-                              <div className='track-compose-effect-color-trigger-body' style={{ backgroundColor: constructRgbCode(this.props.track.getIn(['video', 'spectrum', 'color']), this.props.track.getIn(['video', 'spectrum', 'alpha'])) }} />
-                            </div>
+                            <ColorTrigger
+                              alpha={this.props.track.getIn(['video', 'spectrum', 'alpha'])}
+                              color={this.props.track.getIn(['video', 'spectrum', 'color'])}
+                              onClick={this.handleToggleSpectrumColorPickerVisible}
+                            />
                             <Delay>
                               {this.state.visibleColorPicker === 'spectrum' && (
                                 <div className='track-compose-effect-color-content'>
@@ -780,9 +816,11 @@ export default class TrackCompose extends ImmutablePureComponent {
                             />
                           </span>
                           <div className='track-compose-effect-color-wrap'>
-                            <div className='track-compose-effect-color-trigger' onClick={this.handleToggleParticleColorPickerVisible} role='button' tabIndex='-1'>
-                              <div className='track-compose-effect-color-trigger-body' style={{ backgroundColor: constructRgbCode(this.props.track.getIn(['video', 'particle', 'color']), this.props.track.getIn(['video', 'particle', 'alpha'])) }} />
-                            </div>
+                            <ColorTrigger
+                              alpha={this.props.track.getIn(['video', 'particle', 'alpha'])}
+                              color={this.props.track.getIn(['video', 'particle', 'color'])}
+                              onClick={this.handleToggleParticleColorPickerVisible}
+                            />
                             <Delay>
                               {this.state.visibleColorPicker === 'particle' && (
                                 <div className='track-compose-effect-color-content'>
@@ -826,9 +864,11 @@ export default class TrackCompose extends ImmutablePureComponent {
                             />
                           </span>
                           <div className='track-compose-effect-color-wrap'>
-                            <div className='track-compose-effect-color-trigger' onClick={this.handleToggleTextColorPickerVisible} role='button' tabIndex='-1'>
-                              <div className='track-compose-effect-color-trigger-body' style={{ backgroundColor: constructRgbCode(this.props.track.getIn(['video', 'text', 'color']), this.props.track.getIn(['video', 'text', 'alpha'])) }} />
-                            </div>
+                            <ColorTrigger
+                              alpha={this.props.track.getIn(['video', 'text', 'alpha'])}
+                              color={this.props.track.getIn(['video', 'text', 'color'])}
+                              onClick={this.handleToggleTextColorPickerVisible}
+                            />
                             <Delay>
                               {this.state.visibleColorPicker === 'text' && (
                                 <div className='track-compose-effect-color-content'>
