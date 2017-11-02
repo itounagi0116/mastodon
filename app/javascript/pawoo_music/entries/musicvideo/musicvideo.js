@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
-import configureStore from '../../mastodon/store/configureStore';
-import { getLocale } from '../../mastodon/locales';
-import Track from '../containers/track';
+import configureStore from '../../../mastodon/store/configureStore';
+import { getLocale } from '../../../mastodon/locales';
+import Logo from '../../components/logo';
+import Track from '../../containers/track';
 
-import '../containers/app/app.scss';
+import '../../containers/app/app.scss';
 
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
@@ -28,8 +29,12 @@ export default class MusicvideoEntry extends React.PureComponent {
     return (
       <IntlProvider locale={locale} messages={messages}>
         <Provider store={store}>
-          <div className='app embed'>
+          <div className='app embed app-musicvideo'>
             <Track track={Immutable.fromJS(track).set('id', statusId)} fitContain />
+            <div className='credit'>
+              <Logo />
+              {`${track.artist} - ${track.title}`}
+            </div>
           </div>
         </Provider>
       </IntlProvider>

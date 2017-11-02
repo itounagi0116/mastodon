@@ -1,78 +1,58 @@
 .track {
-  .musicvideo-wrapper {
-    display: block;
-    position: relative;
-    box-shadow: var(--shadow);
-    background-size: cover;
-    background-position: center center;
-    background-color: black;
+  display: block;
+  position: relative;
+  box-shadow: var(--shadow);
+  background-size: cover;
+  background-position: center center;
+  background-color: black;
 
-    .thumbnail {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
+  .thumbnail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 
-      .playbutton {
-        display: block;
-        height:     var(--iconsize40);
-        width:      var(--iconsize40);
-      }
-
-      &:hover .playbutton {
-        opacity:    var(--hover-opacity);
-        transition: var(--hover-transition);
-      }
+    .playbutton {
+      display: block;
+      height:     var(--iconsize40);
+      width:      var(--iconsize40);
     }
-  }
 
-
-  .credit {
-    display:        block;
-    font-size:      var(--text30-font);
-    line-height:    var(--text30-line);
-
-    font-weight:    bold;
-    color:          var(--strong2);
-    margin:         var(--verticalspace25);
+    &:hover .playbutton {
+      opacity:    var(--hover-opacity);
+      transition: var(--hover-transition);
+    }
   }
 
   &.fit-contain {
     width: 100%;
     height: 100%;
 
-    .musicvideo-wrapper {
+    .thumbnail {
       width: 100%;
-      height: calc(100% - var(--verticalspace25-value) - var(--text30-line));
+      height: 100%;
+    }
 
-      .thumbnail {
+    .musicvideo {
+      width: 100%;
+      height: 100%;
+
+      .canvas-container {
         width: 100%;
-        height: 100%;
-      }
-
-      .musicvideo {
-        width: 100%;
-        height: 100%;
-
-        .canvas-container {
-          width: 100%;
-          height: calc(100% - var(--controls-container-height));
-        }
+        height: calc(100% - var(--controls-container-height));
       }
     }
   }
 
   &:not(.fit-contain) {
-    .musicvideo-wrapper {
-      .thumbnail {
-        width:  var(--width-gallery);
-        height: var(--width-gallery); // aspect ratio 1:1
-      }
+    .thumbnail {
+      width:  var(--width-gallery);
+      height: var(--width-gallery); // aspect ratio 1:1
+    }
 
-      .canvas-container {
-        width: var(--width-gallery);
-        height: var(--width-gallery);
-      }
+    .canvas-container {
+      width: var(--width-gallery);
+      height: var(--width-gallery);
     }
   }
 }

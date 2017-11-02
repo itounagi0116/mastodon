@@ -27,9 +27,8 @@ import TrackComposeModalContainer from '../track_compose_modal';
 import PlayControlContainer from '../../../mastodon/features/ui/containers/play_control_container';
 import { openModalFormCompose } from '../../../mastodon/actions/compose';
 import Link from '../../components/link_wrapper';
+import Logo from '../../components/logo';
 import IconButton from '../../components/icon_button';
-
-import logo from '../../../images/pawoo_music/pawoo_music.svg';
 
 const mapStateToProps = state => ({
   isLogin: !!state.getIn(['meta', 'me']),
@@ -175,7 +174,7 @@ export default class App extends PureComponent {
             <IconButton src='menu' className={classNames('to_global_navi', { 'selected': target === 'global_navi' })} strokeWidth={2} onClick={this.handleClickGlobalNaviButton} />
             <div className='blank' />
             <div className='logo'>
-              <img alt='logo' src={logo} />
+              <Logo />
               <div className='timeline_title'>{title}</div>
             </div>
             <IconButton src='edit-2' className='post_status' strokeWidth={2} onClick={isLogin ? this.handleClickStatusPostButton : this.handleRedirectLoginPage} />

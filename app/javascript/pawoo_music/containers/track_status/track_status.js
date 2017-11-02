@@ -76,6 +76,9 @@ export default class TrackStatus extends ImmutablePureComponent {
         </div>
 
         <Track track={status.get('track')} />
+        <div className='credit'>
+          {`${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}`}
+        </div>
 
         <StatusContent status={status.set('content', status.getIn(['track', 'content']))} />
 

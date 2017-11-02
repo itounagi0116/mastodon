@@ -15,9 +15,8 @@ import TrendTagsContainer from '../trend_tags';
 import { isMobile } from '../../util/is_mobile';
 import { changeTargetColumn } from '../../actions/column';
 import Link from '../../components/link_wrapper';
+import Logo from '../../components/logo';
 import Announcements from '../../components/announcements';
-
-import logo from '../../../images/pawoo_music/pawoo_music.svg';
 
 const icons = {
   home: 'home',
@@ -108,7 +107,7 @@ export default class GlobalNavi extends PureComponent {
       <div className='global-navi'>
         <div className='global-navi-center'>
           {!mobile && (
-            <Link to='/timelines/public/local'><img className='logo' src={logo} alt='logo' /></Link>
+            <Link to='/timelines/public/local'><Logo className='logo' /></Link>
           )}
           <SearchBox />
           {!isLogin && <LoginBox />}

@@ -1,0 +1,20 @@
+.app-musicvideo {
+  .track {
+    width: 100%;
+    height: calc(100% - var(--verticalspace25-value) - var(--text50-line));
+  }
+
+  .credit {
+    display:        block;
+    font-size:      var(--text50-font);
+    line-height:    var(--text50-line);
+
+    font-weight:    bold;
+    color:          var(--strong2);
+    margin:         var(--verticalspace25);
+
+    > img {
+      margin-right: 8px;
+    }
+  }
+}
