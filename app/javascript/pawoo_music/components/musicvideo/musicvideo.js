@@ -31,12 +31,10 @@ class Musicvideo extends ImmutablePureComponent {
     track: ImmutablePropTypes.map.isRequired,
     label: PropTypes.string,
     autoPlay: PropTypes.bool,
-    onEnded: PropTypes.func,
   };
 
   static defaultProps = {
     autoPlay: true,
-    onEnded: noop,
   };
 
   /*
@@ -244,12 +242,10 @@ class Musicvideo extends ImmutablePureComponent {
     this.state.audioBufferSource.stop();
     this.setState({
       audioBufferSource: null,
-      lastSeekDestinationOffsetToMusicTime: this.calculateMusicCurrentTime(),
+      lastSeekDestinationOffsetToMusicTime: this.state.audioBuffer.duration,
     });
 
     this.generator.stop();
-
-    this.props.onEnded();
   }
 
   handleLoadImage = () => {
@@ -262,7 +258,15 @@ class Musicvideo extends ImmutablePureComponent {
 
     if (this.state.audioBufferSource === null) {
       if (this.state.audioBuffer !== null) {
-        this.offsetToAudioContextTime = this.state.lastSeekDestinationOffsetToMusicTime - context.currentTime;
+        if (this.state.lastSeekDestinationOffsetToMusicTime < this.state.audioBuffer.duration) {
+          this.offsetToAudioContextTime = this.state.lastSeekDestinationOffsetToMusicTime - context.currentTime;
+        } else {
+          this.offsetToAudioContextTime = -context.currentTime;
+          this.generator.initialize();
+
+          this.setState({ lastSeekDestinationOffsetToMusicTime: 0 });
+        }
+
         this.createAudioBufferSource(this.state.audioBuffer);
       }
     } else {

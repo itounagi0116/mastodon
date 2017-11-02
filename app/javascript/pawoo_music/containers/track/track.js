@@ -61,11 +61,6 @@ class Track extends ImmutablePureComponent {
     }
   }
 
-  handleEndTrack = () => {
-    this.props.onStopTrack(this.props.track.get('id'));
-    this.setState({ thumbnailView: true });
-  };
-
   render() {
     const { fitContain, track } = this.props;
     const { thumbnailView } = this.state;
@@ -85,7 +80,7 @@ class Track extends ImmutablePureComponent {
             <img className='playbutton' src={playIcon} alt='playbutton' />
           </div>
         ) : (
-          <Musicvideo track={track} onEnded={this.handleEndTrack} />
+          <Musicvideo track={track} />
         )}
       </div>
     );
