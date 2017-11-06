@@ -495,15 +495,6 @@ export default class TrackCompose extends ImmutablePureComponent {
   render () {
     const { track, intl } = this.props;
     const { trackMusicTitle, trackVideoImageTitle } = this.state;
-    const caution = {
-      height: '100px',
-      overflowY: 'scroll',
-      marginTop: '24px',
-      fontSize: 'var(--text10-font)',
-      backgroundColor: 'var(--textcolor)',
-      padding: 'var(--padding10)',
-      borderRadius: 'var(--radius)',
-    };
 
     return (
       <div className='track-compose'>
@@ -1001,7 +992,7 @@ export default class TrackCompose extends ImmutablePureComponent {
                 </Delay>
               </fieldset>
 
-              <div style={caution}>
+              <div className='caution'>
                 <b>作品（画像、音源、楽曲、テキスト等を含む）のアップロードにおいて、下記の注意事項を守ることを誓います。</b><br />
                 <br />
                 １．この作品をインターネットで配信することが、第三者のいかなる権利も侵害しないこと。<br />
