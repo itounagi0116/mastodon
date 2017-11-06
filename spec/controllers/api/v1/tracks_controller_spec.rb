@@ -59,6 +59,8 @@ describe Api::V1::TracksController, type: :controller do
           },
         }
 
+        expected_video_params = video_params.map { |k, v| [k, v.is_a?(Hash) ? v.merge(visible: true) : v] }.to_h
+
         post :create,
              params: { title: 'title', artist: 'artist', text: 'text', visibility: 'public', music: music, video: video_params }
 
@@ -97,7 +99,7 @@ describe Api::V1::TracksController, type: :controller do
         expect(body_as_json[:track][:title]).to eq 'title'
         expect(body_as_json[:track][:artist]).to eq 'artist'
         expect(body_as_json[:track][:text]).to eq 'text'
-        expect(body_as_json[:track][:video]).to eq video_params
+        expect(body_as_json[:track][:video]).to eq expected_video_params
       end
 
       it 'joins given artist, title, text and URL to create status text' do
@@ -179,6 +181,8 @@ describe Api::V1::TracksController, type: :controller do
           banner: { alpha: 0.5 },
         }
 
+        expected_video_params = video_params.map { |k, v| [k, v.is_a?(Hash) ? v.merge(visible: true) : v] }.to_h
+
         patch :update,
               params: { id: status.id, title: 'updated title', artist: 'updated artist', text: 'updated text', music: another_music, video: video_params }
 
@@ -210,7 +214,7 @@ describe Api::V1::TracksController, type: :controller do
         expect(body_as_json[:track][:title]).to eq 'updated title'
         expect(body_as_json[:track][:artist]).to eq 'updated artist'
         expect(body_as_json[:track][:text]).to eq 'updated text'
-        expect(body_as_json[:track][:video]).to eq video_params
+        expect(body_as_json[:track][:video]).to eq expected_video_params
       end
 
       it 'returns http unprocessable entity if empty string is given as background color' do
