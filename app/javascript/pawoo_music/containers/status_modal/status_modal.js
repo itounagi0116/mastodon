@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import StatusContainer from '../status';
-import TrackStatusContainer from '../track_status';
+import MusicStatusContainer from '../music_status';
 import { fetchStatus } from '../../../mastodon/actions/statuses';
 import { makeGetStatus } from '../../../mastodon/selectors';
 
@@ -67,7 +67,7 @@ export default class StatusModal extends ImmutablePureComponent {
 
     const ancestors = this.getChildren(this.props.ancestorsIds);
     const descendants = this.getChildren(this.props.descendantsIds);
-    const Component = status.get('track') ? TrackStatusContainer : StatusContainer;
+    const Component = (status.has('track') || status.has('album')) ? MusicStatusContainer : StatusContainer;
     const content = ancestors.push(
       <Component detail key={status.get('id')} id={status.get('id')} />
     ).concat(descendants);

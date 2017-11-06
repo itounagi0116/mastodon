@@ -10,7 +10,8 @@ import StatusActionBar from '../status_action_bar';
 import AccountContainer from '../account';
 import StatusMeta from '../../components/status_meta';
 import StatusPrepend from '../../components/status_prepend';
-import Track from '../track';
+import TrackContainer from '../track';
+// import AlbumContainer from '../album';
 import FollowButton from '../follow_button';
 
 const makeMapStateToProps = () => {
@@ -22,6 +23,7 @@ const makeMapStateToProps = () => {
     return {
       status: status || getStatus(state, id),
       trackId: state.getIn(['pawoo_music', 'tracks', 'trackId']),
+      albumId: state.getIn(['pawoo_music', 'albums', 'albumId']),
     };
   };
 
@@ -29,7 +31,7 @@ const makeMapStateToProps = () => {
 };
 
 @connect(makeMapStateToProps)
-export default class TrackStatus extends ImmutablePureComponent {
+export default class MusicStatus extends ImmutablePureComponent {
 
   static propTypes = {
     status: ImmutablePropTypes.map,
@@ -37,11 +39,12 @@ export default class TrackStatus extends ImmutablePureComponent {
     prepend: PropTypes.node,
     hidden: PropTypes.bool,
     trackId: PropTypes.number,
+    albumId: PropTypes.number,
     dispatch: PropTypes.func.isRequired,
   };
 
   render () {
-    const { muted, hidden, prepend, status: originalStatus, trackId } = this.props;
+    const { muted, hidden, prepend, status: originalStatus, trackId, albumId } = this.props;
 
     if (!originalStatus) {
       return null;
@@ -56,31 +59,55 @@ export default class TrackStatus extends ImmutablePureComponent {
       return null;
     }
 
-    if (hidden && trackId && trackId !== status.getIn(['track', 'id'])) {
-      return (
-        <div>
-          {status.getIn(['account', 'display_name']) || status.getIn(['account', 'username'])}
-          {status.getIn(['track', 'text'])}
-          {status.getIn(['track', 'artist'])}
-          {status.getIn(['track', 'title'])}
-        </div>
-      );
+    if (hidden) {
+      if (status.has('track') && trackId !== status.getIn(['track', 'id'])) {
+        return (
+          <div>
+            {status.getIn(['account', 'display_name']) || status.getIn(['account', 'username'])}
+            {status.getIn(['track', 'text'])}
+            {status.getIn(['track', 'artist'])}
+            {status.getIn(['track', 'title'])}
+          </div>
+        );
+      }
+
+      if (status.has('album') && albumId !== status.getIn(['album', 'id'])) {
+        return (
+          <div>
+            {status.getIn(['account', 'display_name']) || status.getIn(['account', 'username'])}
+            {status.getIn(['album', 'text'])}
+            {status.getIn(['album', 'title'])}
+          </div>
+        );
+      }
+    }
+
+    let credit = null;
+    let content = null;
+
+    if (status.has('track')) {
+      credit = `${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}`;
+      content = status.getIn(['track', 'content']);
+    }
+
+    if (status.has('album')) {
+      credit = status.getIn(['album', 'title']);
+      content = status.getIn(['album', 'content']);
     }
 
     return (
-      <div className={classNames('track-status', { muted })} data-id={status.get('id')}>
+      <div className={classNames('music-status', { muted })} data-id={status.get('id')}>
         {prepend || <StatusPrepend className='prepend-inline' status={originalStatus} />}
         <div className='status-head'>
           <AccountContainer account={status.get('account')} />
           <FollowButton id={status.getIn(['account', 'id'])} onlyFollow />
         </div>
 
-        <Track track={status.get('track')} />
-        <div className='credit'>
-          {`${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}`}
-        </div>
+        {status.has('track') && <TrackContainer track={status.get('track')} />}
+        {/*status.has('album') && <AlbumContainer album={status.get('album')} />*/}
 
-        <StatusContent status={status.set('content', status.getIn(['track', 'content']))} />
+        <div className='credit'>{credit}</div>
+        <StatusContent status={status.set('content', content)} />
 
         <StatusActionBar status={status} />
 
