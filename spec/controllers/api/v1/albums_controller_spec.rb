@@ -65,8 +65,8 @@ describe Api::V1::AlbumsController, type: :controller do
       let(:user) { Fabricate(:user) }
       let(:album) { Fabricate(:album) }
 
-      context 'with origin status' do
-        let(:status) { Fabricate(:status, account: user.account, music: album) }
+      context 'with origin status authored by self' do
+        let(:status) { Fabricate(:status, account: user.account, music: album, reblog: nil) }
 
         it 'updates and renders albums' do
           patch :update,
@@ -86,9 +86,18 @@ describe Api::V1::AlbumsController, type: :controller do
         end
       end
 
+      context 'with status authored by another' do
+        let(:status) { Fabricate(:status, music: album, reblog: nil) }
+
+        it 'returns http not found' do
+          patch :update, params: { id: status.id }
+          expect(response).to have_http_status :not_found
+        end
+      end
+
       context 'with reblog' do
         let(:reblog) { Fabricate(:status, music: album) }
-        let(:status) { Fabricate(:status, music: album, reblog: reblog) }
+        let(:status) { Fabricate(:status, account: user.account, music: album, reblog: reblog) }
 
         it 'returns http not found' do
           patch :update, params: { id: status.id }
