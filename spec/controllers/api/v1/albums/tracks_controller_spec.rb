@@ -101,8 +101,8 @@ describe Api::V1::Albums::TracksController, type: :controller do
 
       context 'with reblog of album' do
         let(:album_reblog) { Fabricate(:status, music: album) }
-        let(:album_status) { Fabricate(:status, music: album, reblog: album_reblog) }
-        let(:track_status) { Fabricate(:status, music: track, reblog: nil) }
+        let(:album_status) { Fabricate(:status, account: user.account, music: album, reblog: album_reblog) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track, reblog: nil) }
 
         it 'returns http not_found' do
           put :update, params: { album_id: album_status, id: track_status }
@@ -111,9 +111,9 @@ describe Api::V1::Albums::TracksController, type: :controller do
       end
 
       context 'with reblog of track' do
-        let(:album_status) { Fabricate(:status, music: album, reblog: nil) }
+        let(:album_status) { Fabricate(:status, account: user.account, music: album, reblog: nil) }
         let(:track_reblog) { Fabricate(:status, music: track) }
-        let(:track_status) { Fabricate(:status, music: track, reblog: track_reblog) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track, reblog: track_reblog) }
 
         it 'returns http not_found' do
           put :update, params: { album_id: album_status, id: track_status }
@@ -164,17 +164,13 @@ describe Api::V1::Albums::TracksController, type: :controller do
         end
       end
 
-      context 'with album and track status authored by self' do
-        let(:album_status) { Fabricate(:status, account: user.account, music: album) }
-        let(:track_status) { Fabricate(:status, account: user.account, music: track) }
+      context 'with origin status of album and track authored by self' do
+        let(:album_status) { Fabricate(:status, account: user.account, music: album, reblog: nil) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track, reblog: nil) }
 
         let!(:album_track) do
           Fabricate(:album_track, album: album, track: track, position: '0.3')
         end
-
-      context 'with origin status of album and track' do
-        let(:album_status) { Fabricate(:status, music: album, reblog: nil) }
-        let(:track_status) { Fabricate(:status, music: track, reblog: nil) }
 
         xit 'updates album tracks' do
           patch :update, params: { album_id: album_status, id: track_status, prev_id: origin_status }
@@ -191,8 +187,8 @@ describe Api::V1::Albums::TracksController, type: :controller do
 
       context 'with reblog of album' do
         let(:album_reblog) { Fabricate(:status, music: album) }
-        let(:album_status) { Fabricate(:status, music: album, reblog: album_reblog) }
-        let(:track_status) { Fabricate(:status, music: track, reblog: nil) }
+        let(:album_status) { Fabricate(:status, account: user.account, music: album, reblog: album_reblog) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track, reblog: nil) }
 
         it 'returns http not_found' do
           patch :update, params: { album_id: album_status, id: track_status, prev_id: origin_status }
@@ -201,9 +197,9 @@ describe Api::V1::Albums::TracksController, type: :controller do
       end
 
       context 'with reblog of track' do
-        let(:album_status) { Fabricate(:status, music: album, reblog: nil) }
+        let(:album_status) { Fabricate(:status, account: user.account, music: album, reblog: nil) }
         let(:track_reblog) { Fabricate(:status, music: track) }
-        let(:track_status) { Fabricate(:status, music: track, reblog: track_reblog) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track, reblog: track_reblog) }
 
         it 'returns http not_found' do
           patch :update, params: { album_id: album_status, id: track_status, prev_id: origin_status }
@@ -244,13 +240,10 @@ describe Api::V1::Albums::TracksController, type: :controller do
   end
 
   describe 'GET #index' do
-    let(:album_status) { Fabricate(:status, music: album) }
-    let(:track_status) { Fabricate(:status, account: album_status.account, music: track) }
+    let(:album_status) { Fabricate(:status, music: album, reblog: nil) }
+    let(:track_status) { Fabricate(:status, account: album_status.account, music: track, reblog: nil) }
 
     render_views
-
-    let(:album_status) { Fabricate(:status, music: album, reblog: nil) }
-    let(:track_status) { Fabricate(:status, music: track, reblog: nil) }
 
     it 'renders tracks ordered by position column with id constraints' do
       statuses = ['0.3', '0.2', '0.1'].map do |position|
