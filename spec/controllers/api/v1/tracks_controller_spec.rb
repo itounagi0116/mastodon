@@ -54,6 +54,9 @@ describe Api::V1::TracksController, type: :controller do
             alpha: 1,
             color: 0xffffff,
           },
+          banner: {
+            alpha: 0.5,
+          },
         }
 
         post :create,
@@ -88,6 +91,7 @@ describe Api::V1::TracksController, type: :controller do
         expect(status.music.video_spectrum_color).to eq 0xff0000
         expect(status.music.video_text_alpha).to eq 1
         expect(status.music.video_text_color).to eq 0xffffff
+        expect(status.music.video_banner_alpha).to eq 0.5
 
         expect(body_as_json[:visibility]).to eq 'public'
         expect(body_as_json[:track][:title]).to eq 'title'
@@ -172,6 +176,7 @@ describe Api::V1::TracksController, type: :controller do
             alpha: 1,
             color: 0xffffff,
           },
+          banner: { alpha: 0.5 },
         }
 
         patch :update,
@@ -199,6 +204,7 @@ describe Api::V1::TracksController, type: :controller do
         expect(track.video_spectrum_color).to eq 0xff0000
         expect(track.video_text_alpha).to eq 1
         expect(track.video_text_color).to eq 0xffffff
+        expect(track.video_banner_alpha).to eq 0.5
 
         expect(body_as_json[:id]).to eq status.id
         expect(body_as_json[:track][:title]).to eq 'updated title'
@@ -395,6 +401,26 @@ describe Api::V1::TracksController, type: :controller do
         track.reload
         expect(track.video_text_alpha).to eq 1
         expect(track.video_text_color).to eq 0xffffff
+      end
+
+      it 'unsets video banner parameter if empty string is given' do
+        track = Fabricate(:track, video_banner_alpha: 1)
+        status = Fabricate(:status, account: user.account, music: track)
+
+        patch :update, params: { id: status, video: { banner: '' } }
+
+        track.reload
+        expect(track.video_banner_alpha).to eq 0
+      end
+
+      it 'does not change video banner parameters if nothing is given' do
+        track = Fabricate(:track, video_banner_alpha: 1)
+        status = Fabricate(:status, account: user.account, music: track)
+
+        patch :update, params: { id: status }
+
+        track.reload
+        expect(track.video_banner_alpha).to eq 1
       end
 
       it 'returns http success' do
