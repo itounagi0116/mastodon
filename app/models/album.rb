@@ -17,8 +17,10 @@ class Album < ApplicationRecord
   include MusicImageCropper
 
   before_save :truncate_title, if: :title_changed?
+  after_update :clear_cache
 
-  has_many :album_tracks, inverse_of: :album
+  has_many :album_tracks, inverse_of: :album, dependent: :destroy
+  has_many :tracks, -> { order('album_tracks.position ASC') }, through: :album_tracks
   has_many :statuses, as: :music
 
   has_attached_file :image,
@@ -37,5 +39,12 @@ class Album < ApplicationRecord
 
   def truncate_title
     self.title = title.slice(0, 128)
+  end
+
+  def clear_cache
+    # キャッシュにalbumの情報も保存されているためクリアする
+    statuses.find_each do |status|
+      Rails.cache.delete(status.cache_key)
+    end
   end
 end

@@ -233,7 +233,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
     if (mobile) {
       location.href = `/tracks/${status.get('id')}/edit`;
     } else {
-      dispatch(setTrackComposeData(status.get('id'), status.get('track')));
+      dispatch(setTrackComposeData(status.get('track')));
       dispatch(showTrackComposeModal());
     }
   }

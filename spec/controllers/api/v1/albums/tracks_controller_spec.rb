@@ -21,7 +21,7 @@ describe Api::V1::Albums::TracksController, type: :controller do
 
         context 'when parameter relative_to is present' do
           let(:relative_to) { Fabricate(:album_track, album: album, position: '0.2') }
-          let(:relative_to_status) { Fabricate(:status, music: relative_to.track) }
+          let(:relative_to_status) { Fabricate(:status, account: user.account, music: relative_to.track) }
 
           context 'when above parameter is false' do
             subject { put :update, params: { album_id: album_status, id: track_status, relative_to: relative_to_status } }
@@ -172,14 +172,14 @@ describe Api::V1::Albums::TracksController, type: :controller do
           Fabricate(:album_track, album: album, track: track, position: '0.3')
         end
 
-        xit 'updates album tracks' do
+        it 'updates album tracks' do
           patch :update, params: { album_id: album_status, id: track_status, prev_id: origin_status }
 
           album_track.reload
           expect(album_track.position).to be > BigDecimal('0.4')
         end
 
-        xit 'returns http success' do
+        it 'returns http success' do
           patch :update, params: { album_id: album_status, id: track_status, prev_id: origin_status }
           expect(response).to have_http_status :success
         end
@@ -233,7 +233,7 @@ describe Api::V1::Albums::TracksController, type: :controller do
       let(:track_status) { Fabricate(:status, account: album_status.account, music: track, reblog: nil) }
 
       it 'returns http unauthorized' do
-        patch :update, params: { album_id: album_status, id: track.id, prev_id: origin.track_id }
+        patch :update, params: { album_id: album_status, id: track_status, prev_id: origin_status }
         expect(response).to have_http_status :unauthorized
       end
     end
@@ -290,5 +290,79 @@ describe Api::V1::Albums::TracksController, type: :controller do
     end
   end
 
-  describe 'DELETE #destroy'
+  describe 'DELETE #destroy' do
+    context 'with write scope' do
+      before do
+        allow(controller).to receive(:doorkeeper_token) do
+          Fabricate(:accessible_access_token, resource_owner_id: user.id, scopes: 'write')
+        end
+      end
+
+      context 'with origin status of album and track authored by self' do
+        let(:album_status) { Fabricate(:status, account: user.account, music: album, reblog: nil) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track, reblog: nil) }
+
+        let!(:album_track) do
+          Fabricate(:album_track, album: album, track: track, position: '0.3')
+        end
+
+        it 'returns http success' do
+          delete :destroy, params: { album_id: album_status, id: track_status }
+          expect(response).to have_http_status :success
+        end
+      end
+
+      context 'with reblog of album' do
+        let(:album_reblog) { Fabricate(:status, music: album) }
+        let(:album_status) { Fabricate(:status, account: user.account, music: album, reblog: album_reblog) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track, reblog: nil) }
+
+        it 'returns http not_found' do
+          delete :destroy, params: { album_id: album_status, id: track_status }
+          expect(response).to have_http_status :not_found
+        end
+      end
+
+      context 'with reblog of track' do
+        let(:album_status) { Fabricate(:status, account: user.account, music: album, reblog: nil) }
+        let(:track_reblog) { Fabricate(:status, music: track) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track, reblog: track_reblog) }
+
+        it 'returns http not_found' do
+          delete :destroy, params: { album_id: album_status, id: track_status }
+          expect(response).to have_http_status :not_found
+        end
+      end
+
+      context 'with album status authored by another' do
+        let(:album_status) { Fabricate(:status, music: album) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track) }
+
+        it 'returns http unprocessable_entity' do
+          delete :destroy, params: { album_id: album_status, id: track_status }
+          expect(response).to have_http_status :unprocessable_entity
+        end
+      end
+
+      context 'with track status authored by another' do
+        let(:album_status) { Fabricate(:status, account: user.account, music: album) }
+        let(:track_status) { Fabricate(:status, music: track) }
+
+        it 'returns http unprocessable_entity' do
+          delete :destroy, params: { album_id: album_status, id: track_status }
+          expect(response).to have_http_status :unprocessable_entity
+        end
+      end
+    end
+
+    context 'without write scope' do
+      let(:album_status) { Fabricate(:status, music: album, reblog: nil) }
+      let(:track_status) { Fabricate(:status, account: album_status.account, music: track, reblog: nil) }
+
+      it 'returns http unauthorized' do
+        delete :destroy, params: { album_id: album_status, id: track_status }
+        expect(response).to have_http_status :unauthorized
+      end
+    end
+  end
 end

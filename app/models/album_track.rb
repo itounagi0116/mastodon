@@ -3,6 +3,7 @@
 #
 # Table name: album_tracks
 #
+#  id       :integer          not null, primary key
 #  album_id :integer          not null
 #  track_id :integer          not null
 #  position :decimal(, )      not null

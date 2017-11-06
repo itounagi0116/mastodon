@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(version: 20171101000000) do
     t.index ["username", "domain"], name: "index_accounts_on_username_and_domain", unique: true
   end
 
-  create_table "album_tracks", id: false, force: :cascade do |t|
+  create_table "album_tracks", force: :cascade do |t|
     t.bigint "album_id", null: false
     t.bigint "track_id", null: false
     t.decimal "position", null: false
