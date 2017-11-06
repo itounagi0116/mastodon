@@ -15,9 +15,9 @@ describe Api::V1::Albums::TracksController, type: :controller do
         end
       end
 
-      context 'with origin status of album and track' do
-        let(:album_status) { Fabricate(:status, music: album, reblog: nil) }
-        let(:track_status) { Fabricate(:status, music: track, reblog: nil) }
+      context 'with origin status of album and track authored by self' do
+        let(:album_status) { Fabricate(:status, account: user.account, music: album, reblog: nil) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track, reblog: nil) }
 
         context 'when parameter relative_to is present' do
           let(:relative_to) { Fabricate(:album_track, album: album, position: '0.2') }
@@ -120,11 +120,31 @@ describe Api::V1::Albums::TracksController, type: :controller do
           expect(response).to have_http_status :not_found
         end
       end
+
+      context 'with album status authored by another' do
+        let(:album_status) { Fabricate(:status, music: album) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track) }
+
+        it 'returns http unprocessable_entity' do
+          put :update, params: { album_id: album_status, id: track_status }
+          expect(response).to have_http_status :unprocessable_entity
+        end
+      end
+
+      context 'with track status authored by another' do
+        let(:album_status) { Fabricate(:status, account: user.account, music: album) }
+        let(:track_status) { Fabricate(:status, music: track) }
+
+        it 'returns http unprocessable_entity' do
+          put :update, params: { album_id: album_status, id: track_status }
+          expect(response).to have_http_status :unprocessable_entity
+        end
+      end
     end
 
     context 'without write scope' do
-      let(:album_status) { Fabricate(:status, music: album, reblog: nil) }
-      let(:track_status) { Fabricate(:status, music: track, reblog: nil) }
+      let(:album_status) { Fabricate(:status, account: user.account, music: album, reblog: nil) }
+      let(:track_status) { Fabricate(:status, account: user.account, music: track, reblog: nil) }
 
       it 'returns http unauthorized' do
         put :update, params: { album_id: album_status, id: track_status }
@@ -144,9 +164,13 @@ describe Api::V1::Albums::TracksController, type: :controller do
         end
       end
 
-      let!(:album_track) do
-        Fabricate(:album_track, album: album, track: track, position: '0.3')
-      end
+      context 'with album and track status authored by self' do
+        let(:album_status) { Fabricate(:status, account: user.account, music: album) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track) }
+
+        let!(:album_track) do
+          Fabricate(:album_track, album: album, track: track, position: '0.3')
+        end
 
       context 'with origin status of album and track' do
         let(:album_status) { Fabricate(:status, music: album, reblog: nil) }
@@ -186,11 +210,31 @@ describe Api::V1::Albums::TracksController, type: :controller do
           expect(response).to have_http_status :not_found
         end
       end
+
+      context 'with album status authored by another' do
+        let(:album_status) { Fabricate(:status, music: album) }
+        let(:track_status) { Fabricate(:status, account: user.account, music: track) }
+
+        it 'returns http unprocessable_entity' do
+          patch :update, params: { album_id: album_status, id: track_status, prev_id: origin_status }
+          expect(response).to have_http_status :unprocessable_entity
+        end
+      end
+
+      context 'with track status authored by another' do
+        let(:album_status) { Fabricate(:status, account: user.account, music: album) }
+        let(:track_status) { Fabricate(:status, music: track) }
+
+        it 'returns http unprocessable_entity' do
+          patch :update, params: { album_id: album_status, id: track_status, prev_id: origin_status }
+          expect(response).to have_http_status :unprocessable_entity
+        end
+      end
     end
 
     context 'without write scope' do
       let(:album_status) { Fabricate(:status, music: album, reblog: nil) }
-      let(:track_status) { Fabricate(:status, music: track, reblog: nil) }
+      let(:track_status) { Fabricate(:status, account: album_status.account, music: track, reblog: nil) }
 
       it 'returns http unauthorized' do
         patch :update, params: { album_id: album_status, id: track.id, prev_id: origin.track_id }
@@ -200,6 +244,9 @@ describe Api::V1::Albums::TracksController, type: :controller do
   end
 
   describe 'GET #index' do
+    let(:album_status) { Fabricate(:status, music: album) }
+    let(:track_status) { Fabricate(:status, account: album_status.account, music: track) }
+
     render_views
 
     let(:album_status) { Fabricate(:status, music: album, reblog: nil) }
@@ -249,4 +296,6 @@ describe Api::V1::Albums::TracksController, type: :controller do
       expect(response).to have_http_status :success
     end
   end
+
+  describe 'DELETE #destroy'
 end

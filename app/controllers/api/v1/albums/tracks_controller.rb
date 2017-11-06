@@ -8,6 +8,10 @@ class Api::V1::Albums::TracksController < Api::BaseController
   respond_to :json
 
   def update
+    if album_status.account != current_account || track_status.account != current_account
+      raise Mastodon::ValidationError
+    end
+
     position = AlbumTrack.position_between(*entry_range)
 
     if request.put?
@@ -37,7 +41,13 @@ class Api::V1::Albums::TracksController < Api::BaseController
 
   def destroy
     album_track_scope.joins(track: :statuses).find_by!(
-      track: { statuses: { id: params.require(:id), reblog: nil } }
+      track: {
+        statuses: {
+          account: current_account,
+          id: params.require(:id),
+          reblog: nil,
+        },
+      }
     ).destroy!
 
     render_empty
@@ -153,7 +163,7 @@ class Api::V1::Albums::TracksController < Api::BaseController
   end
 
   def track_status
-    @track_status = Status.find_by!(
+    @track_status ||= Status.find_by!(
       id: params.require(:id),
       music_type: 'Track',
       reblog: nil

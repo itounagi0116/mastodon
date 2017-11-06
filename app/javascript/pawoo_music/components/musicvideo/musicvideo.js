@@ -47,6 +47,7 @@ class Musicvideo extends ImmutablePureComponent {
     audioBuffer: null,
     audioBufferSource: null,
     lastSeekDestinationOffsetToMusicTime: 0,
+    loading: false,
   };
 
   cancelMusic = noop;
@@ -130,11 +131,7 @@ class Musicvideo extends ImmutablePureComponent {
     if (this.generator) {
       this.generator.stop();
       this.generator.audioAnalyserNode.context.close();
-      this.generator._albumArt._root._children.forEach((child) => {
-        child.component.displayObject.destroy();
-      });
-      this.generator._albumArt._root.displayObject.destroy();
-      this.generator._albumArt.renderer.destroy();
+      this.generator.destroy();
     }
 
     if (this.audioAnalyser) {
@@ -188,6 +185,8 @@ class Musicvideo extends ImmutablePureComponent {
       return;
     }
 
+    this.setState({ loading: true });
+
     /*
      * Promise based decodeAudioData is not supported by:
      * Mozilla/5.0 (iPhone; CPU iPhone OS 9_3_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13E238 Safari/601.1
@@ -196,7 +195,7 @@ class Musicvideo extends ImmutablePureComponent {
       arrayBuffer => context.decodeAudioData(arrayBuffer, audioBuffer => {
         if (this.props.track.get('id') === track.get('id') &&
             this.props.track.get('music') === track.get('music')) {
-          this.setState({ audioBuffer });
+          this.setState({ audioBuffer, loading: false });
 
           if (this.state.audioBufferSource !== null) {
             this.state.audioBufferSource.stop();
@@ -326,12 +325,14 @@ class Musicvideo extends ImmutablePureComponent {
       <div className='musicvideo'>
         <div
           className='canvas-container'
-          ref={this.setCanvasContainerRef}
           onClick={this.handleTogglePaused}
           role='button'
           tabIndex='0'
           aria-label={label}
-        />
+        >
+          {this.state.loading && <div className='loading' />}
+          <div ref={this.setCanvasContainerRef} />
+        </div>
         <div className={classNames('controls-container', { visible: audioBuffer !== null })}>
           <div className='controls'>
             <div className='toggle' onClick={this.handleTogglePaused} role='button' tabIndex='0' aria-pressed='false'>

@@ -172,6 +172,14 @@ class Api::V1::TracksController < Api::BaseController
       )
     end
 
+    case params.dig('video', 'banner')
+    when nil
+    when ''
+      attributes.merge! video_banner_alpha: 0
+    else
+      attributes.merge! video_banner_alpha: params.dig('video', 'banner', 'alpha')
+    end
+
     @track_attributes = attributes
   end
 
