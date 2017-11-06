@@ -35,6 +35,29 @@ describe Api::V1::AlbumsController, type: :controller do
         expect(body_as_json[:album][:text]).to eq 'text'
       end
 
+      it 'creates and renders with tracks' do
+        account = Fabricate(:account, user: user)
+        track1 = Fabricate(:track, title: 'title1', artist: 'artist1')
+        track_status1 = Fabricate(:status, account: account, music: track1)
+        track2 = Fabricate(:track, title: 'title2', artist: 'artist2')
+        track_status2 = Fabricate(:status, account: account, music: track2)
+
+        post :create,
+             params: { title: 'title', text: 'text', image: image, track_ids: [track_status1.id, track_status2.id] }
+
+        status = Status.find_by!(
+          id: body_as_json[:id],
+          account: user.account,
+          music_type: 'Album'
+        )
+
+        expect(status.music.tracks.first.title).to eq 'title1'
+        expect(status.music.tracks.first.artist).to eq 'artist1'
+        expect(status.music.tracks.second.title).to eq 'title2'
+        expect(status.music.tracks.second.artist).to eq 'artist2'
+        expect(body_as_json[:album][:tracks_count]).to eq 2
+      end
+
       it 'joins given text and URL to create status text'
       it 'uses URL as status text if the given text is blank'
 

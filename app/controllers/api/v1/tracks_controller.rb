@@ -20,7 +20,7 @@ class Api::V1::TracksController < Api::BaseController
       status_text = [
         "#{status_params[:artist]} - #{status_params[:title]}",
         status_params[:text].presence,
-        short_account_status_url(current_account.username, status_id)
+        short_account_status_url(current_account.username, status_id),
       ].compact.join("\n")
 
       @status = PostStatusService.new.call(

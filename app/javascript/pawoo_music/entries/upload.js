@@ -23,7 +23,7 @@ const editNode = document.getElementById('pawoo-music-edit-track');
 if (editNode) {
   const editProps = JSON.parse(editNode.getAttribute('data-props'));
   const track = Immutable.fromJS(editProps.track);
-  store.dispatch(setTrackComposeData(editProps.id, track));
+  store.dispatch(setTrackComposeData(track.set('id', editProps.id)));
 }
 
 export default class UploadEntry extends React.PureComponent {

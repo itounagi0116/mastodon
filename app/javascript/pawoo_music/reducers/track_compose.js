@@ -77,8 +77,14 @@ const initialState = Immutable.fromJS({
 
 function convertTrackData(track) {
   return initialState.get('track').withMutations((map) => {
-    return ['blur', 'particle', 'lightleaks', 'spectrum', 'text'].reduce((base, trackKey) => {
-      return base.setIn(['video', trackKey, 'visible'], track.hasIn(['video', trackKey]));
+    return ['blur', 'particle', 'lightleaks', 'spectrum', 'text', 'banner'].reduce((base, trackKey) => {
+      if (base.getIn(['video', trackKey, 'visible'])) {
+        return base;
+      }
+
+      // visibleがfalseの場合は保存された値がすべて0なので、代わりにデフォルト値を使用する
+      const defaultParam = initialState.getIn(['track', 'video', trackKey]);
+      return base.setIn(['video', trackKey], defaultParam.set('visible', false));
     }, map.mergeDeep(track));
   });
 }
@@ -152,7 +158,7 @@ export default function track_compose(state = initialState, action) {
   case TRACK_COMPOSE_HIDE_MODAL:
     return state.set('modal', false);
   case TRACK_COMPOSE_SET_DATA:
-    return state.set('track', convertTrackData(action.track)).setIn(['track', 'id'], action.id);
+    return state.set('track', convertTrackData(action.track));
   case TRACK_COMPOSE_CHANGE_PRIVACY:
     return state.setIn(['track', 'visibility'], action.value);
   default:
