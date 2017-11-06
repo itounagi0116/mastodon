@@ -52,15 +52,14 @@ import {
   validateIsFileImage,
 } from '../../util/musicvideo';
 import PrivacyDropdown from '../../../mastodon/features/compose/components/privacy_dropdown';
+import GenreTagPicker from '../../components/genre_tag_picker';
 
 const messages = defineMessages({
   preview: { id: 'pawoo_music.track_compose.preview', defaultMessage: 'Video preview' },
   privacy: { id: 'pawoo_music.track_compose.privacy', defaultMessage: 'Privacy' },
   select_genre: { id: 'pawoo_music.track_compose.select_genre', defaultMessage: 'Select genre tag' },
 });
-
 const allowedPrivacy = ['public', 'unlisted'];
-const genreList = ['electronic', 'pop', 'rock', 'alternative', 'ambient', 'acoustic', 'world', 'hiphop', 'reggae', 'folk', 'jazz', 'funk', 'punk', 'metal', 'soundtrack'];
 
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
@@ -258,6 +257,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     tab: PropTypes.string.isRequired,
     track: ImmutablePropTypes.map.isRequired,
     error: PropTypes.any,
+    account: ImmutablePropTypes.map.isRequired,
     isSubmitting: PropTypes.bool.isRequired,
     intl: PropTypes.object.isRequired,
     onClose: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
@@ -477,10 +477,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     this.props.onChangePrivacy(value);
   }
 
-  handleClickGenre = (e) => {
-    const index = e.currentTarget.getAttribute('data-index');
-    const genre = genreList[index];
-
+  handleSelectGenre = (genre) => {
     this.props.onChangeTrackText(`${this.props.track.get('text')} #${genre}`);
   }
 
@@ -592,16 +589,7 @@ export default class TrackCompose extends ImmutablePureComponent {
                       />
                     </label>
                   </div>
-                  <div className='genre-selector'>
-                    <IconButton src='plus-circle' strokeWidth={2} title={intl.formatMessage(messages.select_genre)} />
-                    <div className='genre-list'>
-                      {genreList.map((genre, i) => (
-                        <div key={genre} data-index={i} className='genre-item' onClick={this.handleClickGenre} role='button' tabIndex={0} aria-pressed='false'>
-                          {genre}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <GenreTagPicker onSelectGenre={this.handleSelectGenre} />
                 </legend>
 
                 <legend>

@@ -1,0 +1,27 @@
+.genre-tag-picker {
+  display: flex;
+  color: white;
+  background-color: #2F2F2F;
+  padding: var(--grid) 0;
+  border-radius: 0 0 var(--grid) var(--grid);
+
+  > .icon-button-plus-circle {
+    margin: 0 calc(var(--grid) * 2);
+
+    svg {
+      stroke: white;
+      width: var(--iconsize20);
+      height: var(--iconsize20);
+    }
+  }
+
+  .genre-item {
+    display: inline-block;
+    cursor: pointer;
+    margin-right: var(--grid);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

@@ -1,6 +1,7 @@
 - content_for :header_tags do
   %script#initial-state{ type: 'application/json' }!= json_escape(render(file: 'home/initial_state', formats: :json))
 
+  = stylesheet_pack_tag 'upload', media: 'all'
   = javascript_pack_tag 'upload', integrity: true, crossorigin: 'anonymous'
 
 - content_for :content do
