@@ -1,6 +1,8 @@
 import { isMobile } from './is_mobile';
 import isEqual from 'lodash/isEqual';
 
+import banner from '../../images/pawoo_music/made-with-pawoomusic.png';
+
 const resolution = { width: 480, height: 480 };
 const fps = isMobile() ? 15 : 30;
 
@@ -37,6 +39,7 @@ export function constructGeneratorOptions(track, image) {
     ['lightleaks', 'lightLeaks'],
     ['spectrum', 'spectrum'],
     ['text', 'text'],
+    ['banner', 'banner'],
   ]) {
     const trackProperty = video.get(trackKey);
 
@@ -52,6 +55,10 @@ export function constructGeneratorOptions(track, image) {
   if (options.text) {
     options.text.title = track.get('title');
     options.text.sub = track.get('artist');
+  }
+
+  if (options.banner) {
+    options.banner.image = banner;
   }
 
   return options;

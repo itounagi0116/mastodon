@@ -38,7 +38,13 @@ class Api::V1::AlbumsController < Api::BaseController
   end
 
   def update
-    @status = Status.find_by!(id: params.require(:id), account: current_account, music_type: 'Album')
+    @status = Status.find_by!(
+      id: params.require(:id),
+      account: current_account,
+      music_type: 'Album',
+      reblog: nil
+    )
+
     @status.music.update! params.permit(:title, :text, :image)
 
     render 'api/v1/statuses/show'

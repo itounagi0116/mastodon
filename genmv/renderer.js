@@ -75,6 +75,14 @@ const text =
     undefined :
     { alpha: argv.textAlpha, color: argv.textColor, title: argv.textTitle, sub: argv.textSub };
 
+const bannerImage =
+  url.format({ pathname: argv.bannerImage, protocol: 'file:' });
+
+const banner =
+  argv.bannerImage === undefined && argv.bannerAlpha === undefined ?
+    undefined :
+    { image: bannerImage, alpha: argv.bannerAlpha };
+
 const image = argv.image === undefined ? undefined : url.format({
   pathname: path.resolve(argv.image),
   protocol: 'file:',
@@ -100,6 +108,7 @@ fetch(url.format({ pathname: path.resolve(argv._[0]), protocol: 'file:' }))
       resolution,
       backgroundColor,
       image,
+      banner,
       blur,
       particle,
       lightLeaks,
