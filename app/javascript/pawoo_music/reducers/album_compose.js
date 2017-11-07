@@ -132,7 +132,16 @@ export default function album_compose(state = initialState, action) {
   case ALBUM_COMPOSE_SET_DATA:
     return setAlbumData(state, action.album);
   case ALBUMS_FETCH_TRACKS_SUCCESSS:
-    return action.compose ? state.set('registeredTracks', Immutable.List(action.statuses.map((status) => status.id))) : state;
+    const registeredTracks = Immutable.List(action.statuses.map((status) => status.id));
+    return state.merge([
+      [
+        'registeredTracks',
+        registeredTracks,
+      ], [
+        'unregisteredTracks',
+        state.get('unregisteredTracks').filter(id => !registeredTracks.includes(id)),
+      ],
+    ]);
   default:
     return state;
   }

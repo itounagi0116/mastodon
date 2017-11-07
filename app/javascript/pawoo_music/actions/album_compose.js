@@ -8,6 +8,9 @@ export const ALBUM_COMPOSE_REGISTER = 'ALBUM_COMPOSE_REGISTER';
 export const ALBUM_COMPOSE_REGISTERED_TRACKS_REARRANGE = 'ALBUM_COMPOSE_REGISTERED_TRACKS_REARRANGE';
 export const ALBUM_COMPOSE_UNREGISTER = 'ALBUM_COMPOSE_UNREGISTER';
 export const ALBUM_COMPOSE_UNREGISTERED_TRACKS_REARRANGE = 'ALBUM_COMPOSE_UNREGISTERED_TRACKS_REARRANGE';
+export const ALBUM_COMPOSE_TRACK_UPDATE_REQUEST = 'ALBUM_COMPOSE_TRACK_UPDATE_REQUEST';
+export const ALBUM_COMPOSE_TRACK_UPDATE_SUCCESS = 'ALBUM_COMPOSE_TRACK_UPDATE_SUCCESS';
+export const ALBUM_COMPOSE_TRACK_UPDATE_FAIL = 'ALBUM_COMPOSE_TRACK_UPDATE_FAIL';
 export const ALBUM_COMPOSE_ALBUM_TITLE_CHANGE = 'ALBUM_COMPOSE_ALBUM_TITLE_CHANGE';
 export const ALBUM_COMPOSE_ALBUM_TEXT_CHANGE = 'ALBUM_COMPOSE_ALBUM_TEXT_CHANGE';
 export const ALBUM_COMPOSE_ALBUM_IMAGE_CHANGE = 'ALBUM_COMPOSE_ALBUM_VIDEO_IMAGE_CHANGE';
@@ -157,8 +160,26 @@ export function refreshTracksFail(account, error) {
   };
 }
 
+export function updateTrackRequest() {
+  return {
+    type: ALBUM_COMPOSE_TRACK_UPDATE_REQUEST,
+  };
+}
 
-export function register(source, destination) {
+export function updateTrackSuccess() {
+  return {
+    type: ALBUM_COMPOSE_TRACK_UPDATE_SUCCESS,
+  };
+}
+
+export function updateTrackFail(error) {
+  return {
+    type: ALBUM_COMPOSE_TRACK_UPDATE_FAIL,
+    error,
+  };
+}
+
+function registerAction(source, destination) {
   return {
     type: ALBUM_COMPOSE_REGISTER,
     source,
@@ -166,7 +187,36 @@ export function register(source, destination) {
   };
 }
 
-export function rearrangeRegisteredTracks(source, destination) {
+export function register(source, destination) {
+  return function (dispatch, getState) {
+    const state = getState();
+    const albumId = state.getIn(['pawoo_music', 'album_compose', 'album', 'id']);
+
+    if (albumId) {
+      const unregisteredTracks = state.getIn(['pawoo_music', 'album_compose', 'unregisteredTracks']);
+      const registeredTracks = state.getIn(['pawoo_music', 'album_compose', 'registeredTracks']);
+      const trackId = unregisteredTracks.get(source);
+      const relativeTo = registeredTracks.get(destination);
+      const params = {};
+
+      if (relativeTo) {
+        params.relative_to = relativeTo;
+        params.above = true;
+      }
+
+      api(getState).put(`/api/v1/albums/${albumId}/tracks/${trackId}`, params).then(() => {
+        dispatch(updateTrackSuccess());
+      }).catch(error => {
+        dispatch(updateTrackFail(error));
+        dispatch(unregisterAction(destination, source));
+      });
+    }
+
+    dispatch(registerAction(source, destination));
+  };
+}
+
+function rearrangeRegisteredTracksAction(source, destination) {
   return {
     type: ALBUM_COMPOSE_REGISTERED_TRACKS_REARRANGE,
     source,
@@ -174,11 +224,62 @@ export function rearrangeRegisteredTracks(source, destination) {
   };
 }
 
-export function unregister(source, destination) {
+export function rearrangeRegisteredTracks(source, destination) {
+  return function (dispatch, getState) {
+    const state = getState();
+    const albumId = state.getIn(['pawoo_music', 'album_compose', 'album', 'id']);
+
+    if (albumId) {
+      const registeredTracks = state.getIn(['pawoo_music', 'album_compose', 'registeredTracks']);
+      const trackId = registeredTracks.get(source);
+      const relativeTo = registeredTracks.get(destination);
+      const params = {};
+
+      if (relativeTo) {
+        params.relative_to = relativeTo;
+        if (source > destination) {
+          params.above = true;
+        }
+      }
+
+      api(getState).patch(`/api/v1/albums/${albumId}/tracks/${trackId}`, params).then(() => {
+        dispatch(updateTrackSuccess());
+      }).catch(error => {
+        dispatch(updateTrackFail(error));
+        dispatch(rearrangeRegisteredTracksAction(destination, source));
+      });
+    }
+
+    dispatch(rearrangeRegisteredTracksAction(source, destination));
+  };
+}
+
+function unregisterAction(source, destination) {
   return {
     type: ALBUM_COMPOSE_UNREGISTER,
     source,
     destination,
+  };
+}
+
+export function unregister(source, destination) {
+  return function (dispatch, getState) {
+    const state = getState();
+    const albumId = state.getIn(['pawoo_music', 'album_compose', 'album', 'id']);
+
+    if (albumId) {
+      const registeredTracks = state.getIn(['pawoo_music', 'album_compose', 'registeredTracks']);
+      const trackId = registeredTracks.get(source);
+
+      api(getState).delete(`/api/v1/albums/${albumId}/tracks/${trackId}`).then(() => {
+        dispatch(updateTrackSuccess());
+      }).catch(error => {
+        dispatch(updateTrackFail(error));
+        dispatch(unregisterAction(destination, source));
+      });
+    }
+
+    dispatch(unregisterAction(source, destination));
   };
 }
 

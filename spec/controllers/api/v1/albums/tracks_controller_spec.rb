@@ -257,14 +257,16 @@ describe Api::V1::Albums::TracksController, type: :controller do
     end
 
     it 'renders tracks ordered by position column with limit constraint' do
-      statuses = ['0.2', '0.1'].map do |position|
+      statuses = ['0.2', '0.1', '0.3', '0.01', '0.5'].map do |position|
         album_track = Fabricate(:album_track, album: album, position: position)
         Fabricate(:status, music: album_track.track)
       end
 
-      get :index, params: { album_id: album_status, limit: 1 }
+      get :index, params: { album_id: album_status, limit: 3 }
 
-      expect(body_as_json.pluck(:id)).to match_array [statuses[1].id]
+      expect(body_as_json[0][:id]).to eq statuses[3].id
+      expect(body_as_json[1][:id]).to eq statuses[1].id
+      expect(body_as_json[2][:id]).to eq statuses[0].id
     end
 
     it 'set pagination headers if necessary' do

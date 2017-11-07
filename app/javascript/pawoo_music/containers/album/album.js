@@ -94,19 +94,33 @@ class Album extends ImmutablePureComponent {
 
     if (newIndex < album.get('tracks_count')) {
       this.setState({ index: newIndex });
-    } else {
-      this.props.onStopAlbum();
-      this.setState({ thumbnailView: true, index: 0 });
     }
   };
+
+  handleClickTrack = (e) => {
+    const { index } = this.state;
+    const clickedIndex = Number(e.currentTarget.getAttribute('data-index'));
+
+    if (clickedIndex === index) {
+      if (this.musicvideo) {
+        this.musicvideo.togglePaused();
+      }
+    } else {
+      this.setState({ index: clickedIndex });
+    }
+  }
+
+  setRef = (c) => {
+    this.musicvideo = c && c.getWrappedInstance();
+  }
 
   renderTrack = (status, i) => {
     const { index } = this.state;
 
     return (
       <div className='album-track' key={status.get('id')}>
-        <div className={classNames('album-track-info', { active: index === i })}>
-          {`${i}. ${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}`}
+        <div className={classNames('album-track-info', { active: index === i })} data-index={i} role='button' tabIndex='0' aria-pressed='false' onClick={this.handleClickTrack}>
+          {`${i + 1}. ${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}`}
         </div>
         {index === i && (
           <div>
@@ -123,7 +137,7 @@ class Album extends ImmutablePureComponent {
     const { thumbnailView, index } = this.state;
 
     const thumbnailStyle = {
-      backgroundImage: thumbnailView && `url('${album.getIn('image', defaultArtwork)}')`,
+      backgroundImage: thumbnailView && `url('${album.get('image', defaultArtwork)}')`,
     };
 
     return (
@@ -134,10 +148,10 @@ class Album extends ImmutablePureComponent {
               <img className='playbutton' src={playIcon} alt='playbutton' />
             </div>
           ) : (
-            <Musicvideo track={trackStatuses.getIn([index, 'track'])} onEnded={this.handleEndTrack} />
+            <Musicvideo ref={this.setRef} track={trackStatuses.getIn([index, 'track'])} onEnded={this.handleEndTrack} />
           )}
         </div>
-        {trackStatuses && (
+        {!thumbnailView && trackStatuses && (
           <div className='album-track-list'>
             {trackStatuses.map(this.renderTrack)}
           </div>

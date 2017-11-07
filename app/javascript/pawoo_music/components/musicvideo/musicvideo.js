@@ -21,6 +21,10 @@ const messages = defineMessages({
   pause: { id: 'pawoo_music.musicvideo.pause', defaultMessage: 'Pause' },
 });
 
+const injectIntlWithRef = target => {
+  return injectIntl(target, { withRef: true });
+};
+
 /*
  * Note about duration estimation:
  * When their sources are blobs, durations of some musics are not available
@@ -29,7 +33,7 @@ const messages = defineMessages({
  * When duration is not available, a workaround will be performed.
  */
 
-@injectIntl
+@injectIntlWithRef
 class Musicvideo extends ImmutablePureComponent {
 
   static propTypes = {
@@ -37,6 +41,7 @@ class Musicvideo extends ImmutablePureComponent {
     track: ImmutablePropTypes.map.isRequired,
     label: PropTypes.string,
     autoPlay: PropTypes.bool,
+    onEnded: PropTypes.func,
   };
 
   static defaultProps = {
@@ -155,6 +160,7 @@ class Musicvideo extends ImmutablePureComponent {
     this.audioForOutput.removeEventListener('seeking', this.audioWillSeek);
     this.audioForOutput.removeEventListener('seeked', this.audioDidSeek);
     this.audioForOutput.removeEventListener('waiting', this.audioDidStop);
+    this.audioForOutput.removeEventListener('ended', this.audioDidEnd);
 
     this.generator.audioAnalyserNode.context.close();
     this.generator.stop();
@@ -216,6 +222,7 @@ class Musicvideo extends ImmutablePureComponent {
 
     this.audioDidUpdate();
   }
+  togglePaused = this.handleTogglePaused
 
   handleChangeCurrentTime = (value) => {
     this.audioForAnalysis.currentTime = value;
@@ -279,6 +286,12 @@ class Musicvideo extends ImmutablePureComponent {
     this.audioForAnalysis.pause();
     this.generator.stop();
     this.forceUpdate();
+  }
+
+  audioDidEnd = () => {
+    if (this.props.onEnded) {
+      this.props.onEnded();
+    }
   }
 
   render() {
