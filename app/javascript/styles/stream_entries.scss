@@ -118,7 +118,7 @@
 
       strong {
         font-weight: 500;
-        color: $ui-base-color;
+        color: $primary-text-color;
       }
 
       span {
@@ -128,7 +128,7 @@
     }
 
     .status__content {
-      color: $ui-base-color;
+      color: $primary-text-color;
 
       a {
         color: $ui-highlight-color;
