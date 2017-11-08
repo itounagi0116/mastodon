@@ -18,7 +18,7 @@ import {
   ALBUM_COMPOSE_HIDE_MODAL,
   ALBUM_COMPOSE_SET_DATA,
 } from '../actions/album_compose';
-import { ALBUMS_FETCH_TRACKS_SUCCESSS } from '../actions/albums';
+import { ALBUMS_FETCH_TRACKS_SUCCESS } from '../actions/albums';
 
 const initialState = Immutable.fromJS({
   error: null,
@@ -131,7 +131,7 @@ export default function album_compose(state = initialState, action) {
     return state.set('modal', false);
   case ALBUM_COMPOSE_SET_DATA:
     return setAlbumData(state, action.album);
-  case ALBUMS_FETCH_TRACKS_SUCCESSS:
+  case ALBUMS_FETCH_TRACKS_SUCCESS:
     const registeredTracks = Immutable.List(action.statuses.map((status) => status.id));
     return state.merge([
       [

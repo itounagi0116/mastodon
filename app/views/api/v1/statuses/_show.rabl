@@ -40,12 +40,11 @@ end
 root_status = root_object
 
 child({ music: :album }, if: ->(status) { !status.reblog? && status.music.is_a?(Album) }) do
-  attribute :title, :text
+  attribute :title, :text, :tracks_count
 
   node(:content) { |album| Formatter.instance.format_for_music(album) }
   node(:image) { |album| full_asset_url(album.image.url(:original)) }
   node(:preview_url) { |album| full_asset_url(album.image.url(:small)) }
-  node(:tracks_count) { |album| album.album_tracks.size }
 end
 
 child({ music: :track }, if: ->(status) { !status.reblog? && status.music.is_a?(Track) }) do

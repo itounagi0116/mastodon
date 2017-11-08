@@ -1,6 +1,7 @@
 import {
   TRACKS_PLAY,
   TRACKS_STOP,
+  TRACKS_FETCH_CONTAINED_ALBUMS_SUCCESS,
 } from '../actions/tracks';
 import {
   ALBUMS_PLAY,
@@ -9,6 +10,7 @@ import Immutable from 'immutable';
 
 const initialState = Immutable.fromJS({
   trackId: null,
+  containedAlbums: {},
 });
 
 export default function tracks(state = initialState, action) {
@@ -18,6 +20,8 @@ export default function tracks(state = initialState, action) {
   case TRACKS_STOP:
   case ALBUMS_PLAY:
     return state.set('trackId', null);
+  case TRACKS_FETCH_CONTAINED_ALBUMS_SUCCESS:
+    return state.setIn(['containedAlbums', action.id], Immutable.List(action.statuses.map((status) => status.id)));
   default:
     return state;
   }

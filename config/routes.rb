@@ -252,6 +252,7 @@ Rails.application.routes.draw do
 
       resources :tracks, only: [:create, :update] do
         post :prepare_video, on: :member
+        get :albums, on: :member
       end
     end
 

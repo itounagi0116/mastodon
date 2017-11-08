@@ -95,4 +95,11 @@
     margin:         var(--verticalspace25);
   }
 
+  .contained-albums-button {
+    cursor: pointer;
+
+    &:hover {
+      color: var(--linkcolor);
+    }
+  }
 }

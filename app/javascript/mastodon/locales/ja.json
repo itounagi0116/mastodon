@@ -20,6 +20,7 @@
   "account.unblock_domain": "{domain}を表示",
   "account.unfollow": "フォロー解除",
   "account.unmute": "ミュート解除",
+  "album.tracks": "トラック",
   "boost_modal.combo": "次からは{combo}を押せば、これをスキップできます。",
   "column.blocks": "ブロックしたユーザー",
   "column.community": "ローカルタイムライン",

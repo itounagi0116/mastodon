@@ -10,8 +10,8 @@
 #
 
 class AlbumTrack < ApplicationRecord
-  belongs_to :album, inverse_of: :album_tracks
-  belongs_to :track, inverse_of: :album_tracks
+  belongs_to :album, inverse_of: :album_tracks, counter_cache: :tracks_count
+  belongs_to :track, inverse_of: :album_tracks, counter_cache: :albums_count
 
   MIN_POSITION = BigDecimal(0)
   MAX_POSITION = BigDecimal(1)

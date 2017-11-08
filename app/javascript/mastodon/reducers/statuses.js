@@ -40,8 +40,11 @@ import {
   SCHEDULED_STATUSES_EXPAND_SUCCESS,
 } from '../../pawoo_music/actions/schedules';
 import {
-  ALBUMS_FETCH_TRACKS_SUCCESSS,
+  ALBUMS_FETCH_TRACKS_SUCCESS,
 } from '../../pawoo_music/actions/albums';
+import {
+  TRACKS_FETCH_CONTAINED_ALBUMS_SUCCESS,
+} from '../../pawoo_music/actions/tracks';
 import Immutable from 'immutable';
 
 const normalizeStatus = (state, status) => {
@@ -134,7 +137,8 @@ export default function statuses(state = initialState, action) {
   case SEARCH_FETCH_SUCCESS:
   case SCHEDULED_STATUSES_FETCH_SUCCESS:
   case SCHEDULED_STATUSES_EXPAND_SUCCESS:
-  case ALBUMS_FETCH_TRACKS_SUCCESSS:
+  case ALBUMS_FETCH_TRACKS_SUCCESS:
+  case TRACKS_FETCH_CONTAINED_ALBUMS_SUCCESS:
     return normalizeStatuses(state, action.statuses);
   case TIMELINE_DELETE:
     return deleteStatus(state, action.id, action.references);

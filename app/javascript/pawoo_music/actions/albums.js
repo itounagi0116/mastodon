@@ -3,7 +3,7 @@ import api from '../../mastodon/api';
 export const ALBUMS_PLAY = 'ALBUMS_PLAY';
 export const ALBUMS_STOP = 'ALBUMS_STOP';
 export const ALBUMS_FETCH_TRACKS_REQUEST = 'ALBUMS_FETCH_TRACKS_REQUEST';
-export const ALBUMS_FETCH_TRACKS_SUCCESSS = 'ALBUMS_FETCH_TRACKS_SUCCESSS';
+export const ALBUMS_FETCH_TRACKS_SUCCESS = 'ALBUMS_FETCH_TRACKS_SUCCESS';
 export const ALBUMS_FETCH_TRACKS_FAIL = 'ALBUMS_FETCH_TRACKS_FAIL';
 
 
@@ -34,17 +34,15 @@ export function fetchAlbumTracks(id, { compose = false } = {}) {
 export function fetchAlbumTracksRequest() {
   return {
     type: ALBUMS_FETCH_TRACKS_REQUEST,
-    skipLoading: true,
   };
 }
 
 export function fetchAlbumTracksSuccess(id, statuses, compose) {
   return {
-    type: ALBUMS_FETCH_TRACKS_SUCCESSS,
+    type: ALBUMS_FETCH_TRACKS_SUCCESS,
     id,
     statuses,
     compose,
-    skipLoading: true,
   };
 }
 
@@ -52,6 +50,5 @@ export function fetchAlbumTracksFail(error) {
   return {
     type: ALBUMS_FETCH_TRACKS_FAIL,
     error,
-    skipLoading: true,
   };
 }

@@ -1,4 +1,4 @@
-attribute :title, :artist, :text
+attribute :title, :artist, :text, :albums_count
 
 node(:content) { |track| Formatter.instance.format_for_music(track) }
 

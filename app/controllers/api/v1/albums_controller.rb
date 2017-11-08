@@ -6,6 +6,8 @@ class Api::V1::AlbumsController < Api::BaseController
   before_action -> { doorkeeper_authorize! :write }
   before_action :require_user!
 
+  obfuscate_filename [:image]
+
   respond_to :json
 
   def create

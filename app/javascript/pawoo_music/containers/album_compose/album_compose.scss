@@ -45,8 +45,11 @@
     }
 
     .thumbnail {
-      width: 100%;
+      width: var(--form-width);
+      height: var(--form-width);
       max-width: 480px;
+      max-height: 480px;
+      object-fit: cover;
     }
 
     @media screen and (max-width: 1000px) {

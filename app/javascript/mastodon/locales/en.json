@@ -20,6 +20,7 @@
   "account.unblock_domain": "Unhide {domain}",
   "account.unfollow": "Unfollow",
   "account.unmute": "Unmute @{name}",
+  "album.tracks": "Tracks",
   "boost_modal.combo": "You can press {combo} to skip this next time",
   "column.blocks": "Blocked users",
   "column.community": "Local timeline",

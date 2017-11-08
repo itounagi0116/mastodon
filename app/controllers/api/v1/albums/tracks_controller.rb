@@ -61,7 +61,7 @@ class Api::V1::Albums::TracksController < Api::BaseController
 
     statuses = Status
       .reorder(nil)
-      .joins(%(JOIN tracks ON statuses.music_id = tracks.id AND statuses.music_type = 'Track'))
+      .joins("JOIN tracks ON statuses.music_id = tracks.id AND statuses.music_type = 'Track'")
       .joins('JOIN album_tracks ON tracks.id = album_tracks.track_id')
       .where(reblog: nil)
       .merge(index_scope)

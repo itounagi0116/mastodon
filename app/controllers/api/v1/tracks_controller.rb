@@ -3,8 +3,8 @@
 class Api::V1::TracksController < Api::BaseController
   include ObfuscateFilename
 
-  before_action -> { doorkeeper_authorize! :write }
-  before_action :require_user!
+  before_action -> { doorkeeper_authorize! :write }, only: [:create, :update, :prepare_video]
+  before_action :require_user!, only: [:create, :update, :prepare_video]
   before_action :set_status, only: [:update, :prepare_video]
 
   obfuscate_filename :music
@@ -53,6 +53,14 @@ class Api::V1::TracksController < Api::BaseController
     VideoPreparingWorker.perform_async @status.id, resolution
 
     render_empty
+  end
+
+  def albums
+    status = Status.tracks_only.find_by!(id: params[:id], reblog: nil)
+    @statuses = cache_collection(status.music.album_statuses, Status)
+    set_maps(@statuses)
+
+    render 'api/v1/statuses/index'
   end
 
   private

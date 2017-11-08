@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import { FormattedMessage } from 'react-intl';
 import Musicvideo from '../../components/musicvideo';
 import StatusActionBar from '../status_action_bar';
 import StatusMeta from '../../components/status_meta';
@@ -146,6 +147,10 @@ class Album extends ImmutablePureComponent {
           {(thumbnailView || !trackStatuses) ? (
             <div className='thumbnail' role='button' tabIndex='0' aria-pressed='false' onClick={this.handlePlayClick}>
               <img className='playbutton' src={playIcon} alt='playbutton' />
+              <span className='tracks-count'>
+                {album.get('tracks_count')}
+                <FormattedMessage id='album.tracks' defaultMessage='Tracks' />
+              </span>
             </div>
           ) : (
             <Musicvideo ref={this.setRef} track={trackStatuses.getIn([index, 'track'])} onEnded={this.handleEndTrack} />

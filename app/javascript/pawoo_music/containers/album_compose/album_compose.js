@@ -26,6 +26,7 @@ import {
 import { fetchAlbumTracks } from '../../actions/albums';
 import { validateIsFileImage } from '../../util/musicvideo';
 import { makeGetAccount } from '../../../mastodon/selectors';
+import { constructRgbCode } from '../../util/musicvideo';
 
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 
@@ -136,8 +137,12 @@ export default class AlbumCompose extends ImmutablePureComponent {
 
   componentDidMount () {
     const { me, album } = this.props;
+    const id = album.get('id');
+
     this.props.onMapId(me);
-    this.props.onFetchAlbumTracks(album.get('id'));
+    if (id) {
+      this.props.onFetchAlbumTracks(id);
+    }
     this.updateImage(album);
   }
 
@@ -258,6 +263,10 @@ export default class AlbumCompose extends ImmutablePureComponent {
       return null;
     }
 
+    const artworkStyle = {
+      backgroundColor: constructRgbCode(track.getIn(['video', 'backgroundcolor']), 1),
+    };
+
     return (
       <Draggable key={item} draggableId={item}>
         {(provided) => (
@@ -268,7 +277,7 @@ export default class AlbumCompose extends ImmutablePureComponent {
               style={provided.draggableStyle}
               {...provided.dragHandleProps}
             >
-              <img className='album-compose-track-artwork' src={track.getIn(['video', 'image'], defaultArtwork)} alt={track.get('title')} />
+              <img className='album-compose-track-artwork' src={track.getIn(['video', 'image'], defaultArtwork)} alt={track.get('title')} style={artworkStyle} />
               <div className='album-compose-track-info'>{`${track.get('artist')} - ${track.get('title')}`}</div>
             </div>
             {provided.placeholder}

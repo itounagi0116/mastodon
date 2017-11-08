@@ -1,0 +1,14 @@
+.contained-albums {
+  align-items: center;
+
+  .music-status + .music-status {
+    margin-top: 30px;
+  }
+
+  .music-status {
+    margin-top: 0;
+    margin-left: -12px;
+    padding: var(--padding15);
+    width: var(--width-gallery);
+  }
+}

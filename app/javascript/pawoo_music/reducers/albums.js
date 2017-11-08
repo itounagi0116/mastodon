@@ -1,7 +1,7 @@
 import {
   ALBUMS_PLAY,
   ALBUMS_STOP,
-  ALBUMS_FETCH_TRACKS_SUCCESSS,
+  ALBUMS_FETCH_TRACKS_SUCCESS,
 } from '../actions/albums';
 import {
   TRACKS_PLAY,
@@ -21,7 +21,7 @@ export default function tracks(state = initialState, action) {
   case ALBUMS_STOP:
   case TRACKS_PLAY:
     return state.set('albumId', null);
-  case ALBUMS_FETCH_TRACKS_SUCCESSS:
+  case ALBUMS_FETCH_TRACKS_SUCCESS:
     return state.setIn(['tracks', action.id], Immutable.List(action.statuses.map((status) => status.id)));
   default:
     return state;

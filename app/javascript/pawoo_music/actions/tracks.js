@@ -3,8 +3,11 @@ import api from '../../mastodon/api';
 export const TRACKS_PLAY = 'TRACKS_PLAY';
 export const TRACKS_STOP = 'TRACKS_STOP';
 export const TRACKS_GENERATE_REQUEST = 'TRACKS_GENERATE_REQUEST';
-export const TRACKS_GENERATE_SUCCESSS = 'TRACKS_GENERATE_SUCCESSS';
+export const TRACKS_GENERATE_SUCCESS = 'TRACKS_GENERATE_SUCCESS';
 export const TRACKS_GENERATE_FAIL = 'TRACKS_GENERATE_FAIL';
+export const TRACKS_FETCH_CONTAINED_ALBUMS_REQUEST = 'TRACKS_FETCH_CONTAINED_ALBUMS_REQUEST';
+export const TRACKS_FETCH_CONTAINED_ALBUMS_SUCCESS = 'TRACKS_FETCH_CONTAINED_ALBUMS_SUCCESS';
+export const TRACKS_FETCH_CONTAINED_ALBUMS_FAIL = 'TRACKS_FETCH_CONTAINED_ALBUMS_FAIL';
 
 export function playTrack(trackId) {
   return {
@@ -39,7 +42,7 @@ export function generateTrackMvRequest() {
 
 export function generateTrackMvSuccess() {
   return {
-    type: TRACKS_GENERATE_SUCCESSS,
+    type: TRACKS_GENERATE_SUCCESS,
     skipLoading: true,
   };
 }
@@ -49,5 +52,37 @@ export function generateTrackMvFail(error) {
     type: TRACKS_GENERATE_FAIL,
     error,
     skipLoading: true,
+  };
+}
+
+export function fetchContainedAlbums(id) {
+  return function (dispatch, getState) {
+    dispatch(fetchContainedAlbumsRequest());
+    api(getState).get(`/api/v1/tracks/${id}/albums`).then((response) => {
+      dispatch(fetchContainedAlbumsSuccess(id, response.data));
+    }).catch(error => {
+      dispatch(fetchContainedAlbumsFail(error));
+    });
+  };
+}
+
+export function fetchContainedAlbumsRequest() {
+  return {
+    type: TRACKS_FETCH_CONTAINED_ALBUMS_REQUEST,
+  };
+}
+
+export function fetchContainedAlbumsSuccess(id, statuses) {
+  return {
+    type: TRACKS_FETCH_CONTAINED_ALBUMS_SUCCESS,
+    id,
+    statuses,
+  };
+}
+
+export function fetchContainedAlbumsFail(error) {
+  return {
+    type: TRACKS_FETCH_CONTAINED_ALBUMS_FAIL,
+    error,
   };
 }

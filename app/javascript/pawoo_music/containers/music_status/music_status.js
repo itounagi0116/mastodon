@@ -13,6 +13,8 @@ import StatusPrepend from '../../components/status_prepend';
 import TrackContainer from '../track';
 import AlbumContainer from '../album';
 import FollowButton from '../follow_button';
+import { openModal } from '../../../mastodon/actions/modal';
+import ContainedAlbumsModalContentContainer from '../contained_albums_modal_content';
 
 const makeMapStateToProps = () => {
   const getStatus = makeGetStatus();
@@ -42,6 +44,15 @@ export default class MusicStatus extends ImmutablePureComponent {
     albumId: PropTypes.number,
     dispatch: PropTypes.func.isRequired,
   };
+
+  handleClickContainedAlbums = () => {
+    const { status, dispatch } = this.props;
+    const id = status.getIn(['track', 'id']);
+
+    if (id) {
+      dispatch(openModal('UNIVERSAL', { children: <ContainedAlbumsModalContentContainer id={id} /> }));
+    }
+  }
 
   render () {
     const { muted, hidden, prepend, status: originalStatus, trackId, albumId } = this.props;
@@ -84,10 +95,21 @@ export default class MusicStatus extends ImmutablePureComponent {
 
     let credit = null;
     let content = null;
+    let albumsButton = null;
 
     if (status.has('track')) {
       credit = `${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}`;
       content = status.getIn(['track', 'content']);
+
+      const albumsCount = status.getIn(['track', 'albums_count']);
+      if (albumsCount > 0) {
+        albumsButton = (
+          <div className='contained-albums-button' role='button' tabIndex='0' aria-pressed='false' onClick={this.handleClickContainedAlbums}>
+            収録アルバム
+            {albumsCount > 1 && <span className='albums-count'>{albumsCount}</span>}
+          </div>
+        );
+      }
     }
 
     if (status.has('album')) {
@@ -110,7 +132,7 @@ export default class MusicStatus extends ImmutablePureComponent {
         <StatusContent status={status.set('content', content)} />
 
         <StatusActionBar status={status} />
-
+        {albumsButton}
         <StatusMeta status={status} />
       </div>
     );

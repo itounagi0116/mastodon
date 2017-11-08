@@ -531,4 +531,22 @@ describe Api::V1::TracksController, type: :controller do
       end
     end
   end
+
+  describe 'GET #albums' do
+    let(:album) { Fabricate(:album) }
+    let(:track) { Fabricate(:track) }
+    let!(:album_status) { Fabricate(:status, music: album, reblog: nil) }
+    let!(:track_status) { Fabricate(:status, account: album_status.account, music: track, reblog: nil) }
+    let!(:album_track) { Fabricate(:album_track, album: album, track: track, position: '0.3') }
+
+    it 'returns http success' do
+      get :albums, params: { id: track_status }
+      expect(response).to have_http_status :success
+    end
+
+    it 'renders albums' do
+      get :albums, params: { id: track_status }
+      expect(body_as_json[0][:id]).to eq album_status.id
+    end
+  end
 end

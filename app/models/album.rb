@@ -10,6 +10,7 @@
 #  image_content_type :string
 #  image_file_size    :integer
 #  image_updated_at   :datetime
+#  tracks_count       :integer          default(0), not null
 #
 
 class Album < ApplicationRecord
@@ -30,6 +31,7 @@ class Album < ApplicationRecord
       small: ->(instance) { crop_option(instance.min_size(:image), '600') },
     }
 
+  validates :title, presence: true
   validates_attachment :image,
                        presence: true,
                        content_type: { content_type: ['image/jpeg', 'image/png'] },
