@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171101000000) do
+ActiveRecord::Schema.define(version: 20171108000000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -383,6 +383,7 @@ ActiveRecord::Schema.define(version: 20171101000000) do
     t.index ["in_reply_to_id"], name: "index_statuses_on_in_reply_to_id"
     t.index ["music_type", "account_id"], name: "index_statuses_on_music_type_and_account_id"
     t.index ["music_type", "id"], name: "index_statuses_on_music_type_and_id"
+    t.index ["reblog_of_id", "music_type", "id"], name: "index_statuses_on_reblog_of_id_and_music_type_and_id"
     t.index ["reblog_of_id", "music_type", "music_id"], name: "index_statuses_on_reblog_of_id_and_music_type_and_music_id"
     t.index ["uri"], name: "index_statuses_on_uri", unique: true
   end
