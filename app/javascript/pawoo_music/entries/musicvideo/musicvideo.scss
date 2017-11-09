@@ -1,20 +1,48 @@
 .app-musicvideo {
   .track {
-    width: 100%;
-    height: calc(100% - var(--verticalspace25-value) - var(--text50-line));
+    width:  100%;
+    height: calc(100% - var(--padding5-value) * 2 - var(--text20-line) - var(--text40-line));
   }
 
-  .credit {
-    display:        block;
-    font-size:      var(--text50-font);
-    line-height:    var(--text50-line);
+  .meta {
+     padding: var(--padding5);
 
-    font-weight:    bold;
-    color:          var(--strong2);
-    margin:         var(--verticalspace25);
+    .credit {
+      display:        flex;
+      font-size:      var(--text20-font);
+      line-height:    var(--text20-line);
 
-    > img {
-      margin-right: 8px;
+      > p {
+        flex:          1;
+        font-weight:   100;
+
+        overflow:      hidden;
+        white-space:   nowrap;
+        text-overflow: ellipsis;
+      }
+
+      > a {
+        flex:        0;
+        margin-left: 8px;
+
+        * {
+          height: var(--text20-font);
+        }
+      }
+    }
+
+    h1 {
+      font-size:     var(--text40-font);
+      font-weight:   100;
+      line-height:   var(--text40-line);
+
+      overflow:      hidden;
+      white-space:   nowrap;
+      text-overflow: ellipsis;
+
+      * {
+        color: var(--strong2);
+      }
     }
   }
 }

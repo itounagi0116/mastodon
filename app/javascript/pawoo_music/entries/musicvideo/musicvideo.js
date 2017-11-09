@@ -18,22 +18,21 @@ const store = configureStore();
 export default class MusicvideoEntry extends React.PureComponent {
 
   static propTypes = {
-    statusId: PropTypes.number.isRequired,
-    track: PropTypes.object.isRequired,
+    status: PropTypes.object.isRequired,
     locale: PropTypes.string.isRequired,
   }
 
   render () {
-    const { locale, track, statusId } = this.props;
+    const { locale, status: { id, account, track } } = this.props;
 
     return (
       <IntlProvider locale={locale} messages={messages}>
         <Provider store={store}>
           <div className='app embed app-musicvideo'>
-            <Track track={Immutable.fromJS(track).set('id', statusId)} fitContain />
-            <div className='credit'>
-              <Logo />
-              {`${track.artist} - ${track.title}`}
+            <Track track={Immutable.fromJS(track).set('id', id)} fitContain />
+            <div className='meta'>
+              <div className='credit'><p>{track.artist}</p><a href='/' target='_blank'><Logo /></a></div>
+              <h1><a href={`/@${account.acct}/${id}`} target='_blank'>{track.title}</a></h1>
             </div>
           </div>
         </Provider>

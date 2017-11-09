@@ -59,16 +59,25 @@ body {
   --rightspace10:          0 var(--rightspace10-value) 0 0;
   --rightspace15:          0 var(--rightspace15-value) 0 0;
 
+  // Values for padding
+  --padding5-value:  calc(var(--grid) * 1);
+  --padding10-value: calc(var(--grid) * 2);
+  --padding15-value: calc(var(--grid) * 3);
+  --padding20-value: calc(var(--grid) * 4);
+  --padding30-value: calc(var(--grid) * 6);
+  --padding40-value: calc(var(--grid) * 8);
+  --padding50-value: calc(var(--grid) * 16);
+  --padding-dropdown-option-value: calc(var(--grid) * 2) calc(var(--grid) * 4);
 
   // 'padding'
-  --padding5:         calc(var(--grid) * 1);
-  --padding10:        calc(var(--grid) * 2);
-  --padding15:        calc(var(--grid) * 3);
-  --padding20:        calc(var(--grid) * 4);
-  --padding30:        calc(var(--grid) * 6);
-  --padding40:        calc(var(--grid) * 8);
-  --padding50:        calc(var(--grid) * 16);
-  --padding-dropdown-option:  calc(var(--grid) * 2) calc(var(--grid) * 4);
+  --padding5:        var(--padding5-value);
+  --padding10:       var(--padding10-value);
+  --padding15:       var(--padding15-value);
+  --padding20:       var(--padding20-value);
+  --padding30:       var(--padding30-value);
+  --padding40:       var(--padding40-value);
+  --padding50:       var(--padding50-value);
+  --padding-dropdown-option:  var(--padding-dropdown-option-value);
 
 
   // 'font-size' and 'line-height'
