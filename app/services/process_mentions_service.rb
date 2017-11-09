@@ -27,20 +27,36 @@ class ProcessMentionsService < BaseService
       mentioned_account.mentions.where(status: status).first_or_create(status: status)
     end
 
-    time_limit = TimeLimit.from_tags(status.tags)
-
     status.mentions.includes(:account).each do |mention|
-      mentioned_account = mention.account
-
-      if mentioned_account.local?
-        NotifyService.new.call(mentioned_account, mention)
-      elsif time_limit.nil?
-        NotificationWorker.perform_async(stream_entry_to_xml(status.stream_entry), status.account_id, mentioned_account.id)
-      end
+      create_notification(status, mention)
     end
   end
 
   private
+
+  def create_notification(status, mention)
+    time_limit = TimeLimit.from_tags(status.tags)
+
+    mentioned_account = mention.account
+
+    if mentioned_account.local?
+      NotifyService.new.call(mentioned_account, mention)
+    elsif time_limit.nil?
+      if mentioned_account.ostatus? && (Rails.configuration.x.use_ostatus_privacy || !status.stream_entry.hidden?)
+        NotificationWorker.perform_async(stream_entry_to_xml(status.stream_entry), status.account_id, mentioned_account.id)
+      elsif mentioned_account.activitypub?
+        ActivityPub::DeliveryWorker.perform_async(build_json(mention.status), mention.status.account_id, mentioned_account.inbox_url)
+      end
+    end
+  end
+
+  def build_json(status)
+    Oj.dump(ActivityPub::LinkedDataSignature.new(ActiveModelSerializers::SerializableResource.new(
+      status,
+      serializer: ActivityPub::ActivitySerializer,
+      adapter: ActivityPub::Adapter
+    ).as_json).sign!(status.account))
+  end
 
   def follow_remote_account_service
     @follow_remote_account_service ||= ResolveRemoteAccountService.new

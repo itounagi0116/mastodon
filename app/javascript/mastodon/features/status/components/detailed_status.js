@@ -6,7 +6,6 @@ import Avatar from '../../../components/avatar';
 import DisplayName from '../../../components/display_name';
 import StatusContent from '../../../components/status_content';
 import MediaGallery from '../../../components/media_gallery';
-import VideoPlayer from '../../../components/video_player';
 import AttachmentList from '../../../components/attachment_list';
 import BoothWidget from '../../../components/booth_widget';
 import SCWidget from '../../../components/sc_widget';
@@ -15,6 +14,7 @@ import Link from 'react-router-dom/Link';
 import { FormattedDate, FormattedNumber } from 'react-intl';
 import CardContainer from '../containers/card_container';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import Video from '../../video';
 
 export default class DetailedStatus extends ImmutablePureComponent {
 
@@ -37,6 +37,10 @@ export default class DetailedStatus extends ImmutablePureComponent {
     }
 
     e.stopPropagation();
+  }
+
+  handleOpenVideo = startTime => {
+    this.props.onOpenVideo(this.props.status.getIn(['media_attachments', 0]), startTime);
   }
 
   render () {
@@ -66,7 +70,18 @@ export default class DetailedStatus extends ImmutablePureComponent {
       if (attachments.some(item => item.get('type') === 'unknown')) {
         media = <AttachmentList media={attachments} />;
       } else if (attachments.first().get('type') === 'video') {
-        media = <VideoPlayer sensitive={status.get('sensitive')} media={attachments.first()} width={300} height={150} onOpenVideo={this.props.onOpenVideo} autoplay />;
+        const video = attachments.first();
+
+        media = (
+          <Video
+            preview={video.get('preview_url')}
+            src={video.get('url')}
+            width={300}
+            height={150}
+            onOpenVideo={this.handleOpenVideo}
+            sensitive={status.get('sensitive')}
+          />
+        );
       } else {
         media = <MediaGallery sensitive={status.get('sensitive')} media={attachments} height={300} onOpenMedia={this.props.onOpenMedia} autoPlayGif={this.props.autoPlayGif} expandMedia />;
       }
@@ -92,7 +107,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
     return (
       <div className='detailed-status'>
         <a href={status.getIn(['account', 'url'])} onClick={this.handleAccountClick} className='detailed-status__display-name'>
-          <div className='detailed-status__display-avatar'><Avatar src={status.getIn(['account', 'avatar'])} staticSrc={status.getIn(['account', 'avatar_static'])} size={48} /></div>
+          <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={48} /></div>
           <DisplayName account={status.get('account')} />
         </a>
 

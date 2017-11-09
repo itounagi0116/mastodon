@@ -8,6 +8,10 @@ import { isIOS } from '../is_mobile';
 @injectIntl
 export default class VideoPlayer extends React.PureComponent {
 
+  static contextTypes = {
+    router: PropTypes.object,
+  };
+
   static propTypes = {
     media: ImmutablePropTypes.map.isRequired,
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
@@ -122,39 +126,43 @@ export default class VideoPlayer extends React.PureComponent {
       </div>
     );
 
-    let expandButton = (
-      <div className='status__video-player-expand'>
-        <IconButton src='maximize-2' onClick={this.handleExpand} />
-      </div>
-    );
+    let expandButton = '';
+
+    if (this.context.router) {
+      expandButton = (
+        <div className='status__video-player-expand'>
+          <IconButton src='maximize-2' onClick={this.handleExpand} />
+        </div>
+      );
+    }
 
     if (!this.state.visible) {
       if (sensitive) {
         return (
-          <div role='button' tabIndex='0' style={{ width: `${width}px`, height: `${height}px` }} className='media-spoiler' onClick={this.handleVisibility}>
+          <button style={{ width: `${width}px`, height: `${height}px`, marginTop: '8px' }} className='media-spoiler' onClick={this.handleVisibility}>
             {spoilerButton}
             <span className='media-spoiler__warning'><FormattedMessage id='status.sensitive_warning' defaultMessage='Sensitive content' /></span>
             <span className='media-spoiler__trigger'><FormattedMessage id='status.sensitive_toggle' defaultMessage='Click to view' /></span>
-          </div>
+          </button>
         );
       } else {
         return (
-          <div role='button' tabIndex='0' style={{ width: `${width}px`, height: `${height}px` }} className='media-spoiler' onClick={this.handleVisibility}>
+          <button style={{ width: `${width}px`, height: `${height}px`, marginTop: '8px' }} className='media-spoiler' onClick={this.handleVisibility}>
             {spoilerButton}
             <span className='media-spoiler__warning'><FormattedMessage id='status.media_hidden' defaultMessage='Media hidden' /></span>
             <span className='media-spoiler__trigger'><FormattedMessage id='status.sensitive_toggle' defaultMessage='Click to view' /></span>
-          </div>
+          </button>
         );
       }
     }
 
     if (this.state.preview && !autoplay) {
       return (
-        <div role='button' tabIndex='0' className='media-spoiler-video' style={{ width: `${width}px`, height: `${height}px`, backgroundImage: `url(${media.get('preview_url')})` }} onClick={this.handleOpen}>
+        <button className='media-spoiler-video' style={{ width: `${width}px`, height: `${height}px`, backgroundImage: `url(${media.get('preview_url')})` }} onClick={this.handleOpen}>
           {spoilerButton}
           <div className='media-spoiler-video-play-icon'><i className='fa fa-play' /></div>
           {expandButton}
-        </div>
+        </button>
       );
     }
 

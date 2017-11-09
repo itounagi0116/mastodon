@@ -64,8 +64,16 @@ export default class App extends PureComponent {
       dispatch(refreshNotifications());
 
       // Desktop notifications
+      // Ask after 1 minute
       if (typeof window.Notification !== 'undefined' && Notification.permission === 'default') {
-        Notification.requestPermission();
+        window.setTimeout(() => Notification.requestPermission(), 60 * 1000);
+      }
+
+      // Protocol handler
+      // Ask after 5 minutes
+      if (typeof navigator.registerProtocolHandler !== 'undefined') {
+        const handlerUrl = window.location.protocol + '//' + window.location.host + '/intent?uri=%s';
+        window.setTimeout(() => navigator.registerProtocolHandler('web+mastodon', handlerUrl, 'Mastodon'), 5 * 60 * 1000);
       }
     }
   }
@@ -124,7 +132,7 @@ export default class App extends PureComponent {
     const routes = (
       <Switch>
         <Route path='/' exact component={HomeTimelineContainer} />
-        <Route path='/intent/statuses/new' exact component={Intent} />
+        <Route path='/share' exact component={Intent} />
         <Route path='/notifications' component={NotificationTimelineContainer} />
         <Route path='/timelines/public/local' component={CommunityTimelineContainer} />
         <Route path='/timelines/public' exact component={PublicTimelineContainer} />

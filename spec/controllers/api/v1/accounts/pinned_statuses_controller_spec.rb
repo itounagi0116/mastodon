@@ -12,7 +12,7 @@ describe Api::V1::Accounts::PinnedStatusesController do
   end
 
   describe 'GET #index' do
-    let!(:pinned_status) { Fabricate(:pinned_status, account: user.account) }
+    let!(:status_pin) { Fabricate(:status_pin, account: user.account) }
 
     it 'returns http success' do
       get :index, params: { account_id: user.account.id, limit: 1 }

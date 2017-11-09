@@ -32,6 +32,7 @@ RSpec.describe PostStatusService do
     it 'pings PuSH hubs' do
       allow(DistributionWorker).to receive(:perform_async)
       allow(Pubsubhubbub::DistributionWorker).to receive(:perform_async)
+      allow(ActivityPub::DistributionWorker).to receive(:perform_async)
       account = Fabricate(:account)
 
       status = subject.call(account, "test status update")
@@ -39,6 +40,7 @@ RSpec.describe PostStatusService do
       expect(DistributionWorker).to have_received(:perform_async).with(status.id)
       expect(Pubsubhubbub::DistributionWorker).
         to have_received(:perform_async).with(status.stream_entry.id)
+      expect(ActivityPub::DistributionWorker).to have_received(:perform_async).with(status.id)
     end
   end
 
@@ -94,22 +96,6 @@ RSpec.describe PostStatusService do
     expect(status.visibility).to eq "private"
   end
 
-  it 'creates a status with the given id' do
-    id = Status.next_id
-    status = create_status_with_options(id: id)
-
-    expect(status).to be_persisted
-    expect(status.id).to eq id
-  end
-
-  it 'creates a status with the given music' do
-    music = Fabricate(:track)
-    status = create_status_with_options(music: music)
-
-    expect(status).to be_persisted
-    expect(status.music).to eq music
-  end
-
   it 'creates a status for the given application' do
     application = Fabricate(:application)
 
@@ -120,17 +106,12 @@ RSpec.describe PostStatusService do
   end
 
   it 'creates a status with a language set' do
-    skip 'LanguageDetector is not used'
-
-    detector = double(to_iso_s: :en)
-    allow(LanguageDetector).to receive(:new).and_return(detector)
-
     account = Fabricate(:account)
-    text = 'test status text'
+    text = 'This is an English text.'
 
-    subject.call(account, text)
+    status = subject.call(account, text)
 
-    expect(LanguageDetector).to have_received(:new).with(text, account)
+    expect(status.language).to eq 'en'
   end
 
   it 'processes hashtags' do
@@ -143,6 +124,20 @@ RSpec.describe PostStatusService do
 
     expect(ProcessHashtagsService).to have_received(:new)
     expect(hashtags_service).to have_received(:call).with(status)
+  end
+
+  it 'gets distributed' do
+    allow(DistributionWorker).to receive(:perform_async)
+    allow(Pubsubhubbub::DistributionWorker).to receive(:perform_async)
+    allow(ActivityPub::DistributionWorker).to receive(:perform_async)
+
+    account = Fabricate(:account)
+
+    status = subject.call(account, "test status update")
+
+    expect(DistributionWorker).to have_received(:perform_async).with(status.id)
+    expect(Pubsubhubbub::DistributionWorker).to have_received(:perform_async).with(status.stream_entry.id)
+    expect(ActivityPub::DistributionWorker).to have_received(:perform_async).with(status.id)
   end
 
   it 'crawls links' do

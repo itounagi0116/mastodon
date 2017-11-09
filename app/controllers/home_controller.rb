@@ -3,11 +3,9 @@
 class HomeController < ApplicationController
   include TimelineConcern
 
-  layout 'timeline'
-
-  before_action :set_initial_state_data, only: :index
   before_action :authenticate_user!, only: :index
   before_action :set_instance_presenter, only: :index
+  before_action :set_initial_state_json, only: :index
 
   def index; end
 

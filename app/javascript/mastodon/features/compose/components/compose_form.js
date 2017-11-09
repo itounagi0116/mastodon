@@ -1,12 +1,13 @@
-import qs from 'querystring';
 import React from 'react';
 import DateTime from 'react-datetime';
 import CharacterCounter from './character_counter';
 import Button from '../../../components/button';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
+import Immutable from 'immutable';
 import ReplyIndicatorContainer from '../containers/reply_indicator_container';
 import AutosuggestTextarea from '../../../components/autosuggest_textarea';
+import HashtagEditor from '../../../components/hashtag_editor';
 import { debounce } from 'lodash';
 import UploadButtonContainer from '../containers/upload_button_container';
 import MusicButtonContainer from '../containers/music_button_container';
@@ -20,9 +21,17 @@ import EmojiPickerDropdown from './emoji_picker_dropdown';
 import TimeLimitDropdown from './time_limit_dropdown';
 import UploadFormContainer from '../containers/upload_form_container';
 import WarningContainer from '../containers/warning_container';
+import { isMobile } from '../../../is_mobile';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import TipsBalloonContainer from '../../../containers/tips_balloon_container';
 import { length } from 'stringz';
+import { countableText } from '../util/counter';
+
+// TODO: i18n
+// Moment is used by react-datetime, which is imported only by this module.
+// Fix the setting to ja for now because the default display is confusing for
+// Japanese people.
+import 'moment/locale/ja';
 
 // TODO: i18n
 // Moment is used by react-datetime, which is imported only by this module.
@@ -32,8 +41,14 @@ import 'moment/locale/ja';
 
 const messages = defineMessages({
   placeholder: { id: 'compose_form.placeholder', defaultMessage: 'What is on your mind?' },
+<<<<<<< HEAD
   spoiler_placeholder: { id: 'compose_form.spoiler_placeholder', defaultMessage: 'Content warning' },
   schedule_placeholder: { id: 'compose_form.schedule_placeholder', defaultMessage: 'Time to post' },
+=======
+  spoiler_placeholder: { id: 'compose_form.spoiler_placeholder', defaultMessage: 'Write your warning here' },
+  schedule_placeholder: { id: 'compose_form.schedule_placeholder', defaultMessage: 'Time to post' },
+  hashtag_editor_placeholder: { id: 'compose_form.hashtag_editor_placeholder', defaultMessage: 'Append tag (press enter to add)' },
+>>>>>>> pawoo/pawoo-v1.6.1
   publish: { id: 'compose_form.publish', defaultMessage: 'Toot' },
   publishLoud: { id: 'compose_form.publish_loud', defaultMessage: '{publish}!' },
 });
@@ -72,12 +87,14 @@ export default class ComposeForm extends ImmutablePureComponent {
     onHashTagSuggestionsFetchRequested: PropTypes.func.isRequired,
     onHashTagSuggestionsSelected: PropTypes.func.isRequired,
     onSelectTimeLimit: PropTypes.func.isRequired,
+    onInsertHashtag: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
     showSearch: false,
   };
 
+<<<<<<< HEAD
   _restoreCaret = null;
 
   componentDidMount () {
@@ -88,6 +105,10 @@ export default class ComposeForm extends ImmutablePureComponent {
       this.props.onChange(query.text);
     }
   }
+=======
+  state = { tagSuggestionFrom: null }
+  _restoreCaret = null;
+>>>>>>> pawoo/pawoo-v1.6.1
 
   handleChange = (e) => {
     this.props.onChange(e.target.value);
@@ -126,15 +147,18 @@ export default class ComposeForm extends ImmutablePureComponent {
 
   onHashTagSuggestionsClearRequested = () => {
     this.props.onHashTagSuggestionsClearRequested();
+    this.setState({ tagSuggestionFrom: null });
   }
 
-  onHashTagSuggestionsFetchRequested = (token) => {
+  onHashTagSuggestionsFetchRequested = (token, tagSuggestionFrom) => {
     this.props.onHashTagSuggestionsFetchRequested(token);
+    this.setState({ tagSuggestionFrom });
   }
 
   onHashTagSuggestionsSelected = (tokenStart, token, value) => {
     this._restoreCaret = 'suggestion';
     this.props.onHashTagSuggestionsSelected(tokenStart, token, value);
+    this.setState({ tagSuggestionFrom: null });
   }
 
   handleChangeSpoilerText = (e) => {
@@ -188,7 +212,8 @@ export default class ComposeForm extends ImmutablePureComponent {
 
   handleEmojiPick = (data) => {
     const position     = this.autosuggestTextarea.textarea.selectionStart;
-    this._restoreCaret = position + data.shortname.length + 1;
+    const emojiChar    = data.unicode.split('-').map(code => String.fromCodePoint(parseInt(code, 16))).join('');
+    this._restoreCaret = position + emojiChar.length + 1;
     this.props.onPickEmoji(position, data);
   }
 
@@ -199,10 +224,14 @@ export default class ComposeForm extends ImmutablePureComponent {
 
   render () {
     const { scheduling, intl, onPaste, showSearch } = this.props;
+<<<<<<< HEAD
+=======
+    const { tagSuggestionFrom } = this.state;
+>>>>>>> pawoo/pawoo-v1.6.1
     const disabled = this.props.is_submitting;
-    const text = [this.props.spoiler_text, this.props.text].join('');
+    const text     = [this.props.spoiler_text, countableText(this.props.text)].join('');
 
-    let publishText    = '';
+    let publishText = '';
 
     if (this.props.privacy === 'private' || this.props.privacy === 'direct') {
       publishText = <span className='compose-form__publish-private'><i className='fa fa-lock' /> {intl.formatMessage(messages.publish)}</span>;
@@ -214,7 +243,10 @@ export default class ComposeForm extends ImmutablePureComponent {
       <div className='compose-form'>
         <Collapsable isVisible={this.props.spoiler} fullHeight={50}>
           <div className='spoiler-input'>
-            <input placeholder={intl.formatMessage(messages.spoiler_placeholder)} value={this.props.spoiler_text} onChange={this.handleChangeSpoilerText} onKeyDown={this.handleKeyDown} type='text' className='spoiler-input__input'  id='cw-spoiler-input' />
+            <label>
+              <span style={{ display: 'none' }}>{intl.formatMessage(messages.spoiler_placeholder)}</span>
+              <input placeholder={intl.formatMessage(messages.spoiler_placeholder)} value={this.props.spoiler_text} onChange={this.handleChangeSpoilerText} onKeyDown={this.handleKeyDown} type='text' className='spoiler-input__input'  id='cw-spoiler-input' />
+            </label>
           </div>
         </Collapsable>
 
@@ -235,8 +267,8 @@ export default class ComposeForm extends ImmutablePureComponent {
             onSuggestionsClearRequested={this.onSuggestionsClearRequested}
             onSuggestionSelected={this.onSuggestionSelected}
             onPaste={onPaste}
-            autoFocus={!showSearch}
-            hash_tag_suggestions={this.props.hash_tag_suggestions}
+            autoFocus={!showSearch && !isMobile(window.innerWidth)}
+            hash_tag_suggestions={tagSuggestionFrom === 'autosuggested-textarea' ? this.props.hash_tag_suggestions : Immutable.List()}
             onHashTagSuggestionsFetchRequested={this.onHashTagSuggestionsFetchRequested}
             onHashTagSuggestionsClearRequested={this.onHashTagSuggestionsClearRequested}
             onHashTagSuggestionsSelected={this.onHashTagSuggestionsSelected}
@@ -248,6 +280,14 @@ export default class ComposeForm extends ImmutablePureComponent {
 
         <div className='compose-form__modifiers'>
           <UploadFormContainer />
+          <HashtagEditor
+            placeholder={intl.formatMessage(messages.hashtag_editor_placeholder)}
+            disabled={disabled}
+            suggestions={tagSuggestionFrom === 'hashtag-editor' ? this.props.hash_tag_suggestions : Immutable.List()}
+            onSuggestionsFetchRequested={this.onHashTagSuggestionsFetchRequested}
+            onSuggestionsClearRequested={this.onHashTagSuggestionsClearRequested}
+            onInsertHashtag={this.props.onInsertHashtag}
+          />
         </div>
 
         <div className='compose-form__buttons-wrapper'>
@@ -278,7 +318,11 @@ export default class ComposeForm extends ImmutablePureComponent {
 
           <div className='compose-form__publish'>
             <div className='character-counter__wrapper'><CharacterCounter max={500} text={text} /></div>
+<<<<<<< HEAD
             <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={disabled || this.props.is_uploading || typeof this.props.published === 'string' || length(text) > 500 || (text.length !==0 && text.trim().length === 0)} block /></div>
+=======
+            <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={disabled || this.props.is_uploading || typeof this.props.published === 'string' || length(text) > 500 || (text.length !== 0 && text.trim().length === 0)} block /></div>
+>>>>>>> pawoo/pawoo-v1.6.1
           </div>
         </div>
 

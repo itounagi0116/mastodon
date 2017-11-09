@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import Immutable from 'immutable';
+import { List as ImmutableList } from 'immutable';
 import { initialState as composeInitialState } from '../reducers/compose';
 
 const getAccountBase         = (state, id) => state.getIn(['accounts', id], null);
@@ -74,10 +74,10 @@ export const makeGetNotification = () => {
 };
 
 export const getAccountGallery = createSelector([
-  (state, id) => state.getIn(['timelines', `account:${id}:media`, 'items'], Immutable.List()),
+  (state, id) => state.getIn(['timelines', `account:${id}:media`, 'items'], ImmutableList()),
   state       => state.get('statuses'),
 ], (statusIds, statuses) => {
-  let medias = Immutable.List();
+  let medias = ImmutableList();
 
   statusIds.forEach(statusId => {
     const status = statuses.get(statusId);

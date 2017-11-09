@@ -4,7 +4,7 @@ class TracksController < ApplicationController
   include TimelineConcern
 
   before_action :authenticate_user!
-  before_action :set_initial_state_data
+  before_action :set_initial_state_json
 
   layout 'upload'
 

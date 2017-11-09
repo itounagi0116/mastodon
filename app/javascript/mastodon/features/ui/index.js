@@ -1,83 +1,63 @@
 import React from 'react';
-import Switch from 'react-router-dom/Switch';
-import Route from 'react-router-dom/Route';
-import Redirect from 'react-router-dom/Redirect';
 import NotificationsContainer from './containers/notifications_container';
 import PropTypes from 'prop-types';
 import LoadingBarContainer from './containers/loading_bar_container';
 import TabsBar from './components/tabs_bar';
-import ModalContainer from '../../../pawoo_music/containers/modal_container';
-import PlayControlContainer from './containers/play_control_container';
+import ModalContainer from './containers/modal_container';
 import { connect } from 'react-redux';
+import { Redirect, withRouter } from 'react-router-dom';
 import { isMobile } from '../../is_mobile';
 import { debounce } from 'lodash';
 import { uploadCompose } from '../../actions/compose';
 import { refreshHomeTimeline } from '../../actions/timelines';
 import { refreshNotifications } from '../../actions/notifications';
+import { clearHeight } from '../../actions/height_cache';
+import { WrappedSwitch, WrappedRoute } from './util/react_router_helpers';
 import UploadArea from './components/upload_area';
 import ColumnsAreaContainer from './containers/columns_area_container';
-import Status from '../../features/status';
-import GettingStarted from '../../features/getting_started';
-import PublicTimeline from '../../features/public_timeline';
-import CommunityTimeline from '../../features/community_timeline';
-import AccountTimeline from '../../features/account_timeline';
-// import AccountGallery from '../../features/account_gallery';
-import HomeTimeline from '../../features/home_timeline';
-import Compose from '../../features/compose';
-import Followers from '../../features/followers';
-import Following from '../../features/following';
-import Reblogs from '../../features/reblogs';
-import Favourites from '../../features/favourites';
-import HashtagTimeline from '../../features/hashtag_timeline';
-import Notifications from '../../features/notifications';
-import FollowRequests from '../../features/follow_requests';
-import GenericNotFound from '../../features/generic_not_found';
-import FavouritedStatuses from '../../features/favourited_statuses';
-import Blocks from '../../features/blocks';
-import Mutes from '../../features/mutes';
-import MediaTimeline from '../../features/media_timeline';
-import StatusSearchResults from '../../features/status_search_results';
-import AccountMediaTimeline from '../../features/account_media_timeline';
+import {
+  Compose,
+  Status,
+  GettingStarted,
+  PublicTimeline,
+  CommunityTimeline,
+  AccountTimeline,
+  // AccountGallery,
+  HomeTimeline,
+  Followers,
+  Following,
+  Reblogs,
+  Favourites,
+  HashtagTimeline,
+  Notifications,
+  FollowRequests,
+  GenericNotFound,
+  FavouritedStatuses,
+  Blocks,
+  Mutes,
+  PinnedStatuses,
+  MediaTimeline,
+  SuggestedAccounts,
+  SuggestionTags,
+  StatusSearchResults,
+  AccountMediaTimeline,
+} from './util/async-components';
 
-// Small wrapper to pass multiColumn to the route components
-const WrappedSwitch = ({ multiColumn, children }) => (
-  <Switch>
-    {React.Children.map(children, child => React.cloneElement(child, { multiColumn }))}
-  </Switch>
-);
+// Dummy import, to make sure that <Status /> ends up in the application bundle.
+// Without this it ends up in ~8 very commonly used bundles.
+import '../../components/status';
 
-WrappedSwitch.propTypes = {
-  multiColumn: PropTypes.bool,
-  children: PropTypes.node,
-};
+const mapStateToProps = state => ({
+  isComposing: state.getIn(['compose', 'is_composing']),
+});
 
-// Small Wraper to extract the params from the route and pass
-// them to the rendered component, together with the content to
-// be rendered inside (the children)
-class WrappedRoute extends React.Component {
-
-  static propTypes = {
-    component: PropTypes.func.isRequired,
-    content: PropTypes.node,
-    multiColumn: PropTypes.bool,
-  }
-
-  renderComponent = ({ match: { params } }) => {
-    const { component: Component, content, multiColumn } = this.props;
-
-    return <Component params={params} multiColumn={multiColumn}>{content}</Component>;
-  }
-
-  render () {
-    const { component: Component, content, ...rest } = this.props;
-
-    return <Route {...rest} render={this.renderComponent} />;
-  }
-
-}
-
-@connect()
+@connect(mapStateToProps)
+@withRouter
 export default class UI extends React.PureComponent {
+
+  static contextTypes = {
+    router: PropTypes.object.isRequired,
+  }
 
   static defaultProps = {
     intent: false,
@@ -86,6 +66,8 @@ export default class UI extends React.PureComponent {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
     children: PropTypes.node,
+    isComposing: PropTypes.bool,
+    location: PropTypes.object,
     className: PropTypes.string,
     intent: PropTypes.bool,
   };
@@ -96,6 +78,9 @@ export default class UI extends React.PureComponent {
   };
 
   handleResize = debounce(() => {
+    // The cached heights are no longer accurate, invalidate
+    this.props.dispatch(clearHeight());
+
     this.setState({ width: window.innerWidth });
   }, 500, {
     trailing: true,
@@ -157,6 +142,14 @@ export default class UI extends React.PureComponent {
     this.setState({ draggingOver: false });
   }
 
+  handleServiceWorkerPostMessage = ({ data }) => {
+    if (data.type === 'navigate') {
+      this.context.router.history.push(data.path);
+    } else {
+      console.warn('Unknown message type:', data.type);
+    }
+  }
+
   componentWillMount () {
     window.addEventListener('resize', this.handleResize, { passive: true });
     document.addEventListener('dragenter', this.handleDragEnter, false);
@@ -165,9 +158,32 @@ export default class UI extends React.PureComponent {
     document.addEventListener('dragleave', this.handleDragLeave, false);
     document.addEventListener('dragend', this.handleDragEnd, false);
 
+    if ('serviceWorker' in  navigator) {
+      navigator.serviceWorker.addEventListener('message', this.handleServiceWorkerPostMessage);
+    }
+
     if (!this.props.intent) {
       this.props.dispatch(refreshHomeTimeline());
       this.props.dispatch(refreshNotifications());
+    }
+  }
+
+  shouldComponentUpdate (nextProps) {
+    if (nextProps.isComposing !== this.props.isComposing) {
+      // Avoid expensive update just to toggle a class
+      this.node.classList.toggle('is-composing', nextProps.isComposing);
+
+      return false;
+    }
+
+    // Why isn't this working?!?
+    // return super.shouldComponentUpdate(nextProps, nextState);
+    return true;
+  }
+
+  componentDidUpdate (prevProps) {
+    if (![this.props.location.pathname, '/'].includes(prevProps.location.pathname)) {
+      this.columnsAreaNode.handleChildrenContentChange();
     }
   }
 
@@ -182,6 +198,10 @@ export default class UI extends React.PureComponent {
 
   setRef = (c) => {
     this.node = c;
+  }
+
+  setColumnsAreaRef = (c) => {
+    this.columnsAreaNode = c.getWrappedInstance().getWrappedInstance();
   }
 
   render () {
@@ -200,7 +220,7 @@ export default class UI extends React.PureComponent {
     return (
       <div className='ui' ref={this.setRef}>
         <TabsBar />
-        <ColumnsAreaContainer singleColumn={isMobile(width)}>
+        <ColumnsAreaContainer ref={this.setColumnsAreaRef} singleColumn={isMobile(width)}>
           <WrappedSwitch>
             <Redirect from='/' to='/getting-started' exact />
             <WrappedRoute path='/getting-started' component={GettingStarted} content={children} />
@@ -211,6 +231,7 @@ export default class UI extends React.PureComponent {
 
             <WrappedRoute path='/notifications' component={Notifications} content={children} />
             <WrappedRoute path='/favourites' component={FavouritedStatuses} content={children} />
+            <WrappedRoute path='/pinned' component={PinnedStatuses} content={children} />
 
             <WrappedRoute path='/statuses/new' component={Compose} content={children} />
             <WrappedRoute path='/statuses/:statusId' exact component={Status} content={children} />
@@ -227,6 +248,8 @@ export default class UI extends React.PureComponent {
             <WrappedRoute path='/mutes' component={Mutes} content={children} />
 
             <WrappedRoute path='/timelines/public/media' component={MediaTimeline} content={children} />
+            <WrappedRoute path='/suggested_accounts' component={SuggestedAccounts} content={children} />
+            <WrappedRoute path='/suggestion_tags/:type' component={SuggestionTags} content={children} />
             <WrappedRoute path='/statuses/search/:keyword' component={StatusSearchResults} content={children} />
             <WrappedRoute path='/accounts/:accountId/media' component={AccountMediaTimeline} content={children} />
 
@@ -236,7 +259,6 @@ export default class UI extends React.PureComponent {
         <NotificationsContainer />
         <LoadingBarContainer className='loading-bar' />
         <ModalContainer />
-        <PlayControlContainer />
         <UploadArea active={draggingOver} onClose={this.closeUploadModal} />
       </div>
     );

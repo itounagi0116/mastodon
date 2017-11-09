@@ -25,6 +25,7 @@ class PostStatusService < BaseService
     published = options[:published]
 
     status = nil
+
     ApplicationRecord.transaction do
       attributes = {
         text: text,
@@ -32,8 +33,8 @@ class PostStatusService < BaseService
         created_at: published,
         sensitive: options[:sensitive],
         spoiler_text: options[:spoiler_text] || '',
-        visibility: options[:visibility],
-        language: detect_language_for(text, account),
+        visibility: options[:visibility] || account.user&.setting_default_privacy,
+        language: LanguageDetector.instance.detect(text, account),
         application: options[:application],
         music: options[:music],
       }
@@ -62,10 +63,12 @@ class PostStatusService < BaseService
       ScheduledDistributionWorker.perform_at(published, status.id)
     else
       # 抽出したハッシュタグを使用するため、ProcessHashtagsServiceの後に実行されなければならない
-      ProcessMentionsService.new.call(status)
+      process_mentions_service.call(status)
 
       DistributionWorker.perform_async(status.id)
       Pubsubhubbub::DistributionWorker.perform_async(status.stream_entry.id)
+      ActivityPub::DistributionWorker.perform_async(status.id)
+      ActivityPub::ReplyDistributionWorker.perform_async(status.id) if status.reply? && status.thread.account.local?
 
       time_limit = TimeLimit.from_tags(status.tags)
       RemovalWorker.perform_in(time_limit.to_duration, status.id) if time_limit
@@ -114,8 +117,8 @@ class PostStatusService < BaseService
     media.update(status_id: status.id)
   end
 
-  def detect_language_for(text, account)
-    LanguageDetector.new(text, account).to_iso_s
+  def process_mentions_service
+    @process_mentions_service ||= ProcessMentionsService.new
   end
 
   def process_hashtags_service

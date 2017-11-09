@@ -6,28 +6,20 @@ import Avatar from './avatar';
 import AvatarOverlay from './avatar_overlay';
 import Timestamp from './timestamp';
 import DisplayName from './display_name';
-import MediaGallery from './media_gallery';
-import VideoPlayer from './video_player';
-import BoothWidget from './booth_widget';
-import SCWidget from './sc_widget';
-import YTWidget from './yt_widget';
 import StatusContent from './status_content';
 import StatusActionBar from './status_action_bar';
 import { FormattedMessage } from 'react-intl';
-import emojify from '../emoji';
-import escapeTextContentForBrowser from 'escape-html';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import { MediaGallery, Video } from '../features/ui/util/async-components';
+
+// We use the component (and not the container) since we do not want
+// to use the progress bar to show download progress
+import Bundle from '../features/ui/components/bundle';
 
 export default class Status extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object,
-    displayPinned: PropTypes.bool,
-  };
-
-  // for reblog
-  static childContextTypes = {
-    displayPinned: PropTypes.bool,
   };
 
   static propTypes = {
@@ -37,9 +29,12 @@ export default class Status extends ImmutablePureComponent {
     onFavourite: PropTypes.func,
     onReblog: PropTypes.func,
     onDelete: PropTypes.func,
+    onPin: PropTypes.func,
     onOpenMedia: PropTypes.func,
     onOpenVideo: PropTypes.func,
     onBlock: PropTypes.func,
+    onEmbed: PropTypes.func,
+    onHeightChange: PropTypes.func,
     me: PropTypes.number,
     boostModal: PropTypes.bool,
     autoPlayGif: PropTypes.bool,
@@ -49,8 +44,9 @@ export default class Status extends ImmutablePureComponent {
     standalone: PropTypes.bool,
     schedule: PropTypes.bool,
     onPin: PropTypes.func,
-    fetchBoothItem: PropTypes.func,
-    boothItem: ImmutablePropTypes.map,
+    displayPinned: PropTypes.bool,
+    intersectionObserverWrapper: PropTypes.object,
+    hidden: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -70,40 +66,27 @@ export default class Status extends ImmutablePureComponent {
     'boostModal',
     'autoPlayGif',
     'muted',
-    'boothItem',
+    'hidden',
   ]
 
   updateOnStates = ['isExpanded']
 
-  // for reblog
-  getChildContext() {
-    return { displayPinned: false };
-  }
-
-  componentDidMount () {
-    const boothItemId = this.props.status.get('booth_item_id');
-
-    if (!this.props.boothItem && boothItemId) {
-      this.props.fetchBoothItem(boothItemId);
-    }
-  }
-
   handleClick = () => {
-    let { status } = this.props;
-    if (status.get('reblog')) {
-      status = status.get('reblog');
+    if (!this.context.router) {
+      return;
     }
 
-    this.context.router.history.push(`/@${status.getIn(['account', 'acct'])}/${status.get('id')}`);
+    const { status } = this.props;
+    this.context.router.history.push(`/statuses/${status.getIn(['reblog', 'id'], status.get('id'))}`);
   }
 
   handleAccountClick = (e) => {
     if (this.props.standalone) {
       e.preventDefault();
-    } else if (e.button === 0) {
-      const acct = e.currentTarget.getAttribute('data-acct');
+    } else if (this.context.router && e.button === 0) {
+      const id = Number(e.currentTarget.getAttribute('data-id'));
       e.preventDefault();
-      this.context.router.history.push(`/@${acct}`);
+      this.context.router.history.push(`/accounts/${id}`);
     }
   }
 
@@ -111,49 +94,66 @@ export default class Status extends ImmutablePureComponent {
     this.setState({ isExpanded: !this.state.isExpanded });
   };
 
+  renderLoadingMediaGallery = () => {
+    const { squareMedia } = this.props;
+    return <div className='media_gallery' style={{ height: squareMedia ? 229 : 132 }} />;
+  }
+
+  renderLoadingVideoPlayer = () => {
+    const { squareMedia } = this.props;
+    return <div className='media-spoiler-video' style={{ height: squareMedia ? 229 : 132 }} />;
+  }
+
+  handleOpenVideo = startTime => {
+    this.props.onOpenVideo(this.props.status.getIn(['media_attachments', 0]), startTime);
+  }
+
   render () {
     let media = null;
     let statusAvatar;
 
-    const { status, account, ...other } = this.props;
-    const { expandMedia, squareMedia, standalone, schedule } = this.props;
+    const { status, account, hidden, expandMedia, squareMedia, standalone, schedule, ...other } = this.props;
     const { isExpanded } = this.state;
-    const { displayPinned } = this.context;
 
     if (status === null) {
       return null;
     }
 
-    if (displayPinned && status.get('pinned')) {
+    if (hidden) {
       return (
-        <div className='status__wrapper pinned' data-id={status.get('id')} >
+        <div>
+          {status.getIn(['account', 'display_name']) || status.getIn(['account', 'username'])}
+          {status.get('content')}
+        </div>
+      );
+    }
+
+    if (this.props.displayPinned && status.get('pinned')) {
+      const { displayPinned, intersectionObserverWrapper, ...otherProps } = this.props;
+
+      return (
+        <div className='status__wrapper pinned' ref={this.handleRef} data-id={status.get('id')} >
           <div className='status__prepend'>
             <div className='status__prepend-icon-wrapper'><i className='fa fa-fw fa-pin status__prepend-icon' /></div>
             <FormattedMessage id='status.pinned' defaultMessage='Pinned Toot' className='status__display-name muted' />
           </div>
 
-          <Status {...this.props} />
+          <Status {...otherProps} />
         </div>
       );
     }
 
     if (status.get('reblog', null) !== null && typeof status.get('reblog') === 'object') {
-      let displayName = status.getIn(['account', 'display_name']);
-
-      if (displayName.length === 0) {
-        displayName = status.getIn(['account', 'username']);
-      }
-
-      const displayNameHTML = { __html: emojify(escapeTextContentForBrowser(displayName)) };
+      const display_name_html = { __html: status.getIn(['account', 'display_name_html']) };
 
       return (
         <div className='status__wrapper' data-id={status.get('id')} >
           <div className='status__prepend'>
             <div className='status__prepend-icon-wrapper'><i className='fa fa-fw fa-retweet status__prepend-icon' /></div>
-            <FormattedMessage id='status.reblogged_by' defaultMessage='{name} boosted' values={{ name: <a onClick={this.handleAccountClick} data-id={status.getIn(['account', 'id'])} href={status.getIn(['account', 'url'])} className='status__display-name muted'><strong dangerouslySetInnerHTML={displayNameHTML} /></a> }} />
+            <FormattedMessage id='status.reblogged_by' defaultMessage='{name} boosted' values={{ name: <a onClick={this.handleAccountClick} data-id={status.getIn(['account', 'id'])} href={status.getIn(['account', 'url'])} className='status__display-name muted'><strong dangerouslySetInnerHTML={display_name_html} /></a> }} />
           </div>
 
-          <Status {...other} status={status.get('reblog')} account={status.get('account')} />
+          <Status {...other} status={status.get('reblog')} account={status.get('account')} displayPinned={false} />
         </div>
       );
     }
@@ -172,42 +172,45 @@ export default class Status extends ImmutablePureComponent {
       }).concat(attachments);
     }
 
-    const youtube_pattern = /(?:youtube\.com\/\S*(?:(?:\/e(?:mbed))?\/|watch\/?\?(?:\S*?&?v\=))|youtu\.be\/)([a-zA-Z0-9_-]{6,11})/;
-    const soundcloud_pattern = /soundcloud\.com\/([a-zA-Z0-9\-\_\.]+)\/([a-zA-Z0-9\-\_\.]+)(|\/)/;
-
     if (attachments.size > 0 && !this.props.muted) {
       if (attachments.some(item => item.get('type') === 'unknown')) {
 
       } else if (attachments.first().get('type') === 'video') {
-        media = <VideoPlayer media={attachments.first()} sensitive={status.get('sensitive')} onOpenVideo={this.props.onOpenVideo} />;
-      } else {
-        media = <MediaGallery media={attachments} sensitive={status.get('sensitive')} height={squareMedia ? 229 : 132} onOpenMedia={this.props.onOpenMedia} autoPlayGif={this.props.autoPlayGif} expandMedia={expandMedia} />;
-      }
-    } else if (this.props.boothItem) {
-      const boothItemUrl = status.get('booth_item_url');
-      const boothItemId = status.get('booth_item_id');
+        const video = attachments.first();
 
-      media = <BoothWidget url={boothItemUrl} itemId={boothItemId} boothItem={this.props.boothItem} />;
-    } else if (status.get('content').match(youtube_pattern)) {
-      const videoId = status.get('content').match(youtube_pattern)[1];
-      media = <YTWidget videoId={videoId} />;
-    } else if (status.get('content').match(soundcloud_pattern)) {
-      const url = 'https://' + status.get('content').match(soundcloud_pattern)[0];
-      media = <SCWidget url={url} />;
+        media = (
+          <Bundle fetchComponent={Video} loading={this.renderLoadingVideoPlayer} >
+            {Component => <Component
+              preview={video.get('preview_url')}
+              src={video.get('url')}
+              width={239}
+              height={110}
+              sensitive={status.get('sensitive')}
+              onOpenVideo={this.handleOpenVideo}
+            />}
+          </Bundle>
+        );
+      } else {
+        media = (
+          <Bundle fetchComponent={MediaGallery} loading={this.renderLoadingMediaGallery} >
+            {Component => <Component media={attachments} sensitive={status.get('sensitive')} height={squareMedia ? 229 : 132} onOpenMedia={this.props.onOpenMedia} autoPlayGif={this.props.autoPlayGif} expandMedia={expandMedia} />}
+          </Bundle>
+        );
+      }
     }
 
     if (account === undefined || account === null) {
-      statusAvatar = <Avatar src={status.getIn(['account', 'avatar'])} staticSrc={status.getIn(['account', 'avatar_static'])} size={48} />;
-    } else {
-      statusAvatar = <AvatarOverlay staticSrc={status.getIn(['account', 'avatar_static'])} overlaySrc={account.get('avatar_static')} />;
+      statusAvatar = <Avatar account={status.get('account')} size={48} />;
+    }else{
+      statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
     }
 
     return (
       <div className={`status ${this.props.muted ? 'muted' : ''} status-${status.get('visibility')}`} data-id={status.get('id')}>
         <div className='status__info'>
-          <a href={status.get('url')} className='status__time' target='_blank' rel='noopener'><Timestamp absolute={schedule} timestamp={status.get('created_at')} /></a>
+          <a href={status.get('url')} className='status__time' target='_blank' rel='noopener'><Timestamp schedule={schedule} timestamp={status.get('created_at')} /></a>
 
-          <a onClick={this.handleAccountClick} data-acct={status.getIn(['account', 'acct'])} href={status.getIn(['account', 'url'])} className='status__display-name'>
+          <a onClick={this.handleAccountClick} target='_blank' data-id={status.getIn(['account', 'id'])} href={status.getIn(['account', 'url'])} className='status__display-name'>
             <div className='status__avatar'>
               {statusAvatar}
             </div>
@@ -216,7 +219,7 @@ export default class Status extends ImmutablePureComponent {
           </a>
         </div>
 
-        <StatusContent status={status} onClick={this.handleClick} expanded={isExpanded} onExpandedToggle={this.handleExpandedToggle} onHeightUpdate={this.saveHeight} standalone />
+        <StatusContent status={status} onClick={this.handleClick} expanded={isExpanded} onExpandedToggle={this.handleExpandedToggle} standalone />
 
         {media}
 

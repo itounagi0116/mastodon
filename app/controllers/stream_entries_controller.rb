@@ -26,21 +26,13 @@ class StreamEntriesController < ApplicationController
 
       format.atom do
         return not_found if TimeLimit.from_tags(@stream_entry.status&.tags)
-        render xml: AtomSerializer.render(AtomSerializer.new.entry(@stream_entry, true))
+        render xml: OStatus::AtomSerializer.render(OStatus::AtomSerializer.new.entry(@stream_entry, true))
       end
     end
   end
 
   def embed
-    response.headers['X-Frame-Options'] = 'ALLOWALL'
-    return gone if @stream_entry.activity.nil?
-
-    if @stream_entry.status.music.is_a?(Track)
-      @status = @stream_entry.status
-      render 'musicvideo', layout: 'embedded'
-    else
-      render layout: 'embedded'
-    end
+    redirect_to embed_short_account_status_url(@account, @stream_entry.activity), status: 301
   end
 
   private
@@ -50,7 +42,12 @@ class StreamEntriesController < ApplicationController
   end
 
   def set_link_headers
-    response.headers['Link'] = LinkHeader.new([[account_stream_entry_url(@account, @stream_entry, format: 'atom'), [%w(rel alternate), %w(type application/atom+xml)]]])
+    response.headers['Link'] = LinkHeader.new(
+      [
+        [account_stream_entry_url(@account, @stream_entry, format: 'atom'), [%w(rel alternate), %w(type application/atom+xml)]],
+        [ActivityPub::TagManager.instance.uri_for(@stream_entry.activity), [%w(rel alternate), %w(type application/activity+json)]],
+      ]
+    )
   end
 
   def set_stream_entry

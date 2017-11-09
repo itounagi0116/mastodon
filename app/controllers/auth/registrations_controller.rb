@@ -8,12 +8,6 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   before_action :set_sessions, only: [:edit, :update]
   before_action :store_current_location, only: [:edit]
 
-  def create
-    super do |user|
-      DefaultFollowWorker.perform_async(user.account_id) if user.persisted?
-    end
-  end
-
   def update
     if current_user.initial_password_usage
       send_reset_password_instructions
@@ -29,9 +23,9 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   protected
 
   def send_reset_password_instructions
-    _resource = resource_class.send_reset_password_instructions(email: current_user.email)
+    resource = resource_class.send_reset_password_instructions(email: current_user.email)
 
-    if successfully_sent?(_resource)
+    if successfully_sent?(resource)
       redirect_to edit_user_registration_path
     else
       render :edit, status: :unprocessable_entity

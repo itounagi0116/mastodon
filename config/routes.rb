@@ -3,6 +3,8 @@
 require 'sidekiq/web'
 require 'sidekiq-scheduler/web'
 
+Sidekiq::Web.set :session_secret, Rails.application.secrets[:secret_key_base]
+
 Rails.application.routes.draw do
   mount LetterOpenerWeb::Engine, at: 'letter_opener' if Rails.env.development?
 
@@ -18,6 +20,7 @@ Rails.application.routes.draw do
   get '.well-known/host-meta', to: 'well_known/host_meta#show', as: :host_meta, defaults: { format: 'xml' }
   get '.well-known/webfinger', to: 'well_known/webfinger#show', as: :webfinger
   get 'manifest', to: 'manifests#show', defaults: { format: 'json' }
+  get 'intent', to: 'intents#show'
 
   devise_for :users, path: 'auth', controllers: {
     sessions:           'auth/sessions',
@@ -34,12 +37,9 @@ Rails.application.routes.draw do
     end
   end
 
-  get '/@:username', to: 'accounts#show', as: :short_account, constraints: { username: /((?!(\.atom|\.activitystreams2)$)[^\/])+/ }
-  get '/@:account_username/:id', to: 'statuses#show', as: :short_account_status, constraints: { account_username: /[^\/]+/ }
+  get '/users/:username', to: redirect('/@%{username}'), constraints: { username: /([^\/]+(?<!\.atom|\.json)$)/ }
 
-  get '/users/:username', to: redirect('/@%{username}'), constraints: { username: /([^\/]+(?<!\.atom|\.activitystreams2)$)/ }
-
-  resources :accounts, path: 'users', only: [:show], param: :username, constraints: { username: /((?!(\.atom|\.activitystreams2)$)[^\/])+/ } do
+  resources :accounts, path: 'users', only: [:show], param: :username, constraints: { username: /((?!(\.atom|\.json)$)[^\/])+/ } do
     resources :stream_entries, path: 'updates', only: [:show] do
       member do
         get :embed
@@ -49,12 +49,29 @@ Rails.application.routes.draw do
     get :remote_follow,  to: 'remote_follow#new'
     post :remote_follow, to: 'remote_follow#create'
 
-    resources :media, only: [:index], controller: :medium_accounts
+    resources :statuses, only: [:show] do
+      member do
+        get :activity
+        get :embed
+      end
+    end
+
+    # get :media, to: redirect(path: '/@%{account_username}/media')
     resources :followers, only: [:index], controller: :follower_accounts
     resources :following, only: [:index], controller: :following_accounts
     resource :follow, only: [:create], controller: :account_follow
     resource :unfollow, only: [:create], controller: :account_unfollow
+    resource :outbox, only: [:show], module: :activitypub
+    resource :inbox, only: [:create], module: :activitypub
   end
+
+  resource :inbox, only: [:create], module: :activitypub
+
+  get '/@:username', to: 'accounts#show', as: :short_account, constraints: { username: /((?!(\.atom|\.json)$)[^\/])+/ }
+  # get '/@:username/with_replies', to: 'accounts#show', as: :short_account_with_replies
+  # get '/@:username/media', to: 'accounts#show', as: :short_account_media
+  get '/@:account_username/:id', to: 'statuses#show', as: :short_account_status, constraints: { account_username: /[^\/]+/ }
+  get '/@:account_username/:id/embed', to: 'statuses#embed', as: :embed_short_account_status, constraints: { account_username: /[^\/]+/ }
 
   namespace :settings do
     resources :oauth_authentications, only: [:index, :destroy]
@@ -76,7 +93,16 @@ Rails.application.routes.draw do
     end
 
     resource :follower_domains, only: [:show, :update]
+
+    resources :applications, except: [:edit] do
+      member do
+        post :regenerate
+      end
+    end
+
     resource :delete, only: [:show, :destroy]
+    resources :sessions, only: [:destroy]
+
     resource :timeline, only: [:show]
     resource :follow_requests, only: [:show]
     resource :mutes, only: [:show]
@@ -87,24 +113,30 @@ Rails.application.routes.draw do
   resources :tags,  only: [:show]
   resources :oauth_authentications, only: [:show], param: :uid
 
-  namespace :intent do
-    resources :statuses, only: :new
-  end
+  get '/intent/statuses/new', to: redirect(path: '/share')
+
+  get '/media_proxy/:id/(*any)', to: 'media_proxy#show', as: :media_proxy
 
   # Remote follow
   resource :authorize_follow, only: [:show, :create]
+  resource :share, only: [:show, :create]
 
   namespace :admin do
     resources :subscriptions, only: [:index]
     resources :domain_blocks, only: [:index, :new, :create, :show, :destroy]
     resource :settings, only: [:edit, :update]
-    resources :instances, only: [:index]
     resources :suggestion_tags, only: [:index, :new, :create, :edit, :update, :destroy]
     resources :scheduled_statuses, only: [:index]
     resources :trend_ng_words, only: [:index, :new, :create, :edit, :update, :destroy]
     resources :oauth_authentications, only: [:destroy]
     resources :playlists, only: [:index, :new, :create, :edit, :update, :destroy]
     resource :playlist_setting, only: [:update]
+
+    resources :instances, only: [:index] do
+      collection do
+        post :resubscribe
+      end
+    end
 
     resources :reports, only: [:index, :show, :update] do
       resources :reported_statuses, only: [:create, :update, :destroy]
@@ -145,13 +177,6 @@ Rails.application.routes.draw do
     # OEmbed
     get '/oembed', to: 'oembed#show', as: :oembed
 
-    # ActivityPub
-    namespace :activitypub do
-      get '/users/:id/outbox', to: 'outbox#show', as: :outbox
-      get '/statuses/:id', to: 'activities#show_status', as: :status
-      resources :notes, only: [:show]
-    end
-
     # JSON / REST API
     namespace :v1 do
       resources :statuses, only: [:create, :show, :destroy] do
@@ -166,6 +191,9 @@ Rails.application.routes.draw do
 
           resource :mute, only: :create
           post :unmute, to: 'mutes#destroy'
+
+          resource :pin, only: [:create, :destroy]
+          post :unpin, to: 'pins#destroy'
         end
 
         member do
@@ -173,8 +201,6 @@ Rails.application.routes.draw do
           get :card
           get :music
         end
-
-        resource :pin, only: [:create, :destroy], controller: :pinned_statuses
       end
 
       namespace :timelines do
@@ -182,13 +208,15 @@ Rails.application.routes.draw do
         resource :public, only: :show, controller: :public
         resources :tag, only: :show
       end
-      resources :streaming,  only: [:index]
+
+      resources :streaming, only: [:index]
 
       get '/search', to: 'search#index', as: :search
       get '/search/statuses/:query', to: 'search#statuses', as: :status_search_timeline
 
       resource :push_notification_preferences, only: [:show, :update]
       resources :trend_tags, only: [:index]
+      resources :suggestion_tags, only: [:index]
       resources :follows,    only: [:create]
       resources :media,      only: [:create]
       resources :apps,       only: [:create]
@@ -228,6 +256,7 @@ Rails.application.routes.draw do
         resource :search, only: :show, controller: :search
         resources :relationships, only: :index
       end
+
       resources :accounts, only: [:show] do
         resources :statuses, only: :index, controller: 'accounts/statuses'
         resources :followers, only: :index, controller: 'accounts/follower_accounts'
@@ -256,6 +285,12 @@ Rails.application.routes.draw do
 
     namespace :web do
       resource :settings, only: [:update]
+      resource :embed, only: [:create]
+      resources :push_subscriptions, only: [:create] do
+        member do
+          put :update
+        end
+      end
     end
   end
 
@@ -278,7 +313,7 @@ Rails.application.routes.draw do
   resources :tracks, only: [:new, :edit]
 
   match '*unmatched_route',
-    via: :all,
-    to: 'application#raise_not_found',
-    format: false
+        via: :all,
+        to: 'application#raise_not_found',
+        format: false
 end

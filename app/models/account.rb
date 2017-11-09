@@ -36,12 +36,17 @@
 #  followers_count         :integer          default(0), not null
 #  following_count         :integer          default(0), not null
 #  last_webfingered_at     :datetime
+#  inbox_url               :string           default(""), not null
+#  outbox_url              :string           default(""), not null
+#  shared_inbox_url        :string           default(""), not null
+#  followers_url           :string           default(""), not null
+#  protocol                :integer          default("ostatus"), not null
 #  tracks_count            :integer          default(0), not null
 #  albums_count            :integer          default(0), not null
 #
 
 class Account < ApplicationRecord
-  MENTION_RE = /(?:^|[^\/[:word:]])@([a-z0-9_]+(?:@[a-z0-9\.\-]+[a-z0-9]+)?)/i
+  MENTION_RE = /(?:^|[^\/[:word:]])@(([a-z0-9_]+)(?:@[a-z0-9\.\-]+[a-z0-9]+)?)/i
 
   include AccountAvatar
   include AccountFinderConcern
@@ -49,6 +54,9 @@ class Account < ApplicationRecord
   include AccountInteractions
   include Attachmentable
   include Remotable
+  include EmojiHelper
+
+  enum protocol: [:ostatus, :activitypub]
 
   # Local users
   has_one :user, inverse_of: :account
@@ -71,7 +79,10 @@ class Account < ApplicationRecord
   has_many :mentions, inverse_of: :account, dependent: :destroy
   has_many :notifications, inverse_of: :account, dependent: :destroy
   has_many :oauth_authentications, through: :user
-  has_many :pinned_statuses, dependent: :destroy
+
+  # Pinned statuses
+  has_many :status_pins, inverse_of: :account, dependent: :destroy
+  has_many :pinned_statuses, -> { reorder('status_pins.created_at DESC') }, through: :status_pins, class_name: 'Status', source: :status
 
   # Media
   has_many :media_attachments, dependent: :destroy
@@ -101,11 +112,13 @@ class Account < ApplicationRecord
   scope :by_domain_accounts, -> { group(:domain).select(:domain, 'COUNT(*) AS accounts_count').order('accounts_count desc') }
   scope :matches_username, ->(value) { where(arel_table[:username].matches("#{value}%")) }
   scope :matches_display_name, ->(value) { where(arel_table[:display_name].matches("#{value}%")) }
+  scope :matches_domain, ->(value) { where(arel_table[:domain].matches("%#{value}%")) }
 
   delegate :email,
            :current_sign_in_ip,
            :current_sign_in_at,
            :confirmed?,
+           :admin?,
            :locale,
            to: :user,
            prefix: true,
@@ -115,6 +128,10 @@ class Account < ApplicationRecord
 
   def local?
     domain.nil?
+  end
+
+  def bootstrap_timeline?
+    local? && (Setting.bootstrap_timeline_accounts || '').split(',').map { |str| str.strip.gsub(/\A@/, '') }.include?(username)
   end
 
   def acct
@@ -176,11 +193,19 @@ class Account < ApplicationRecord
   end
 
   class << self
+    def readonly_attributes
+      super - %w(statuses_count following_count followers_count)
+    end
+
     def domains
       reorder(nil).pluck('distinct accounts.domain')
     end
 
-    def triadic_closures(account, limit: 5, offset: 0, exclude_ids: [])
+    def inboxes
+      reorder(nil).where(protocol: :activitypub).pluck("distinct coalesce(nullif(accounts.shared_inbox_url, ''), accounts.inbox_url)")
+    end
+
+    def triadic_closures(account, limit: 5, offset: 0, exclude_ids: [], current_time: Time.current)
       sql = <<-SQL.squish
         WITH first_degree AS (
           SELECT target_account_id
@@ -192,12 +217,16 @@ class Account < ApplicationRecord
         INNER JOIN accounts ON follows.target_account_id = accounts.id
         WHERE
           account_id IN (SELECT * FROM first_degree)
-          AND suspended = 'f'
-          AND silenced = 'f'
           AND target_account_id NOT IN (SELECT * FROM first_degree)
           AND target_account_id NOT IN (:excluded_account_ids)
-          AND accounts.suspended = false
+          AND accounts.suspended = FALSE
         GROUP BY target_account_id, accounts.id
+        HAVING (
+          SELECT created_at
+          FROM statuses
+          WHERE statuses.account_id = target_account_id
+          ORDER BY statuses.id DESC LIMIT 1
+        ) >= TIMESTAMP :current_timestamp - '3 days'::INTERVAL
         ORDER BY count(account_id) DESC
         OFFSET :offset
         LIMIT :limit
@@ -206,7 +235,7 @@ class Account < ApplicationRecord
       excluded_account_ids = account.excluded_from_timeline_account_ids + [account.id] + exclude_ids
 
       find_by_sql(
-        [sql, { account_id: account.id, excluded_account_ids: excluded_account_ids, limit: limit, offset: offset }]
+        [sql, { account_id: account.id, excluded_account_ids: excluded_account_ids, limit: limit, offset: offset, current_timestamp: current_time }]
       )
     end
 
@@ -219,7 +248,7 @@ class Account < ApplicationRecord
           ts_rank_cd(#{textsearch}, #{query}, 32) AS rank
         FROM accounts
         WHERE #{query} @@ #{textsearch}
-          AND accounts.suspended = false
+          AND accounts.suspended = FALSE
         ORDER BY rank DESC
         LIMIT ?
       SQL
@@ -237,13 +266,26 @@ class Account < ApplicationRecord
         FROM accounts
         LEFT OUTER JOIN follows AS f ON (accounts.id = f.account_id AND f.target_account_id = ?) OR (accounts.id = f.target_account_id AND f.account_id = ?)
         WHERE #{query} @@ #{textsearch}
-          AND accounts.suspended = false
+          AND accounts.suspended = FALSE
         GROUP BY accounts.id
         ORDER BY rank DESC
         LIMIT ?
       SQL
 
       find_by_sql([sql, account.id, account.id, limit])
+    end
+
+    def filter_by_time(ids, time_begin = 3.days.ago)
+      sql = <<-SQL.squish
+        SELECT accounts.id
+        FROM accounts
+        WHERE accounts.id IN (:ids)
+        AND suspended = FALSE
+        AND silenced = FALSE
+        AND (SELECT created_at FROM statuses WHERE statuses.account_id = accounts.id ORDER BY statuses.id DESC LIMIT 1) > :time_begin
+      SQL
+
+      find_by_sql([sql, {ids: ids, time_begin: time_begin}]).map(&:id)
     end
 
     private
@@ -259,13 +301,22 @@ class Account < ApplicationRecord
 
   before_create :generate_keys
   before_validation :normalize_domain
+  before_validation :prepare_contents, if: :local?
 
   private
+
+  def prepare_contents
+    display_name&.strip!
+    note&.strip!
+
+    self.display_name = emojify(display_name)
+    self.note         = emojify(note)
+  end
 
   def generate_keys
     return unless local?
 
-    keypair = OpenSSL::PKey::RSA.new(Rails.env.test? ? 1024 : 2048)
+    keypair = OpenSSL::PKey::RSA.new(Rails.env.test? ? 512 : 2048)
     self.private_key = keypair.to_pem
     self.public_key  = keypair.public_key.to_pem
   end

@@ -44,6 +44,7 @@
 #  video_1920x1080_updated_at       :datetime
 #  video_backgroundcolor            :integer          default(1513239), not null
 #  video_banner_alpha               :float            default(1.0), not null
+#  albums_count                     :integer          default(0), not null
 #
 
 class Track < ApplicationRecord

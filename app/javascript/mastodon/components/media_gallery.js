@@ -7,20 +7,46 @@ import { isIOS } from '../is_mobile';
 
 class Item extends React.PureComponent {
 
+  static contextTypes = {
+    router: PropTypes.object,
+  };
+
   static propTypes = {
     attachment: ImmutablePropTypes.map.isRequired,
     index: PropTypes.number.isRequired,
     size: PropTypes.number.isRequired,
     onClick: PropTypes.func.isRequired,
-    autoPlayGif: PropTypes.bool.isRequired,
+    autoPlayGif: PropTypes.bool,
     expandMedia: PropTypes.bool.isRequired,
     lineMedia: PropTypes.bool.isRequired,
   };
 
+  static defaultProps = {
+    autoPlayGif: false,
+  };
+
+  handleMouseEnter = (e) => {
+    if (this.hoverToPlay()) {
+      e.target.play();
+    }
+  }
+
+  handleMouseLeave = (e) => {
+    if (this.hoverToPlay()) {
+      e.target.pause();
+      e.target.currentTime = 0;
+    }
+  }
+
+  hoverToPlay () {
+    const { attachment, autoPlayGif } = this.props;
+    return !autoPlayGif && attachment.get('type') === 'gifv';
+  }
+
   handleClick = (e) => {
     const { index, onClick } = this.props;
 
-    if (e.button === 0) {
+    if (this.context.router && e.button === 0) {
       e.preventDefault();
       onClick(index);
     }
@@ -94,8 +120,10 @@ class Item extends React.PureComponent {
       const originalUrl = attachment.get('url');
       const originalWidth = attachment.getIn(['meta', 'original', 'width']);
 
-      const srcSet = attachment.has('meta') ? `${originalUrl} ${originalWidth}w, ${previewUrl} ${previewWidth}w` : null;
-      const sizes = `(min-width: 1025px) ${320 * (width / 100)}px, ${width}vw`;
+      const hasSize = typeof originalWidth === 'number' && typeof previewWidth === 'number';
+
+      const srcSet = hasSize ? `${originalUrl} ${originalWidth}w, ${previewUrl} ${previewWidth}w` : null;
+      const sizes = hasSize ? `(min-width: 1025px) ${320 * (width / 100)}px, ${width}vw` : null;
 
       thumbnail = (
         <a
@@ -117,6 +145,8 @@ class Item extends React.PureComponent {
             role='application'
             src={attachment.get('url')}
             onClick={this.handleClick}
+            onMouseEnter={this.handleMouseEnter}
+            onMouseLeave={this.handleMouseLeave}
             autoPlay={autoPlay}
             loop
             muted
@@ -152,6 +182,7 @@ export default class MediaGallery extends React.PureComponent {
   static defaultProps = {
     expandMedia: false,
     lineMedia: false,
+    autoPlayGif: false,
   };
 
   state = {
@@ -187,10 +218,10 @@ export default class MediaGallery extends React.PureComponent {
       }
 
       children = (
-        <div role='button' tabIndex='0' className='media-spoiler' onClick={this.handleOpen}>
+        <button className='media-spoiler' onClick={this.handleOpen}>
           <span className='media-spoiler__warning'>{warning}</span>
           <span className='media-spoiler__trigger'><FormattedMessage id='status.sensitive_toggle' defaultMessage='Click to view' /></span>
-        </div>
+        </button>
       );
     } else {
       const size = media.take(4).size;

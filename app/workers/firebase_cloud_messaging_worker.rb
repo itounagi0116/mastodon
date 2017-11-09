@@ -17,7 +17,7 @@ class FirebaseCloudMessagingWorker
   end
 
   def send_push_notifications
-    data = JSON.parse(InlineRenderer.render(@notification, @recipient, 'firebase_cloud_messagings/push_notification'))
+    data = InlineRenderer.render(@notification, @recipient, :firebase_cloud_messaging_push_notification)
 
     @recipient.user.firebase_cloud_messaging_tokens.each do |firebase_cloud_messaging_token|
       method_name = if firebase_cloud_messaging_token.android?

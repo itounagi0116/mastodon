@@ -44,7 +44,7 @@ en:
           attributes:
             reblog:
               taken: of status already exists
-        pinned_status:
+        status_pin:
           attributes:
             status:
               no_permission: isn't own toot
