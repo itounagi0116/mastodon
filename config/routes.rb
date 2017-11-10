@@ -256,6 +256,7 @@ Rails.application.routes.draw do
 
     namespace :web do
       resource :settings, only: [:update]
+      resource :embed, only: [:create]
     end
   end
 
