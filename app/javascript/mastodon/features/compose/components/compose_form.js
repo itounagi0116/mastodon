@@ -41,14 +41,9 @@ import 'moment/locale/ja';
 
 const messages = defineMessages({
   placeholder: { id: 'compose_form.placeholder', defaultMessage: 'What is on your mind?' },
-<<<<<<< HEAD
-  spoiler_placeholder: { id: 'compose_form.spoiler_placeholder', defaultMessage: 'Content warning' },
-  schedule_placeholder: { id: 'compose_form.schedule_placeholder', defaultMessage: 'Time to post' },
-=======
   spoiler_placeholder: { id: 'compose_form.spoiler_placeholder', defaultMessage: 'Write your warning here' },
   schedule_placeholder: { id: 'compose_form.schedule_placeholder', defaultMessage: 'Time to post' },
   hashtag_editor_placeholder: { id: 'compose_form.hashtag_editor_placeholder', defaultMessage: 'Append tag (press enter to add)' },
->>>>>>> pawoo/pawoo-v1.6.1
   publish: { id: 'compose_form.publish', defaultMessage: 'Toot' },
   publishLoud: { id: 'compose_form.publish_loud', defaultMessage: '{publish}!' },
 });
@@ -94,21 +89,8 @@ export default class ComposeForm extends ImmutablePureComponent {
     showSearch: false,
   };
 
-<<<<<<< HEAD
-  _restoreCaret = null;
-
-  componentDidMount () {
-    const rawQuery = location.search.replace(/^\?/, '');
-    if (rawQuery.length > 0) {
-      window.history.replaceState(window.history.state, null, location.pathname);
-      const query = qs.parse(rawQuery);
-      this.props.onChange(query.text);
-    }
-  }
-=======
   state = { tagSuggestionFrom: null }
   _restoreCaret = null;
->>>>>>> pawoo/pawoo-v1.6.1
 
   handleChange = (e) => {
     this.props.onChange(e.target.value);
@@ -224,10 +206,7 @@ export default class ComposeForm extends ImmutablePureComponent {
 
   render () {
     const { scheduling, intl, onPaste, showSearch } = this.props;
-<<<<<<< HEAD
-=======
     const { tagSuggestionFrom } = this.state;
->>>>>>> pawoo/pawoo-v1.6.1
     const disabled = this.props.is_submitting;
     const text     = [this.props.spoiler_text, countableText(this.props.text)].join('');
 
@@ -318,11 +297,7 @@ export default class ComposeForm extends ImmutablePureComponent {
 
           <div className='compose-form__publish'>
             <div className='character-counter__wrapper'><CharacterCounter max={500} text={text} /></div>
-<<<<<<< HEAD
-            <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={disabled || this.props.is_uploading || typeof this.props.published === 'string' || length(text) > 500 || (text.length !==0 && text.trim().length === 0)} block /></div>
-=======
             <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={disabled || this.props.is_uploading || typeof this.props.published === 'string' || length(text) > 500 || (text.length !== 0 && text.trim().length === 0)} block /></div>
->>>>>>> pawoo/pawoo-v1.6.1
           </div>
         </div>
 

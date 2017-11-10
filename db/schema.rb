@@ -87,7 +87,6 @@ ActiveRecord::Schema.define(version: 20171108000000) do
     t.string "image_content_type"
     t.integer "image_file_size"
     t.datetime "image_updated_at"
-    t.integer "tracks_count", default: 0, null: false
   end
 
   create_table "blocks", id: :serial, force: :cascade do |t|
@@ -509,7 +508,6 @@ ActiveRecord::Schema.define(version: 20171108000000) do
     t.datetime "video_1920x1080_updated_at"
     t.integer "video_backgroundcolor", default: 1513239, null: false
     t.float "video_banner_alpha", default: 1.0, null: false
-    t.integer "albums_count", default: 0, null: false
   end
 
   create_table "trend_ng_words", id: :serial, force: :cascade do |t|

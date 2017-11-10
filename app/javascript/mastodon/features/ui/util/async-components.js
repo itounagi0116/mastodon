@@ -78,10 +78,6 @@ export function MediaTimeline () {
   return import(/* webpackChunkName: "features/media_timeline" */'../../media_timeline');
 }
 
-export function SuggestedAccounts () {
-  return import(/* webpackChunkName: "features/suggestion_tags" */'../../suggested_accounts');
-}
-
 export function SuggestionTags () {
   return import(/* webpackChunkName: "features/suggestion_tags" */'../../suggestion_tags');
 }
