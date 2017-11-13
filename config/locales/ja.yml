@@ -319,6 +319,7 @@ ja:
     unlocked_warning_title: このアカウントは非公開アカウントに設定されていません。
   generic:
     changes_saved_msg: 正常に変更されました
+    initialize_settings: 設定を初期化
     powered_by: powered by %{link}
     save_changes: 変更を保存
     validation_errors:
@@ -434,6 +435,7 @@ ja:
     authorized_apps: 認証済みアプリ
     back: 戻る
     blocked_users: ブロックしたユーザー
+    custom_color: 色のカスタマイズ
     delete: アカウントの削除
     edit_profile: プロフィールを編集
     export: データのエクスポート

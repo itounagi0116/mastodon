@@ -219,7 +219,7 @@ $button-icon-scale-ration-on-pc: 0.85;
 }
 
 .loading-bar {
-  background-color: var(--tootcolor);
+  background-color: var(--linkcolor2);
   height: 3px;
   position: absolute;
   top: 0;
@@ -385,7 +385,7 @@ $button-icon-scale-ration-on-pc: 0.85;
   border-radius:    var(--radius);
   background-color: var(--color1);
 
-  color:          var(--tootcolor);
+  color:          var(--linkcolor2);
   font-size:      var(--text30-font);
   line-height:    var(--text30-line);
 }
@@ -1041,7 +1041,7 @@ button.icon-button {
 
     &:hover,
     &.active {
-      background: var(--tootcolor);
+      background: var(--linkcolor2);
       color:      var(--textcolor);
 
       .privacy-dropdown__option__icon {
@@ -1059,7 +1059,7 @@ button.icon-button {
     }
 
     &.active:hover {
-      background: var(--tootcolor);
+      background: var(--linkcolor2);
     }
   }
 }

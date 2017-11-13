@@ -46,13 +46,13 @@ import Slider from '../../components/slider';
 import Checkbox from '../../components/checkbox';
 import {
   constructRgbObject,
-  constructRgbCode,
   extractRgbFromRgbObject,
   validateIsFileMp3,
   validateIsFileImage,
 } from '../../util/musicvideo';
 import PrivacyDropdown from '../../../mastodon/features/compose/components/privacy_dropdown';
 import GenreTagPicker from '../../components/genre_tag_picker';
+import ColorTrigger from '../../components/color_trigger';
 
 const messages = defineMessages({
   preview: { id: 'pawoo_music.track_compose.preview', defaultMessage: 'Video preview' },
@@ -189,38 +189,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(submitTrackCompose());
   },
 });
-
-class ColorTrigger extends ImmutablePureComponent {
-
-  static propTypes = {
-    alpha: PropTypes.number.isRequired,
-    color: PropTypes.number.isRequired,
-    onClick: PropTypes.func,
-  }
-
-  render () {
-    const { alpha, color, onClick } = this.props;
-    const depth = Math.round(((color & 0xff) + ((color >> 8) & 0xff) + ((color >> 16) & 0xff)) / 3);
-    const borderDepth = depth < 0xb0 ? 0x58 + depth : Math.max(0x58, 0x108 - depth);
-    const borderDepthHex = borderDepth.toString(16);
-
-    return (
-      <div
-        className='track-compose-effect-color-trigger'
-        onClick={onClick}
-        role='button'
-        style={{ borderColor: '#' + borderDepthHex.repeat(3) }}
-        tabIndex='-1'
-      >
-        <div
-          className='track-compose-effect-color-trigger-body'
-          style={{ backgroundColor: constructRgbCode(color, alpha) }}
-        />
-      </div>
-    );
-  }
-
-}
 
 @injectIntl
 @connect(makeMapStateToProps, mapDispatchToProps)

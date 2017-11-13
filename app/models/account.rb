@@ -88,6 +88,8 @@ class Account < ApplicationRecord
   has_many :track_statuses, -> { where(in_reply_to_id: nil).tracks_only }, class_name: 'Status'
   has_many :album_statuses, -> { where(in_reply_to_id: nil).albums_only }, class_name: 'Status'
 
+  has_one :custom_color, class_name: 'AccountCustomColor'
+
   scope :remote, -> { where.not(domain: nil) }
   scope :local, -> { where(domain: nil) }
   scope :without_followers, -> { where(followers_count: 0) }

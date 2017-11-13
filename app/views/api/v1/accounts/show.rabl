@@ -14,3 +14,7 @@ attributes :followers_count, :following_count, :statuses_count, :tracks_count, :
 child :oauth_authentications, object_root: false do
   attribute(:uid, :provider)
 end
+
+child({ custom_color: :custom_color }, object_root: false) do
+  attributes :textcolor, :linkcolor, :linkcolor2, :strong1, :strong2, :color1, :color2, :color3
+end
