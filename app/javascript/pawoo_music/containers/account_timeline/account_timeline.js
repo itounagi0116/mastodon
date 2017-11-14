@@ -122,13 +122,18 @@ export default class AccountTimeline extends PureComponent {
   }
 
   render () {
-    const { statusIds, pinnedStatusIds, isLoading, hasMore, gallery } = this.props;
+    const { account, statusIds, pinnedStatusIds, isLoading, hasMore, gallery } = this.props;
     const header = null;
     const prepend = null;
     const uniqueStatusIds = pinnedStatusIds.concat(statusIds).toOrderedSet().toList();
+    const galleryStyle = {};
+
+    if (account.get('background_image')) {
+      galleryStyle.backgroundImage = `url(${account.get('background_image')})`;
+    }
 
     return (
-      <Timeline gallery={gallery} header={header}>
+      <Timeline gallery={gallery} galleryStyle={galleryStyle} header={header}>
         <ScrollableList
           scrollKey='account_timeline'
           statusIds={uniqueStatusIds}
