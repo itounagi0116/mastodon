@@ -49,5 +49,5 @@ child({ music: :album }, if: ->(status) { !status.reblog? && status.music.is_a?(
 end
 
 child({ music: :track }, if: ->(status) { !status.reblog? && status.music.is_a?(Track) }) do
-  extends 'api/v1/statuses/_track', locals: { show_video_url: current_account && root_status.account_id == current_account.id }
+  extends 'api/v1/statuses/_track', locals: { show_video_url: current_account && (current_user.admin || root_status.account == current_account) }
 end
