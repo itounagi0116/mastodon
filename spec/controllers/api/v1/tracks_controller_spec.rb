@@ -479,7 +479,7 @@ describe Api::V1::TracksController, type: :controller do
         end
       end
 
-      let(:user) { Fabricate(:user) }
+      let(:user) { Fabricate(:user, admin: false) }
       let(:track) { Fabricate(:track) }
 
       context 'with origin status authored by self' do
@@ -487,7 +487,7 @@ describe Api::V1::TracksController, type: :controller do
 
         it 'queues rendering' do
           post :prepare_video, params: { id: status, resolution: '720x720' }
-          expect(VideoPreparingWorker).to have_enqueued_sidekiq_job status.id, '720x720'
+          expect(VideoPreparingWorker).to have_enqueued_sidekiq_job status.id, user.account.id,'720x720'
         end
 
         it 'returns 422 with invalid resolution' do
@@ -507,6 +507,21 @@ describe Api::V1::TracksController, type: :controller do
         it 'returns not found' do
           post :prepare_video, params: { id: status, resolution: '720x720' }
           expect(response).to have_http_status :not_found
+        end
+      end
+
+      context 'with track authored by another if admin account' do
+        let(:user) { Fabricate(:user, admin: true) }
+        let(:status) { Fabricate(:status, music: track, reblog: nil) }
+
+        it 'queues rendering' do
+          post :prepare_video, params: { id: status, resolution: '720x720' }
+          expect(VideoPreparingWorker).to have_enqueued_sidekiq_job status.id, user.account.id,'720x720'
+        end
+
+        it 'returns http success' do
+          post :prepare_video, params: { id: status, resolution: '720x720' }
+          expect(response).to have_http_status :success
         end
       end
 

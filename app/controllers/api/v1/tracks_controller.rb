@@ -41,16 +41,19 @@ class Api::V1::TracksController < Api::BaseController
   end
 
   def update
+    raise ActiveRecord::RecordNotFound if @status.account != current_account
     @status.music.update! track_attributes
 
     render 'api/v1/statuses/show'
   end
 
   def prepare_video
+    raise ActiveRecord::RecordNotFound if !current_user.admin && @status.account != current_account
+
     resolution = params.require('resolution')
     raise Mastodon::ValidationError if Track::RESOLUTIONS.exclude? resolution
 
-    VideoPreparingWorker.perform_async @status.id, resolution
+    VideoPreparingWorker.perform_async @status.id, current_account.id, resolution
 
     render_empty
   end
@@ -58,7 +61,7 @@ class Api::V1::TracksController < Api::BaseController
   private
 
   def set_status
-    @status = Status.tracks_only.find_by!(id: params[:id], account: current_account, reblog: nil)
+    @status = Status.tracks_only.find_by!(id: params[:id], reblog: nil)
   end
 
   def track_attributes

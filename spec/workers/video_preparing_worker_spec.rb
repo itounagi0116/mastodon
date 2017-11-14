@@ -20,21 +20,21 @@ describe VideoPreparingWorker do
     # > Dimensions should be between 32x32 and 1280x1024
     # > Aspect ratio should be between 1:3 and 3:1
     it 'prepares 720x720' do
-      VideoPreparingWorker.new.perform status.id, '720x720'
+      VideoPreparingWorker.new.perform status.id, user.account.id, '720x720'
 
       status.reload
       expect(track.video).not_to eq nil
     end
 
     it 'prepares 1920x1080' do
-      VideoPreparingWorker.new.perform status.id, '1920x1080'
+      VideoPreparingWorker.new.perform status.id, user.account.id, '1920x1080'
 
       status.reload
       expect(track.video_1920x1080).not_to eq nil
     end
 
     it 'notifies finish of preparation' do
-      VideoPreparingWorker.new.perform status.id, '720x720'
+      VideoPreparingWorker.new.perform status.id, user.account.id, '720x720'
 
       expect do
         Notification.find_by!(account: user.account, activity: track)
@@ -43,7 +43,7 @@ describe VideoPreparingWorker do
 
     it 'does not raise even if attachment is being removed in race condition' do
       expect do
-        VideoPreparingWorker.new.perform 1, '720x720'
+        VideoPreparingWorker.new.perform 1, user.account.id, '720x720'
       end.not_to raise_error
     end
   end
