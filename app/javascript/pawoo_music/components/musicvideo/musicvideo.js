@@ -1,5 +1,3 @@
-import axios from 'axios';
-import noop from 'lodash/noop';
 import classNames from 'classnames';
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -23,6 +21,14 @@ const messages = defineMessages({
   pause: { id: 'pawoo_music.musicvideo.pause', defaultMessage: 'Pause' },
 });
 
+/*
+ * Note about duration estimation:
+ * When their sources are blobs, durations of some musics are not available
+ * from duration property of HTMLAudioElement on:
+ * Mozilla/5.0 (X11; Linux x86_64; rv:56.0) Gecko/20100101 Firefox/56.0
+ * When duration is not available, a workaround will be performed.
+ */
+
 @injectIntl
 class Musicvideo extends ImmutablePureComponent {
 
@@ -38,39 +44,60 @@ class Musicvideo extends ImmutablePureComponent {
   };
 
   /*
-   * The combination of FileReader, axios, AudioBuffer, and
-   * AudioBufferSourceNode is used instead of HTMLAudioElement.
-   * It is known that HTMLAudioElement causes noises on some environments such
-   * as Apple Safari.
+   * It is known that HTMLAudioElement causes small interruptions on some
+   * environments such as Apple Safari when it is used for
+   * MediaElementSourceNode. Do not use audioForAnalysis for output.
    */
+  audioForAnalysis = new Audio();
+  audioForOutput = new Audio();
+  image = new BaseTexture(new Image());
+
   state = {
-    audioBuffer: null,
-    audioBufferSource: null,
-    lastSeekDestinationOffsetToMusicTime: 0,
-    loading: false,
+    duration: Infinity,
   };
 
-  cancelMusic = noop;
-  image = new BaseTexture(new Image());
-  offsetToAudioContextTime = 0;
+  generator = new Canvas(
+    new AudioContext,
+    constructGeneratorOptions(this.props.track, this.image),
+    lightLeaks,
+    () => this.audioForOutput.currentTime
+  );
 
   componentDidMount () {
-    const { audioAnalyserNode } = this.generator;
-    const { track } = this.props;
-
     // ジャケット画像
     // Using BaseTexture "constructor" is important to prevent from associating
     // the source URL and image element. The src attribute of the element is
     // dynamic.
     this.image.source.addEventListener('load', this.handleLoadImage, { once: false });
     this.image.source.crossOrigin = 'anonymous';
-    this.updateImage(track);
+    this.updateImage();
+
+    // 音声
+    this.audioForAnalysis.crossOrigin = 'anonymous';
+    this.audioForOutput.crossOrigin = 'anonymous';
+
+    /*
+     * Events listed here can be fired by builtin controls provided in some
+     * environments, including Google Chromium on Android and Apple Safari on
+     * iOS.
+     */
+    this.audioForOutput.addEventListener('loadedmetadata', this.audioDidLoadMetadata);
+    this.audioForOutput.addEventListener('playing', this.audioDidStart);
+    this.audioForOutput.addEventListener('pause', this.audioDidStop);
+    this.audioForOutput.addEventListener('seeking', this.audioWillSeek);
+    this.audioForOutput.addEventListener('seeked', this.audioDidSeek);
+    this.audioForOutput.addEventListener('waiting', this.audioDidStop);
+    this.audioForOutput.addEventListener('ended', this.audioDidEnd);
+
+    this.updateMusic();
 
     // オーディオ接続
-    audioAnalyserNode.connect(audioAnalyserNode.context.destination);
+    const { audioAnalyserNode } = this.generator;
+    const audioSource = audioAnalyserNode.context.createMediaElementSource(this.audioForAnalysis);
+    audioSource.connect(audioAnalyserNode);
 
     // キャンバス更新
-    this.updateCanvas(track);
+    this.updateCanvas();
 
     // キャンバス初期化
     this.generator.initialize();
@@ -83,68 +110,67 @@ class Musicvideo extends ImmutablePureComponent {
 
     this.canvasContainer.appendChild(view);
 
-    // 楽曲更新
-    this.updateMusic(track);
-
-    this.timer = setInterval(() => this.forceUpdate(), 500);
+    this.timer = setInterval(this.audioDidUpdate, 500);
   }
 
-  componentWillReceiveProps ({ track }) {
+  componentDidUpdate ({ track }) {
     const id = track.get('id');
     const image = track.getIn(['video', 'image']);
     const music = track.get('music');
-    const oldId = this.props.track.get('id');
-    const oldImage = this.props.track.getIn(['video', 'image']);
-    const oldMusic = this.props.track.get('music');
 
-    if (image !== oldImage) {
-      if (oldImage instanceof Blob) {
-        URL.revokeObjectURL(this.image.source.src);
+    if (this.props.track.get('id') !== id ||
+        this.props.track.get('music') !== music) {
+      if (music instanceof Blob) {
+        URL.revokeObjectURL(this.audioForOutput.src);
       }
 
-      this.updateImage(track);
+      this.updateMusic();
+      this.generator.initialize();
     }
 
-    if (id !== oldId || music !== oldMusic) {
-      this.updateMusic(track);
+    if (this.props.track.getIn(['video', 'image']) !== image) {
+      if (image instanceof Blob) {
+        URL.revokeObjectURL(this.image.source.src);
+      }
+      this.updateImage();
     }
 
-    if (track !== this.props.track) {
-      this.updateCanvas(track);
+    if (this.props.track !== track) {
+      this.updateCanvas();
     }
   }
 
   componentWillUnmount () {
     const { track } = this.props;
 
-    this.cancelMusic();
     clearInterval(this.timer);
 
-    if (this.image) {
-      this.image.source.removeEventListener('load', this.handleLoadImage);
-    }
+    this.image.source.removeEventListener('load', this.handleLoadImage);
 
-    if (this.state.audioBufferSource) {
-      this.state.audioBufferSource.stop();
-    }
+    this.audioForAnalysis.pause();
+    this.audioForOutput.pause();
+    this.audioForOutput.removeEventListener('loadedmetadata', this.audioDidLoadMetadata);
+    this.audioForOutput.removeEventListener('playing', this.audioDidStart);
+    this.audioForOutput.removeEventListener('pause', this.audioDidStop);
+    this.audioForOutput.removeEventListener('seeking', this.audioWillSeek);
+    this.audioForOutput.removeEventListener('seeked', this.audioDidSeek);
+    this.audioForOutput.removeEventListener('waiting', this.audioDidStop);
 
-    if (this.generator) {
-      this.generator.stop();
-      this.generator.audioAnalyserNode.context.close();
-      this.generator.destroy();
-    }
-
-    if (this.audioAnalyser) {
-      this.audioAnalyser.disconnect();
-    }
+    this.generator.audioAnalyserNode.context.close();
+    this.generator.stop();
+    this.generator.destroy();
 
     if ((track.getIn(['video', 'image']) instanceof Blob)) {
       URL.revokeObjectURL(this.image.source.src);
     }
+
+    if ((this.props.track.get('music') instanceof Blob)) {
+      URL.revokeObjectURL(this.audioForOutput.src);
+    }
   }
 
-  updateImage = (track) => {
-    const image = track.getIn(['video', 'image']);
+  updateImage = () => {
+    const image = this.props.track.getIn(['video', 'image']);
 
     if (image instanceof Blob) {
       this.image.source.src = URL.createObjectURL(image);
@@ -155,171 +181,109 @@ class Musicvideo extends ImmutablePureComponent {
     }
   }
 
-  updateMusic = (track) => {
-    const { context } = this.generator.audioAnalyserNode;
-    let arrayBufferPromise;
-
-    this.cancelMusic();
+  updateMusic = () => {
+    const { track } = this.props;
 
     if (track.has('music') && track.get('music') !== null) {
-      arrayBufferPromise = new Promise((resolve, reject) => {
-        const reader = new FileReader;
-
-        reader.onload = ({ target }) => target.result !== null ?
-          resolve(target.result) : reject(target.error);
-
-        reader.readAsArrayBuffer(track.get('music'));
-
-        this.cancelMusic = () => reader.abort();
-      });
+      this.audioForAnalysis.src = URL.createObjectURL(track.get('music'));
     } else if (track.has('id') && track.get('id') !== null) {
-      const source = axios.CancelToken.source();
-
-      arrayBufferPromise = axios.get(
-        `/api/v1/statuses/${track.get('id')}/music`,
-        { responseType: 'arraybuffer', cancelToken: source.token }
-      ).then(({ data }) => data);
-
-      this.cancelMusic = () => source.cancel();
+      this.audioForAnalysis.src = `/api/v1/statuses/${track.get('id')}/music`;
     } else {
       return;
     }
 
-    this.setState({ loading: true });
-
-    /*
-     * Promise based decodeAudioData is not supported by:
-     * Mozilla/5.0 (iPhone; CPU iPhone OS 9_3_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13E238 Safari/601.1
-     */
-    arrayBufferPromise.then(
-      arrayBuffer => context.decodeAudioData(arrayBuffer, audioBuffer => {
-        if (this.props.track.get('id') === track.get('id') &&
-            this.props.track.get('music') === track.get('music')) {
-          this.setState({ audioBuffer, loading: false });
-
-          if (this.state.audioBufferSource !== null) {
-            this.state.audioBufferSource.stop();
-          }
-
-          this.offsetToAudioContextTime = -context.currentTime;
-          this.generator.initialize();
-
-          if (this.state.audioBufferSource !== null || this.props.autoPlay) {
-            this.createAudioBufferSource(audioBuffer);
-            this.setState({ lastSeekDestinationOffsetToMusicTime: 0 });
-          }
-        }
-      })
-    );
-  }
-
-  createAudioBufferSource = (audioBuffer) => {
-    const { audioAnalyserNode } = this.generator;
-    const audioBufferSource = audioAnalyserNode.context.createBufferSource();
-
-    audioBufferSource.onended = this.handleEnded;
-    audioBufferSource.buffer = audioBuffer;
-    audioBufferSource.connect(audioAnalyserNode);
-    audioBufferSource.start(0, this.calculateMusicCurrentTime());
-
-    this.generator.start();
-
-    this.setState({ audioBufferSource });
-  }
-
-  calculateMusicCurrentTime = () => {
-    return this.state.audioBufferSource === null ?
-      this.state.lastSeekDestinationOffsetToMusicTime :
-      this.generator.audioAnalyserNode.context.currentTime + this.offsetToAudioContextTime;
-  }
-
-  handleEnded = () => {
-    if (this.state.audioBufferSource === null) {
-      return;
-    }
-
-    this.state.audioBufferSource.stop();
-    this.setState({
-      audioBufferSource: null,
-      lastSeekDestinationOffsetToMusicTime: this.state.audioBuffer.duration,
-    });
-
-    this.generator.stop();
+    this.audioForOutput.src = this.audioForAnalysis.src;
+    this.audioDidStop();
+    this.setState({ duration: Infinity });
   }
 
   handleLoadImage = () => {
     this.image.update();
-    this.updateCanvas(this.props.track);
+    this.updateCanvas();
   }
 
   handleTogglePaused = () => {
-    const { context } = this.generator.audioAnalyserNode;
-
-    if (this.state.audioBufferSource === null) {
-      if (this.state.audioBuffer !== null) {
-        if (this.state.lastSeekDestinationOffsetToMusicTime < this.state.audioBuffer.duration) {
-          this.offsetToAudioContextTime = this.state.lastSeekDestinationOffsetToMusicTime - context.currentTime;
-        } else {
-          this.offsetToAudioContextTime = -context.currentTime;
-          this.generator.initialize();
-
-          this.setState({ lastSeekDestinationOffsetToMusicTime: 0 });
-        }
-
-        this.createAudioBufferSource(this.state.audioBuffer);
+    if (this.audioForOutput.paused) {
+      if (this.audioForOutput.ended) {
+        this.audioForAnalysis.currentTime = 0;
+        this.audioForOutput.currentTime = 0;
       }
-    } else {
-      this.setState({
-        audioBufferSource: null,
-        lastSeekDestinationOffsetToMusicTime: this.calculateMusicCurrentTime(),
-      });
 
-      this.state.audioBufferSource.stop();
-      this.generator.stop();
+      this.audioForOutput.play();
+    } else {
+      this.audioForOutput.pause();
     }
+
+    this.audioDidUpdate();
   }
 
-  handleBeforeChangeCurrentTime = () => {
-    if (this.state.audioBufferSource !== null) {
-      this.state.audioBufferSource.onended = null;
-      this.state.audioBufferSource.stop();
-
-      this.generator.stop();
-    }
-  };
-
-  handleChangeCurrentTime = (lastSeekDestinationOffsetToMusicTime) => {
-    this.offsetToAudioContextTime = lastSeekDestinationOffsetToMusicTime - this.generator.audioAnalyserNode.context.currentTime;
-    this.setState({ lastSeekDestinationOffsetToMusicTime });
-    this.generator.initialize();
-  };
-
-  handleAfterChangeCurrentTime = () => {
-    if (this.state.audioBufferSource !== null) {
-      this.createAudioBufferSource(this.state.audioBuffer);
-    }
+  handleChangeCurrentTime = (value) => {
+    this.audioForAnalysis.currentTime = value;
+    this.audioForOutput.currentTime = value;
   }
 
   setCanvasContainerRef = (ref) => {
     this.canvasContainer = ref;
   }
 
-  updateCanvas = (track) => {
-    if (this.generator) {
-      this.generator.changeParams(constructGeneratorOptions(track, this.image));
+  updateCanvas = () => {
+    this.generator.changeParams(constructGeneratorOptions(this.props.track, this.image));
+  }
+
+  audioDidLoadMetadata = () => {
+    if (this.audioForOutput.duration === Infinity) {
+      this.audioForOutput.currentTime = 9e9;
+    } else {
+      this.setState({ duration: this.audioForOutput.duration });
+
+      if (this.props.autoPlay) {
+        this.audioForOutput.play();
+      }
     }
   }
 
-  generator = new Canvas(
-    new AudioContext,
-    constructGeneratorOptions(this.props.track, null),
-    lightLeaks,
-    this.calculateMusicCurrentTime
-  );
+  audioDidStart = () => {
+    this.audioForAnalysis.play();
+    this.generator.start();
+    this.forceUpdate();
+  }
+
+  audioWillSeek = () => {
+    this.audioDidStop();
+    this.generator.initialize();
+  }
+
+  audioDidSeek = () => {
+    if (this.state.duration === Infinity) {
+      this.setState({ duration: this.audioForOutput.currentTime });
+      this.audioForOutput.currentTime = 0;
+
+      if (this.props.autoPlay) {
+        this.audioForOutput.play();
+      }
+    }
+  }
+
+  audioDidUpdate = () => {
+    /*
+     * HTMLAudioElement suddenly aborts, making noise on some environments such
+     * as Apple Safari when it is used for MediaElementSourceNode. Seeking
+     * it somehow resolves the issue.
+     */
+    this.audioForAnalysis.currentTime = this.audioForOutput.currentTime;
+
+    this.forceUpdate();
+  }
+
+  audioDidStop = () => {
+    this.audioForAnalysis.pause();
+    this.generator.stop();
+    this.forceUpdate();
+  }
 
   render() {
     const { intl, label } = this.props;
-    const { audioBuffer, audioBufferSource } = this.state;
+    const controlDisabled = this.audioForOutput.readyState === this.audioForOutput.HAVE_NOTHING;
 
     return (
       <div className='musicvideo'>
@@ -330,23 +294,21 @@ class Musicvideo extends ImmutablePureComponent {
           tabIndex='0'
           aria-label={label}
         >
-          {this.state.loading && <div className='loading' />}
+          {[this.audioForOutput.NETWORK_IDLE, this.audioForOutput.NETWORK_LOADING].includes(this.audioForOutput.networkState) && [this.audioForOutput.HAVE_NOTHING, this.audioForOutput.HAVE_METADATA].includes(this.audioForOutput.readyState) && <div className='loading' />}
           <div ref={this.setCanvasContainerRef} />
         </div>
-        <div className={classNames('controls-container', { visible: audioBuffer !== null })}>
+        <div className={classNames('controls-container', { visible: !controlDisabled })}>
           <div className='controls'>
             <div className='toggle' onClick={this.handleTogglePaused} role='button' tabIndex='0' aria-pressed='false'>
-              {audioBufferSource === null ? <IconButton src='play' title={intl.formatMessage(messages.play)} /> : <IconButton src='pause' title={intl.formatMessage(messages.pause)} />}
+              {this.audioForOutput.paused ? <IconButton src='play' title={intl.formatMessage(messages.play)} /> : <IconButton src='pause' title={intl.formatMessage(messages.pause)} />}
             </div>
             <Slider
               min={0}
-              max={audioBuffer === null ? 1 : audioBuffer.duration}
+              max={this.state.duration}
               step={0.1}
-              value={this.calculateMusicCurrentTime()}
-              onBeforeChange={this.handleBeforeChangeCurrentTime}
+              value={this.audioForOutput.currentTime}
               onChange={this.handleChangeCurrentTime}
-              onAfterChange={this.handleAfterChangeCurrentTime}
-              disabled={!audioBuffer}
+              disabled={controlDisabled || this.state.duration === Infinity}
             />
           </div>
         </div>
