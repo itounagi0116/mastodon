@@ -19,6 +19,7 @@
         overflow:      hidden;
         white-space:   nowrap;
         text-overflow: ellipsis;
+        color: inherit;
       }
 
       > a {
@@ -40,8 +41,10 @@
       white-space:   nowrap;
       text-overflow: ellipsis;
 
-      * {
-        color: var(--strong2);
+      > a {
+        &:link, &:visited, &:hover, &:focus, &:active {
+          color: inherit;
+        }
       }
     }
   }
