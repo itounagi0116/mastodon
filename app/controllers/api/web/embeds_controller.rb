@@ -9,6 +9,7 @@ class Api::Web::EmbedsController < Api::BaseController
     @stream_entry = StreamEntryFinder.new(params[:url]).stream_entry
     @width = @stream_entry.status.music.is_a?(Track) ? '480' : '400'
     @height = @stream_entry.status.music.is_a?(Track) ? '512' : nil
+    @extra_params = params.permit(:textcolor, :backgroundcolor)
 
     render 'api/oembed/show.json'
   rescue ActiveRecord::RecordNotFound

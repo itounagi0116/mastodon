@@ -18,6 +18,31 @@
       word-break: break-all;
     }
 
+    .options {
+      margin-bottom: var(--padding20);
+      font-size: var(--text20-font);
+
+      .embed-textcolor, .embed-backgroundcolor {
+        display: flex;
+        margin-bottom: var(--padding5);
+
+        .color-trigger {
+          margin-left: var(--padding20);
+        }
+
+        .embed-color-picker {
+          position: relative;
+
+          .sketch-picker {
+            position: absolute;
+            top: -120px;
+            left: 10px;
+          }
+        }
+      }
+
+    }
+
     .embed-modal-html {
       outline: 0;
       box-sizing: border-box;
