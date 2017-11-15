@@ -194,6 +194,12 @@ class Musicvideo extends ImmutablePureComponent {
 
     this.audioForOutput.src = this.audioForAnalysis.src;
     this.audioDidStop();
+
+    if (this.props.autoPlay) {
+      this.audioForAnalysis.play();
+      this.audioForOutput.play();
+    }
+
     this.setState({ duration: Infinity });
   }
 
@@ -209,6 +215,7 @@ class Musicvideo extends ImmutablePureComponent {
         this.audioForOutput.currentTime = 0;
       }
 
+      this.audioForAnalysis.play();
       this.audioForOutput.play();
     } else {
       this.audioForOutput.pause();
@@ -235,15 +242,10 @@ class Musicvideo extends ImmutablePureComponent {
       this.audioForOutput.currentTime = 9e9;
     } else {
       this.setState({ duration: this.audioForOutput.duration });
-
-      if (this.props.autoPlay) {
-        this.audioForOutput.play();
-      }
     }
   }
 
   audioDidStart = () => {
-    this.audioForAnalysis.play();
     this.generator.start();
     this.forceUpdate();
   }
@@ -254,14 +256,18 @@ class Musicvideo extends ImmutablePureComponent {
   }
 
   audioDidSeek = () => {
-    if (this.state.duration === Infinity) {
+    if (this.audioForOutput.paused) {
+      if (this.state.duration !== Infinity) {
+        return;
+      }
+
       this.setState({ duration: this.audioForOutput.currentTime });
       this.audioForOutput.currentTime = 0;
-
-      if (this.props.autoPlay) {
-        this.audioForOutput.play();
-      }
+      this.audioForAnalysis.play();
+      this.audioForOutput.play();
     }
+
+    this.audioDidStart();
   }
 
   audioDidUpdate = () => {
@@ -276,7 +282,6 @@ class Musicvideo extends ImmutablePureComponent {
   }
 
   audioDidStop = () => {
-    this.audioForAnalysis.pause();
     this.generator.stop();
     this.forceUpdate();
   }
