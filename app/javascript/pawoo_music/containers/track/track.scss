@@ -46,8 +46,8 @@
 
   &:not(.fit-contain) {
     .thumbnail {
-      width: var(--width-gallery);
-      height: var(--width-gallery); // aspect ratio 1:1
+      width: var(--width-gallery-canvas);
+      height: var(--width-gallery-canvas);
     }
 
     .canvas-container {

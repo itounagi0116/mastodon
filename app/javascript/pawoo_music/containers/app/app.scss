@@ -175,8 +175,8 @@ a:hover {
   --width-globalnavi:     calc(var(--grid) * 50);
   --width-lobby:          calc(var(--grid) * 80);
   --width-gallery-view:   calc(100vw - var(--grid) * 130);
-  --width-gallery:        calc(var(--grid) * 120);
-  --width-gallery-canvas: calc(var(--width-gallery) - var(--padding20) * 2);
+  --width-gallery-canvas: calc(var(--grid) * 120);
+  --width-gallery: calc(var(--width-gallery-canvas) + var(--padding20) * 2);
 
   --width-ago:            calc(var(--grid) * 6);
   --width-contextmenu:    calc(var(--grid) * 56);
