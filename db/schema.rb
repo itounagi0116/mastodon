@@ -10,10 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171109000000) do
+ActiveRecord::Schema.define(version: 20171114152234) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "account_custom_colors", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.integer "textcolor", default: 3223857, null: false
+    t.integer "linkcolor", default: 10197915, null: false
+    t.integer "linkcolor2", default: 2397659, null: false
+    t.integer "strong1", default: 13632027, null: false
+    t.integer "strong2", default: 0, null: false
+    t.integer "color1", default: 16777215, null: false
+    t.integer "color2", default: 15987699, null: false
+    t.integer "color3", default: 13684944, null: false
+    t.index ["account_id"], name: "index_account_custom_colors_on_account_id", unique: true
+  end
 
   create_table "account_domain_blocks", id: :serial, force: :cascade do |t|
     t.integer "account_id"
@@ -58,6 +71,10 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.datetime "last_webfingered_at"
     t.bigint "tracks_count", default: 0, null: false
     t.bigint "albums_count", default: 0, null: false
+    t.string "background_image_file_name"
+    t.string "background_image_content_type"
+    t.integer "background_image_file_size"
+    t.datetime "background_image_updated_at"
     t.index "(((setweight(to_tsvector('simple'::regconfig, (display_name)::text), 'A'::\"char\") || setweight(to_tsvector('simple'::regconfig, (username)::text), 'B'::\"char\")) || setweight(to_tsvector('simple'::regconfig, (COALESCE(domain, ''::character varying))::text), 'C'::\"char\")))", name: "search_index", using: :gin
     t.index "lower((username)::text), lower((domain)::text)", name: "index_accounts_on_username_and_domain_lower"
     t.index ["uri"], name: "index_accounts_on_uri"
@@ -533,6 +550,7 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.index ["user_id"], name: "index_web_settings_on_user_id", unique: true
   end
 
+  add_foreign_key "account_custom_colors", "accounts", on_delete: :cascade
   add_foreign_key "account_domain_blocks", "accounts", on_delete: :cascade
   add_foreign_key "album_tracks", "albums", on_update: :cascade, on_delete: :cascade
   add_foreign_key "album_tracks", "tracks", on_update: :cascade, on_delete: :cascade

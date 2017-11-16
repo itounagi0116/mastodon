@@ -4,11 +4,9 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import { ScrollContext } from 'react-router-scroll';
-import { Route } from 'react-router-dom';
 import { hydrateStore } from '../../mastodon/actions/store';
 import configureStore from '../../mastodon/store/configureStore';
 import { getLocale } from '../../mastodon/locales';
-import UI from '../../mastodon/features/ui';
 import Settings from '../components/settings';
 
 const { localeData, messages } = getLocale();
@@ -40,9 +38,7 @@ export default class TimelineSettingsEntry extends React.PureComponent {
         <Provider store={store}>
           <BrowserRouter basename='/'>
             <ScrollContext>
-              <UI className='settings' intent>
-                <Route path='/' component={Settings} />
-              </UI>
+              <Settings />
             </ScrollContext>
           </BrowserRouter>
         </Provider>

@@ -81,8 +81,8 @@ class Status < ApplicationRecord
   scope :not_excluded_by_account, ->(account) { where.not(account_id: account.excluded_from_timeline_account_ids) }
   scope :not_domain_blocked_by_account, ->(account) { account.excluded_from_timeline_domains.blank? ? left_outer_joins(:account) : left_outer_joins(:account).where('accounts.domain IS NULL OR accounts.domain NOT IN (?)', account.excluded_from_timeline_domains) }
 
-  cache_associated :application, :stream_entry, :tags, :media_attachments, :pixiv_cards, :pinned_status, :music, account: :oauth_authentications, mentions: { account: :oauth_authentications }, thread: { account: :oauth_authentications },
-    reblog: [:application, :stream_entry, :tags, :media_attachments, :pixiv_cards, :pinned_status, :music, account: :oauth_authentications, mentions: { account: :oauth_authentications }]
+  cache_associated :application, :stream_entry, :tags, :media_attachments, :pixiv_cards, :pinned_status, :music, account: :oauth_authentications, mentions: { account: [:oauth_authentications, :custom_color] }, thread: { account: :oauth_authentications },
+    reblog: [:application, :stream_entry, :tags, :media_attachments, :pixiv_cards, :pinned_status, :music, account: [:oauth_authentications, :custom_color], mentions: { account: :oauth_authentications }]
 
   def postable_to_es?
     public_visibility? && local?
@@ -185,7 +185,7 @@ class Status < ApplicationRecord
         account_ids << item.reblog.account_id if item.reblog?
       end
 
-      accounts = Account.where(id: account_ids.uniq).map { |a| [a.id, a] }.to_h
+      accounts = Account.where(id: account_ids.uniq).preload(:oauth_authentications, :custom_color).map { |a| [a.id, a] }.to_h
 
       cached_items.each do |item|
         item.account = accounts[item.account_id]

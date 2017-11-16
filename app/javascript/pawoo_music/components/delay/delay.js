@@ -7,7 +7,7 @@ export default class Delay extends PureComponent {
 
   static propTypes = {
     className: PropTypes.string,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     duration: PropTypes.number,
     easing: PropTypes.string,
   };

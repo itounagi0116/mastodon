@@ -8,9 +8,9 @@
   text-decoration: none;
   padding: 0 10px;
 
-  background-color:   var(--tootcolor);
+  background-color:   var(--linkcolor2);
   color:              var(--color1);
-  border:             1px solid var(--tootcolor);
+  border:             1px solid var(--linkcolor2);
 
   transition: all 0.2s var(--hover-timing);
 
@@ -35,26 +35,26 @@
   }
 
   &:hover {
-    background-color:   var(--tootcolor);
+    background-color:   var(--linkcolor2);
     color:              var(--color1);
     transform:          scale(1.1);
   }
 
   &.follow {
     background-color:   var(--color1);
-    color:              var(--tootcolor);
-    border:             1px solid var(--tootcolor);
+    color:              var(--linkcolor2);
+    border:             1px solid var(--linkcolor2);
 
     &:hover {
-      background-color:   var(--tootcolor);
+      background-color:   var(--linkcolor2);
       color:              var(--color1);
     }
   }
 
   &.unfollow {
-    background-color:   var(--tootcolor);
+    background-color:   var(--linkcolor2);
     color:              var(--color1);
-    border:             1px solid var(--tootcolor);
+    border:             1px solid var(--linkcolor2);
 
     &:hover{
       background-color:   var(--strong1);
