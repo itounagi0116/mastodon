@@ -1,7 +1,6 @@
 class MusicConvertService < BaseService
   def call(track, resolution)
-    music_file = Tempfile.new
-    begin
+    Tempfile.create do |music_file|
       track.music.copy_to_local_file :original, music_file.path
 
       image_file = nil
@@ -24,8 +23,6 @@ class MusicConvertService < BaseService
       ensure
         image_file&.unlink
       end
-    ensure
-      music_file.unlink
     end
   end
 
