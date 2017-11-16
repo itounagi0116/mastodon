@@ -5893,9 +5893,9 @@ multipipe@^0.1.2:
   dependencies:
     duplexer2 "0.0.2"
 
-"musicvideo-generator@https://github.com/pixiv/musicvideo-generator.git#v1.4.2":
-  version "1.4.2"
-  resolved "https://github.com/pixiv/musicvideo-generator.git#2e2c4e8154813a9024019ff355440b6932ff5714"
+"musicvideo-generator@https://github.com/pixiv/musicvideo-generator.git#v1.4.6":
+  version "1.4.6"
+  resolved "https://github.com/pixiv/musicvideo-generator.git#d732a33e495a0b4d837be659ac1e140541f2d412"
   dependencies:
     pixi.js "^4.5.6"
 
