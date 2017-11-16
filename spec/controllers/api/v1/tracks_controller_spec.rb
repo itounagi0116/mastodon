@@ -59,6 +59,8 @@ describe Api::V1::TracksController, type: :controller do
           },
         }
 
+        expected_video_params = video_params.map { |k, v| [k, v.is_a?(Hash) ? v.merge(visible: true) : v] }.to_h
+
         post :create,
              params: { title: 'title', artist: 'artist', text: 'text', visibility: 'public', music: music, video: video_params }
 
@@ -97,7 +99,7 @@ describe Api::V1::TracksController, type: :controller do
         expect(body_as_json[:track][:title]).to eq 'title'
         expect(body_as_json[:track][:artist]).to eq 'artist'
         expect(body_as_json[:track][:text]).to eq 'text'
-        expect(body_as_json[:track][:video]).to eq video_params
+        expect(body_as_json[:track][:video]).to eq expected_video_params
       end
 
       it 'joins given artist, title, text and URL to create status text' do
@@ -179,6 +181,8 @@ describe Api::V1::TracksController, type: :controller do
           banner: { alpha: 0.5 },
         }
 
+        expected_video_params = video_params.map { |k, v| [k, v.is_a?(Hash) ? v.merge(visible: true) : v] }.to_h
+
         patch :update,
               params: { id: status.id, title: 'updated title', artist: 'updated artist', text: 'updated text', music: another_music, video: video_params }
 
@@ -210,7 +214,7 @@ describe Api::V1::TracksController, type: :controller do
         expect(body_as_json[:track][:title]).to eq 'updated title'
         expect(body_as_json[:track][:artist]).to eq 'updated artist'
         expect(body_as_json[:track][:text]).to eq 'updated text'
-        expect(body_as_json[:track][:video]).to eq video_params
+        expect(body_as_json[:track][:video]).to eq expected_video_params
       end
 
       it 'returns http unprocessable entity if empty string is given as background color' do
@@ -475,7 +479,7 @@ describe Api::V1::TracksController, type: :controller do
         end
       end
 
-      let(:user) { Fabricate(:user) }
+      let(:user) { Fabricate(:user, admin: false) }
       let(:track) { Fabricate(:track) }
 
       context 'with origin status authored by self' do
@@ -483,7 +487,7 @@ describe Api::V1::TracksController, type: :controller do
 
         it 'queues rendering' do
           post :prepare_video, params: { id: status, resolution: '720x720' }
-          expect(VideoPreparingWorker).to have_enqueued_sidekiq_job status.id, '720x720'
+          expect(VideoPreparingWorker).to have_enqueued_sidekiq_job status.id, user.account.id,'720x720'
         end
 
         it 'returns 422 with invalid resolution' do
@@ -503,6 +507,21 @@ describe Api::V1::TracksController, type: :controller do
         it 'returns not found' do
           post :prepare_video, params: { id: status, resolution: '720x720' }
           expect(response).to have_http_status :not_found
+        end
+      end
+
+      context 'with track authored by another if admin account' do
+        let(:user) { Fabricate(:user, admin: true) }
+        let(:status) { Fabricate(:status, music: track, reblog: nil) }
+
+        it 'queues rendering' do
+          post :prepare_video, params: { id: status, resolution: '720x720' }
+          expect(VideoPreparingWorker).to have_enqueued_sidekiq_job status.id, user.account.id,'720x720'
+        end
+
+        it 'returns http success' do
+          post :prepare_video, params: { id: status, resolution: '720x720' }
+          expect(response).to have_http_status :success
         end
       end
 

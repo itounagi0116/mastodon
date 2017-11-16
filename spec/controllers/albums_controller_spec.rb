@@ -14,7 +14,7 @@ describe AlbumsController, type: :controller do
 
     it 'redirects when signed out' do
       get :new
-      expect(response).to redirect_to 'http://test.host/about'
+      expect(response).to redirect_to 'http://test.host/timelines/public/local'
     end
   end
 end

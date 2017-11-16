@@ -33,10 +33,8 @@ class Formatter
     html.html_safe # rubocop:disable Rails/OutputSafety
   end
 
-  def format_for_track(status)
-    linkable_accounts = status.mentions.map(&:account)
-    linkable_accounts << status.account
-    html = encode_and_link_urls(status.music.text, linkable_accounts)
+  def format_for_music(music)
+    html = encode_and_link_urls(music.text)
     html = simple_format(html, {}, sanitize: false)
     html = html.delete("\n")
 

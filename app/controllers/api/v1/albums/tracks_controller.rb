@@ -40,16 +40,11 @@ class Api::V1::Albums::TracksController < Api::BaseController
   end
 
   def destroy
-    album_track_scope.joins(track: :statuses).find_by!(
-      track: {
-        statuses: {
-          account: current_account,
-          id: params.require(:id),
-          reblog: nil,
-        },
-      }
-    ).destroy!
+    if album_status.account != current_account || track_status.account != current_account
+      raise Mastodon::ValidationError
+    end
 
+    album_track_scope.find_by!(track: track_status.music).destroy!
     render_empty
   end
 
@@ -98,9 +93,13 @@ class Api::V1::Albums::TracksController < Api::BaseController
         lower_position = lower.position if lower
       end
     else
-      relative_to = album_track_scope.joins(track: :statuses).find_by!(
-        track: { statuses: { id: relative_to_id, reblog: nil } }
+      relative_to_status = Status.find_by!(
+        id: relative_to_id,
+        music_type: 'Track',
+        reblog: nil,
+        account: current_account
       )
+      relative_to = album_track_scope.find_by!(track: relative_to_status.music)
 
       if above
         lower = album_track_scope.find_by('position < ?', relative_to.position)

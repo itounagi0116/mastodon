@@ -81,6 +81,8 @@ Rails.application.routes.draw do
     resource :follow_requests, only: [:show]
     resource :mutes, only: [:show]
     resource :blocks, only: [:show]
+
+    resource :custom_color, only: [:show, :update, :destroy]
   end
 
   resources :media, only: [:show]

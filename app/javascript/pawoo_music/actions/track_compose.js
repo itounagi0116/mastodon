@@ -357,7 +357,6 @@ export function submitTrackComposeFail(error) {
   };
 };
 
-
 export function showTrackComposeModal() {
   return {
     type: TRACK_COMPOSE_SHOW_MODAL,
@@ -370,10 +369,9 @@ export function hideTrackComposeModal() {
   };
 };
 
-export function setTrackComposeData(id, track) {
+export function setTrackComposeData(track) {
   return {
     type: TRACK_COMPOSE_SET_DATA,
-    id,
     track,
   };
 }

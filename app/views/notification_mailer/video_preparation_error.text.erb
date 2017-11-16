@@ -2,4 +2,4 @@
 
 <%= raw t('notification_mailer.video_preparation_error.body', title: @track.title) %>
 
-<%= raw t('application_mailer.view')%> <%= short_account_status_url(@me.username, @status) %>
+<%= raw t('application_mailer.view')%> <%= short_account_status_url(@status.account, @status) %>

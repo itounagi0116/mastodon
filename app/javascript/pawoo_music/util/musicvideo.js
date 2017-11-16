@@ -45,10 +45,6 @@ export function constructGeneratorOptions(track, image) {
 
     if (trackProperty) {
       options[optionKey] = trackProperty.toJS();
-      if (!trackProperty.has('visible')) {
-        // 投稿後のパラメータはvisibleキーを持たない
-        options[optionKey].visible = true;
-      }
     }
   }
 

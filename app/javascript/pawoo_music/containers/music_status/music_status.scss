@@ -1,4 +1,4 @@
-.track-status {
+.music-status {
   display:    block;
   text-align: left;
 
@@ -10,6 +10,9 @@
   line-height:  var(--text20-line);
 
   margin:     var(--verticalspace40);
+
+  padding: var(--padding20);
+  box-sizing: border-box;
 
   &.highlight {
     border:     1px dashed var(--strong1);

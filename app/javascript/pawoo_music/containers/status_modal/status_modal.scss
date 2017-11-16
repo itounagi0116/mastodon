@@ -8,13 +8,13 @@
       opacity: 0.72;
     }
 
-    .track-status, .status {
+    .music-status, .status {
       & + .status {
         margin-top: 30px;
       }
     }
 
-    .track-status {
+    .music-status {
       margin-top: 0;
       margin-left: -12px;
       padding: var(--padding15);

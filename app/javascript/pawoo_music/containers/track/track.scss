@@ -46,13 +46,13 @@
 
   &:not(.fit-contain) {
     .thumbnail {
-      width:  var(--width-gallery);
+      width: var(--width-gallery);
       height: var(--width-gallery); // aspect ratio 1:1
     }
 
     .canvas-container {
-      width: var(--width-gallery);
-      height: var(--width-gallery);
+      width: var(--width-gallery-canvas);
+      height: var(--width-gallery-canvas);
     }
   }
 }

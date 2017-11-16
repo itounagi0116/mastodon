@@ -17,76 +17,117 @@ const { remote, webFrame } = require('electron');
 const path = require('path');
 const url = require('url');
 const yargs = require('yargs');
-const { argv } = yargs(remote.process.argv.slice(remote.process.argv.indexOf('--') + 1));
 
-function parseLimit(bottom, top, threshold) {
-  const band = argv[bottom] === undefined && argv[top] === undefined ?
-    undefined :
-    { bottom: argv[bottom], top: argv[top] };
-
-  return band === undefined && argv[threshold] === undefined ?
-    undefined : { band, threshold: argv[threshold] };
-}
-
-function parseResolution(resolution) {
-  const [width, height] = resolution.split('x').map(Number);
-  return { width, height };
-}
-
-const resolution = parseResolution(argv.resolution);
-
-const backgroundColor = argv.backgroundcolor;
-
-const blurMovement = parseLimit('blurMovementBandBottom',
-                                'blurMovementBandTop',
-                                'blurMovementThreshold');
-
-const blurBlink = parseLimit('blurBlinkBandBottom',
-                             'blurBlinkBandTop',
-                             'blurBlinkThreshold');
-
-const blur = blurMovement === undefined && blurBlink === undefined ?
-  undefined : { movement: blurMovement, blink: blurBlink };
-
-const particleLimit = parseLimit('particleLimitBandBottom',
-                                 'particleLimitBandTop',
-                                 'particleLimitThreshold');
-
-const particle =
-  particleLimit === undefined &&
-  argv.particleAlpha === undefined && argv.particleColor === undefined ?
-    undefined :
-    { limit: particleLimit, alpha: argv.particleAlpha, color: argv.particleColor };
-
-const lightLeaks =
-  argv.lightleaksAlpha === undefined && argv.lightleaksInterval === undefined ?
-    undefined :
-    { alpha: argv.lightleaksAlpha, interval: argv.lightleaksInterval };
-
-const spectrum =
-  argv.spectrumMode === undefined && argv.spectrumAlpha === undefined &&
-  argv.spectrumColor === undefined ?
-    undefined :
-    { mode: argv.spectrumMode, alpha: argv.spectrumAlpha, color: argv.spectrumColor };
-
-const text =
-  argv.textAlpha === undefined && argv.textColor === undefined &&
-  argv.textTitle === undefined && argv.textSub === undefined ?
-    undefined :
-    { alpha: argv.textAlpha, color: argv.textColor, title: argv.textTitle, sub: argv.textSub };
-
-const bannerImage =
-  url.format({ pathname: argv.bannerImage, protocol: 'file:' });
-
-const banner =
-  argv.bannerImage === undefined && argv.bannerAlpha === undefined ?
-    undefined :
-    { image: bannerImage, alpha: argv.bannerAlpha };
-
-const image = argv.image === undefined ? undefined : url.format({
-  pathname: path.resolve(argv.image),
-  protocol: 'file:',
+const { argv } = yargs(remote.process.argv.slice(remote.process.argv.indexOf('--') + 1)).options({
+  'resolution': {
+    string: true,
+    demandOption: true,
+    description: 'WIDTHxHEIGHT',
+  },
+  'backgroundcolor': {
+    number: true,
+    description: 'background color in 24-bit',
+    default: 0,
+  },
+  'blur.movement.band.bottom': {
+    number: true,
+    description: 'the bottom of the band triggering the movement of the blur in hertz',
+  },
+  'blur.movement.band.top': {
+    number: true,
+    description: 'the top of the band triggering the movement of the blur in hertz',
+  },
+  'blur.movement.band.threshold': {
+    number: true,
+    description: 'the threshold for the band triggering the movement of the blur in hertz',
+  },
+  'blur.blink.band.bottom': {
+    number: true,
+    description: 'the bottom of the band triggering the movement of the blur in hertz',
+  },
+  'blur.blink.band.top': {
+    number: true,
+    description: 'the top of the band triggering the movement of the blur in hertz',
+  },
+  'blur.blink.band.threshold': {
+    number: true,
+    description: 'the threshold for the band triggering the movement of the blur in hertz',
+  },
+  'particle.limit.band.bottom': {
+    number: true,
+    description: 'the bottom of the band triggering the change of the particle in hertz',
+  },
+  'particle.limit.band.top': {
+    number: true,
+    description: 'the top of the band triggering the change of the particle in hertz',
+  },
+  'particle.limit.band.threshold': {
+    number: true,
+    description: 'the threshold for the band triggering the change of the particle in hertz',
+  },
+  'particle.alpha': {
+    number: true,
+    description: 'the alpha of the particle in range from 0 to 1',
+  },
+  'particle.color': {
+    number: true,
+    description: 'the color of the particle in 24-bit',
+  },
+  'lightleaks.alpha': {
+    number: true,
+    description: 'the alpha of the light leaks in range from 0 to 1',
+  },
+  'lightleaks.interval': {
+    number: true,
+    description: 'the interval of the light leaks in seconds',
+  },
+  'spectrum.mode': {
+    number: true,
+    description: 'the mode of the spectrum (0, 1, 2, or 3)',
+  },
+  'spectrum.alpha': {
+    number: true,
+    description: 'the alpha of the spectrum in range from 0 to 1',
+  },
+  'spectrum.color': {
+    number: true,
+    description: 'the color of the spectrum in 24-bit',
+  },
+  'text.alpha': {
+    number: true,
+    description: 'the alpha of the texts in range from 0 to 1',
+  },
+  'text.color': {
+    number: true,
+    description: 'the alpha of the texts in 24-bit',
+  },
+  'text.title': {
+    string: true,
+    description: 'the title',
+  },
+  'text.sub': {
+    string: true,
+    description: 'the subtitle',
+  },
+  'banner.image': {
+    string: true,
+    description: 'the path to the banner',
+  },
+  'banner.alpha': {
+    number: true,
+    description: 'the alpha the banner in range from 0 to 1',
+  },
+  'image': {
+    string: true,
+    description: 'the path to the image',
+  },
+  '_': {
+    string: true,
+    description: 'the path to the music',
+  },
 });
+
+const [width, height] = argv.resolution.split('x').map(Number);
 
 webFrame.registerURLSchemeAsPrivileged('file');
 
@@ -105,15 +146,24 @@ fetch(url.format({ pathname: path.resolve(argv._[0]), protocol: 'file:' }))
        * > Frame rate should be 40fps or less
        */
       fps: 30,
-      resolution,
-      backgroundColor,
-      image,
-      banner,
-      blur,
-      particle,
-      lightLeaks,
-      spectrum,
-      text,
+      resolution: { width, height },
+      backgroundColor: argv.backgroundcolor,
+      image: argv.image === undefined ? null : url.format({
+        pathname: path.resolve(argv.image),
+        protocol: 'file:',
+      }),
+      banner: argv.banner && {
+        image: url.format({
+          pathname: path.resolve(argv.banner.image),
+          protocol: 'file:',
+        }),
+        alpha: argv.banner.alpha,
+      },
+      blur: argv.blur,
+      particle: argv.particle,
+      lightLeaks: argv.lightleaks,
+      spectrum: argv.spectrum,
+      text: argv.text,
     });
 
     // XXX: The documentation says the default value of end is true, but somehow

@@ -5,8 +5,9 @@ class VideoPreparingWorker
 
   sidekiq_options queue: :video_preparer, unique_for: 16.minutes, retry: false
 
-  def perform(id, resolution)
+  def perform(id, account_id, resolution)
     status = Status.tracks_only.find(id)
+    account = Account.find(account_id)
 
     video = MusicConvertService.new.call(status.music, resolution)
     begin
@@ -30,7 +31,7 @@ class VideoPreparingWorker
 
     error = VideoPreparationError.create!(track: status.music)
     begin
-      NotifyService.new.call(status.account, error)
+      NotifyService.new.call(account, error)
     rescue => e
       Rails.logger.error e
       error.destroy!
@@ -39,8 +40,8 @@ class VideoPreparingWorker
     raise
   else
     # 再生成の場合は前回の通知を削除する
-    Notification.find_by(activity_type: 'Track', activity_id: status.music.id, account: status.account)&.destroy
+    Notification.find_by(activity_type: 'Track', activity_id: status.music.id, account: account)&.destroy
 
-    NotifyService.new.call(status.account, status.music)
+    NotifyService.new.call(account, status.music)
   end
 end

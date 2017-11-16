@@ -46,21 +46,20 @@ import Slider from '../../components/slider';
 import Checkbox from '../../components/checkbox';
 import {
   constructRgbObject,
-  constructRgbCode,
   extractRgbFromRgbObject,
   validateIsFileMp3,
   validateIsFileImage,
 } from '../../util/musicvideo';
 import PrivacyDropdown from '../../../mastodon/features/compose/components/privacy_dropdown';
+import GenreTagPicker from '../../components/genre_tag_picker';
+import ColorTrigger from '../../components/color_trigger';
 
 const messages = defineMessages({
   preview: { id: 'pawoo_music.track_compose.preview', defaultMessage: 'Video preview' },
   privacy: { id: 'pawoo_music.track_compose.privacy', defaultMessage: 'Privacy' },
   select_genre: { id: 'pawoo_music.track_compose.select_genre', defaultMessage: 'Select genre tag' },
 });
-
 const allowedPrivacy = ['public', 'unlisted'];
-const genreList = ['electronic', 'pop', 'rock', 'alternative', 'ambient', 'acoustic', 'world', 'hiphop', 'reggae', 'folk', 'jazz', 'funk', 'punk', 'metal', 'soundtrack'];
 
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
@@ -191,38 +190,6 @@ const mapDispatchToProps = (dispatch) => ({
   },
 });
 
-class ColorTrigger extends ImmutablePureComponent {
-
-  static propTypes = {
-    alpha: PropTypes.number.isRequired,
-    color: PropTypes.number.isRequired,
-    onClick: PropTypes.func,
-  }
-
-  render () {
-    const { alpha, color, onClick } = this.props;
-    const depth = Math.round(((color & 0xff) + ((color >> 8) & 0xff) + ((color >> 16) & 0xff)) / 3);
-    const borderDepth = depth < 0xb0 ? 0x58 + depth : Math.max(0x58, 0x108 - depth);
-    const borderDepthHex = borderDepth.toString(16);
-
-    return (
-      <div
-        className='track-compose-effect-color-trigger'
-        onClick={onClick}
-        role='button'
-        style={{ borderColor: '#' + borderDepthHex.repeat(3) }}
-        tabIndex='-1'
-      >
-        <div
-          className='track-compose-effect-color-trigger-body'
-          style={{ backgroundColor: constructRgbCode(color, alpha) }}
-        />
-      </div>
-    );
-  }
-
-}
-
 @injectIntl
 @connect(makeMapStateToProps, mapDispatchToProps)
 export default class TrackCompose extends ImmutablePureComponent {
@@ -258,6 +225,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     tab: PropTypes.string.isRequired,
     track: ImmutablePropTypes.map.isRequired,
     error: PropTypes.any,
+    account: ImmutablePropTypes.map.isRequired,
     isSubmitting: PropTypes.bool.isRequired,
     intl: PropTypes.object.isRequired,
     onClose: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
@@ -477,10 +445,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     this.props.onChangePrivacy(value);
   }
 
-  handleClickGenre = (e) => {
-    const index = e.currentTarget.getAttribute('data-index');
-    const genre = genreList[index];
-
+  handleSelectGenre = (genre) => {
     this.props.onChangeTrackText(`${this.props.track.get('text')} #${genre}`);
   }
 
@@ -495,15 +460,6 @@ export default class TrackCompose extends ImmutablePureComponent {
   render () {
     const { track, intl } = this.props;
     const { trackMusicTitle, trackVideoImageTitle } = this.state;
-    const caution = {
-      height: '100px',
-      overflowY: 'scroll',
-      marginTop: '24px',
-      fontSize: 'var(--text10-font)',
-      backgroundColor: 'var(--textcolor)',
-      padding: 'var(--padding10)',
-      borderRadius: 'var(--radius)',
-    };
 
     return (
       <div className='track-compose'>
@@ -601,16 +557,7 @@ export default class TrackCompose extends ImmutablePureComponent {
                       />
                     </label>
                   </div>
-                  <div className='genre-selector'>
-                    <IconButton src='plus-circle' strokeWidth={2} title={intl.formatMessage(messages.select_genre)} />
-                    <div className='genre-list'>
-                      {genreList.map((genre, i) => (
-                        <div key={genre} data-index={i} className='genre-item' onClick={this.handleClickGenre} role='button' tabIndex={0} aria-pressed='false'>
-                          {genre}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <GenreTagPicker onSelectGenre={this.handleSelectGenre} />
                 </legend>
 
                 <legend>
@@ -1001,7 +948,7 @@ export default class TrackCompose extends ImmutablePureComponent {
                 </Delay>
               </fieldset>
 
-              <div style={caution}>
+              <div className='caution'>
                 <b>作品（画像、音源、楽曲、テキスト等を含む）のアップロードにおいて、下記の注意事項を守ることを誓います。</b><br />
                 <br />
                 １．この作品をインターネットで配信することが、第三者のいかなる権利も侵害しないこと。<br />
