@@ -176,6 +176,7 @@ a:hover {
   --width-lobby:          calc(var(--grid) * 80);
   --width-gallery-view:   calc(100vw - var(--grid) * 130);
   --width-gallery:        calc(var(--grid) * 120);
+  --width-gallery-canvas: calc(var(--width-gallery) - var(--padding20) * 2);
 
   --width-ago:            calc(var(--grid) * 6);
   --width-contextmenu:    calc(var(--grid) * 56);
@@ -211,6 +212,7 @@ a:hover {
   --width-gallery-slide:  100vw;
   --width-gallery-view:   100vw;
   --width-gallery:        calc(100vw - var(--grid) * 8);
+  --width-gallery-canvas: calc(var(--width-gallery) - var(--padding20) * 2);
 
   --width-ago:            calc(var(--grid) * 6);
 
