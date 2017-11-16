@@ -239,7 +239,7 @@ export default class AccountHeader extends ImmutablePureComponent {
         </div>
         <div className='tabs'>
           <NavLink to={`/@${account.get('acct')}`} exact>
-            <strong><FormattedNumber value={account.get('tracks_count')} /></strong>
+            <strong><FormattedNumber value={account.get('tracks_count')} /> </strong>
             <span><FormattedMessage id='account.tracks' defaultMessage='Tracks' /></span>
           </NavLink>
           <NavLink to={`/users/${account.get('acct')}/followers`} exact>
