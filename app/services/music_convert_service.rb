@@ -45,50 +45,50 @@ class MusicConvertService < BaseService
 
     if track.video_banner_alpha != 0
       args.push(
-        '--banner-image', Rails.root.join('app', 'made-with-pawoomusic.png'),
-        '--banner-alpha', track.video_banner_alpha
+        '--banner.image', Rails.root.join('app', 'made-with-pawoomusic.png'),
+        '--banner.alpha', track.video_banner_alpha
       )
     end
 
     if track.video_text_alpha != 0
       args.push(
-        '--text-alpha', track.video_text_alpha,
-        '--text-color', track.video_text_color,
-        '--text-title', track.title, '--text-sub', track.artist
+        '--text.alpha', track.video_text_alpha,
+        '--text.color', track.video_text_color,
+        '--text.title', track.title, '--text.sub', track.artist
       )
     end
 
     if track.video_blur_movement_band_top != 0 && track.video_blur_blink_band_top != 0
       args.push(
-        '--blur-movement-band-top', track.video_blur_movement_band_top,
-        '--blur-movement-band-bottom', track.video_blur_movement_band_bottom,
-        '--blur-movement-threshold', track.video_blur_movement_threshold,
-        '--blur-blink-band-top', track.video_blur_blink_band_top,
-        '--blur-blink-band-bottom', track.video_blur_blink_band_bottom,
-        '--blur-blink-threshold', track.video_blur_blink_threshold,
+        '--blur.movement.band.top', track.video_blur_movement_band_top,
+        '--blur.movement.band.bottom', track.video_blur_movement_band_bottom,
+        '--blur.movement.threshold', track.video_blur_movement_threshold,
+        '--blur.blink.band.top', track.video_blur_blink_band_top,
+        '--blur.blink.band.bottom', track.video_blur_blink_band_bottom,
+        '--blur.blink.threshold', track.video_blur_blink_threshold,
       )
     end
 
     if track.video_particle_alpha != 0
       args.push(
-        '--particle-limit-band-top', track.video_particle_limit_band_top,
-        '--particle-limit-band-bottom', track.video_particle_limit_band_bottom,
-        '--particle-limit-threshold', track.video_particle_limit_threshold,
-        '--particle-alpha', track.video_particle_alpha,
-        '--particle-color', track.video_particle_color,
+        '--particle.limit.band.top', track.video_particle_limit_band_top,
+        '--particle.limit.band.bottom', track.video_particle_limit_band_bottom,
+        '--particle.limit.threshold', track.video_particle_limit_threshold,
+        '--particle.alpha', track.video_particle_alpha,
+        '--particle.color', track.video_particle_color,
       )
     end
 
     if track.video_lightleaks_alpha != 0
-      args.push '--lightleaks-alpha', track.video_lightleaks_alpha
-      args.push '--lightleaks-interval', track.video_lightleaks_interval
+      args.push '--lightleaks.alpha', track.video_lightleaks_alpha
+      args.push '--lightleaks.interval', track.video_lightleaks_interval
     end
 
     if track.video_spectrum_alpha != 0
       args.push(
-        '--spectrum-mode', track.video_spectrum_mode,
-        '--spectrum-alpha', track.video_spectrum_alpha,
-        '--spectrum-color', track.video_spectrum_color,
+        '--spectrum.mode', track.video_spectrum_mode,
+        '--spectrum.alpha', track.video_spectrum_alpha,
+        '--spectrum.color', track.video_spectrum_color,
       )
     end
 
