@@ -38,6 +38,8 @@ class Notification < ApplicationRecord
   belongs_to :follow,         foreign_type: 'Follow',        foreign_key: 'activity_id'
   belongs_to :follow_request, foreign_type: 'FollowRequest', foreign_key: 'activity_id'
   belongs_to :favourite,      foreign_type: 'Favourite',     foreign_key: 'activity_id'
+  belongs_to :video_preparation_error,   foreign_type: 'VideoPreparationError', foreign_key: 'activity_id'
+  belongs_to :video_preparation_success, foreign_type: 'Track',                 foreign_key: 'activity_id'
 
   validates :account_id, uniqueness: { scope: [:activity_type, :activity_id] }
   validates :activity_type, inclusion: { in: TYPE_CLASS_MAP.values }
@@ -61,6 +63,10 @@ class Notification < ApplicationRecord
       activity&.reblog
     when :favourite, :mention
       activity&.status
+    when :video_preparation_success
+      activity&.statuses&.find_by(reblog: nil)
+    when :video_preparation_error
+      activity&.track&.statuses&.find_by(reblog: nil)
     end
   end
 
