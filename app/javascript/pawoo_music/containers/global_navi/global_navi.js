@@ -115,7 +115,7 @@ export default class GlobalNavi extends PureComponent {
             {this.renderNavLinks()}
           </div>
 
-          <Announcements />
+          {isLogin && <Announcements />}
 
           <h2>
             <FormattedMessage
