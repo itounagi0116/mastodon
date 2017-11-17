@@ -81,8 +81,8 @@ class Status < ApplicationRecord
   scope :not_excluded_by_account, ->(account) { where.not(account_id: account.excluded_from_timeline_account_ids) }
   scope :not_domain_blocked_by_account, ->(account) { account.excluded_from_timeline_domains.blank? ? left_outer_joins(:account) : left_outer_joins(:account).where('accounts.domain IS NULL OR accounts.domain NOT IN (?)', account.excluded_from_timeline_domains) }
 
-  cache_associated :application, :stream_entry, :tags, :media_attachments, :pixiv_cards, :pinned_status, :music, account: :oauth_authentications, mentions: { account: [:oauth_authentications, :custom_color] }, thread: { account: :oauth_authentications },
-    reblog: [:application, :stream_entry, :tags, :media_attachments, :pixiv_cards, :pinned_status, :music, account: [:oauth_authentications, :custom_color], mentions: { account: :oauth_authentications }]
+  cache_associated :application, :stream_entry, :tags, :media_attachments, :pixiv_cards, :pinned_status, :music, account: [:oauth_authentications, :custom_color], mentions: { account: [:oauth_authentications, :custom_color] }, thread: { account: [:oauth_authentications, :custom_color] },
+    reblog: [:application, :stream_entry, :tags, :media_attachments, :pixiv_cards, :pinned_status, :music, account: [:oauth_authentications, :custom_color], mentions: { account: [:oauth_authentications, :custom_color] }]
 
   def postable_to_es?
     public_visibility? && local?
