@@ -6,6 +6,7 @@ SimpleNavigation::Configuration.run do |navigation|
 
     primary.item :settings, safe_join([fa_icon('cog fw'), t('settings.settings')]), settings_profile_url do |settings|
       settings.item :profile, safe_join([fa_icon('user fw'), t('settings.edit_profile')]), settings_profile_url
+      settings.item :custom_color, safe_join([fa_icon('eyedropper fw'), t('settings.custom_color')]), settings_custom_color_url
       settings.item :preferences, safe_join([fa_icon('sliders fw'), t('settings.preferences')]), settings_preferences_url
       settings.item :password, safe_join([fa_icon('lock fw'), t('auth.change_password')]), edit_user_registration_url, highlights_on: %r{/auth/edit|/settings/delete}
       settings.item :timeline, safe_join([fa_icon('globe fw'), t('settings.timeline')]), settings_timeline_url

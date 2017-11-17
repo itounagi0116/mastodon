@@ -339,7 +339,7 @@
 
             &:hover,
             &.active {
-              background: var(--tootcolor);
+              background: var(--linkcolor2);
               color:      var(--color1);
 
               .time-limit-dropdown__option__content {
@@ -349,7 +349,7 @@
             }
 
             &.active:hover {
-              background: var(--tootcolor);
+              background: var(--linkcolor2);
             }
           }
         }

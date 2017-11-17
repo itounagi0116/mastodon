@@ -13,6 +13,10 @@ code {
   .input {
     margin-bottom: 15px;
     overflow: hidden;
+
+    &.hidden {
+      margin-bottom: 0px;
+    }
   }
 
   .omniauth {

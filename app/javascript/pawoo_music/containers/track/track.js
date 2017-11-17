@@ -70,14 +70,16 @@ class Track extends ImmutablePureComponent {
 
     const thumbnailStyle = {
       backgroundColor: constructRgbCode(track.getIn(['video', 'backgroundcolor']), 1),
-      backgroundImage: thumbnailView && `url('${track.getIn(['video', 'image'], defaultArtwork)}')`,
     };
 
     return (
       <div className={classNames('track', { 'fit-contain': fitContain })} style={thumbnailStyle}>
         {thumbnailView ? (
-          <div className='thumbnail' role='button' tabIndex='0' aria-pressed='false' onClick={this.handlePlayClick}>
-            <img className='playbutton' src={playIcon} alt='playbutton' />
+          <div className='thumbnail'>
+            <img className='thumbnail-image' src={track.getIn(['video', 'image'], defaultArtwork)} alt='thumbnail' />
+            <div className='playbutton' role='button' tabIndex='0' aria-pressed='false' onClick={this.handlePlayClick}>
+              <img className='playbutton-icon' src={playIcon} alt='playbutton' />
+            </div>
           </div>
         ) : (
           <Musicvideo track={track.deleteIn(['video', 'banner'])} />

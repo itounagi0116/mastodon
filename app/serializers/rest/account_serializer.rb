@@ -7,7 +7,7 @@ class REST::AccountSerializer < ActiveModel::Serializer
              :note, :url, :avatar, :avatar_static, :header, :header_static,
              :followers_count, :following_count, :statuses_count, :tracks_count, :albums_count
 
-  belongs_to :oauth_authentications
+  belongs_to :oauth_authentications, :custom_color
 
   def note
     Formatter.instance.simplified_format(object)
@@ -35,5 +35,9 @@ class REST::AccountSerializer < ActiveModel::Serializer
 
   class OauthAuthenticationSerializer < ActiveModel::Serializer
     attributes :uid, :provider
+  end
+
+  class CustomColorSerializer < ActiveModel::Serializer
+    attributes :textcolor, :linkcolor, :linkcolor2, :strong1, :strong2, :color1, :color2, :color3
   end
 end

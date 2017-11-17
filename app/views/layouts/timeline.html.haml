@@ -2,10 +2,14 @@
   %script#initial-state{ type: 'application/json' }!= json_escape(@initial_state_json)
   %meta{name: 'applicationServerKey', content: Rails.configuration.x.vapid_public_key}
 
-  = javascript_pack_tag 'application', integrity: true, crossorigin: 'anonymous'
-
 - content_for :content do
   .app-holder#mastodon{ data: { props: Oj.dump(default_props) } }
+
+    -# These loads fonts required for music videos.
+    %div{ style: 'font-family: Roboto; font-weight: 500' } Loading…
+    %div{ style: 'font-family: Roboto; font-weight: normal' } Please wait for a moment.
+
+    = javascript_pack_tag 'application', integrity: true, crossorigin: 'anonymous'
     %noscript
       = image_tag asset_pack_path('logo.svg')
       %div

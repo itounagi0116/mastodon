@@ -76,6 +76,7 @@ const makeMapStateToProps = () => {
     return {
       status,
       me: state.getIn(['meta', 'me']),
+      isUserAdmin: state.getIn(['meta', 'is_user_admin']),
       boostModal: state.getIn(['meta', 'boost_modal']),
       deleteModal: state.getIn(['meta', 'delete_modal']),
       autoPlayGif: state.getIn(['meta', 'auto_play_gif']) || false,
@@ -96,6 +97,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
   static propTypes = {
     status: ImmutablePropTypes.map.isRequired,
     me: PropTypes.number,
+    isUserAdmin: PropTypes.bool,
     withDismiss: PropTypes.bool,
     boostModal: PropTypes.bool,
     deleteModal: PropTypes.bool,
@@ -243,7 +245,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
   }
 
   render () {
-    const { status, me, intl, withDismiss } = this.props;
+    const { status, me, isUserAdmin, intl, withDismiss } = this.props;
     const { schedule } = this.context;
     const favouriteDisabled = schedule;
     const reblogDisabled = status.get('visibility') === 'private' || status.get('visibility') === 'direct' || schedule;
@@ -258,32 +260,37 @@ export default class StatusActionBar extends ImmutablePureComponent {
     let editButton     = null;
     let downloadButton = null;
 
-    if (status.getIn(['account', 'id']) === me  &&  status.get('track')) {
-      const videoMenu = [];
+    if (status.get('track')) {
+      if (status.getIn(['account', 'id']) === me || isUserAdmin) {
+        const videoMenu = [];
 
-      for (const resolution of ['720x720', '1920x1080']) {
-        const message = intl.formatMessage(messages['resolution' + resolution]);
-        const url = status.getIn(['track', 'video', 'url_' + resolution]);
+        for (const resolution of ['720x720', '1920x1080']) {
+          const message = intl.formatMessage(messages['resolution' + resolution]);
+          const url = status.getIn(['track', 'video', 'url_' + resolution]);
 
-        if (url) {
-          videoMenu.push({
-            text: intl.formatMessage(messages.download_mv, { resolution: message }),
-            href: url,
-            download: `${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}_${resolution}.mp4`,
-          }, {
-            text: intl.formatMessage(messages.regenerate_mv, { resolution: message }),
-            action: () => this.handleGenerateMvClick(resolution),
-          });
-        } else {
-          videoMenu.push({
-            text: intl.formatMessage(messages.generate_mv, { resolution: message }),
-            action: () => this.handleGenerateMvClick(resolution),
-          });
+          if (url) {
+            videoMenu.push({
+              text: intl.formatMessage(messages.download_mv, { resolution: message }),
+              href: url,
+              download: `${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}_${resolution}.mp4`,
+            }, {
+              text: intl.formatMessage(messages.regenerate_mv, { resolution: message }),
+              action: () => this.handleGenerateMvClick(resolution),
+            });
+          } else {
+            videoMenu.push({
+              text: intl.formatMessage(messages.generate_mv, { resolution: message }),
+              action: () => this.handleGenerateMvClick(resolution),
+            });
+          }
         }
+
+        downloadButton = <li><DropdownMenuContainer items={videoMenu} src='download' strong title={intl.formatMessage(messages.download_mv_title)} /></li>;
       }
 
-      downloadButton = <li><DropdownMenuContainer items={videoMenu} src='download' strong title={intl.formatMessage(messages.download_mv_title)} /></li>;
-      editButton = <li><IconButton className='strong' src='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} /></li>;
+      if (status.getIn(['account', 'id']) === me) {
+        editButton = <li><IconButton className='strong' src='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} /></li>;
+      }
     }
 
 

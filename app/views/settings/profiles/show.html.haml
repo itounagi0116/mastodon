@@ -15,6 +15,7 @@
     = f.input :avatar, wrapper: :with_label, input_html: { accept: AccountAvatar::IMAGE_MIME_TYPES.join(',') }, hint: t('simple_form.hints.defaults.avatar')
 
     = f.input :header, wrapper: :with_label, input_html: { accept: AccountHeader::IMAGE_MIME_TYPES.join(',') }, hint: t('simple_form.hints.defaults.header')
+    = f.input :background_image, wrapper: :with_label, input_html: { accept: AccountBackgroundImage::IMAGE_MIME_TYPES.join(',') }, hint: t('simple_form.hints.defaults.background_image')
 
   .fields-group
     = f.input :locked, as: :boolean, wrapper: :with_label, hint: t('simple_form.hints.defaults.locked')
