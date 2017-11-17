@@ -1,26 +1,40 @@
 .track {
   display: block;
-  position: relative;
   box-shadow: var(--shadow);
   background-size: cover;
   background-position: center center;
   background-color: black;
 
   .thumbnail {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
+    position: relative;
 
-    .playbutton {
+    .thumbnail-image {
+      width: 100%;
       display: block;
-      height:     var(--iconsize40);
-      width:      var(--iconsize40);
     }
 
-    &:hover .playbutton {
-      opacity:    var(--hover-opacity);
-      transition: var(--hover-transition);
+    .playbutton {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+
+      .playbutton-icon {
+        display: block;
+        height:     var(--iconsize40);
+        width:      var(--iconsize40);
+      }
+
+      &:hover .playbutton-icon {
+        opacity:    var(--hover-opacity);
+        transition: var(--hover-transition);
+      }
     }
   }
 

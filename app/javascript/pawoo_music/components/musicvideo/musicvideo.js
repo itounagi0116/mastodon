@@ -6,6 +6,7 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { defineMessages, injectIntl } from 'react-intl';
 import { Canvas } from 'musicvideo-generator';
 import { BaseTexture } from 'pixi.js';
+import noop from 'lodash/noop';
 import MusicvideoAudio from './audio';
 import IconButton from '../icon_button';
 import Slider from '../slider';
@@ -36,6 +37,14 @@ class Musicvideo extends ImmutablePureComponent {
     autoPlay: true,
   };
 
+  state = {
+    duration: Infinity,
+    initialized: false,
+    loading: true,
+    paused: true,
+    currentTime: 0,
+  };
+
   image = new BaseTexture(new Image());
 
   generator = new Canvas(
@@ -45,17 +54,31 @@ class Musicvideo extends ImmutablePureComponent {
     () => this.audio.getCurrentTime()
   );
 
+  setAudioState = () => {
+    const newState = {
+      duration: this.audio.duration,
+      initialized: this.audio.getInitialized(),
+      loading: this.audio.getLoading(),
+      paused: this.audio.getPaused(),
+      currentTime: this.audio.getCurrentTime(),
+    };
+
+    if (Object.keys(newState).some((key) => newState[key] !== this.state[key])) {
+      this.setState(newState);
+    }
+  }
+
   audio = new MusicvideoAudio({
     analyser: this.generator.audioAnalyserNode,
-    onDurationChange: this.forceUpdate.bind(this),
+    onDurationChange: this.setAudioState,
     onSeeking: this.generator.initialize.bind(this.generator),
     onStart: () => {
       this.generator.start();
-      this.forceUpdate();
+      this.setAudioState();
     },
     onStop: () => {
       this.generator.stop();
-      this.forceUpdate();
+      this.setAudioState();
     },
   });
 
@@ -183,37 +206,38 @@ class Musicvideo extends ImmutablePureComponent {
 
   audioDidUpdate = () => {
     this.audio.update();
-    this.forceUpdate();
+    this.setAudioState();
   }
 
   render() {
     const { intl, label } = this.props;
-    const initialized = this.audio.getInitialized();
-    const canPlay = ![Infinity, NaN].includes(this.audio.duration);
+    const { duration, initialized, loading, paused, currentTime } = this.state;
+    const canPlay = ![Infinity, NaN].includes(duration);
 
     return (
       <div className='musicvideo'>
         <div
           className='canvas-container'
-          onClick={canPlay && this.handleTogglePaused}
+          onClick={canPlay ? this.handleTogglePaused : noop}
           role='button'
           style={{ cursor: canPlay && 'pointer' }}
           tabIndex='0'
+          aria-pressed='false'
           aria-label={label}
         >
-          {this.audio.getLoading() && <div className='loading' />}
+          {loading && <div className='loading' />}
           <div ref={this.setCanvasContainerRef} />
         </div>
         <div className={classNames('controls-container', { visible: initialized })}>
           <div className='controls'>
             <div className='toggle' onClick={this.handleTogglePaused} role='button' tabIndex='0' aria-pressed='false'>
-              {this.audio.getPaused() ? <IconButton src='play' title={intl.formatMessage(messages.play)} /> : <IconButton src='pause' title={intl.formatMessage(messages.pause)} />}
+              {paused ? <IconButton src='play' title={intl.formatMessage(messages.play)} /> : <IconButton src='pause' title={intl.formatMessage(messages.pause)} />}
             </div>
             <Slider
               min={0}
-              max={this.audio.duration}
+              max={duration}
               step={0.1}
-              value={this.audio.getCurrentTime()}
+              value={currentTime}
               onChange={this.handleChangeCurrentTime}
               disabled={!initialized || !canPlay}
             />
