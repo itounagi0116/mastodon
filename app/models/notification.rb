@@ -26,8 +26,9 @@ class Notification < ApplicationRecord
     video_preparation_success: 'Track',
   }.freeze
 
-  STATUS_INCLUDES = [:stream_entry, :media_attachments, :tags, mentions: { account: :oauth_authentications },
-                     reblog: [:stream_entry, :media_attachments, :tags, account: :oauth_authentications, mentions: { account: :oauth_authentications }], account: :oauth_authentications].freeze
+  ACCOUNT_INCLUDES = [:oauth_authentications, :custom_color]
+  STATUS_INCLUDES = [:stream_entry, :media_attachments, :tags, mentions: { account: ACCOUNT_INCLUDES },
+                     reblog: [:stream_entry, :media_attachments, :tags, account: ACCOUNT_INCLUDES, mentions: { account: ACCOUNT_INCLUDES }], account: ACCOUNT_INCLUDES].freeze
 
   belongs_to :account
   belongs_to :from_account, class_name: 'Account'
@@ -51,7 +52,7 @@ class Notification < ApplicationRecord
     where(activity_type: types)
   }
 
-  cache_associated :from_account, status: STATUS_INCLUDES, mention: [status: STATUS_INCLUDES], favourite: [:account, status: STATUS_INCLUDES], follow: :account
+  cache_associated :from_account, status: STATUS_INCLUDES, mention: [status: STATUS_INCLUDES], favourite: [account: ACCOUNT_INCLUDES, status: STATUS_INCLUDES], follow: { account: ACCOUNT_INCLUDES }
 
   def type
     @type ||= TYPE_CLASS_MAP.invert[activity_type].to_sym
