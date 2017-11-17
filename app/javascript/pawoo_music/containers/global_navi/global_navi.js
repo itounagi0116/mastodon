@@ -115,6 +115,8 @@ export default class GlobalNavi extends PureComponent {
             {this.renderNavLinks()}
           </div>
 
+          <Announcements />
+
           <h2>
             <FormattedMessage
               id='pawoo_music.global_navi.tag_timeline'
@@ -125,7 +127,6 @@ export default class GlobalNavi extends PureComponent {
           <EventCalendar />
           <PinnedTagsContainer currentTag={currentTag} />
           <TrendTagsContainer />
-          <Announcements />
         </div>
         <div className='global-navi-bottom'>
           {isLogin && (
