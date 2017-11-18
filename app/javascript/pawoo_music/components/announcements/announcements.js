@@ -75,7 +75,7 @@ class Announcements extends React.PureComponent {
   }
 
   handleDismiss = (event) => {
-    const id = +event.currentTarget.getAttribute('title');
+    const id = +event.currentTarget.getAttribute('data-id');
 
     if (Number.isInteger(id)) {
       this.setState({ dismissed: [].concat(this.state.dismissed, id) });
@@ -91,7 +91,7 @@ class Announcements extends React.PureComponent {
           <li className='announcement-item' key={announcement.get('id')}>
             <div className='announcement-header'>
               <span className='header-text'>{intl.formatMessage({ id: 'pawoo_music.announcements.header', defaultMessage: 'News' })}</span>
-              <IconButton className='dismiss-button' title={intl.formatMessage({ id: 'pawoo_music.announcements.dismiss', defaultMessage: 'Dismiss' })} src='x-circle' role='button' tabIndex='0' aria-pressed='false' onClick={this.handleDismiss} />
+              <IconButton className='dismiss-button' title={intl.formatMessage({ id: 'pawoo_music.announcements.dismiss', defaultMessage: 'Dismiss' })} src='x-circle' role='button' tabIndex='0' aria-pressed='false' data-id={announcement.get('id')} onClick={this.handleDismiss} />
             </div>
             <div className='announcements__body'>
               <p>{announcement.get('body')}</p>
