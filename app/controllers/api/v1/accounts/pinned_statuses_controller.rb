@@ -8,12 +8,10 @@ class Api::V1::Accounts::PinnedStatusesController < Api::BaseController
   def index
     limit = limit_param(DEFAULT_STATUSES_LIMIT)
 
-    statuses = Status.permitted_for(@account, current_account)
-      .where(account: @account)
+    statuses = account_statuses
       .joins(:status_pin)
       .reorder(nil)
       .merge(StatusPin.recent.paginate_by_max_id(limit, params[:max_id], params[:since_id]))
-      .preload(:status_pin)
 
     @statuses = cache_collection(statuses, Status)
     set_maps(@statuses)

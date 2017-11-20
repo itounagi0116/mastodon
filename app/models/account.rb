@@ -100,9 +100,9 @@ class Account < ApplicationRecord
   has_many :targeted_reports, class_name: 'Report', foreign_key: :target_account_id
 
   # Musics
-  has_many :music_statuses, -> { where(in_reply_to_id: nil).musics_only }, class_name: 'Status'
-  has_many :track_statuses, -> { where(in_reply_to_id: nil).tracks_only }, class_name: 'Status'
-  has_many :album_statuses, -> { where(in_reply_to_id: nil).albums_only }, class_name: 'Status'
+  has_many :music_statuses, -> { where(reblog_of_id: nil).musics_only }, class_name: 'Status'
+  has_many :track_statuses, -> { where(reblog_of_id: nil).tracks_only }, class_name: 'Status'
+  has_many :album_statuses, -> { where(reblog_of_id: nil).albums_only }, class_name: 'Status'
 
   has_one :custom_color, class_name: 'AccountCustomColor'
 

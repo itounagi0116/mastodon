@@ -16,12 +16,14 @@ import {
   favourite,
   unreblog,
   unfavourite,
+  pin,
+  unpin,
 } from '../../../mastodon/actions/interactions';
 import {
   blockAccount,
   muteAccount,
 } from '../../../mastodon/actions/accounts';
-import { muteStatus, unmuteStatus, deleteStatus, pinStatus, unpinStatus } from '../../../mastodon/actions/statuses';
+import { muteStatus, unmuteStatus, deleteStatus } from '../../../mastodon/actions/statuses';
 import { initReport } from '../../../mastodon/actions/reports';
 import { openModal } from '../../../mastodon/actions/modal';
 import { generateTrackMv } from '../../actions/tracks';
@@ -162,13 +164,13 @@ export default class StatusActionBar extends ImmutablePureComponent {
       dispatch(openModal('CONFIRM', {
         message: <FormattedMessage id='confirmations.unpin.message' defaultMessage='Unpin from your profile. Are you sure?' />,
         confirm: intl.formatMessage(messages.unpinConfirm),
-        onConfirm: () => dispatch(unpinStatus(status.get('id'))),
+        onConfirm: () => dispatch(unpin(status)),
       }));
     } else {
       dispatch(openModal('CONFIRM', {
         message: <FormattedMessage id='confirmations.pin.message' defaultMessage='This will prepend any previously pinned Toot. Are you sure?' />,
         confirm: intl.formatMessage(messages.pinConfirm),
-        onConfirm: () => dispatch(pinStatus(status.get('id'))),
+        onConfirm: () => dispatch(pin(status)),
       }));
     }
   }
