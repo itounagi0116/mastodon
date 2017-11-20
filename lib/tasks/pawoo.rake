@@ -2,7 +2,7 @@
 
 namespace :pawoo do
   namespace :maintenance do
-    desc 'Update counter caches'
+    desc 'Migrating from PinnedStatus to StatusPin'
     task migrate_from_pinned_status_to_status_pin: :environment do
       Rails.logger.debug 'Migrating from PinnedStatus to StatusPin...'
 
