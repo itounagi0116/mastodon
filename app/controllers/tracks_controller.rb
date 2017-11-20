@@ -12,5 +12,6 @@ class TracksController < ApplicationController
 
   def edit
     @status = Status.find_by!(id: params[:id], account: current_account, music_type: 'Track')
+    @status_json = ActiveModelSerializers::SerializableResource.new(@status, serializer: REST::StatusSerializer, scope: current_user, scope_name: :current_user).to_json
   end
 end

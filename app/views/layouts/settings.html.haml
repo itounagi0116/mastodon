@@ -1,5 +1,5 @@
 - content_for :header_tags do
-  %script#initial-state{ type: 'application/json' }!= json_escape(render(file: 'home/initial_state.json', formats: :json))
+  %script#initial-state{ type: 'application/json' }!= json_escape(@initial_state_json)
   = stylesheet_pack_tag 'settings', media: 'all'
   = javascript_pack_tag 'settings', integrity: true, crossorigin: 'anonymous'
 

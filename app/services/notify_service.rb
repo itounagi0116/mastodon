@@ -41,6 +41,8 @@ class NotifyService < BaseService
   end
 
   def blocked?
+    return false if @notification.from_account.blank?
+
     blocked   = @recipient.suspended?                                                                                                # Skip if the recipient account is suspended anyway
     blocked ||= @recipient.id == @notification.from_account.id                                                                       # Skip for interactions with self
     blocked ||= @recipient.domain_blocking?(@notification.from_account.domain) && !@recipient.following?(@notification.from_account) # Skip for domain blocked accounts

@@ -6,7 +6,7 @@ RSpec.describe HomeController, type: :controller do
       it 'redirects to about page' do
         @request.path = '/'
         get :index
-        expect(response).to redirect_to(about_path)
+        expect(response).to redirect_to(local_timeline_path)
       end
     end
 

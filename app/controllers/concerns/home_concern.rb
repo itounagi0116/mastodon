@@ -50,10 +50,6 @@ module HomeConcern
       token: current_session.token,
       admin: Account.find_local(Setting.site_contact_username),
       target_account: @account,
-      appmode: appmode,
     }
   end
-
-  # NOTE: Override me
-  def appmode; end
 end

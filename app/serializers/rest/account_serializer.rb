@@ -7,7 +7,9 @@ class REST::AccountSerializer < ActiveModel::Serializer
              :note, :url, :avatar, :avatar_static, :header, :header_static,
              :followers_count, :following_count, :statuses_count, :tracks_count, :albums_count
 
-  belongs_to :oauth_authentications, :custom_color
+  belongs_to :oauth_authentications
+  has_many :popular_media_attachments, serializer: REST::MediaAttachmentSerializer, if: :show_with_media?
+  has_one :custom_color
 
   def note
     Formatter.instance.simplified_format(object)
@@ -31,6 +33,10 @@ class REST::AccountSerializer < ActiveModel::Serializer
 
   def header_static
     full_asset_url(object.header_static_url)
+  end
+
+  def show_with_media?
+    instance_options[:show_with_media]
   end
 
   class OauthAuthenticationSerializer < ActiveModel::Serializer

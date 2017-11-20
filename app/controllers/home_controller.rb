@@ -7,7 +7,9 @@ class HomeController < ApplicationController
   before_action :set_instance_presenter, only: :index
   before_action :set_initial_state_json, only: :index
 
-  def index; end
+  def index
+    @body_classes = 'app-body'
+  end
 
   def web
     redirect_to find_redirect_path_from_request

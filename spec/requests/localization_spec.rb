@@ -12,7 +12,7 @@ describe 'Localization' do
 
     get "/about/more", headers: headers
     expect(response.body).to include(
-      I18n.t('about.about_mastodon_html', locale: 'zh-HK')
+      I18n.t('about.contact', locale: 'zh-HK')
     )
   end
 
@@ -21,7 +21,7 @@ describe 'Localization' do
 
     get "/about/more", headers: headers
     expect(response.body).to include(
-      I18n.t('about.about_mastodon_html', locale: 'es')
+      I18n.t('about.contact', locale: 'es')
     )
   end
   it 'falls back to english when locale is missing' do
@@ -29,7 +29,7 @@ describe 'Localization' do
 
     get "/about/more", headers: headers
     expect(response.body).to include(
-      I18n.t('about.about_mastodon_html', locale: 'en')
+      I18n.t('about.contact', locale: 'en')
     )
   end
 end

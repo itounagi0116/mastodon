@@ -12,6 +12,8 @@ class REST::StatusSerializer < ActiveModel::Serializer
   belongs_to :reblog, serializer: REST::StatusSerializer
   belongs_to :application
   belongs_to :account, serializer: REST::AccountSerializer
+  attribute :track
+  belongs_to :album, serializer: REST::AlbumSerializer
 
   has_many :media_attachments, serializer: REST::MediaAttachmentSerializer
   has_many :mentions
@@ -70,6 +72,10 @@ class REST::StatusSerializer < ActiveModel::Serializer
 
   def pixiv_cards
     object.pixiv_cards.select(&:image_url?).map { |record| record.slice(:url, :image_url) }.compact
+  end
+
+  def track
+    REST::TrackSerializer.new(object.track, account: object.account, scope: current_user, scope_name: :current_user) if object.track
   end
 
   class ApplicationSerializer < ActiveModel::Serializer
