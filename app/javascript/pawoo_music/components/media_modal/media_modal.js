@@ -85,11 +85,11 @@ export default class MediaModal extends ImmutablePureComponent {
     }).toArray();
 
     return (
-      <div role='button' tabIndex='0' className='media-modal' onClick={onClose}>
+      <div className='modal-root__modal media-modal'>
         {leftNav}
 
-        <div className='media-modal__content'>
-          <IconButton className='media-modal__close' title={intl.formatMessage(messages.close)} icon='times' onClick={onClose} size={16} />
+        <div className='media-modal__content' role='button' tabIndex='0' onClick={onClose}>
+          <IconButton className='media-modal__close' title={intl.formatMessage(messages.close)} src='x' onClick={onClose} />
           <ReactSwipeableViews onChangeIndex={this.handleSwipe} index={index} animateHeight={media.every(image => image.hasIn(['meta', 'original', 'height']))}>
             {content}
           </ReactSwipeableViews>

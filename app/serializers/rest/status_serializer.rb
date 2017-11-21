@@ -12,8 +12,8 @@ class REST::StatusSerializer < ActiveModel::Serializer
   belongs_to :reblog, serializer: REST::StatusSerializer
   belongs_to :application
   belongs_to :account, serializer: REST::AccountSerializer
-  attribute :track
-  belongs_to :album, serializer: REST::AlbumSerializer
+  attribute :track, if: :track?
+  belongs_to :album, serializer: REST::AlbumSerializer, if: :album?
 
   has_many :media_attachments, serializer: REST::MediaAttachmentSerializer
   has_many :mentions
@@ -76,6 +76,14 @@ class REST::StatusSerializer < ActiveModel::Serializer
 
   def track
     REST::TrackSerializer.new(object.track, account: object.account, scope: current_user, scope_name: :current_user) if object.track
+  end
+
+  def track?
+    !object.track.nil?
+  end
+
+  def album?
+    !object.album.nil?
   end
 
   class ApplicationSerializer < ActiveModel::Serializer

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { throttle } from 'lodash';
 import classNames from 'classnames';
+import IconButton from '../../../pawoo_music/components/icon_button';
 
 const messages = defineMessages({
   play: { id: 'video.play', defaultMessage: 'Play' },
@@ -104,7 +105,7 @@ export default class Video extends React.PureComponent {
   static propTypes = {
     preview: PropTypes.string,
     src: PropTypes.string.isRequired,
-    width: PropTypes.number,
+    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     height: PropTypes.number,
     sensitive: PropTypes.bool,
     startTime: PropTypes.number,
@@ -286,15 +287,15 @@ export default class Video extends React.PureComponent {
           </div>
 
           <div className='video-player__buttons left'>
-            <button aria-label={intl.formatMessage(paused ? messages.play : messages.pause)} onClick={this.togglePlay}><i className={classNames('fa fa-fw', { 'fa-play': paused, 'fa-pause': !paused })} /></button>
-            <button aria-label={intl.formatMessage(muted ? messages.unmute : messages.mute)} onClick={this.toggleMute}><i className={classNames('fa fa-fw', { 'fa-volume-off': muted, 'fa-volume-up': !muted })} /></button>
-            {!onCloseVideo && <button aria-label={intl.formatMessage(messages.hide)} onClick={this.toggleReveal}><i className='fa fa-fw fa-eye' /></button>}
+            <IconButton aria-label={intl.formatMessage(paused ? messages.play : messages.pause)} onClick={this.togglePlay} src={paused ? 'play' : 'pause'} />
+            <IconButton aria-label={intl.formatMessage(muted ? messages.unmute : messages.mute)} onClick={this.toggleMute} src={muted ? 'volume-x' : 'volume-2'} />
+            {!onCloseVideo && <IconButton aria-label={intl.formatMessage(messages.hide)} onClick={this.toggleReveal} src='eye' />}
           </div>
 
           <div className='video-player__buttons right'>
-            {(!fullscreen && onOpenVideo) && <button aria-label={intl.formatMessage(messages.expand)} onClick={this.handleOpenVideo}><i className='fa fa-fw fa-expand' /></button>}
-            {onCloseVideo && <button aria-label={intl.formatMessage(messages.close)} onClick={this.handleCloseVideo}><i className='fa fa-fw fa-times' /></button>}
-            <button aria-label={intl.formatMessage(fullscreen ? messages.exit_fullscreen : messages.fullscreen)} onClick={this.toggleFullscreen}><i className={classNames('fa fa-fw', { 'fa-arrows-alt': !fullscreen, 'fa-compress': fullscreen })} /></button>
+            {(!fullscreen && onOpenVideo) && <IconButton aria-label={intl.formatMessage(messages.expand)} onClick={this.handleOpenVideo} src='maximize-2' />}
+            {onCloseVideo && <IconButton aria-label={intl.formatMessage(messages.close)} onClick={this.handleCloseVideo} src='x' />}
+            <IconButton aria-label={intl.formatMessage(fullscreen ? messages.exit_fullscreen : messages.fullscreen)} onClick={this.toggleFullscreen} src={fullscreen ? 'minimize' : 'maximize'} />
           </div>
         </div>
       </div>

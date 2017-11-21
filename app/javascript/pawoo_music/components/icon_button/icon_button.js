@@ -18,7 +18,6 @@ export default class IconButton extends PureComponent {
   }
 
   static defaultProps = {
-    title: 'icon',
     tabindex: -1,
     strokeWidth: 1,
   };

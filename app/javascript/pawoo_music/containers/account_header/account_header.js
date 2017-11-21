@@ -38,6 +38,7 @@ const messages = defineMessages({
   follow: { id: 'account.follow', defaultMessage: 'Follow' },
   report: { id: 'account.report', defaultMessage: 'Report @{name}' },
   media: { id: 'account.media', defaultMessage: 'Media' },
+  more: { id: 'account.more', defaultMessage: 'More' },
   disclaimer: { id: 'account.disclaimer', defaultMessage: 'This user is from another instance. This number may be larger.' },
   blockDomain: { id: 'account.block_domain', defaultMessage: 'Hide everything from {domain}' },
   unblockDomain: { id: 'account.unblock_domain', defaultMessage: 'Unhide {domain}' },
@@ -250,7 +251,7 @@ export default class AccountHeader extends ImmutablePureComponent {
             <strong><FormattedNumber value={account.get('following_count')} />{extraInfo} </strong>
             <span><FormattedMessage id='account.follows' defaultMessage='Follows' /></span>
           </NavLink>
-          {menu.length > 0 && <DropdownMenuContainer items={menu} src='more-horizontal' />}
+          {menu.length > 0 && <DropdownMenuContainer title={intl.formatMessage(messages.more)} items={menu} src='more-horizontal' />}
         </div>
 
       </div>

@@ -2,8 +2,12 @@ import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
 import IconButton from '../../pawoo_music/components/icon_button';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { isIOS } from '../is_mobile';
+
+const messages = defineMessages({
+  toggle_visible: { id: 'media_gallery.toggle_visible', defaultMessage: 'Toggle visibility' },
+});
 
 class Item extends React.PureComponent {
 
@@ -177,6 +181,7 @@ export default class MediaGallery extends React.PureComponent {
     autoPlayGif: PropTypes.bool.isRequired,
     expandMedia: PropTypes.bool,
     lineMedia: PropTypes.bool,
+    intl: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
@@ -204,7 +209,7 @@ export default class MediaGallery extends React.PureComponent {
   }
 
   render () {
-    const { media, sensitive, expandMedia, lineMedia } = this.props;
+    const { media, sensitive, expandMedia, lineMedia, intl } = this.props;
 
     let children;
 
@@ -233,7 +238,7 @@ export default class MediaGallery extends React.PureComponent {
     return (
       <div className='media-gallery' style={{ height: (expandMedia && this.state.visible) ? 'auto' : `${this.props.height}px` }}>
         <div className={`spoiler-button ${this.state.visible ? 'spoiler-button--visible' : ''}`}>
-          <IconButton src={this.state.visible ? 'eye' : 'eye-off'} onClick={this.handleOpen} />
+          <IconButton title={intl.formatMessage(messages.toggle_visible)} src={this.state.visible ? 'eye' : 'eye-off'} onClick={this.handleOpen} />
         </div>
 
         {children}
