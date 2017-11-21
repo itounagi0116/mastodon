@@ -28,7 +28,7 @@ import PlayControlContainer from '../../../mastodon/features/ui/containers/play_
 import { openModalFormCompose } from '../../../mastodon/actions/compose';
 import Link from '../../components/link_wrapper';
 import Logo from '../../components/logo';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
 
 const mapStateToProps = state => ({
   isLogin: !!state.getIn(['meta', 'me']),
@@ -179,14 +179,14 @@ export default class App extends PureComponent {
           <div className='app-center'>{routes}</div>
 
           <div className='app-top'>
-            <IconButton src='menu' className={classNames('to_global_navi', { 'selected': target === 'global_navi' })} strokeWidth={2} onClick={this.handleClickGlobalNaviButton} />
+            <Icon icon='menu' className={classNames('to_global_navi', { 'selected': target === 'global_navi' })} strong onClick={this.handleClickGlobalNaviButton} />
             <div className='blank' />
             <div className='logo'>
               <Logo />
               <div className='timeline_title'>{title}</div>
             </div>
-            <IconButton src='edit-2' className='post_status' strokeWidth={2} onClick={isLogin ? this.handleClickStatusPostButton : this.handleRedirectLoginPage} />
-            <a className='post_track' href='/tracks/new' onClick={this.handleRedirectLoginPage}><IconButton src='music' className='clickable' strokeWidth={2} /></a>
+            <Icon icon='edit-2' className='post_status' strong onClick={isLogin ? this.handleClickStatusPostButton : this.handleRedirectLoginPage} />
+            <a className='post_track' href='/tracks/new' onClick={this.handleRedirectLoginPage}><Icon icon='music' className='clickable' strong /></a>
           </div>
 
           <div className='app-bottom'>{buttons}</div>

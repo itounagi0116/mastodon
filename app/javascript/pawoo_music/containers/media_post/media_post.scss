@@ -11,7 +11,7 @@
     transition: all 0.3s ease;
     cursor: pointer;
 
-    .icon-button {
+    .icon {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -24,7 +24,6 @@
       svg {
         width: var(--iconsize20);
         height: var(--iconsize20);
-        stroke-width: 2px;
         stroke: var(--linkcolor2);
         transition: all 0.8s var(--hover-timing);
       }
@@ -33,7 +32,7 @@
     &:hover {
       box-shadow: 0 0px 48px 0 rgba(0, 0, 0, 0.2);
 
-      .icon-button {
+      .icon {
         background-color: var(--linkcolor2);
         transform: scale(1.1);
 

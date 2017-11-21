@@ -6,7 +6,6 @@ import ExtendedVideoPlayer from '../../../mastodon/components/extended_video_pla
 import { injectIntl, defineMessages } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import ImageLoader from '../../../mastodon/features/ui/components/image_loader';
-import IconButton from '../icon_button';
 
 const messages = defineMessages({
   close: { id: 'lightbox.close', defaultMessage: 'Close' },
@@ -89,7 +88,6 @@ export default class MediaModal extends ImmutablePureComponent {
         {leftNav}
 
         <div className='media-modal__content' role='button' tabIndex='0' onClick={onClose}>
-          <IconButton className='media-modal__close' title={intl.formatMessage(messages.close)} src='x' onClick={onClose} />
           <ReactSwipeableViews onChangeIndex={this.handleSwipe} index={index} animateHeight={media.every(image => image.hasIn(['meta', 'original', 'height']))}>
             {content}
           </ReactSwipeableViews>

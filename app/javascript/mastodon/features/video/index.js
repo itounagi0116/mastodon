@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { throttle } from 'lodash';
 import classNames from 'classnames';
-import IconButton from '../../../pawoo_music/components/icon_button';
+import Icon from '../../../pawoo_music/components/icon';
 
 const messages = defineMessages({
   play: { id: 'video.play', defaultMessage: 'Play' },
@@ -287,15 +287,15 @@ export default class Video extends React.PureComponent {
           </div>
 
           <div className='video-player__buttons left'>
-            <IconButton aria-label={intl.formatMessage(paused ? messages.play : messages.pause)} onClick={this.togglePlay} src={paused ? 'play' : 'pause'} />
-            <IconButton aria-label={intl.formatMessage(muted ? messages.unmute : messages.mute)} onClick={this.toggleMute} src={muted ? 'volume-x' : 'volume-2'} />
-            {!onCloseVideo && <IconButton aria-label={intl.formatMessage(messages.hide)} onClick={this.toggleReveal} src='eye' />}
+            <Icon aria-label={intl.formatMessage(paused ? messages.play : messages.pause)} onClick={this.togglePlay} icon={paused ? 'play' : 'pause'} strong />
+            <Icon aria-label={intl.formatMessage(muted ? messages.unmute : messages.mute)} onClick={this.toggleMute} icon={muted ? 'volume-x' : 'volume-2'} strong />
+            {!onCloseVideo && <Icon aria-label={intl.formatMessage(messages.hide)} onClick={this.toggleReveal} icon='eye' strong />}
           </div>
 
           <div className='video-player__buttons right'>
-            {(!fullscreen && onOpenVideo) && <IconButton aria-label={intl.formatMessage(messages.expand)} onClick={this.handleOpenVideo} src='maximize-2' />}
-            {onCloseVideo && <IconButton aria-label={intl.formatMessage(messages.close)} onClick={this.handleCloseVideo} src='x' />}
-            <IconButton aria-label={intl.formatMessage(fullscreen ? messages.exit_fullscreen : messages.fullscreen)} onClick={this.toggleFullscreen} src={fullscreen ? 'minimize' : 'maximize'} />
+            {(!fullscreen && onOpenVideo) && <Icon aria-label={intl.formatMessage(messages.expand)} onClick={this.handleOpenVideo} icon='maximize-2' strong />}
+            {onCloseVideo && <Icon aria-label={intl.formatMessage(messages.close)} onClick={this.handleCloseVideo} icon='x' strong />}
+            <Icon aria-label={intl.formatMessage(fullscreen ? messages.exit_fullscreen : messages.fullscreen)} onClick={this.toggleFullscreen} icon={fullscreen ? 'minimize' : 'maximize'} strong />
           </div>
         </div>
       </div>

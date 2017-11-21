@@ -1,7 +1,7 @@
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
-import IconButton from '../../pawoo_music/components/icon_button';
+import Icon from '../../pawoo_music/components/icon';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { isIOS } from '../is_mobile';
 
@@ -122,7 +122,7 @@ export default class VideoPlayer extends React.PureComponent {
 
     let spoilerButton = (
       <div className={`status__video-player-spoiler ${this.state.visible ? 'status__video-player-spoiler--visible' : ''}`}>
-        <IconButton src={this.state.visible ? 'eye' : 'eye-off'} onClick={this.handleVisibility} />
+        <Icon icon={this.state.visible ? 'eye' : 'eye-off'} onClick={this.handleVisibility} />
       </div>
     );
 
@@ -131,7 +131,7 @@ export default class VideoPlayer extends React.PureComponent {
     if (this.context.router) {
       expandButton = (
         <div className='status__video-player-expand'>
-          <IconButton src='maximize-2' onClick={this.handleExpand} />
+          <Icon icon='maximize-2' onClick={this.handleExpand} />
         </div>
       );
     }

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl, defineMessages } from 'react-intl';
 import classNames from 'classnames';
-import IconButton from '../../../../pawoo_music/components/icon_button';
+import Icon from '../../../../pawoo_music/components/icon';
 
 const messages = defineMessages({
   public_short: { id: 'privacy.public.short', defaultMessage: 'Public' },
@@ -22,7 +22,6 @@ export default class PrivacyDropdown extends React.PureComponent {
 
   static propTypes = {
     isUserTouching: PropTypes.func,
-    isModalOpen: PropTypes.bool.isRequired,
     onModalOpen: PropTypes.func,
     onModalClose: PropTypes.func,
     value: PropTypes.string.isRequired,
@@ -118,17 +117,17 @@ export default class PrivacyDropdown extends React.PureComponent {
         <div className='privacy-dropdown__value'>
           {text ? (
             <button className={classNames('privacy-dropdown__value-button', buttonClassName)} onClick={this.handleToggle}>
-              <IconButton src={valueOption.icon} />
+              <Icon icon={valueOption.icon} />
               <span className='privacy-dropdown__value-button-text'>{text}</span>
             </button>
           ) : (
-            <IconButton className={classNames('privacy-dropdown__value-icon', buttonClassName)} src={valueOption.icon} title={intl.formatMessage(messages.change_privacy)} active={open} onClick={this.handleToggle} />
+            <Icon className={classNames('privacy-dropdown__value-icon', buttonClassName)} icon={valueOption.icon} title={intl.formatMessage(messages.change_privacy)} active={open} onClick={this.handleToggle} strong scale />
           )}
         </div>
         <div className='privacy-dropdown__dropdown'>
           {open && options.map(item =>
             <div role='button' tabIndex='0' key={item.value} data-index={item.value} onKeyDown={this.handleClick} onClick={this.handleClick} className={`privacy-dropdown__option ${item.value === value ? 'active' : ''}`}>
-              <div className='privacy-dropdown__option__icon'><IconButton src={item.icon} /></div>
+              <div className='privacy-dropdown__option__icon'><Icon icon={item.icon} /></div>
               <div className='privacy-dropdown__option__content'>
                 <strong>{item.text}</strong>
                 {item.meta}

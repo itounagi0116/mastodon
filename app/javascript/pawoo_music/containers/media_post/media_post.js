@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
 import { isMobile } from '../../util/is_mobile';
 import { showTrackComposeModal } from '../../actions/track_compose';
 import TipsBalloonContainer from '../../../mastodon/containers/tips_balloon_container';
@@ -42,7 +42,7 @@ export default class MediaPost extends PureComponent {
     return (
       <div className='media-post'>
         <div className='media-post-body' role='button' tabIndex='-1' onClick={this.handleMediaPost}>
-          <IconButton src='plus' title='Post Your Music!' />
+          <Icon icon='plus' title='Post Your Music!' strong />
         </div>
         <div className='media-post-tips-baloon'>
           <TipsBalloonContainer id={4} style={{ left: '35px', top: '5px' }} direction='top'>

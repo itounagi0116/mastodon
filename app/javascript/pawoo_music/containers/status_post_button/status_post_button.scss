@@ -1,4 +1,4 @@
-.icon-button.status-post-button {
+.icon.status-post-button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,7 +12,6 @@
   svg {
     width: var(--iconsize20);
     height: var(--iconsize20);
-    stroke-width: 2px;
     stroke: var(--linkcolor2);
     transition: all 0.4s var(--hover-timing);
   }

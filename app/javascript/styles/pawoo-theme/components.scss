@@ -619,7 +619,7 @@ $button-icon-scale-ration-on-pc: 0.85;
     &.left {
       float: left;
 
-      .icon-button {
+      .icon {
         padding-right: 10px;
       }
     }
@@ -627,15 +627,14 @@ $button-icon-scale-ration-on-pc: 0.85;
     &.right {
       float: right;
 
-      .icon-button {
+      .icon {
         padding-left: 10px;
       }
     }
 
-    .icon-button.clickable {
+    .icon.clickable {
       svg {
         stroke: $black;
-        stroke-width: 2px;
         width: var(--iconsize8);
         height: var(--iconsize8);
       }
@@ -645,7 +644,6 @@ $button-icon-scale-ration-on-pc: 0.85;
       &:focus {
         svg {
           stroke: $ui-highlight-color;
-          transform: none;
         }
       }
     }
@@ -760,16 +758,11 @@ $button-icon-scale-ration-on-pc: 0.85;
   top:        var(--grid);
   z-index:    var(--z-index-navigation);
 
-  svg {
-    stroke: var(--color1);
-    stroke-width: 2;
-  }
-
   &.spoiler-button--visible {
     display: block;
   }
 
-  .icon-button.clickable {
+  .icon.clickable {
     background-color: var(--color3);
     border-radius: var(--grid);
     padding: var(--grid);
@@ -777,7 +770,6 @@ $button-icon-scale-ration-on-pc: 0.85;
 
     svg {
       stroke: var(--textcolor);
-      stroke-width: 2px;
     }
 
     &:active,
@@ -787,7 +779,6 @@ $button-icon-scale-ration-on-pc: 0.85;
 
       svg {
         stroke: var(--textcolor);
-        transform: none;
       }
     }
   }

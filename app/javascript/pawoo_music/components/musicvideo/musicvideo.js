@@ -8,7 +8,7 @@ import { Canvas } from 'musicvideo-generator';
 import { BaseTexture } from 'pixi.js';
 import noop from 'lodash/noop';
 import MusicvideoAudio from './audio';
-import IconButton from '../icon_button';
+import Icon from '../icon';
 import Slider from '../slider';
 import { constructGeneratorOptions } from '../../util/musicvideo';
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
@@ -231,7 +231,7 @@ class Musicvideo extends ImmutablePureComponent {
         <div className={classNames('controls-container', { visible: initialized })}>
           <div className='controls'>
             <div className='toggle' onClick={this.handleTogglePaused} role='button' tabIndex='0' aria-pressed='false'>
-              {paused ? <IconButton src='play' title={intl.formatMessage(messages.play)} /> : <IconButton src='pause' title={intl.formatMessage(messages.pause)} />}
+              {paused ? <Icon icon='play' title={intl.formatMessage(messages.play)} strong /> : <Icon icon='pause' title={intl.formatMessage(messages.pause)} strong />}
             </div>
             <Slider
               min={0}

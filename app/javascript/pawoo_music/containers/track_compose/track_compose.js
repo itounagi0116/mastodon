@@ -39,7 +39,7 @@ import {
   stopTrack,
 } from '../../actions/tracks';
 import { makeGetAccount } from '../../../mastodon/selectors';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
 import Musicvideo from '../../components/musicvideo';
 import Delay from '../../components/delay';
 import Slider from '../../components/slider';
@@ -60,6 +60,7 @@ const messages = defineMessages({
   select_genre: { id: 'pawoo_music.track_compose.select_genre', defaultMessage: 'Select genre tag' },
 });
 const allowedPrivacy = ['public', 'unlisted'];
+const isUserTouching = () => false;
 
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
@@ -473,7 +474,7 @@ export default class TrackCompose extends ImmutablePureComponent {
                 <legend>
                   <div className={classNames('track-compose-file-upload', { settled: track.get('music') instanceof File })}>
                     <div className='track-compose-file-upload-body'>
-                      <IconButton src='music' />
+                      <Icon icon='music' />
                       <span className='text'>
                         {trackMusicTitle ? trackMusicTitle : (
                           <FormattedMessage
@@ -563,7 +564,7 @@ export default class TrackCompose extends ImmutablePureComponent {
                 <legend>
                   <div className={classNames('track-compose-file-upload', { settled: track.getIn(['video', 'image']) instanceof File })}>
                     <div className='track-compose-file-upload-body'>
-                      <IconButton src='image' />
+                      <Icon icon='image' />
                       <span className='text'>
                         {trackVideoImageTitle ? trackVideoImageTitle : (
                           <FormattedMessage
@@ -968,7 +969,7 @@ export default class TrackCompose extends ImmutablePureComponent {
               <button className='cancel' onClick={this.handleCancel}>
                 <FormattedMessage id='pawoo_music.track_compose.cancel' defaultMessage='Cancel' />
               </button>
-              {!track.get('id') && <PrivacyDropdown buttonClassName='privacy-toggle' value={track.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} />}
+              {!track.get('id') && <PrivacyDropdown buttonClassName='privacy-toggle' value={track.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} isUserTouching={isUserTouching} />}
               <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
                 {track.get('id') ? (
                   <FormattedMessage id='pawoo_music.track_compose.save' defaultMessage='Save' />

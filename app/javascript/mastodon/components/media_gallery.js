@@ -1,7 +1,7 @@
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
-import IconButton from '../../pawoo_music/components/icon_button';
+import Icon from '../../pawoo_music/components/icon';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { isIOS } from '../is_mobile';
 
@@ -238,7 +238,7 @@ export default class MediaGallery extends React.PureComponent {
     return (
       <div className='media-gallery' style={{ height: (expandMedia && this.state.visible) ? 'auto' : `${this.props.height}px` }}>
         <div className={`spoiler-button ${this.state.visible ? 'spoiler-button--visible' : ''}`}>
-          <IconButton title={intl.formatMessage(messages.toggle_visible)} src={this.state.visible ? 'eye' : 'eye-off'} onClick={this.handleOpen} />
+          <Icon title={intl.formatMessage(messages.toggle_visible)} icon={this.state.visible ? 'eye' : 'eye-off'} onClick={this.handleOpen} strong />
         </div>
 
         {children}

@@ -1,4 +1,4 @@
-.icon-button {
+.icon {
   display: inline-flex;
   align-items: center;
 
@@ -15,15 +15,29 @@
     &:hover {
       svg {
         stroke-width: 2px;
-        transform: scale(1.4);
         stroke: var(--strong1);
       }
+    }
+  }
+
+  &.scale {
+    &:hover {
+      svg {
+        transform: scale(1.4);
+      }
+    }
+  }
+
+  &.strong {
+    svg {
+      stroke-width: 2px;
     }
   }
 
   &.active {
     svg {
       stroke: var(--strong1);
+      stroke-width: 2px;
     }
   }
 }
