@@ -8,7 +8,7 @@ class REST::AccountSerializer < ActiveModel::Serializer
              :followers_count, :following_count, :statuses_count, :tracks_count, :albums_count
 
   belongs_to :oauth_authentications
-  has_many :popular_media_attachments, serializer: REST::MediaAttachmentSerializer, if: :show_with_media?
+  has_many :popular_media_attachments, key: :media_attachments, serializer: REST::MediaAttachmentSerializer, if: :show_with_media?
   has_one :custom_color
 
   def note

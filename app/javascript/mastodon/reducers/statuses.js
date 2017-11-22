@@ -64,6 +64,7 @@ const normalizeStatus = (state, status) => {
 
   if (status.track) {
     normalStatus.track.id = status.id;
+    normalStatus.track.contentHtml = emojify(normalStatus.track.content);
   }
 
   const searchContent = [status.spoiler_text, status.content].join(' ').replace(/<br \/>/g, '\n').replace(/<\/p><p>/g, '\n\n');

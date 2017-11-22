@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import Icon from '../../components/icon';
 import { isMobile } from '../../util/is_mobile';
-import { showTrackComposeModal } from '../../actions/track_compose';
+import { showTrackComposeModal, resetTrackComposeData } from '../../actions/track_compose';
 import TipsBalloonContainer from '../../../mastodon/containers/tips_balloon_container';
 
 const mapStateToProps = (state) => ({
@@ -34,6 +34,7 @@ export default class MediaPost extends PureComponent {
     if (this.mobile) {
       location.href = '/tracks/new';
     } else {
+      dispatch(resetTrackComposeData());
       dispatch(showTrackComposeModal());
     }
   };
