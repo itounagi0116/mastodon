@@ -1,5 +1,6 @@
 import loadPolyfills from '../mastodon/load_polyfills';
 import ready from '../mastodon/ready';
+import { createCustomColorStyle } from '../pawoo_music/util/custom_color';
 
 window.addEventListener('message', e => {
   const data = e.data || {};
@@ -110,6 +111,19 @@ function main() {
       const props = JSON.parse(content.getAttribute('data-props'));
       ReactDOM.render(<CardContainer locale={locale} {...props} />, content);
     });
+
+    const customColorElement = document.getElementById('custom-color-props');
+    if (customColorElement) {
+      try {
+        const customColor = JSON.parse(customColorElement.getAttribute('data-props'));
+
+        if (customColor){
+          const head = document.head || document.getElementsByTagName('head')[0];
+          const style = createCustomColorStyle(customColor, 'user-style-setting');
+          head.appendChild(style);
+        }
+      } catch (e) {}
+    }
   });
 
   delegate(document, '.webapp-btn', 'click', ({ target, button }) => {
@@ -159,11 +173,11 @@ function main() {
   });
 
   delegate(document, '#account_avatar', 'change', ({ target }) => {
-    const avatar = document.querySelector('.card.compact .avatar img');
+    const avatar = document.querySelector('.card.compact .avatar');
     const [file] = target.files || [];
     const url = file ? URL.createObjectURL(file) : avatar.dataset.originalSrc;
 
-    avatar.src = url;
+    avatar.style.backgroundImage = `url(${url})`;
   });
 
   delegate(document, '#account_header', 'change', ({ target }) => {
@@ -172,6 +186,11 @@ function main() {
     const url = file ? URL.createObjectURL(file) : header.dataset.originalSrc;
 
     header.style.backgroundImage = `url(${url})`;
+  });
+
+  delegate(document, '#account_display_name', 'keyup', ({ target }) => {
+    const displayName = document.querySelector('.card.compact .display-name');
+    displayName.innerText = target.value;
   });
 }
 

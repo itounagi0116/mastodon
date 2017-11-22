@@ -9,7 +9,7 @@ import { refreshAccountTimeline, expandAccountTimeline, refreshPinnedStatusTimel
 import ScrollableList from '../../components/status_list';
 import Timeline from '../../components/timeline';
 import { makeGetAccount } from '../../../mastodon/selectors';
-import { constructRgbCode } from '../../util/musicvideo';
+import { createCustomColorStyle } from '../../util/custom_color';
 
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
@@ -94,21 +94,8 @@ export default class AccountTimeline extends PureComponent {
       return;
     }
 
-    const customStyles = customColor.entrySeq().map(([key, value]) => `--${key}:${constructRgbCode(value, 1)};`);
-    const css = `body {${customStyles.join('')}}`;
-
     const head = document.head || document.getElementsByTagName('head')[0];
-    const style = document.createElement('style');
-
-    style.type = 'text/css';
-    style.id = `user-style-${account.get('id')}`;
-
-    if (style.styleSheet){
-      style.styleSheet.cssText = css;
-    } else {
-      style.appendChild(document.createTextNode(css));
-    }
-
+    const style = createCustomColorStyle(customColor, `user-style-${account.get('id')}`);
     head.appendChild(style);
   }
 
