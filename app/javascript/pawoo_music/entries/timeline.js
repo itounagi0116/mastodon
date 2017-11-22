@@ -9,12 +9,14 @@ import { hydrateStore } from '../../mastodon/actions/store';
 import store from '../../mastodon/store';
 import { getLocale } from '../../mastodon/locales';
 import App from '../containers/app';
+import subscribeAsPlayer from '../player';
 
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
 
 const initialState = JSON.parse(document.getElementById('initial-state').textContent);
 store.dispatch(hydrateStore(initialState));
+subscribeAsPlayer(store);
 
 export default class TimelineEntry extends React.PureComponent {
 

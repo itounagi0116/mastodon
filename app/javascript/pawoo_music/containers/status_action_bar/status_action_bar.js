@@ -27,7 +27,7 @@ import {
 import { muteStatus, unmuteStatus, deleteStatus } from '../../../mastodon/actions/statuses';
 import { initReport } from '../../../mastodon/actions/reports';
 import { openModal } from '../../../mastodon/actions/modal';
-import { generateTrackMv } from '../../actions/tracks';
+import { generateMusicvideo } from '../../actions/musicvideo';
 import { showTrackComposeModal, setTrackComposeData } from '../../actions/track_compose';
 import { isMobile } from '../../util/is_mobile';
 
@@ -234,7 +234,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
     dispatch(openModal('CONFIRM', {
       message: <FormattedMessage id='confirmations.generate_mv.message' defaultMessage='Generating animation takes time. When generation is completed, a notification is sent by e-mail.' />,
       confirm: intl.formatMessage(messages.generateMvConfirm),
-      onConfirm: () => dispatch(generateTrackMv(status.get('id'), resolution)),
+      onConfirm: () => dispatch(generateMusicvideo(status.get('id'), resolution)),
     }));
   }
 
