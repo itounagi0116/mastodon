@@ -26,7 +26,7 @@ RSpec.describe AccountsController, type: :controller do
 
     context 'atom' do
       before do
-        get :show, params: { username: alice.username, max_id: status4.stream_entry.id, since_id: status1.stream_entry.id }, format: 'atom'
+        get :show, params: { username: alice.acct, max_id: status4.stream_entry&.id, since_id: status1.stream_entry&.id }, format: 'atom'
       end
 
       it 'assigns @account' do
@@ -43,11 +43,19 @@ RSpec.describe AccountsController, type: :controller do
       it 'returns http success with Atom' do
         expect(response).to have_http_status(:success)
       end
+
+      context 'account is remote' do
+        let(:alice) { Fabricate(:account, username: 'alice', domain: 'example.com') }
+
+        it 'returns http not_found' do
+          expect(response).to have_http_status(:not_found)
+        end
+      end
     end
 
     context 'activitystreams2' do
       before do
-        get :show, params: { username: alice.username }, format: 'json'
+        get :show, params: { username: alice.acct }, format: 'json'
       end
 
       it 'assigns @account' do
@@ -61,11 +69,19 @@ RSpec.describe AccountsController, type: :controller do
       it 'returns application/activity+json' do
         expect(response.content_type).to eq 'application/activity+json'
       end
+
+      context 'account is remote' do
+        let(:alice) { Fabricate(:account, username: 'alice', domain: 'example.com') }
+
+        it 'returns http not_found' do
+          expect(response).to have_http_status(:not_found)
+        end
+      end
     end
 
     context 'html without since_id nor max_id' do
       before do
-        get :show, params: { username: alice.username }
+        get :show, params: { username: alice.acct }
       end
 
       it 'assigns @account' do
@@ -83,9 +99,17 @@ RSpec.describe AccountsController, type: :controller do
       it 'returns http success' do
         expect(response).to have_http_status(:success)
       end
+
+      context 'account is remote' do
+        let(:alice) { Fabricate(:account, username: 'alice', domain: 'example.com') }
+
+        it 'returns http success' do
+          expect(response).to have_http_status(:success)
+        end
+      end
     end
 
-    context 'html with since_id and max_id' do
+    xcontext 'html with since_id and max_id' do
       before do
         get :show, params: { username: alice.username, max_id: status5.id, since_id: status1.id }
       end
@@ -94,7 +118,7 @@ RSpec.describe AccountsController, type: :controller do
         expect(assigns(:account)).to eq alice
       end
 
-      xit 'assigns @statuses' do
+      it 'assigns @statuses' do
         statuses = assigns(:statuses).to_a
         expect(statuses.size).to eq 2
         expect(statuses[0]).to eq status3

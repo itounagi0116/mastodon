@@ -4,7 +4,6 @@ class FollowerAccountsController < ApplicationController
   include AccountControllerConcern
   include TimelineConcern
 
-
   def index
     respond_to do |format|
       format.html do
@@ -12,6 +11,8 @@ class FollowerAccountsController < ApplicationController
       end
 
       format.json do
+        raise ActiveRecord::RecordNotFound unless @account.local?
+
         @follows = Follow.where(target_account: @account).recent.page(params[:page]).per(FOLLOW_PER_PAGE).preload(:account)
 
         render json: collection_presenter, serializer: ActivityPub::CollectionSerializer, adapter: ActivityPub::Adapter, content_type: 'application/activity+json'

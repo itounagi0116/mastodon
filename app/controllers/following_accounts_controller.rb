@@ -11,6 +11,8 @@ class FollowingAccountsController < ApplicationController
       end
 
       format.json do
+        raise ActiveRecord::RecordNotFound unless @account.local?
+
         @follows = Follow.where(account: @account).recent.page(params[:page]).per(FOLLOW_PER_PAGE).preload(:target_account)
 
         render json: collection_presenter, serializer: ActivityPub::CollectionSerializer, adapter: ActivityPub::Adapter, content_type: 'application/activity+json'

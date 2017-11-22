@@ -61,13 +61,13 @@ describe StatusesController do
         expect(assigns(:stream_entry)).to eq status.stream_entry
       end
 
-      xit 'assigns @type' do
+      it 'assigns @type' do
         status = Fabricate(:status)
         get :show, params: { account_username: status.account.username, id: status.id }
         expect(assigns(:type)).to eq 'status'
       end
 
-      it 'assigns @ancestors for ancestors of the status if it is a reply' do
+      xit 'assigns @ancestors for ancestors of the status if it is a reply' do
         ancestor = Fabricate(:status)
         status = Fabricate(:status, in_reply_to_id: ancestor.id)
 
@@ -76,7 +76,7 @@ describe StatusesController do
         expect(assigns(:ancestors)).to eq [ancestor]
       end
 
-      it 'assigns @ancestors for [] if it is not a reply' do
+      xit 'assigns @ancestors for [] if it is not a reply' do
         status = Fabricate(:status)
         get :show, params: { account_username: status.account.username, id: status.id }
         expect(assigns(:ancestors)).to eq []
@@ -92,6 +92,74 @@ describe StatusesController do
         status = Fabricate(:status)
         get :show, params: { account_username: status.account.username, id: status.id }
         expect(response).to render_template 'stream_entries/show'
+      end
+    end
+
+    context 'account is remote' do
+      it 'returns a success if format is html' do
+        account = Fabricate(:account, domain: 'example.com')
+        status = Fabricate(:status, account: account)
+
+        get :show, params: { account_username: account.acct, id: status.id }
+
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'returns a not_found if format is json' do
+        account = Fabricate(:account, domain: 'example.com')
+        status = Fabricate(:status, account: account)
+
+        get :show, params: { account_username: account.acct, id: status.id }, format: :json
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe '#activity' do
+    context 'account is local' do
+      it 'returns a success' do
+        account = Fabricate(:account)
+        status = Fabricate(:status, account: account)
+
+        get :activity, params: { account_username: account.acct, id: status.id }
+
+        expect(response).to have_http_status(:success)
+      end
+    end
+
+    context 'account is remote' do
+      it 'returns a not_found' do
+        account = Fabricate(:account, domain: 'example.com')
+        status = Fabricate(:status, account: account)
+
+        get :activity, params: { account_username: account.acct, id: status.id }
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe '#embed' do
+    context 'account is local' do
+      it 'returns a success' do
+        account = Fabricate(:account)
+        status = Fabricate(:status, account: account)
+
+        get :embed, params: { account_username: account.acct, id: status.id }
+
+        expect(response).to have_http_status(:success)
+      end
+    end
+
+    context 'account is remote' do
+      it 'returns a not_found' do
+        account = Fabricate(:account, domain: 'example.com')
+        status = Fabricate(:status, account: account)
+
+        get :embed, params: { account_username: account.acct, id: status.id }
+
+        expect(response).to have_http_status(:not_found)
       end
     end
   end

@@ -13,9 +13,6 @@ class StatusesController < ApplicationController
   def show
     respond_to do |format|
       format.html do
-        @ancestors   = @status.reply? ? cache_collection(@status.ancestors(current_account), Status) : []
-        @descendants = cache_collection(@status.descendants(current_account), Status)
-
         @status_pagination = StatusPagination.new(@status, current_account)
         set_link_headers(@status_pagination.previous, @status_pagination.next)
 
@@ -23,25 +20,25 @@ class StatusesController < ApplicationController
       end
 
       format.json do
-        return not_found if TimeLimit.from_tags(@status.tags)
+        raise ActiveRecord::RecordNotFound if !@account.local? || TimeLimit.from_tags(@status.tags)
         render json: @status, serializer: ActivityPub::NoteSerializer, adapter: ActivityPub::Adapter, content_type: 'application/activity+json'
       end
     end
   end
 
   def activity
-    return not_found if TimeLimit.from_tags(@status.tags)
+    raise ActiveRecord::RecordNotFound if !@account.local? || TimeLimit.from_tags(@status.tags)
     render json: @status, serializer: ActivityPub::ActivitySerializer, adapter: ActivityPub::Adapter, content_type: 'application/activity+json'
   end
 
   def embed
     response.headers['X-Frame-Options'] = 'ALLOWALL'
-    return not_found unless @account.local?
+    raise ActiveRecord::RecordNotFound unless @account.local?
 
     if @status.music.is_a?(Track)
-      render 'musicvideo', layout: 'embedded'
+      render 'stream_entries/musicvideo', layout: 'embedded'
     else
-      render layout: 'embedded'
+      render 'stream_entries/embed', layout: 'embedded'
     end
   end
 
@@ -66,6 +63,7 @@ class StatusesController < ApplicationController
   def set_status
     @status       = @account.statuses.find(params[:id])
     @stream_entry = @status.stream_entry
+    @type         = @stream_entry&.activity_type&.downcase
 
     authorize @status, :show?
   rescue Mastodon::NotPermittedError

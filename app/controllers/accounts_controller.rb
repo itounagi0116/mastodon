@@ -20,6 +20,8 @@ class AccountsController < ApplicationController
       end
 
       format.json do
+        raise ActiveRecord::RecordNotFound unless @account.local?
+
         render json: @account, serializer: ActivityPub::ActorSerializer, adapter: ActivityPub::Adapter, content_type: 'application/activity+json'
       end
     end
