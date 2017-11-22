@@ -162,5 +162,16 @@ describe StatusesController do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    context 'type is track' do
+      it 'returns a success' do
+        account = Fabricate(:account)
+        status = Fabricate(:status, account: account, music: Fabricate(:track))
+
+        get :embed, params: { account_username: account.acct, id: status.id }
+
+        expect(response).to have_http_status(:success)
+      end
+    end
   end
 end

@@ -36,6 +36,8 @@ class StatusesController < ApplicationController
     raise ActiveRecord::RecordNotFound unless @account.local?
 
     if @status.music.is_a?(Track)
+      @status_json = ActiveModelSerializers::SerializableResource.new(@status, serializer: REST::StatusSerializer, scope: current_user, scope_name: :current_user).to_json
+
       render 'stream_entries/musicvideo', layout: 'embedded'
     else
       render 'stream_entries/embed', layout: 'embedded'
