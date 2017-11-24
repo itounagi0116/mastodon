@@ -128,7 +128,11 @@ class Playlist < ApplicationRecord
     set_start_time
     NextPlaylistWorker.perform_in(duration + gap, deck, queue_item_id)
     PushPlaylistWorker.perform_async(deck, 'play', { id: queue_item_id }.to_json)
-    PlaylistLog.find_by(uuid: queue_item_id)&.update(started_at: Time.now)
+    playlist_log = PlaylistLog.find_by!(uuid: queue_item_id)
+    if playlist_log
+      playlist_log.update(started_at: Time.now)
+      PostNowPlayingService.new.call(playlist_log)
+    end
   end
 
   def playlist_key
