@@ -3,7 +3,8 @@
 class REST::StatusSerializer < ActiveModel::Serializer
   attributes :id, :created_at, :in_reply_to_id, :in_reply_to_account_id,
              :sensitive, :spoiler_text, :visibility, :language,
-             :uri, :content, :url, :reblogs_count, :favourites_count, :pixiv_cards, :pinned
+             :uri, :content, :url, :reblogs_count, :favourites_count, :pixiv_cards, :pinned,
+             :booth_item_url, :booth_item_id
 
   attribute :favourited, if: :current_user?
   attribute :reblogged, if: :current_user?
@@ -84,6 +85,15 @@ class REST::StatusSerializer < ActiveModel::Serializer
 
   def album?
     !object.album.nil?
+  end
+
+  def booth_item_url
+    BoothUrl.extract_booth_item_url(Formatter.instance.plaintext(object))
+  end
+
+  def booth_item_id
+    text = Formatter.instance.plaintext(object)
+    BoothUrl.extract_booth_item_id(text) || BoothUrl.extract_apollo_item_id(text)
   end
 
   class ApplicationSerializer < ActiveModel::Serializer
