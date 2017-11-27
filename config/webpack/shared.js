@@ -44,7 +44,7 @@ module.exports = {
 
   plugins: [
     new webpack.EnvironmentPlugin(JSON.parse(JSON.stringify(env))),
-    new ExtractTextPlugin(env.NODE_ENV === 'production' ? '[name]-statichash-c4d25a1aab09b01165fa7807fd0a1cec.css' : '[name].css'),
+    new ExtractTextPlugin(env.NODE_ENV === 'production' ? '[name]-statichash-96f5c06edc0a8754c201c6a5e61b1ad5.css' : '[name].css'),
     new ManifestPlugin({
       publicPath: output.publicPath,
       writeToFileEmit: true,
