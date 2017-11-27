@@ -5,6 +5,7 @@ module TimelineConcern
 
   included do
     layout 'timeline'
+    before_action :set_body_classes
   end
 
   private
@@ -27,5 +28,9 @@ module TimelineConcern
 
   def authenticate_user!
     redirect_to(local_timeline_path) unless user_signed_in?
+  end
+
+  def set_body_classes
+    @body_classes = 'app-body'
   end
 end
