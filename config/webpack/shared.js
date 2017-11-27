@@ -33,7 +33,7 @@ module.exports = {
 
   output: {
     filename: '[name].js',
-    chunkFilename: '[name]-[chunkhash].js',
+    chunkFilename: '[name].js',
     path: output.path,
     publicPath: output.publicPath,
   },
@@ -44,7 +44,7 @@ module.exports = {
 
   plugins: [
     new webpack.EnvironmentPlugin(JSON.parse(JSON.stringify(env))),
-    new ExtractTextPlugin(env.NODE_ENV === 'production' ? '[name]-statichash-2beb3cb0f8aae558fe4eeca895ce7387.css' : '[name].css'),
+    new ExtractTextPlugin(env.NODE_ENV === 'production' ? '[name]-statichash-d93b1469b57271601414e1e1556ccc43.css' : '[name].css'),
     new ManifestPlugin({
       publicPath: output.publicPath,
       writeToFileEmit: true,

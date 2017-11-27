@@ -2,11 +2,11 @@
 
 module AccountControllerConcern
   extend ActiveSupport::Concern
+  include TimelineConcern
 
   FOLLOW_PER_PAGE = 12
 
   included do
-    layout 'public'
     before_action :set_account
     before_action :set_link_headers
     before_action :check_account_suspension
@@ -25,6 +25,7 @@ module AccountControllerConcern
       [
         webfinger_account_link,
         atom_account_url_link,
+        actor_url_link,
       ]
     )
   end
@@ -40,6 +41,13 @@ module AccountControllerConcern
     [
       account_url(@account, format: 'atom'),
       [%w(rel alternate), %w(type application/atom+xml)],
+    ]
+  end
+
+  def actor_url_link
+    [
+      ActivityPub::TagManager.instance.uri_for(@account),
+      [%w(rel alternate), %w(type application/activity+json)],
     ]
   end
 

@@ -10,10 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171109000000) do
+ActiveRecord::Schema.define(version: 20171114152234) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "account_custom_colors", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.integer "textcolor", default: 3223857, null: false
+    t.integer "linkcolor", default: 10197915, null: false
+    t.integer "linkcolor2", default: 2397659, null: false
+    t.integer "strong1", default: 13632027, null: false
+    t.integer "strong2", default: 0, null: false
+    t.integer "color1", default: 16777215, null: false
+    t.integer "color2", default: 15987699, null: false
+    t.integer "color3", default: 13684944, null: false
+    t.index ["account_id"], name: "index_account_custom_colors_on_account_id", unique: true
+  end
 
   create_table "account_domain_blocks", id: :serial, force: :cascade do |t|
     t.integer "account_id"
@@ -58,6 +71,15 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.datetime "last_webfingered_at"
     t.bigint "tracks_count", default: 0, null: false
     t.bigint "albums_count", default: 0, null: false
+    t.string "inbox_url", default: "", null: false
+    t.string "outbox_url", default: "", null: false
+    t.string "shared_inbox_url", default: "", null: false
+    t.string "followers_url", default: "", null: false
+    t.integer "protocol", default: 0, null: false
+    t.string "background_image_file_name"
+    t.string "background_image_content_type"
+    t.integer "background_image_file_size"
+    t.datetime "background_image_updated_at"
     t.index "(((setweight(to_tsvector('simple'::regconfig, (display_name)::text), 'A'::\"char\") || setweight(to_tsvector('simple'::regconfig, (username)::text), 'B'::\"char\")) || setweight(to_tsvector('simple'::regconfig, (COALESCE(domain, ''::character varying))::text), 'C'::\"char\")))", name: "search_index", using: :gin
     t.index "lower((username)::text), lower((domain)::text)", name: "index_accounts_on_username_and_domain_lower"
     t.index ["uri"], name: "index_accounts_on_uri"
@@ -81,6 +103,7 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.string "image_content_type"
     t.integer "image_file_size"
     t.datetime "image_updated_at"
+    t.integer "tracks_count", default: 0, null: false
   end
 
   create_table "blocks", id: :serial, force: :cascade do |t|
@@ -109,7 +132,7 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "severity", default: 0
-    t.boolean "reject_media"
+    t.boolean "reject_media", default: false, null: false
     t.index ["domain"], name: "index_domain_blocks_on_domain", unique: true
   end
 
@@ -118,6 +141,7 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.integer "status_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["account_id", "id"], name: "index_favourites_on_account_id_and_id"
     t.index ["account_id", "status_id"], name: "index_favourites_on_account_id_and_status_id", unique: true
     t.index ["status_id"], name: "index_favourites_on_status_id"
   end
@@ -149,7 +173,7 @@ ActiveRecord::Schema.define(version: 20171109000000) do
   create_table "imports", id: :serial, force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "type", null: false
-    t.boolean "approved"
+    t.boolean "approved", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "data_file_name"
@@ -208,6 +232,7 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.integer "from_account_id"
     t.index ["account_id", "activity_id", "activity_type"], name: "account_activity", unique: true
     t.index ["activity_id", "activity_type"], name: "index_notifications_on_activity_id_and_activity_type"
+    t.index ["id", "account_id", "activity_type"], name: "index_notifications_on_id_and_account_id_and_activity_type", order: { id: :desc }
   end
 
   create_table "oauth_access_grants", id: :serial, force: :cascade do |t|
@@ -246,6 +271,9 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.datetime "updated_at"
     t.boolean "superapp", default: false, null: false
     t.string "website"
+    t.integer "owner_id"
+    t.string "owner_type"
+    t.index ["owner_id", "owner_type"], name: "index_oauth_applications_on_owner_id_and_owner_type"
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
@@ -257,15 +285,6 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.datetime "updated_at", null: false
     t.index ["provider", "uid"], name: "index_oauth_authentications_on_provider_and_uid", unique: true
     t.index ["user_id", "provider"], name: "index_oauth_authentications_on_user_id_and_provider", unique: true
-  end
-
-  create_table "pinned_statuses", id: :serial, force: :cascade do |t|
-    t.integer "account_id", null: false
-    t.bigint "status_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["account_id", "status_id"], name: "index_pinned_statuses_on_account_id_and_status_id", unique: true
-    t.index ["status_id"], name: "index_pinned_statuses_on_status_id"
   end
 
   create_table "pixiv_cards", id: :serial, force: :cascade do |t|
@@ -299,17 +318,14 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.index ["deck"], name: "index_playlists_on_deck", unique: true
   end
 
-  create_table "preview_cards", id: :serial, force: :cascade do |t|
-    t.bigint "status_id"
+  create_table "preview_cards", force: :cascade do |t|
     t.string "url", default: "", null: false
-    t.string "title"
-    t.string "description"
+    t.string "title", default: "", null: false
+    t.string "description", default: "", null: false
     t.string "image_file_name"
     t.string "image_content_type"
     t.integer "image_file_size"
     t.datetime "image_updated_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.integer "type", default: 0, null: false
     t.text "html", default: "", null: false
     t.string "author_name", default: "", null: false
@@ -318,7 +334,15 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.string "provider_url", default: "", null: false
     t.integer "width", default: 0, null: false
     t.integer "height", default: 0, null: false
-    t.index ["status_id"], name: "index_preview_cards_on_status_id", unique: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["url"], name: "index_preview_cards_on_url", unique: true
+  end
+
+  create_table "preview_cards_statuses", id: false, force: :cascade do |t|
+    t.bigint "preview_card_id", null: false
+    t.bigint "status_id", null: false
+    t.index ["status_id", "preview_card_id"], name: "index_preview_cards_statuses_on_status_id_and_preview_card_id"
   end
 
   create_table "reports", id: :serial, force: :cascade do |t|
@@ -342,6 +366,7 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.string "user_agent", default: "", null: false
     t.inet "ip"
     t.integer "access_token_id"
+    t.integer "web_push_subscription_id"
     t.index ["session_id"], name: "index_session_activations_on_session_id", unique: true
     t.index ["user_id"], name: "index_session_activations_on_user_id"
   end
@@ -356,6 +381,26 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.index ["thing_type", "thing_id", "var"], name: "index_settings_on_thing_type_and_thing_id_and_var", unique: true
   end
 
+  create_table "site_uploads", force: :cascade do |t|
+    t.string "var", default: "", null: false
+    t.string "file_file_name"
+    t.string "file_content_type"
+    t.integer "file_file_size"
+    t.datetime "file_updated_at"
+    t.json "meta"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["var"], name: "index_site_uploads_on_var", unique: true
+  end
+
+  create_table "status_pins", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "status_id", null: false
+    t.datetime "created_at", default: -> { "now()" }, null: false
+    t.datetime "updated_at", default: -> { "now()" }, null: false
+    t.index ["account_id", "status_id"], name: "index_status_pins_on_account_id_and_status_id", unique: true
+  end
+
   create_table "statuses", force: :cascade do |t|
     t.string "uri"
     t.integer "account_id", null: false
@@ -365,18 +410,19 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.bigint "in_reply_to_id"
     t.bigint "reblog_of_id"
     t.string "url"
-    t.boolean "sensitive", default: false
+    t.boolean "sensitive", default: false, null: false
     t.integer "visibility", default: 0, null: false
     t.integer "in_reply_to_account_id"
     t.integer "application_id"
     t.text "spoiler_text", default: "", null: false
-    t.boolean "reply", default: false
+    t.boolean "reply", default: false, null: false
     t.integer "favourites_count", default: 0, null: false
     t.integer "reblogs_count", default: 0, null: false
     t.string "language"
     t.bigint "conversation_id"
     t.string "music_type"
     t.bigint "music_id"
+    t.boolean "local"
     t.index ["account_id", "id"], name: "index_statuses_on_account_id_id"
     t.index ["account_id", "music_type", "id"], name: "index_statuses_on_account_id_and_music_type_and_id"
     t.index ["conversation_id"], name: "index_statuses_on_conversation_id"
@@ -422,14 +468,15 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.string "description", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["tag_id"], name: "index_suggestion_tags_on_tag_id", unique: true
+    t.integer "suggestion_type", default: 0, null: false
+    t.index ["tag_id", "suggestion_type"], name: "index_suggestion_tags_on_tag_id_and_suggestion_type", unique: true
   end
 
   create_table "tags", id: :serial, force: :cascade do |t|
     t.string "name", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index "name text_pattern_ops", name: "hashtag_search_index"
+    t.index "lower((name)::text) text_pattern_ops", name: "hashtag_search_index"
     t.index ["name"], name: "index_tags_on_name", unique: true
   end
 
@@ -475,6 +522,7 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.datetime "video_1920x1080_updated_at"
     t.integer "video_backgroundcolor", default: 1513239, null: false
     t.float "video_banner_alpha", default: 1.0, null: false
+    t.integer "albums_count", default: 0, null: false
   end
 
   create_table "trend_ng_words", id: :serial, force: :cascade do |t|
@@ -499,7 +547,7 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.datetime "last_sign_in_at"
     t.inet "current_sign_in_ip"
     t.inet "last_sign_in_ip"
-    t.boolean "admin", default: false
+    t.boolean "admin", default: false, null: false
     t.string "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
@@ -509,7 +557,7 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.string "encrypted_otp_secret_iv"
     t.string "encrypted_otp_secret_salt"
     t.integer "consumed_timestep"
-    t.boolean "otp_required_for_login"
+    t.boolean "otp_required_for_login", default: false, null: false
     t.datetime "last_emailed_at"
     t.string "otp_backup_codes", array: true
     t.string "filtered_languages", default: [], null: false, array: true
@@ -525,6 +573,15 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.index ["track_id"], name: "index_video_preparation_errors_on_track_id"
   end
 
+  create_table "web_push_subscriptions", force: :cascade do |t|
+    t.string "endpoint", null: false
+    t.string "key_p256dh", null: false
+    t.string "key_auth", null: false
+    t.json "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "web_settings", id: :serial, force: :cascade do |t|
     t.integer "user_id"
     t.json "data"
@@ -533,6 +590,7 @@ ActiveRecord::Schema.define(version: 20171109000000) do
     t.index ["user_id"], name: "index_web_settings_on_user_id", unique: true
   end
 
+  add_foreign_key "account_custom_colors", "accounts", on_delete: :cascade
   add_foreign_key "account_domain_blocks", "accounts", on_delete: :cascade
   add_foreign_key "album_tracks", "albums", on_update: :cascade, on_delete: :cascade
   add_foreign_key "album_tracks", "tracks", on_update: :cascade, on_delete: :cascade
@@ -559,14 +617,14 @@ ActiveRecord::Schema.define(version: 20171109000000) do
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id", on_delete: :cascade
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id", on_delete: :cascade
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id", on_delete: :cascade
-  add_foreign_key "pinned_statuses", "accounts"
-  add_foreign_key "pinned_statuses", "statuses"
-  add_foreign_key "preview_cards", "statuses", on_delete: :cascade
+  add_foreign_key "oauth_applications", "users", column: "owner_id", on_delete: :cascade
   add_foreign_key "reports", "accounts", column: "action_taken_by_account_id", on_delete: :nullify
   add_foreign_key "reports", "accounts", column: "target_account_id", on_delete: :cascade
   add_foreign_key "reports", "accounts", on_delete: :cascade
   add_foreign_key "session_activations", "oauth_access_tokens", column: "access_token_id", on_delete: :cascade
   add_foreign_key "session_activations", "users", on_delete: :cascade
+  add_foreign_key "status_pins", "accounts", on_delete: :cascade
+  add_foreign_key "status_pins", "statuses", on_delete: :cascade
   add_foreign_key "statuses", "accounts", column: "in_reply_to_account_id", on_delete: :nullify
   add_foreign_key "statuses", "accounts", on_delete: :cascade
   add_foreign_key "statuses", "statuses", column: "in_reply_to_id", on_delete: :nullify

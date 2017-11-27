@@ -2,7 +2,7 @@ import React from 'react';
 import Dropdown, { DropdownTrigger, DropdownContent } from 'react-simple-dropdown';
 import PropTypes from 'prop-types';
 import { injectIntl, defineMessages } from 'react-intl';
-import IconButton from '../../../../pawoo_music/components/icon_button';
+import Icon from '../../../../pawoo_music/components/icon';
 
 const messages = defineMessages({
   days: { id: 'time_limit.days', defaultMessage: '{days, number} {days, plural, one {day} other {days}} later' },
@@ -45,7 +45,7 @@ export default class TimeLimitDropdown extends React.PureComponent {
     return (
       <Dropdown className='time-limit-dropdown' ref={this.setRef}>
         <DropdownTrigger className='icon-button inverted' title={intl.formatMessage(messages.select_time_limit)}>
-          <IconButton src='clock' className='clickable' strokeWidth={2} />
+          <Icon icon='clock' className='clickable' strong />
         </DropdownTrigger>
 
         <DropdownContent className='dropdown__left'>

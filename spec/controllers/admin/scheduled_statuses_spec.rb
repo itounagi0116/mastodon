@@ -4,7 +4,7 @@ require 'rails_helper'
 
 describe Admin::ScheduledStatusesController, type: :controller do
   describe 'GET #index' do
-    it 'renders' do
+    it 'renders scheduledStatuses' do
       sign_in(Fabricate(:user, admin: true))
       get :index
 

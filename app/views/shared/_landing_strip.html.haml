@@ -1,10 +1,12 @@
 .landing-strip
-  = t('landing_strip_html',
-    name: content_tag(:span, display_name(account), class: :emojify),
-    domain: site_hostname,
-    link_to_root_path: link_to(content_tag(:strong, site_hostname), root_path),
-    sign_up_path: new_user_registration_path)
+  = image_tag asset_pack_path('logo.svg'), class: 'logo'
+
+  %div
+    = t('landing_strip_html', name: content_tag(:span, display_name(account), class: :emojify), link_to_root_path: link_to(content_tag(:strong, site_hostname), root_path))
+
+    - if open_registrations?
+      = t('landing_strip_signup_html', sign_up_path: new_user_registration_path)
 
 .landing-form
-  = link_to t('about.get_started'), new_user_registration_path, class: 'button'
+  = link_to t('about.register'), new_user_registration_path, class: 'button'
   = link_to t('auth.login'), new_user_session_path, class: 'signin button'

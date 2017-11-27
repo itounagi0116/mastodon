@@ -7,10 +7,15 @@ ul.status-action-bar {
     margin:  var(--rightspace15);
   }
 
-  .strong {
+  .icon.strong {
     svg {
-      stroke-width: 2px;
       stroke: var(--strong2);
+    }
+
+    &:hover {
+      svg {
+        stroke: var(--strong1);
+      }
     }
   }
 }

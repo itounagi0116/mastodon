@@ -3,10 +3,14 @@
 
 - content_for :header_tags do
   - if @account.local?
+    - if @account.user&.setting_noindex
+      %meta{ name: 'robots', content: 'noindex' }/
+
     %link{ rel: 'salmon', href: api_salmon_url(@account.id) }/
     %link{ rel: 'alternate', type: 'application/atom+xml', href: account_url(@account, format: 'atom') }/
+    %link{ rel: 'alternate', type: 'application/activity+json', href: ActivityPub::TagManager.instance.uri_for(@account) }/
 
-    %meta{ property: 'og:type', content: 'profile' }/
+    = opengraph 'og:type', 'profile'
     = render 'og', account: @account, url: short_account_url(@account, only_path: false)
   - else
     %meta{ name: 'robots', content: 'noindex,follow' }/

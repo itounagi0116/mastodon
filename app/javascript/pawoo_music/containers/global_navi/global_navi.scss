@@ -42,10 +42,14 @@
               align-items: center;
             }
 
-            .icon-button {
+            .icon {
               margin-top: -2px;
               margin-right: 8px;
               height: 20px;
+
+              svg {
+                stroke: var(--textcolor);
+              }
             }
 
             .unread {
@@ -63,30 +67,25 @@
               background-color: var(--strong1);
             }
 
-            svg {
-              stroke-width: 1px;
-              stroke: var(--textcolor);
-            }
-
             &.active {
               padding:     var(--padding10) 0 var(--padding10) calc(var(--grid) * 6 - 4px);
               border-left: 4px var(--strong1) solid;
               font-weight:    bold;
               color:          var(--strong2);
 
-              svg {
+              .icon svg {
                 stroke-width: 2px;
+                stroke: var(--strong2);
               }
             }
-          }
 
-          a:hover {
-            color:          var(--strong1);
-            transition: color 0.2s var(--hover-timing);
+            &:hover {
+              color: var(--strong1);
+              transition: color 0.2s var(--hover-timing);
 
-            svg {
-              stroke:          var(--strong1);
-              stroke-width: 2px;
+              .icon svg {
+                stroke: var(--strong1);
+              }
             }
           }
         }
@@ -111,6 +110,10 @@
 
       &:visited:hover, &:link:hover {
         color: var(--strong1);
+
+        .icon svg {
+          stroke: var(--strong1);
+        }
       }
     }
   }

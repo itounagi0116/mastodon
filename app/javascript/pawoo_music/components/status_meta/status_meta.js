@@ -3,7 +3,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { FormattedNumber } from 'react-intl';
 import Timestamp from '../../../mastodon/components/timestamp';
-import IconButton from '../icon_button';
+import Icon from '../icon';
 import Link from '../link_wrapper';
 
 export default class StatusMeta extends ImmutablePureComponent {
@@ -50,12 +50,12 @@ export default class StatusMeta extends ImmutablePureComponent {
         {applicationLink}
         {' \u00A0 '}
         <span className='engagement'>
-          <IconButton src='repeat' strokeWidth={2} />
+          <Icon icon='repeat' strong />
           <FormattedNumber value={status.get('reblogs_count')} />
         </span>
         {' \u00A0 '}
         <span className='engagement'>
-          <IconButton src='heart' strokeWidth={2} />
+          <Icon icon='heart' strong />
           <FormattedNumber value={status.get('favourites_count')} />
         </span>
       </div>

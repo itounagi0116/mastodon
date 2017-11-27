@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
 import DropdownMenuContainer from '../dropdown_menu';
 import EmbedModalContent from '../../components/embed_modal_content';
 import { makeGetStatus } from '../../../mastodon/selectors';
@@ -17,12 +17,14 @@ import {
   favourite,
   unreblog,
   unfavourite,
+  pin,
+  unpin,
 } from '../../../mastodon/actions/interactions';
 import {
   blockAccount,
   muteAccount,
 } from '../../../mastodon/actions/accounts';
-import { muteStatus, unmuteStatus, deleteStatus, pinStatus, unpinStatus } from '../../../mastodon/actions/statuses';
+import { muteStatus, unmuteStatus, deleteStatus } from '../../../mastodon/actions/statuses';
 import { initReport } from '../../../mastodon/actions/reports';
 import { openModal } from '../../../mastodon/actions/modal';
 import { generateTrackMv } from '../../actions/tracks';
@@ -164,13 +166,13 @@ export default class StatusActionBar extends ImmutablePureComponent {
       dispatch(openModal('CONFIRM', {
         message: <FormattedMessage id='confirmations.unpin.message' defaultMessage='Unpin from your profile. Are you sure?' />,
         confirm: intl.formatMessage(messages.unpinConfirm),
-        onConfirm: () => dispatch(unpinStatus(status.get('id'))),
+        onConfirm: () => dispatch(unpin(status)),
       }));
     } else {
       dispatch(openModal('CONFIRM', {
         message: <FormattedMessage id='confirmations.pin.message' defaultMessage='This will prepend any previously pinned Toot. Are you sure?' />,
         confirm: intl.formatMessage(messages.pinConfirm),
-        onConfirm: () => dispatch(pinStatus(status.get('id'))),
+        onConfirm: () => dispatch(pin(status)),
       }));
     }
   }
@@ -293,11 +295,11 @@ export default class StatusActionBar extends ImmutablePureComponent {
           }
         }
 
-        downloadButton = <li><DropdownMenuContainer items={videoMenu} src='download' strong title={intl.formatMessage(messages.download_mv_title)} /></li>;
+        downloadButton = <li><DropdownMenuContainer items={videoMenu} icon='download' strong scale title={intl.formatMessage(messages.download_mv_title)} /></li>;
       }
 
       if (status.getIn(['account', 'id']) === me) {
-        editButton = <li><IconButton className='strong' src='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} /></li>;
+        editButton = <li><Icon strong scale icon='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} /></li>;
       }
     }
 
@@ -361,10 +363,10 @@ export default class StatusActionBar extends ImmutablePureComponent {
 
     return (
       <ul className='status-action-bar'>
-        <li><IconButton title={replyTitle} src='message-square' onClick={me ? this.handleReplyClick : this.handleRedirectLoginPage} /></li>
-        <li><IconButton title={reblogTitle} src={reblogIcon} onClick={me ? this.handleReblogClick : this.handleRedirectLoginPage} disabled={reblogDisabled} active={reblogged} strokeWidth={reblogged ? 2 : 1} /></li>
-        <li><IconButton title={favouriteTitle} src='heart' onClick={me ? this.handleFavouriteClick : this.handleRedirectLoginPage} disabled={favouriteDisabled} active={favourited} strokeWidth={favourited ? 2 : 1} /></li>
-        <li><DropdownMenuContainer items={moreMenu} src='more-horizontal' title={moreTitle} /></li>
+        <li><Icon title={replyTitle} icon='message-square' scale onClick={me ? this.handleReplyClick : this.handleRedirectLoginPage} /></li>
+        <li><Icon title={reblogTitle} icon={reblogIcon} scale onClick={me ? this.handleReblogClick : this.handleRedirectLoginPage} disabled={reblogDisabled} active={reblogged} /></li>
+        <li><Icon title={favouriteTitle} icon='heart' scale onClick={me ? this.handleFavouriteClick : this.handleRedirectLoginPage} disabled={favouriteDisabled} active={favourited} /></li>
+        <li><DropdownMenuContainer items={moreMenu} scale icon='more-horizontal' title={moreTitle} /></li>
         {editButton}
         {downloadButton}
       </ul>

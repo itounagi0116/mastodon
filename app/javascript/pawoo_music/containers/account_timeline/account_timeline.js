@@ -8,25 +8,35 @@ import { fetchAccount } from '../../../mastodon/actions/accounts';
 import { refreshAccountTimeline, expandAccountTimeline, refreshPinnedStatusTimeline } from '../../../mastodon/actions/timelines';
 import ScrollableList from '../../components/status_list';
 import Timeline from '../../components/timeline';
+import { makeGetAccount } from '../../../mastodon/selectors';
+import { createCustomColorStyle } from '../../util/custom_color';
 
-const mapStateToProps = (state, props) => {
-  const { accountId } = props;
+const makeMapStateToProps = () => {
+  const getAccount = makeGetAccount();
 
-  return {
-    accountId,
-    statusIds: state.getIn(['timelines', `account:${accountId}`, 'items'], Immutable.List()),
-    isLoading: state.getIn(['timelines', `account:${accountId}`, 'isLoading']),
-    hasMore: !!state.getIn(['timelines', `account:${accountId}`, 'next']),
-    pinnedStatusIds: state.getIn(['timelines', `account:${accountId}:pinned_status`, 'items'], Immutable.List()),
+  const mapStateToProps = (state, props) => {
+    const { accountId } = props;
+
+    return {
+      accountId,
+      account: getAccount(state, accountId),
+      statusIds: state.getIn(['timelines', `account:${accountId}`, 'items'], Immutable.List()),
+      isLoading: state.getIn(['timelines', `account:${accountId}`, 'isLoading']),
+      hasMore: !!state.getIn(['timelines', `account:${accountId}`, 'next']),
+      pinnedStatusIds: state.getIn(['timelines', `account:${accountId}:pinned_status`, 'items'], Immutable.List()),
+    };
   };
+
+  return mapStateToProps;
 };
 
-@connect(mapStateToProps)
+@connect(makeMapStateToProps)
 export default class AccountTimeline extends PureComponent {
 
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
     accountId: PropTypes.number.isRequired,
+    account: ImmutablePropTypes.map.isRequired,
     statusIds: ImmutablePropTypes.list.isRequired,
     isLoading: PropTypes.bool,
     hasMore: PropTypes.bool,
@@ -43,11 +53,12 @@ export default class AccountTimeline extends PureComponent {
   }
 
   componentWillMount () {
-    const { dispatch, accountId } = this.props;
+    const { dispatch, accountId, account } = this.props;
 
     dispatch(fetchAccount(accountId));
     dispatch(refreshPinnedStatusTimeline(accountId));
     dispatch(refreshAccountTimeline(accountId));
+    this.appendStyle(account);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -59,7 +70,14 @@ export default class AccountTimeline extends PureComponent {
       dispatch(fetchAccount(accountId));
       dispatch(refreshPinnedStatusTimeline(accountId));
       dispatch(refreshAccountTimeline(accountId));
+      this.removeStyle(this.props.accountId);
+      this.appendStyle(nextProps.account);
     }
+  }
+
+  componentWillUnmount () {
+    const { accountId } = this.props;
+    this.removeStyle(accountId);
   }
 
   handleScrollToBottom = debounce(() => {
@@ -69,14 +87,40 @@ export default class AccountTimeline extends PureComponent {
     }
   }, 300, { leading: true })
 
+  appendStyle (account) {
+    const customColor = account.get('custom_color');
+
+    if (!customColor) {
+      return;
+    }
+
+    const head = document.head || document.getElementsByTagName('head')[0];
+    const style = createCustomColorStyle(customColor, `user-style-${account.get('id')}`);
+    head.appendChild(style);
+  }
+
+  removeStyle (accountId) {
+    const style = document.getElementById(`user-style-${accountId}`);
+
+    if (style) {
+      const head = document.head || document.getElementsByTagName('head')[0];
+      head.removeChild(style);
+    }
+  }
+
   render () {
-    const { statusIds, pinnedStatusIds, isLoading, hasMore, gallery } = this.props;
+    const { account, statusIds, pinnedStatusIds, isLoading, hasMore, gallery } = this.props;
     const header = null;
     const prepend = null;
     const uniqueStatusIds = pinnedStatusIds.concat(statusIds).toOrderedSet().toList();
+    const galleryStyle = {};
+
+    if (account.get('background_image')) {
+      galleryStyle.backgroundImage = `url(${account.get('background_image')})`;
+    }
 
     return (
-      <Timeline gallery={gallery} header={header}>
+      <Timeline gallery={gallery} galleryStyle={galleryStyle} header={header}>
         <ScrollableList
           scrollKey='account_timeline'
           statusIds={uniqueStatusIds}

@@ -6,12 +6,12 @@ class Api::Web::EmbedsController < Api::BaseController
   before_action :require_user!
 
   def create
-    @stream_entry = StreamEntryFinder.new(params[:url]).stream_entry
-    @width = @stream_entry.status.music.is_a?(Track) ? '480' : '400'
-    @height = @stream_entry.status.music.is_a?(Track) ? '512' : nil
-    @extra_params = params.permit(:textcolor, :backgroundcolor)
+    status = StatusFinder.new(params[:url]).status
+    width = status.music.is_a?(Track) ? '480' : '400'
+    height = status.music.is_a?(Track) ? '480' : nil
+    extra_params = params.permit(:textcolor, :backgroundcolor)
 
-    render 'api/oembed/show.json'
+    render json: status, serializer: OEmbedSerializer, width: width, height: height, extra_params: extra_params
   rescue ActiveRecord::RecordNotFound
     oembed = OEmbed::Providers.get(params[:url])
     render json: Oj.dump(oembed.fields)

@@ -2,15 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
-import configureStore from '../../mastodon/store/configureStore';
+import store from '../../mastodon/store';
 import { getLocale } from '../../mastodon/locales';
 import EmbedMusicvideo from '../components/embed_musicvideo';
 
 
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
-
-const store = configureStore();
 
 export default class MusicvideoEntry extends React.PureComponent {
 

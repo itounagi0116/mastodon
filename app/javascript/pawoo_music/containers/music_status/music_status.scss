@@ -11,6 +11,9 @@
 
   margin:     var(--verticalspace40);
 
+  padding: var(--padding20);
+  box-sizing: border-box;
+
   &.highlight {
     border:     1px dashed var(--strong1);
     background: var(--color2);
@@ -51,11 +54,13 @@
     line-height:  var(--text10-line);
     align-items: center;
 
-    .icon-button {
+    .icon {
       margin:  var(--rightspace5);
       height: var(--text10-font);
+      margin-top: 2px;
 
       svg {
+        stroke: var(--textcolor);
         width: var(--text10-font);
         height: var(--text10-font);
       }
@@ -95,4 +100,7 @@
     margin:         var(--verticalspace25);
   }
 
+  .track {
+    width: var(--width-gallery-canvas);
+  }
 }

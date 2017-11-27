@@ -3,16 +3,14 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
-import ReactSwipeable from 'react-swipeable';
+import ReactSwipeableViews from 'react-swipeable-views';
 import classNames from 'classnames';
 import Permalink from '../../../components/permalink';
-import TransitionMotion from 'react-motion/lib/TransitionMotion';
-import spring from 'react-motion/lib/spring';
 import ComposeForm from '../../compose/components/compose_form';
 import Search from '../../compose/components/search';
 import NavigationBar from '../../compose/components/navigation_bar';
 import ColumnHeader from './column_header';
-import Immutable from 'immutable';
+import { List as ImmutableList } from 'immutable';
 
 const noop = () => { };
 
@@ -32,7 +30,7 @@ const PageOne = ({ acct, domain }) => (
     <div>
       <h1><FormattedMessage id='onboarding.page_one.welcome' defaultMessage='Welcome to Mastodon!' /></h1>
       <p><FormattedMessage id='onboarding.page_one.federation' defaultMessage='Mastodon is a network of independent servers joining up to make one larger social network. We call these servers instances.' /></p>
-      <p><FormattedMessage id='onboarding.page_one.handle' defaultMessage='You are on {domain}, so your full handle is {handle}' values={{ domain, handle: <strong>{acct}@{domain}</strong> }} /></p>
+      <p><FormattedMessage id='onboarding.page_one.handle' defaultMessage='You are on {domain}, so your full handle is {handle}' values={{ domain, handle: <strong>@{acct}@{domain}</strong> }} /></p>
     </div>
   </div>
 );
@@ -49,11 +47,11 @@ const PageTwo = ({ me }) => (
         <NavigationBar account={me} />
       </div>
       <ComposeForm
-        text='こんにちは！ #introductions'
-        suggestions={Immutable.List()}
+        text='Awoo! #introductions'
+        suggestions={ImmutableList()}
         mentionedDomains={[]}
         spoiler={false}
-        hash_tag_suggestions={Immutable.List()}
+        hash_tag_suggestions={ImmutableList()}
         onChange={noop}
         onSubmit={noop}
         onPaste={noop}
@@ -167,18 +165,6 @@ PageSix.propTypes = {
   domain: PropTypes.string.isRequired,
 };
 
-const MusicPageOne = () => (
-  <div className='onboarding-modal__page onboarding-modal-music__page-one'>
-    <div className='onboarding-modal-music__page-one__image' />
-  </div>
-);
-
-const MusicPageTwo = () => (
-  <div className='onboarding-modal__page onboarding-modal-music__page-two'>
-    <div className='onboarding-modal-music__page-two__image' />
-  </div>
-);
-
 const mapStateToProps = state => ({
   me: state.getIn(['accounts', state.getIn(['meta', 'me'])]),
   admin: state.getIn(['accounts', state.getIn(['meta', 'admin'])]),
@@ -205,19 +191,14 @@ export default class OnboardingModal extends React.PureComponent {
     currentIndex: 0,
   };
 
-
   componentWillMount() {
     const { me, admin, domain, intl } = this.props;
-    this.isSp = window.innerWidth < 1024;
-    this.pages = this.isSp ? [
+    this.pages = [
       <PageOne acct={me.get('acct')} domain={domain} />,
       <PageTwo me={me} />,
       <PageThree me={me} />,
       <PageFour domain={domain} intl={intl} />,
       <PageSix admin={admin} domain={domain} />,
-    ] : [
-      <MusicPageOne />,
-      <MusicPageTwo />,
     ];
   };
 
@@ -227,6 +208,10 @@ export default class OnboardingModal extends React.PureComponent {
 
   componentWillUnmount() {
     window.addEventListener('keyup', this.handleKeyUp);
+
+    // モーダルを閉じた時に、おすすめアカウントへ飛ばす
+    const path = '/suggested_accounts';
+    this.context.router.history.push(path);
   }
 
   handleSkip = (e) => {
@@ -251,6 +236,10 @@ export default class OnboardingModal extends React.PureComponent {
     this.setState(({ currentIndex }) => ({
       currentIndex: Math.min(currentIndex + 1, pages.length - 1),
     }));
+  }
+
+  handleSwipe = (index) => {
+    this.setState({ currentIndex: index });
   }
 
   handleKeyUp = ({ key }) => {
@@ -289,40 +278,28 @@ export default class OnboardingModal extends React.PureComponent {
       </button>
     );
 
-    const styles = pages.map((data, i) => ({
-      key: `page-${i}`,
-      data,
-      style: {
-        opacity: spring(i === currentIndex ? 1 : 0),
-      },
-    }));
-
     return (
       <div className='modal-root__modal onboarding-modal'>
-        <TransitionMotion styles={styles}>
-          {interpolatedStyles => (
-            <ReactSwipeable onSwipedRight={this.handlePrev} onSwipedLeft={this.handleNext} className={`onboarding-modal${this.isSp ? '' : '-music'}__pager`}>
-              {interpolatedStyles.map(({ key, data, style }, i) => {
-                const className = classNames('onboarding-modal__page__wrapper', {
-                  'onboarding-modal__page__wrapper--active': i === currentIndex,
-                });
-                return (
-                  <div key={key} style={style} className={className}>{data}</div>
-                );
-              })}
-            </ReactSwipeable>
-          )}
-        </TransitionMotion>
+        <ReactSwipeableViews index={currentIndex} onChangeIndex={this.handleSwipe} className='onboarding-modal__pager'>
+          {pages.map((page, i) => {
+            const className = classNames('onboarding-modal__page__wrapper', {
+              'onboarding-modal__page__wrapper--active': i === currentIndex,
+            });
+            return (
+              <div key={i} className={className}>{page}</div>
+            );
+          })}
+        </ReactSwipeableViews>
 
         <div className='onboarding-modal__paginator'>
-          {this.isSp ? (<div>
+          <div>
             <button
               onClick={this.handleSkip}
               className='onboarding-modal__nav onboarding-modal__skip'
             >
               <FormattedMessage id='onboarding.skip' defaultMessage='Skip' />
             </button>
-          </div>) : null}
+          </div>
 
           <div className='onboarding-modal__dots'>
             {pages.map((_, i) => {

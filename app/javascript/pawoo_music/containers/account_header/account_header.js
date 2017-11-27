@@ -23,9 +23,7 @@ import { mentionCompose } from '../../../mastodon/actions/compose';
 import { initReport } from '../../../mastodon/actions/reports';
 import { openModal } from '../../../mastodon/actions/modal';
 import { blockDomain, unblockDomain } from '../../../mastodon/actions/domain_blocks';
-import IconButton from '../../components/icon_button';
-
-
+import Icon from '../../components/icon';
 
 const messages = defineMessages({
   mention: { id: 'account.mention', defaultMessage: 'Mention @{name}' },
@@ -38,6 +36,7 @@ const messages = defineMessages({
   follow: { id: 'account.follow', defaultMessage: 'Follow' },
   report: { id: 'account.report', defaultMessage: 'Report @{name}' },
   media: { id: 'account.media', defaultMessage: 'Media' },
+  more: { id: 'account.more', defaultMessage: 'More' },
   disclaimer: { id: 'account.disclaimer', defaultMessage: 'This user is from another instance. This number may be larger.' },
   blockDomain: { id: 'account.block_domain', defaultMessage: 'Hide everything from {domain}' },
   unblockDomain: { id: 'account.unblock_domain', defaultMessage: 'Unhide {domain}' },
@@ -203,7 +202,7 @@ export default class AccountHeader extends ImmutablePureComponent {
     }
 
     const menu = this.createMenu();
-    const lockedIcon = account.get('locked') && <IconButton src='lock' />;
+    const lockedIcon = account.get('locked') && <Icon icon='lock' />;
     const extraInfo = (account.get('acct') !== account.get('username')) && <abbr title={intl.formatMessage(messages.disclaimer)}>*</abbr>;
     const note = { __html: emojify(account.get('note')) };
     let followed = null;
@@ -239,7 +238,7 @@ export default class AccountHeader extends ImmutablePureComponent {
         </div>
         <div className='tabs'>
           <NavLink to={`/@${account.get('acct')}`} exact>
-            <strong><FormattedNumber value={account.get('tracks_count')} /></strong>
+            <strong><FormattedNumber value={account.get('tracks_count')} /> </strong>
             <span><FormattedMessage id='account.tracks' defaultMessage='Tracks' /></span>
           </NavLink>
           <NavLink to={`/users/${account.get('acct')}/followers`} exact>
@@ -250,7 +249,7 @@ export default class AccountHeader extends ImmutablePureComponent {
             <strong><FormattedNumber value={account.get('following_count')} />{extraInfo} </strong>
             <span><FormattedMessage id='account.follows' defaultMessage='Follows' /></span>
           </NavLink>
-          {menu.length > 0 && <DropdownMenuContainer items={menu} src='more-horizontal' />}
+          {menu.length > 0 && <DropdownMenuContainer title={intl.formatMessage(messages.more)} items={menu} icon='more-horizontal' />}
         </div>
 
       </div>

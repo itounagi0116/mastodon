@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import IconButton from '../../../../pawoo_music/components/icon_button';
+import Icon from '../../../../pawoo_music/components/icon';
 import { changeComposeSpoilerness } from '../../../actions/compose';
 import { injectIntl, defineMessages } from 'react-intl';
 import { switchCompose } from '../../../selectors';
@@ -45,12 +45,14 @@ class SpoilerButton extends React.PureComponent {
 
     return (
       <div className={className}>
-        <IconButton
+        <Icon
           className='compose-form__spoiler-button__icon'
           title={intl.formatMessage(messages.title)}
-          src={icon}
+          icon={icon}
           onClick={onClick}
           active={active}
+          strong
+          scale
         />
       </div>
     );

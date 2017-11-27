@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
 import Link from '../../components/link_wrapper';
 import { isMobile } from '../../util/is_mobile';
 import { openModal, closeModal } from '../../../mastodon/actions/modal';
@@ -57,7 +57,8 @@ export default class DropdownMenu extends React.PureComponent {
 
   static propTypes = {
     strong: PropTypes.bool,
-    src: PropTypes.string.isRequired,
+    scale: PropTypes.bool,
+    icon: PropTypes.string.isRequired,
     items: PropTypes.array.isRequired,
     title: PropTypes.string,
     isLogin: PropTypes.bool,
@@ -144,12 +145,12 @@ export default class DropdownMenu extends React.PureComponent {
   }
 
   render () {
-    const { strong, src, title, isLogin } = this.props;
+    const { strong, scale, icon, title, isLogin } = this.props;
     const { expanded } = this.state;
 
     return (
       <div className={classNames('dropdown-menu', { active: expanded })}>
-        <IconButton className={classNames('dropdown-trigger', { strong })} src={src} title={title} onClick={isLogin ? this.handleClick : this.handleRedirectLoginPage} />
+        <Icon className='dropdown-trigger' icon={icon} title={title} onClick={isLogin ? this.handleClick : this.handleRedirectLoginPage} strong={strong} scale={scale} />
         {!mobile && expanded && (
           <DropdownContent onClose={this.handleClose}>
             {expanded && this.renderMenuItems()}

@@ -27,7 +27,7 @@ describe 'stream_entries/show.html.haml', without_verify_partial_doubles: true d
 
     render
 
-    mf2 = Microformats2.parse(rendered)
+    mf2 = Microformats.parse(rendered)
 
     expect(mf2.entry.name.to_s).to eq status.text
     expect(mf2.entry.url.to_s).not_to be_empty
@@ -53,7 +53,7 @@ describe 'stream_entries/show.html.haml', without_verify_partial_doubles: true d
 
     render
 
-    mf2 = Microformats2.parse(rendered)
+    mf2 = Microformats.parse(rendered)
 
     expect(mf2.entry.name.to_s).to eq reply.text
     expect(mf2.entry.url.to_s).not_to be_empty
@@ -80,9 +80,42 @@ describe 'stream_entries/show.html.haml', without_verify_partial_doubles: true d
 
     header_tags = view.content_for(:header_tags)
 
-    expect(header_tags).to match(%r{<meta content='.+' property='og:title'>})
-    expect(header_tags).to match(%r{<meta content='article' property='og:type'>})
-    expect(header_tags).to match(%r{<meta content='.+' property='og:image'>})
-    expect(header_tags).to match(%r{<meta content='http://.+' property='og:url'>})
+    expect(header_tags).to match(%r{<meta content=".+" property="og:title" />})
+    expect(header_tags).to match(%r{<meta content="article" property="og:type" />})
+    expect(header_tags).to match(%r{<meta content=".+" property="og:image" />})
+    expect(header_tags).to match(%r{<meta content="http://.+" property="og:url" />})
+  end
+
+  it 'has link header for federation' do
+    alice   =  Fabricate(:account, username: 'alice', display_name: 'Alice')
+    status  =  Fabricate(:status, account: alice, text: 'Hello World')
+
+    assign(:status, status)
+    assign(:stream_entry, status.stream_entry)
+    assign(:account, alice)
+    assign(:type, status.stream_entry.activity_type.downcase)
+
+    render
+
+    header_tags = view.content_for(:header_tags)
+
+    expect(header_tags).to match(%r{<link href='.+' rel='alternate' type='application/atom\+xml'>})
+    expect(header_tags).to match(%r{<link href='.+' rel='alternate' type='application/activity\+json'>})
+  end
+
+  it 'does not have link header for federation when remote account' do
+    alice   =  Fabricate(:account, username: 'alice', display_name: 'Alice', domain: 'example.com')
+    status  =  Fabricate(:status, account: alice, text: 'Hello World')
+
+    assign(:status, status)
+    assign(:stream_entry, status.stream_entry)
+    assign(:account, alice)
+
+    render
+
+    header_tags = view.content_for(:header_tags)
+
+    expect(header_tags).not_to match(%r{<link href='.+' rel='alternate' type='application/atom\+xml'>})
+    expect(header_tags).not_to match(%r{<link href='.+' rel='alternate' type='application/activity\+json'>})
   end
 end

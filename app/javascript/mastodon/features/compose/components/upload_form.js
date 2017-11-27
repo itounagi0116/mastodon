@@ -1,7 +1,7 @@
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
-import IconButton from '../../../components/icon_button';
+import Icon from '../../../../pawoo_music/components/icon';
 import { defineMessages, injectIntl } from 'react-intl';
 import UploadProgressContainer from '../containers/upload_progress_container';
 import Motion from 'react-motion/lib/Motion';
@@ -34,7 +34,7 @@ export default class UploadForm extends React.PureComponent {
         <Motion defaultStyle={{ scale: 0.8 }} style={{ scale: spring(1, { stiffness: 180, damping: 12 }) }}>
           {({ scale }) =>
             <div className='compose-form__upload-thumbnail' data-id={attachment.get('id')} style={{ transform: `translateZ(0) scale(${scale})`, backgroundImage: `url(${attachment.get('preview_url')})` }}>
-              <IconButton icon='times' title={intl.formatMessage(messages.undo)} size={36} onClick={this.onRemoveFile} />
+              <Icon icon='x' strong title={intl.formatMessage(messages.undo)} onClick={this.onRemoveFile} />
             </div>
           }
         </Motion>

@@ -13,8 +13,8 @@ class OauthRegistrationsController < DeviseController
     @oauth_registration.assign_attributes(oauth_registration_params)
 
     if @oauth_registration.save
+      BootstrapTimelineWorker.perform_async(@oauth_registration.user.account_id)
       sign_in(@oauth_registration.user)
-      DefaultFollowWorker.perform_async(@oauth_registration.user.account_id)
 
       redirect_to after_sign_in_path_for(@oauth_registration.user)
     elsif @oauth_registration.errors.added?(:email, :taken)
