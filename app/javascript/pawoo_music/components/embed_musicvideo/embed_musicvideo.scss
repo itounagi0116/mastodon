@@ -1,51 +1,40 @@
 .embed-musicvideo {
+  position: relative;
+
   .track {
-    width:  100%;
+    width: 100%;
     height: calc(100% - var(--padding5-value) * 2 - var(--text20-line) - var(--text40-line));
   }
 
   .meta {
-     padding: var(--padding5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: transparent !important;  // 自動で白を入れるのを切ってくださいまし
+    padding: var(--padding10);
+    width: 100%;
+    box-sizing: border-box;
 
-    .credit {
-      display:        flex;
-      font-size:      var(--text20-font);
-      line-height:    var(--text20-line);
+    .artist, .title {
+      display: inline-block;
+      font-weight: 100;
+      padding: var(--padding5);
 
-      > p {
-        flex:          1;
-        font-weight:   100;
-
-        overflow:      hidden;
-        white-space:   nowrap;
-        text-overflow: ellipsis;
-        color: inherit;
-      }
-
-      > a {
-        flex:        0;
-        margin-left: 8px;
-
-        * {
-          height: var(--text20-font);
-        }
-      }
+      background-color: rgba(0, 0, 0, 0.7);
     }
 
-    h1 {
-      font-size:     var(--text40-font);
-      font-weight:   100;
-      line-height:   var(--text40-line);
+    .artist {
+      color: #cccccc;
+      font-size: var(--text10-font);
+      line-height: var(--text10-line);
+      text-decoration: underline;
+    }
 
-      overflow:      hidden;
-      white-space:   nowrap;
-      text-overflow: ellipsis;
-
-      > a {
-        &:link, &:visited, &:hover, &:focus, &:active {
-          color: inherit;
-        }
-      }
+    .title {
+      color: #ffffff;
+      font-size: var(--text20-font);
+      line-height: var(--text20-line);
+      margin: var(--verticalspace10);
     }
   }
 }

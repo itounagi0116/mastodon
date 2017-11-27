@@ -8,7 +8,6 @@ import classNames from 'classnames';
 import { playTrack, stopTrack } from '../../actions/tracks';
 import { constructRgbCode } from '../../util/musicvideo';
 
-import playIcon from '../../../images/pawoo_music/play.png';
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 
 const mapStateToProps = (state) => ({
@@ -77,7 +76,9 @@ class Track extends ImmutablePureComponent {
       <div className={classNames('track', { 'fit-contain': fitContain })} style={thumbnailStyle}>
         {thumbnailView ? (
           <div className='thumbnail' role='button' tabIndex='0' aria-pressed='false' onClick={this.handlePlayClick}>
-            <img className='playbutton' src={playIcon} alt='playbutton' />
+            <div className='playbutton' alt='playbutton'>
+              <span className='playbutton-icon' />
+            </div>
           </div>
         ) : (
           <Musicvideo track={track.deleteIn(['video', 'banner'])} />

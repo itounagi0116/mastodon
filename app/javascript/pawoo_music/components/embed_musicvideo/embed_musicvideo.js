@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import querystring from 'querystring';
-import Logo from '../../components/logo';
 import Track from '../../containers/track';
 
 import '../../containers/app/app.scss';
@@ -24,8 +23,8 @@ export default class MusicvideoEntry extends React.PureComponent {
       <div className='app embed-musicvideo'>
         <Track track={Immutable.fromJS(track).set('id', id)} fitContain />
         <div className='meta' style={style}>
-          <div className='credit'><p>{track.artist}</p><a href='/' target='_blank'><Logo /></a></div>
-          <h1><a href={`/@${account.acct}/${id}`} target='_blank'>{track.title}</a></h1>
+          <a className='artist' href={`/@${account.acct}`}       target='_blank'>{track.artist}</a><br />
+          <a className='title'  href={`/@${account.acct}/${id}`} target='_blank'>{track.title} </a>
         </div>
       </div>
     );

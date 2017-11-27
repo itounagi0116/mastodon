@@ -13,14 +13,20 @@
     cursor: pointer;
 
     .playbutton {
-      display: block;
-      height:     var(--iconsize40);
-      width:      var(--iconsize40);
+      height: var(--iconsize50);
+      width: var(--iconsize50);
     }
 
-    &:hover .playbutton {
-      opacity:    var(--hover-opacity);
-      transition: var(--hover-transition);
+    .playbutton .playbutton-icon {
+      display: block;
+      height: 100%;
+      width: 100%;
+      background-image: url('/packs/pawoo_music/play.png');
+      background-size: cover;
+    }
+
+    &:hover .playbutton .playbutton-icon {
+      background-image: url('/packs/pawoo_music/play_hover.png');
     }
   }
 
