@@ -13,7 +13,7 @@ import App from '../containers/app';
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
 
-const store = configureStore();
+export const store = configureStore();
 const initialState = JSON.parse(document.getElementById('initial-state').textContent);
 store.dispatch(hydrateStore(initialState));
 

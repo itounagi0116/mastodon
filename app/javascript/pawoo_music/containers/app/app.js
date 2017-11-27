@@ -75,6 +75,10 @@ export default class App extends PureComponent {
         const handlerUrl = window.location.protocol + '//' + window.location.host + '/intent?uri=%s';
         window.setTimeout(() => navigator.registerProtocolHandler('web+mastodon', handlerUrl, 'Mastodon'), 5 * 60 * 1000);
       }
+
+      if ('serviceWorker' in  navigator) {
+        navigator.serviceWorker.addEventListener('message', this.handleServiceWorkerPostMessage);
+      }
     }
   }
 
@@ -82,6 +86,14 @@ export default class App extends PureComponent {
     if (this.disconnect) {
       this.disconnect();
       this.disconnect = null;
+    }
+  }
+
+  handleServiceWorkerPostMessage = ({ data }) => {
+    if (data.type === 'navigate') {
+      this.context.router.history.push(data.path);
+    } else {
+      console.warn('Unknown message type:', data.type);
     }
   }
 
