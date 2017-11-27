@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
-import configureStore from '../../../mastodon/store/configureStore';
+import store from '../../../mastodon/store';
 import { getLocale } from '../../../mastodon/locales';
 import Logo from '../../components/logo';
 import Track from '../../containers/track';
@@ -12,8 +12,6 @@ import '../../containers/app/app.scss';
 
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
-
-const store = configureStore();
 
 export default class MusicvideoEntry extends React.PureComponent {
 
