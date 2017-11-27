@@ -36,7 +36,7 @@ RSpec.describe Playlist, type: :model do
     it 'deliver by streaming' do
       allow(PushPlaylistWorker).to receive(:perform_async)
       subject
-      expect(PushPlaylistWorker).to have_received(:perform_async).with(deck, 'add', playlist.queue_items.first.to_json).once
+      expect(PushPlaylistWorker).to have_received(:perform_async).with(deck, 'add', playlist.queue_items.first.as_json).once
     end
 
     context 'when the playlist is empty' do
@@ -112,7 +112,7 @@ RSpec.describe Playlist, type: :model do
     it 'deliver by streaming' do
       allow(PushPlaylistWorker).to receive(:perform_async)
       subject
-      expect(PushPlaylistWorker).to have_received(:perform_async).with(deck, 'end', { id: id }.to_json).once
+      expect(PushPlaylistWorker).to have_received(:perform_async).with(deck, 'end', id: id).once
     end
 
     context 'when the playlist becomes empty' do
