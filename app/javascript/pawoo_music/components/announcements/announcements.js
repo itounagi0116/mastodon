@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import Link from 'react-router-dom/Link';
-import IconButton from '../icon_button';
+import Icon from '../icon';
 import { injectIntl } from 'react-intl';
 
 const storageKey = 'announcements_dismissed';
@@ -91,7 +91,7 @@ class Announcements extends React.PureComponent {
           <li className='announcement-item' key={announcement.get('id')}>
             <div className='announcement-header'>
               <span className='header-text'>{intl.formatMessage({ id: 'pawoo_music.announcements.header', defaultMessage: 'News' })}</span>
-              <IconButton className='dismiss-button' title={intl.formatMessage({ id: 'pawoo_music.announcements.dismiss', defaultMessage: 'Dismiss' })} src='x-circle' role='button' tabIndex='0' aria-pressed='false' data-id={announcement.get('id')} onClick={this.handleDismiss} />
+              <Icon className='dismiss-button' title={intl.formatMessage({ id: 'pawoo_music.announcements.dismiss', defaultMessage: 'Dismiss' })} icon='x-circle'data-id={announcement.get('id')} onClick={this.handleDismiss} />
             </div>
             <div className='announcements__body'>
               <p>{announcement.get('body')}</p>

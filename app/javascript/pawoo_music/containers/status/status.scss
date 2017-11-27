@@ -83,11 +83,13 @@
     line-height:  var(--text10-line);
     align-items: center;
 
-    .icon-button {
+    .icon {
       margin:  var(--rightspace5);
       height: var(--text10-font);
+      margin-top: 2px;
 
       svg {
+        stroke: var(--textcolor);
         width: var(--text10-font);
         height: var(--text10-font);
       }

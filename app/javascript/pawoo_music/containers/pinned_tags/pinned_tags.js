@@ -8,12 +8,14 @@ import classNames from 'classnames';
 import { defineMessages, injectIntl } from 'react-intl';
 import HashtagLink from '../../components/hashtag_link';
 import TagBox from '../../components/tag_box';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
 import { changeTargetColumn } from '../../actions/column';
 import { addColumn, removeColumn } from '../../../mastodon/actions/columns';
 
 const messages = defineMessages({
   title: { id: 'pinned_tags.title', defaultMessage: 'Pinned tags' },
+  pin: { id: 'pinned_tags.pin', defaultMessage: 'Pin' },
+  unpin: { id: 'pinned_tags.unpin', defaultMessage: 'Unpin' },
 });
 
 const mapStateToProps = state => ({
@@ -62,7 +64,7 @@ export default class PinnedTags extends ImmutablePureComponent {
               <HashtagLink hashtag={currentTag} onClick={this.handleClick} />
               {isLogin && (
                 <div className='right-box'>
-                  <IconButton src='map-pin' onClick={this.handlePinClick} />
+                  <Icon icon='map-pin' onClick={this.handlePinClick} title={intl.formatMessage(messages.pin)} />
                 </div>
               )}
             </li>
@@ -73,7 +75,7 @@ export default class PinnedTags extends ImmutablePureComponent {
               <li key={id} className={classNames('hashtag', { active: id === currentTag })}>
                 <HashtagLink hashtag={id} onClick={this.handleClick} />
                 <div className='right-box'>
-                  <IconButton src='x-circle' data-id={tag.get('uuid')} onClick={this.handleCloseClick} />
+                  <Icon icon='x-circle' data-id={tag.get('uuid')} onClick={this.handleCloseClick} title={intl.formatMessage(messages.unpin)} />
                 </div>
               </li>
             );

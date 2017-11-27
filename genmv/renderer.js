@@ -5,7 +5,7 @@ onerror = message => {
   return true;
 };
 
-onunhandledrejection = event => {
+onunhandledrejection = event => { // eslint-disable-line no-undef
   console.error(event.reason);
   close();
 

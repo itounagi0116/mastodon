@@ -32,6 +32,7 @@ import {
   TRACK_COMPOSE_SUBMIT_FAIL,
   TRACK_COMPOSE_SHOW_MODAL,
   TRACK_COMPOSE_HIDE_MODAL,
+  TRACK_COMPOSE_RESET_DATA,
   TRACK_COMPOSE_SET_DATA,
   TRACK_COMPOSE_CHANGE_PRIVACY,
 } from '../actions/track_compose';
@@ -157,6 +158,8 @@ export default function track_compose(state = initialState, action) {
     return state.set('modal', true);
   case TRACK_COMPOSE_HIDE_MODAL:
     return state.set('modal', false);
+  case TRACK_COMPOSE_RESET_DATA:
+    return state.set('track', initialState.get('track'));
   case TRACK_COMPOSE_SET_DATA:
     return state.set('track', convertTrackData(action.track));
   case TRACK_COMPOSE_CHANGE_PRIVACY:

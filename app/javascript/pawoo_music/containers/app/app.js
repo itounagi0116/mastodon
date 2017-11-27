@@ -28,7 +28,7 @@ import PlayControlContainer from '../../../mastodon/features/ui/containers/play_
 import { openModalFormCompose } from '../../../mastodon/actions/compose';
 import Link from '../../components/link_wrapper';
 import Logo from '../../components/logo';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
 
 const mapStateToProps = state => ({
   isLogin: !!state.getIn(['meta', 'me']),
@@ -64,8 +64,16 @@ export default class App extends PureComponent {
       dispatch(refreshNotifications());
 
       // Desktop notifications
+      // Ask after 1 minute
       if (typeof window.Notification !== 'undefined' && Notification.permission === 'default') {
-        Notification.requestPermission();
+        window.setTimeout(() => Notification.requestPermission(), 60 * 1000);
+      }
+
+      // Protocol handler
+      // Ask after 5 minutes
+      if (typeof navigator.registerProtocolHandler !== 'undefined') {
+        const handlerUrl = window.location.protocol + '//' + window.location.host + '/intent?uri=%s';
+        window.setTimeout(() => navigator.registerProtocolHandler('web+mastodon', handlerUrl, 'Mastodon'), 5 * 60 * 1000);
       }
     }
   }
@@ -124,7 +132,7 @@ export default class App extends PureComponent {
     const routes = (
       <Switch>
         <Route path='/' exact component={HomeTimelineContainer} />
-        <Route path='/intent/statuses/new' exact component={Intent} />
+        <Route path='/share' exact component={Intent} />
         <Route path='/notifications' component={NotificationTimelineContainer} />
         <Route path='/timelines/public/local' component={CommunityTimelineContainer} />
         <Route path='/timelines/public' exact component={PublicTimelineContainer} />
@@ -171,14 +179,14 @@ export default class App extends PureComponent {
           <div className='app-center'>{routes}</div>
 
           <div className='app-top'>
-            <IconButton src='menu' className={classNames('to_global_navi', { 'selected': target === 'global_navi' })} strokeWidth={2} onClick={this.handleClickGlobalNaviButton} />
+            <Icon icon='menu' className={classNames('to_global_navi', { 'selected': target === 'global_navi' })} strong onClick={this.handleClickGlobalNaviButton} />
             <div className='blank' />
             <div className='logo'>
               <Logo />
               <div className='timeline_title'>{title}</div>
             </div>
-            <IconButton src='edit-2' className='post_status' strokeWidth={2} onClick={isLogin ? this.handleClickStatusPostButton : this.handleRedirectLoginPage} />
-            <a className='post_track' href='/tracks/new' onClick={this.handleRedirectLoginPage}><IconButton src='music' className='clickable' strokeWidth={2} /></a>
+            <Icon icon='edit-2' className='post_status' strong onClick={isLogin ? this.handleClickStatusPostButton : this.handleRedirectLoginPage} />
+            <a className='post_track' href='/tracks/new' onClick={this.handleRedirectLoginPage}><Icon icon='music' className='clickable' strong /></a>
           </div>
 
           <div className='app-bottom'>{buttons}</div>

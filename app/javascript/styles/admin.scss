@@ -84,6 +84,7 @@
   }
 
   .content {
+    box-sizing: border-box;
     max-width: 700px;
     padding: 20px 15px;
     padding-top: 60px;
@@ -304,8 +305,14 @@
 
 .batch-form-box {
   display: flex;
+  margin-bottom: 10px;
   flex-wrap: wrap;
   margin-bottom: 5px;
+
+  #form_status_batch_action {
+    margin: 0 5px 5px 0;
+    font-size: 14px;
+  }
 
   #form_status_batch_action {
     margin: 0 5px 5px 0;

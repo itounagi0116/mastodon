@@ -95,6 +95,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(insertTagCompose(tag));
   },
 
+  onInsertHashtag (tag) {
+    dispatch(insertTagCompose(tag));
+  },
+
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ComposeForm);

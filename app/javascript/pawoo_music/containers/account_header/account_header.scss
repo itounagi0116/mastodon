@@ -40,8 +40,20 @@
 
     .acct {
       font-size: var(--text10-font);
-      line-height: 1;
-      color: var(--color1);
+      line-height: var(--text10-line);
+      color: var( --color1);
+      display: inline-flex;
+      align-items: center;
+
+      .icon-lock {
+        margin-left: var(--grid);
+
+        svg {
+          stroke: var(--color1);
+          width: var(--text10-font);
+          height: var(--text10-font);
+        }
+      }
     }
 
     .account--follows-info {

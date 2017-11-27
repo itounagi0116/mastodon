@@ -21,6 +21,10 @@ SimpleNavigation::Configuration.run do |navigation|
       settings.item :oauth_authentications, safe_join([fa_icon('list fw'), t('settings.oauth_authentications')]), settings_oauth_authentications_url
     end
 
+    primary.item :development, safe_join([fa_icon('code fw'), t('settings.development')]), settings_applications_url do |development|
+      development.item :your_apps, safe_join([fa_icon('list fw'), t('settings.your_apps')]), settings_applications_url, highlights_on: %r{/settings/applications}
+    end
+
     primary.item :admin, safe_join([fa_icon('cogs fw'), t('admin.title')]), admin_reports_url, if: proc { current_user.admin? } do |admin|
       admin.item :suggestion_tags, safe_join([fa_icon('tags fw'), t('admin.suggestion.title')]), admin_suggestion_tags_url, highlights_on: %r{/admin/suggestion_tags}
       admin.item :scheduled_statuses, safe_join([fa_icon('clock-o fw'), t('admin.scheduled_statuses.title')]), admin_scheduled_statuses_url, highlights_on: %r{/admin/scheduled_statuses}

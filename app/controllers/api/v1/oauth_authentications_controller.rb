@@ -7,7 +7,7 @@ class Api::V1::OauthAuthenticationsController < Api::BaseController
   respond_to :json
 
   def show
-    render 'api/v1/accounts/show'
+    render json: @account, serializer: REST::CredentialAccountSerializer
   end
 
   private

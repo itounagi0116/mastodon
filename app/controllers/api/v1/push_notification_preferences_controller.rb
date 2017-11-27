@@ -9,14 +9,14 @@ class Api::V1::PushNotificationPreferencesController < Api::BaseController
   before_action :set_settings
 
   def show
-    render 'api/v1/settings/show'
+    render json: @settings, serializer: REST::PushNotificationPreferenceSerializer
   end
 
   def update
     user_settings.update(user_settings_params.to_h)
 
     if current_user.save
-      render 'api/v1/settings/show'
+      render json: @settings, serializer: REST::PushNotificationPreferenceSerializer
     else
       render json: { error: current_user.errors.full_messages.first }, status: :unprocessable_entity
     end

@@ -12,7 +12,8 @@ import AccountHeaderContainer from '../account_header';
 import StatusContainer from '../status';
 import { refreshAccountTimeline } from '../../../mastodon/actions/timelines';
 import { makeGetAccount } from '../../../mastodon/selectors';
-import { constructRgbCode, constructRgbObject, extractRgbFromRgbObject } from '../../util/musicvideo';
+import { constructRgbObject, extractRgbFromRgbObject } from '../../util/musicvideo';
+import { createCustomColorStyle } from '../../util/custom_color';
 
 const messages = defineMessages({
   textcolor: { id: 'custom_color.textcolor', defaultMessage: 'Text color' },
@@ -93,21 +94,8 @@ export default class CustomColor extends ImmutablePureComponent {
   appendStyle () {
     const { customColor } = this.state;
 
-    const customStyles = customColor.entrySeq().map(([key, value]) => `--${key}:${constructRgbCode(value, 1)};`);
-    const css = `body {${customStyles.join('')}}`;
-
     const head = document.head || document.getElementsByTagName('head')[0];
-    const style = document.createElement('style');
-
-    style.type = 'text/css';
-    style.id = 'user-style-setting';
-
-    if (style.styleSheet){
-      style.styleSheet.cssText = css;
-    } else {
-      style.appendChild(document.createTextNode(css));
-    }
-
+    const style = createCustomColorStyle(customColor, 'user-style-setting');
     head.appendChild(style);
   }
 

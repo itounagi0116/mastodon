@@ -2,9 +2,10 @@ import React from 'react';
 import ComposeFormContainer from './containers/compose_form_container';
 import NavigationContainer from './containers/navigation_container';
 import TrendTagsContainer from './containers/trend_tags_container';
-import AnnouncementsContainer from './containers/announcements_container';
+import Announcements from './components/announcements';
 import EventCalendarContainer from './containers/event_calendar_container';
 import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 import { mountCompose, unmountCompose } from '../../actions/compose';
 import Link from 'react-router-dom/Link';
@@ -13,9 +14,12 @@ import SearchContainer from './containers/search_container';
 import Motion from 'react-motion/lib/Motion';
 import spring from 'react-motion/lib/spring';
 import SearchResultsContainer from './containers/search_results_container';
+import { changeComposing } from '../../actions/compose';
 
 const messages = defineMessages({
   start: { id: 'getting_started.heading', defaultMessage: 'Getting started' },
+  home_timeline: { id: 'tabs_bar.home', defaultMessage: 'Home' },
+  notifications: { id: 'tabs_bar.notifications', defaultMessage: 'Notifications' },
   public: { id: 'navigation_bar.public_timeline', defaultMessage: 'Federated timeline' },
   community: { id: 'navigation_bar.community_timeline', defaultMessage: 'Local timeline' },
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
@@ -23,6 +27,7 @@ const messages = defineMessages({
 });
 
 const mapStateToProps = state => ({
+  columns: state.getIn(['settings', 'columns']),
   showSearch: state.getIn(['search', 'submitted']) && !state.getIn(['search', 'hidden']),
   submitting: state.getIn(['compose', 'is_submitting']),
 });
@@ -33,10 +38,10 @@ export default class Compose extends React.PureComponent {
 
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
+    columns: ImmutablePropTypes.list.isRequired,
     multiColumn: PropTypes.bool,
     showSearch: PropTypes.bool,
     intl: PropTypes.object.isRequired,
-    intent: PropTypes.bool,
     schedule: PropTypes.bool,
     submitting: PropTypes.bool,
   };
@@ -45,28 +50,19 @@ export default class Compose extends React.PureComponent {
     this.props.dispatch(mountCompose());
   }
 
-  componentDidUpdate (prevProps) {
-    if (this.props.intent && prevProps.submitting && !this.props.submitting) {
-      window.close();
-      // Cannot close window unless it opened by JavaScript.
-      setTimeout(() => (location.href = '/'), 240);
-    }
-  }
-
   componentWillUnmount () {
     this.props.dispatch(unmountCompose());
   }
 
-  render () {
-    if (this.props.intent) {
-      return (
-        <div style={{ maxWidth: 400, width: '100%' }}>
-          <NavigationContainer />
-          <ComposeFormContainer />
-        </div>
-      );
-    }
+  onFocus = () => {
+    this.props.dispatch(changeComposing(true));
+  }
 
+  onBlur = () => {
+    this.props.dispatch(changeComposing(false));
+  }
+
+  render () {
     if (this.props.schedule) {
       return (<ComposeFormContainer scheduling />);
     }
@@ -76,14 +72,25 @@ export default class Compose extends React.PureComponent {
     let header = '';
 
     if (multiColumn) {
+      const { columns } = this.props;
       header = (
-        <div className='drawer__header'>
-          <Link to='/getting-started' className='drawer__tab' title={intl.formatMessage(messages.start)}><i role='img' aria-label={intl.formatMessage(messages.start)} className='fa fa-fw fa-asterisk' /></Link>
-          <Link to='/timelines/public/local' className='drawer__tab' title={intl.formatMessage(messages.community)}><i role='img' aria-label={intl.formatMessage(messages.community)} className='fa fa-fw fa-users' /></Link>
-          <Link to='/timelines/public' className='drawer__tab' title={intl.formatMessage(messages.public)}><i role='img' aria-label={intl.formatMessage(messages.public)} className='fa fa-fw fa-globe' /></Link>
-          <a href='/settings/preferences' className='drawer__tab' title={intl.formatMessage(messages.preferences)}><i role='img' aria-label={intl.formatMessage(messages.preferences)} className='fa fa-fw fa-cog' /></a>
-          <a href='/auth/sign_out' className='drawer__tab' data-method='delete' title={intl.formatMessage(messages.logout)}><i role='img' aria-label={intl.formatMessage(messages.logout)} className='fa fa-fw fa-sign-out' /></a>
-        </div>
+        <nav className='drawer__header'>
+          <Link to='/getting-started' className='drawer__tab' title={intl.formatMessage(messages.start)} aria-label={intl.formatMessage(messages.start)}><i role='img' className='fa fa-fw fa-asterisk' /></Link>
+          {!columns.some(column => column.get('id') === 'HOME') && (
+            <Link to='/timelines/home' className='drawer__tab' title={intl.formatMessage(messages.home_timeline)} aria-label={intl.formatMessage(messages.home_timeline)}><i role='img' className='fa fa-fw fa-home' /></Link>
+          )}
+          {!columns.some(column => column.get('id') === 'NOTIFICATIONS') && (
+            <Link to='/notifications' className='drawer__tab' title={intl.formatMessage(messages.notifications)} aria-label={intl.formatMessage(messages.notifications)}><i role='img' className='fa fa-fw fa-bell' /></Link>
+          )}
+          {!columns.some(column => column.get('id') === 'COMMUNITY') && (
+            <Link to='/timelines/public/local' className='drawer__tab' title={intl.formatMessage(messages.community)} aria-label={intl.formatMessage(messages.community)}><i role='img' className='fa fa-fw fa-users' /></Link>
+          )}
+          {!columns.some(column => column.get('id') === 'PUBLIC') && (
+            <Link to='/timelines/public' className='drawer__tab' title={intl.formatMessage(messages.public)} aria-label={intl.formatMessage(messages.public)}><i role='img' className='fa fa-fw fa-globe' /></Link>
+          )}
+          <a href='/settings/preferences' className='drawer__tab' title={intl.formatMessage(messages.preferences)} aria-label={intl.formatMessage(messages.preferences)}><i role='img' className='fa fa-fw fa-cog' /></a>
+          <a href='/auth/sign_out' className='drawer__tab' data-method='delete' title={intl.formatMessage(messages.logout)} aria-label={intl.formatMessage(messages.logout)}><i role='img' className='fa fa-fw fa-sign-out' /></a>
+        </nav>
       );
     }
 
@@ -94,12 +101,12 @@ export default class Compose extends React.PureComponent {
         <SearchContainer />
 
         <div className='drawer__pager'>
-          <div className='drawer__inner'>
+          <div className='drawer__inner' onFocus={this.onFocus}>
             <div className='drawer__block'>
-              <NavigationContainer />
+              <NavigationContainer onClose={this.onBlur} />
               <ComposeFormContainer />
             </div>
-            <AnnouncementsContainer />
+            <Announcements />
             <div className='drawer__block'>
               <EventCalendarContainer />
             </div>

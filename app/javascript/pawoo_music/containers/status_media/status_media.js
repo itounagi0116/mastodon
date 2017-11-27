@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { openModal } from '../../../mastodon/actions/modal';
 import MediaGallery from '../../../mastodon/components/media_gallery';
-import VideoPlayer from '../../../mastodon/components/video_player';
+import Video from '../../../mastodon/features/video';
 import CardContainer from '../../../mastodon/features/status/containers/card_container';
 import BoothWidget from '../../../mastodon/components/booth_widget';
 import SCWidget from '../../../mastodon/components/sc_widget';
@@ -47,8 +47,10 @@ export default class StatusMedia extends ImmutablePureComponent {
     dispatch(openModal('MEDIA', { media, index }));
   }
 
-  handleOpenVideo = (media, time) => {
-    const { dispatch } = this.props;
+  handleOpenVideo = (time) => {
+    const { dispatch, status } = this.props;
+    const media = status.getIn(['media_attachments', 0]);
+
     dispatch(openModal('VIDEO', { media, time }));
   }
 
@@ -78,8 +80,19 @@ export default class StatusMedia extends ImmutablePureComponent {
       if (attachments.some(item => item.get('type') === 'unknown')) {
 
       } else if (attachments.first().get('type') === 'video') {
+        const video = attachments.first();
         const height = detail ? 300 : 239;
-        media = <VideoPlayer media={attachments.first()} sensitive={status.get('sensitive')} height={height} onOpenVideo={this.handleOpenVideo} />;
+
+        media = (
+          <Video
+            preview={video.get('preview_url')}
+            src={video.get('url')}
+            width={'100%'}
+            height={height}
+            sensitive={status.get('sensitive')}
+            onOpenVideo={this.handleOpenVideo}
+          />
+        );
       } else {
         const height = detail ? 300 : 132;
         media = <MediaGallery media={attachments} sensitive={status.get('sensitive')} height={height} onOpenMedia={this.handleOpenMedia} autoPlayGif={this.props.autoPlayGif} expandMedia={detail} />;

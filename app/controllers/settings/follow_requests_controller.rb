@@ -6,7 +6,7 @@ class Settings::FollowRequestsController < ApplicationController
   layout 'settings'
 
   before_action :authenticate_user!
-  before_action :set_initial_state_data, only: :show
+  before_action :set_initial_state_json, only: :show
 
   def show; end
 end

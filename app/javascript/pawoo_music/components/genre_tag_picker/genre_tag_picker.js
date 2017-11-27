@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { defineMessages, injectIntl } from 'react-intl';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
 
 const genreList = ['electronic', 'pop', 'rock', 'alternative', 'ambient', 'acoustic', 'world', 'hiphop', 'reggae', 'folk', 'jazz', 'funk', 'punk', 'metal', 'soundtrack'];
 const messages = defineMessages({
@@ -28,7 +28,7 @@ export default class GenreTagPicker extends React.PureComponent {
 
     return (
       <div className='genre-tag-picker'>
-        <IconButton src='plus-circle' strokeWidth={2} title={intl.formatMessage(messages.select_genre)} />
+        <Icon icon='plus-circle' strong title={intl.formatMessage(messages.select_genre)} />
         <div className='genre-list'>
           {genreList.map((genre, i) => (
             <div key={genre} data-index={i} className='genre-item' onClick={this.handleClickGenre} role='button' tabIndex={0} aria-pressed='false'>

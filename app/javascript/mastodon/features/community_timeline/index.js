@@ -7,15 +7,11 @@ import ColumnHeader from '../../components/column_header';
 import {
   refreshCommunityTimeline,
   expandCommunityTimeline,
-  updateTimeline,
-  deleteFromTimelines,
-  connectTimeline,
-  disconnectTimeline,
 } from '../../actions/timelines';
 import { addColumn, removeColumn, moveColumn } from '../../actions/columns';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import ColumnSettingsContainer from './containers/column_settings_container';
-import createStream from '../../stream';
+import { connectCommunityStream } from '../../actions/streaming';
 
 const messages = defineMessages({
   title: { id: 'column.community', defaultMessage: 'Local timeline' },
@@ -23,8 +19,6 @@ const messages = defineMessages({
 
 const mapStateToProps = state => ({
   hasUnread: state.getIn(['timelines', 'community', 'unread']) > 0,
-  streamingAPIBaseURL: state.getIn(['meta', 'streaming_api_base_url']),
-  accessToken: state.getIn(['meta', 'access_token']),
 });
 
 @connect(mapStateToProps)
@@ -35,8 +29,6 @@ export default class CommunityTimeline extends React.PureComponent {
     dispatch: PropTypes.func.isRequired,
     columnId: PropTypes.string,
     intl: PropTypes.object.isRequired,
-    streamingAPIBaseURL: PropTypes.string.isRequired,
-    accessToken: PropTypes.string.isRequired,
     hasUnread: PropTypes.bool,
     multiColumn: PropTypes.bool,
     standalone: PropTypes.bool,
@@ -66,41 +58,11 @@ export default class CommunityTimeline extends React.PureComponent {
   }
 
   componentDidMount () {
-    const { dispatch, streamingAPIBaseURL, accessToken, standalone } = this.props;
-
-    dispatch(refreshCommunityTimeline());
-
-    if (typeof this._subscription !== 'undefined') {
-      return;
-    }
+    const { dispatch, standalone } = this.props;
 
     if (!standalone) {
-      this._subscription = createStream(streamingAPIBaseURL, accessToken, 'public:local', {
-
-        connected () {
-          dispatch(connectTimeline('community'));
-        },
-
-        reconnected () {
-          dispatch(connectTimeline('community'));
-        },
-
-        disconnected () {
-          dispatch(disconnectTimeline('community'));
-        },
-
-        received (data) {
-          switch(data.event) {
-          case 'update':
-            dispatch(updateTimeline('community', JSON.parse(data.payload)));
-            break;
-          case 'delete':
-            dispatch(deleteFromTimelines(data.payload));
-            break;
-          }
-        },
-
-      });
+      dispatch(refreshCommunityTimeline());
+      this.disconnect = dispatch(connectCommunityStream());
     } else {
       this.interval = setInterval(() => {
         dispatch(refreshCommunityTimeline());
@@ -109,9 +71,9 @@ export default class CommunityTimeline extends React.PureComponent {
   }
 
   componentWillUnmount () {
-    if (typeof this._subscription !== 'undefined') {
-      this._subscription.close();
-      this._subscription = null;
+    if (this.disconnect) {
+      this.disconnect();
+      this.disconnect = null;
     }
 
     clearInterval(this.interval);

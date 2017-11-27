@@ -20,28 +20,28 @@ import {
   STATUS_SEARCH_TIMELINE_EXPAND_SUCCESS,
 } from '../actions/search';
 import {
-  STATUS_PIN_SUCCESS,
-  STATUS_UNPIN_SUCCESS,
-} from '../actions/statuses';
-import Immutable from 'immutable';
+  PIN_SUCCESS,
+  UNPIN_SUCCESS,
+} from '../actions/interactions';
+import { Map as ImmutableMap, List as ImmutableList, fromJS } from 'immutable';
 
-const initialState = Immutable.Map();
+const initialState = ImmutableMap();
 
-const initialTimeline = Immutable.Map({
+const initialTimeline = ImmutableMap({
   unread: 0,
   online: false,
   top: true,
   loaded: false,
   isLoading: false,
   next: false,
-  items: Immutable.List(),
+  items: ImmutableList(),
 });
 
 const normalizeTimeline = (state, timeline, statuses, next) => {
-  const ids       = Immutable.List(statuses.map(status => status.get('id')));
+  const ids       = ImmutableList(statuses.map(status => status.get('id')));
   const wasLoaded = state.getIn([timeline, 'loaded']);
   const hadNext   = state.getIn([timeline, 'next']);
-  const oldIds    = state.getIn([timeline, 'items'], Immutable.List());
+  const oldIds    = state.getIn([timeline, 'items'], ImmutableList());
 
   return state.update(timeline, initialTimeline, map => map.withMutations(mMap => {
     mMap.set('loaded', true);
@@ -52,8 +52,8 @@ const normalizeTimeline = (state, timeline, statuses, next) => {
 };
 
 const appendNormalizedTimeline = (state, timeline, statuses, next) => {
-  const ids    = Immutable.List(statuses.map(status => status.get('id')));
-  const oldIds = state.getIn([timeline, 'items'], Immutable.List());
+  const ids    = ImmutableList(statuses.map(status => status.get('id')));
+  const oldIds = state.getIn([timeline, 'items'], ImmutableList());
 
   return state.update(timeline, initialTimeline, map => map.withMutations(mMap => {
     mMap.set('isLoading', false);
@@ -64,7 +64,7 @@ const appendNormalizedTimeline = (state, timeline, statuses, next) => {
 
 const updateTimeline = (state, timeline, status, references) => {
   const top        = state.getIn([timeline, 'top']);
-  const ids        = state.getIn([timeline, 'items'], Immutable.List());
+  const ids        = state.getIn([timeline, 'items'], ImmutableList());
   const includesId = ids.includes(status.get('id'));
   const unread     = state.getIn([timeline, 'unread'], 0);
 
@@ -132,11 +132,11 @@ export default function timelines(state = initialState, action) {
   case TIMELINE_EXPAND_FAIL:
     return state.update(action.timeline, initialTimeline, map => map.set('isLoading', false));
   case TIMELINE_REFRESH_SUCCESS:
-    return normalizeTimeline(state, action.timeline, Immutable.fromJS(action.statuses), action.next);
+    return normalizeTimeline(state, action.timeline, fromJS(action.statuses), action.next);
   case TIMELINE_EXPAND_SUCCESS:
-    return appendNormalizedTimeline(state, action.timeline, Immutable.fromJS(action.statuses), action.next);
+    return appendNormalizedTimeline(state, action.timeline, fromJS(action.statuses), action.next);
   case TIMELINE_UPDATE:
-    return updateTimeline(state, action.timeline, Immutable.fromJS(action.status), action.references);
+    return updateTimeline(state, action.timeline, fromJS(action.status), action.references);
   case TIMELINE_DELETE:
     return deleteStatus(state, action.id, action.accountId, action.references, action.reblogOf);
   case ACCOUNT_BLOCK_SUCCESS:
@@ -148,12 +148,12 @@ export default function timelines(state = initialState, action) {
     return state.update(action.timeline, initialTimeline, map => map.set('online', true));
   case TIMELINE_DISCONNECT:
     return state.update(action.timeline, initialTimeline, map => map.set('online', false));
-  case STATUS_PIN_SUCCESS:
-    return state.updateIn([`account:${action.accountId}:pinned_status`], initialTimeline, map => map
-      .update('items', Immutable.List(), list => list.unshift(action.id).toOrderedSet().toList()));
-  case STATUS_UNPIN_SUCCESS:
-    return state.updateIn([`account:${action.accountId}:pinned_status`], initialTimeline, map => map
-      .update('items', Immutable.List(), list => list.filter((id) => id !== action.id)));
+  case PIN_SUCCESS:
+    return state.updateIn([`account:${action.status.getIn(['account', 'id'])}:pinned_status`], initialTimeline, map => map
+      .update('items', ImmutableList(), list => list.unshift(action.status.get('id')).toOrderedSet().toList()));
+  case UNPIN_SUCCESS:
+    return state.updateIn([`account:${action.status.getIn(['account', 'id'])}:pinned_status`], initialTimeline, map => map
+      .update('items', ImmutableList(), list => list.filter((id) => id !== action.status.get('id'))));
   case STATUS_SEARCH_TIMELINE_REFRESH_SUCCESS:
     return state.update(action.timeline, initialTimeline, map => map
       .set('isLoading', false)

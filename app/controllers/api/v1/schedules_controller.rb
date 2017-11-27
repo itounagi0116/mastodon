@@ -14,6 +14,7 @@ class Api::V1::SchedulesController < Api::BaseController
 
   def index
     @statuses = load_statuses
+    render json: @statuses, each_serializer: REST::StatusSerializer
   end
 
   private

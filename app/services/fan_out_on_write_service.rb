@@ -63,7 +63,7 @@ class FanOutOnWriteService < BaseService
   end
 
   def render_anonymous_payload(status)
-    @payload = InlineRenderer.render(status, nil, 'api/v1/statuses/show')
+    @payload = InlineRenderer.render(status, nil, :status)
     @payload = Oj.dump(event: :update, payload: @payload)
   end
 

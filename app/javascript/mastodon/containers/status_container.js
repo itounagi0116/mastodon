@@ -11,15 +11,14 @@ import {
   favourite,
   unreblog,
   unfavourite,
+  pin,
+  unpin,
 } from '../actions/interactions';
 import {
   blockAccount,
   muteAccount,
 } from '../actions/accounts';
-import {
-  fetchBoothItem,
-} from '../actions/booth_items';
-import { muteStatus, unmuteStatus, deleteStatus, pinStatus, unpinStatus } from '../actions/statuses';
+import { muteStatus, unmuteStatus, deleteStatus } from '../actions/statuses';
 import { initReport } from '../actions/reports';
 import { openModal } from '../actions/modal';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
@@ -29,25 +28,18 @@ const messages = defineMessages({
   deleteMessage: { id: 'confirmations.delete.message', defaultMessage: 'Are you sure you want to delete this status?' },
   blockConfirm: { id: 'confirmations.block.confirm', defaultMessage: 'Block' },
   muteConfirm: { id: 'confirmations.mute.confirm', defaultMessage: 'Mute' },
-  unpinConfirm: { id: 'confirmations.unpin.confirm', defaultMessage: 'Unpin' },
-  pinConfirm: { id: 'confirmations.pin.confirm', defaultMessage: 'Pin' },
 });
 
 const makeMapStateToProps = () => {
   const getStatus = makeGetStatus();
 
-  const mapStateToProps = (state, props) => {
-    const status = getStatus(state, props.id);
-
-    return {
-      status,
-      me: state.getIn(['meta', 'me']),
-      boostModal: state.getIn(['meta', 'boost_modal']),
-      deleteModal: state.getIn(['meta', 'delete_modal']),
-      autoPlayGif: state.getIn(['meta', 'auto_play_gif']) || false,
-      boothItem: state.getIn(['booth_items', status.get('booth_item_id')]),
-    };
-  };
+  const mapStateToProps = (state, props) => ({
+    status: getStatus(state, props.id),
+    me: state.getIn(['meta', 'me']),
+    boostModal: state.getIn(['meta', 'boost_modal']),
+    deleteModal: state.getIn(['meta', 'delete_modal']),
+    autoPlayGif: state.getIn(['meta', 'auto_play_gif']) || false,
+  });
 
   return mapStateToProps;
 };
@@ -80,6 +72,18 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     } else {
       dispatch(favourite(status));
     }
+  },
+
+  onPin (status) {
+    if (status.get('pinned')) {
+      dispatch(unpin(status));
+    } else {
+      dispatch(pin(status));
+    }
+  },
+
+  onEmbed (status) {
+    dispatch(openModal('EMBED', { url: status.get('url') }));
   },
 
   onDelete (status) {
@@ -132,26 +136,6 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     } else {
       dispatch(muteStatus(status.get('id')));
     }
-  },
-
-  onPin (status) {
-    if (status.get('pinned')) {
-      dispatch(openModal('CONFIRM', {
-        message: <FormattedMessage id='confirmations.unpin.message' defaultMessage='Unpin from your profile. Are you sure?' />,
-        confirm: intl.formatMessage(messages.unpinConfirm),
-        onConfirm: () => dispatch(unpinStatus(status.get('id'))),
-      }));
-    } else {
-      dispatch(openModal('CONFIRM', {
-        message: <FormattedMessage id='confirmations.pin.message' defaultMessage='This will prepend any previously pinned Toot. Are you sure?' />,
-        confirm: intl.formatMessage(messages.pinConfirm),
-        onConfirm: () => dispatch(pinStatus(status.get('id'))),
-      }));
-    }
-  },
-
-  fetchBoothItem(id) {
-    dispatch(fetchBoothItem(id));
   },
 
 });

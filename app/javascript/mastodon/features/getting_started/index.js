@@ -22,8 +22,10 @@ const messages = defineMessages({
   favourites: { id: 'navigation_bar.favourites', defaultMessage: 'Favourites' },
   blocks: { id: 'navigation_bar.blocks', defaultMessage: 'Blocked users' },
   mutes: { id: 'navigation_bar.mutes', defaultMessage: 'Muted users' },
-  help: { id: 'navigation_bar.help', defaultMessage: 'Pawoo Music Help' },
+  help: { id: 'navigation_bar.help', defaultMessage: 'Pawoo Help' },
   info: { id: 'navigation_bar.info', defaultMessage: 'Extended information' },
+  pins: { id: 'navigation_bar.pins', defaultMessage: 'Pinned toots' },
+  suggested_accounts: { id: 'navigation_bar.suggested_accounts', defaultMessage: 'Active Accounts' },
   media_timeline: { id: 'navigation_bar.media_timeline', defaultMessage: 'Media timeline' },
 });
 
@@ -66,21 +68,23 @@ export default class GettingStarted extends ImmutablePureComponent {
       }
 
       if (!columns.find(item => item.get('id') === 'MEDIA')) {
-        navItems.push(<ColumnLink key='media_timeline' icon='music' text={intl.formatMessage(messages.media_timeline)} to='/timelines/public/media' />);
+        navItems.push(<ColumnLink key='media_timeline' icon='image' text={intl.formatMessage(messages.media_timeline)} to='/timelines/public/media' />);
       }
     }
 
     navItems = navItems.concat([
       <ColumnLink key='4' icon='star' text={intl.formatMessage(messages.favourites)} to='/favourites' />,
+      <ColumnLink key='suggested_accounts' icon='user' text={intl.formatMessage(messages.suggested_accounts)} to='/suggested_accounts' />,
+      <ColumnLink key='5' icon='thumb-tack' text={intl.formatMessage(messages.pins)} to='/pinned' />,
     ]);
 
     if (me.get('locked')) {
-      navItems.push(<ColumnLink key='5' icon='users' text={intl.formatMessage(messages.follow_requests)} to='/follow_requests' />);
+      navItems.push(<ColumnLink key='6' icon='users' text={intl.formatMessage(messages.follow_requests)} to='/follow_requests' />);
     }
 
     navItems = navItems.concat([
-      <ColumnLink key='6' icon='volume-off' text={intl.formatMessage(messages.mutes)} to='/mutes' />,
-      <ColumnLink key='7' icon='ban' text={intl.formatMessage(messages.blocks)} to='/blocks' />,
+      <ColumnLink key='7' icon='volume-off' text={intl.formatMessage(messages.mutes)} to='/mutes' />,
+      <ColumnLink key='8' icon='ban' text={intl.formatMessage(messages.blocks)} to='/blocks' />,
     ]);
 
     return (
@@ -91,7 +95,7 @@ export default class GettingStarted extends ImmutablePureComponent {
           <ColumnSubheading text={intl.formatMessage(messages.settings_subheading)} />
           <ColumnLink icon='book' text={intl.formatMessage(messages.info)} href='/about/more' />
           <ColumnLink icon='cog' text={intl.formatMessage(messages.preferences)} href='/settings/preferences' />
-          <ColumnLink icon='question-circle' text={intl.formatMessage(messages.help)} to='/timelines/tag/pawoomusicヘルプ' />
+          <ColumnLink icon='question-circle' text={intl.formatMessage(messages.help)} to='/timelines/tag/pawooヘルプ' />
           <ColumnLink icon='sign-out' text={intl.formatMessage(messages.sign_out)} href='/auth/sign_out' method='delete' />
         </div>
 
@@ -104,7 +108,7 @@ export default class GettingStarted extends ImmutablePureComponent {
               <FormattedMessage
                 id='getting_started.open_source_notice'
                 defaultMessage='Mastodon is open source software. You can contribute or report issues on GitHub at {github}.'
-                values={{ github: <a href='https://github.com/pixiv/mastodon/tree/pawoo-music' rel='noopener' target='_blank'>pixiv/mastodon (pawoo)</a> }}
+                values={{ github: <a href='https://github.com/pixiv/mastodon' rel='noopener' target='_blank'>pixiv/mastodon (pawoo)</a> }}
               />
             </p>
           </div>

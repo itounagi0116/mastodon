@@ -8,7 +8,7 @@ class Settings::CustomColorsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_account
   before_action :set_custom_color, only: [:show, :update]
-  before_action :set_initial_state_data, only: :show
+  before_action :set_initial_state_json, only: :show
 
   def show; end
 

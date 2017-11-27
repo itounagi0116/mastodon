@@ -3,14 +3,26 @@
 module TimelineConcern
   extend ActiveSupport::Concern
 
+  included do
+    layout 'timeline'
+  end
+
   private
 
-  def set_initial_state_data
-    @body_classes           = 'app-body'
-    @token                  = current_session&.token
-    @web_settings           = Web::Setting.find_by(user: current_user)&.data || {}
-    @admin                  = Account.find_local(Setting.site_contact_username)
-    @streaming_api_base_url = Rails.configuration.x.streaming_api_base_url
+  def set_initial_state_json
+    serializable_resource = ActiveModelSerializers::SerializableResource.new(InitialStatePresenter.new(initial_state_params), serializer: InitialStateSerializer)
+    @initial_state_json   = serializable_resource.to_json
+  end
+
+  def initial_state_params
+    {
+      settings: Web::Setting.find_by(user: current_user)&.data || {},
+      push_subscription: current_account&.user&.web_push_subscription(current_session),
+      current_account: current_account,
+      token: current_session&.token,
+      admin: Account.find_local(Setting.site_contact_username),
+      target_account: @account,
+    }
   end
 
   def authenticate_user!
