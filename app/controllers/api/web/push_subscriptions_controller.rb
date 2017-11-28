@@ -17,7 +17,8 @@ class Api::Web::PushSubscriptionsController < Api::BaseController
     end
 
     # Mobile devices do not support regular notifications, so we enable push notifications by default
-    alerts_enabled = active_session.detection.device.mobile? || active_session.detection.device.tablet?
+    # alerts_enabled = active_session.detection.device.mobile? || active_session.detection.device.tablet?
+    alerts_enabled = true
 
     data = {
       alerts: {
