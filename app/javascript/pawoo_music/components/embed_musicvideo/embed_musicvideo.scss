@@ -11,12 +11,10 @@
     position: absolute;
     top: 0;
     left: 0;
-    background-color: transparent !important;  // 自動で白を入れるのを切ってくださいまし
-    padding: var(--padding10);
-    width: 100%;
+    margin: var(--padding10);
     box-sizing: border-box;
 
-    .artist, .title {
+    .artist, .title, .icon-link {
       display: inline-block;
       font-weight: 100;
       padding: var(--padding5);
@@ -36,6 +34,23 @@
       font-size: var(--text20-font);
       line-height: var(--text20-line);
       margin: var(--verticalspace10);
+    }
+
+    .icon-link {
+      opacity: 0;
+      transition: opacity 240ms ease-in-out;
+      background-color: #e00000;
+      border-radius: var(--iconsize35);
+
+      &.visible, &:hover {
+        opacity: 1;
+      }
+
+      > img {
+        display: block;
+        width: var(--iconsize35);
+        height: var(--iconsize35);
+      }
     }
   }
 }

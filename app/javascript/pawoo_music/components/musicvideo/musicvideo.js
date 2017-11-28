@@ -7,10 +7,13 @@ import { defineMessages, injectIntl } from 'react-intl';
 import { Canvas } from 'musicvideo-generator';
 import { BaseTexture } from 'pixi.js';
 import noop from 'lodash/noop';
+import { debounce } from 'lodash';
 import MusicvideoAudio from './audio';
 import Icon from '../icon';
 import Slider from '../slider';
 import { constructGeneratorOptions } from '../../util/musicvideo';
+import { isMobile } from '../../util/is_mobile';
+
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 import lightLeaks from '../../../light_leaks.mp4';
 
@@ -22,6 +25,8 @@ const messages = defineMessages({
   play: { id: 'pawoo_music.musicvideo.play', defaultMessage: 'Play' },
   pause: { id: 'pawoo_music.musicvideo.pause', defaultMessage: 'Pause' },
 });
+
+const mobile = isMobile();
 
 @injectIntl
 class Musicvideo extends ImmutablePureComponent {
@@ -43,6 +48,7 @@ class Musicvideo extends ImmutablePureComponent {
     loading: true,
     paused: true,
     currentTime: 0,
+    showControls: false,
   };
 
   image = new BaseTexture(new Image());
@@ -190,10 +196,42 @@ class Musicvideo extends ImmutablePureComponent {
     }
 
     this.audioDidUpdate();
+    this.showControls();
   }
 
   handleChangeCurrentTime = (value) => {
     this.audio.seek(value);
+    this.showControls();
+  }
+
+  handleClick = (e) => {
+    const { showControls } = this.state;
+
+    if (!showControls) {
+      e.stopPropagation();
+      this.showControls();
+    }
+  }
+
+  handleMouseEnter = () => {
+    this.showControls();
+  }
+
+  handleMouseMove = () => {
+    this.showControls();
+  }
+
+  handleMouseLeave = () => {
+    this.setState({ showControls: false });
+  }
+
+  hideControlsDebounce = debounce(() => {
+    this.setState({ showControls: false });
+  }, 3000);
+
+  showControls () {
+    this.setState({ showControls: true });
+    this.hideControlsDebounce();
   }
 
   setCanvasContainerRef = (ref) => {
@@ -211,11 +249,19 @@ class Musicvideo extends ImmutablePureComponent {
 
   render() {
     const { intl, label } = this.props;
-    const { duration, initialized, loading, paused, currentTime } = this.state;
+    const { duration, initialized, loading, paused, currentTime, showControls } = this.state;
     const canPlay = ![Infinity, NaN].includes(duration);
 
     return (
-      <div className='musicvideo'>
+      <div
+        className='musicvideo'
+        onClickCapture={mobile ? this.handleClick : noop}
+        role='button'
+        aria-pressed='false'
+        onMouseEnter={mobile ? noop : this.handleMouseEnter}
+        onMouseMove={mobile ? noop : this.handleMouseMove}
+        onMouseLeave={mobile ? noop : this.handleMouseLeave}
+      >
         <div
           className='canvas-container'
           onClick={canPlay ? this.handleTogglePaused : noop}
@@ -228,7 +274,7 @@ class Musicvideo extends ImmutablePureComponent {
           {loading && <div className='loading' />}
           <div ref={this.setCanvasContainerRef} />
         </div>
-        <div className={classNames('controls-container', { visible: initialized })}>
+        <div className={classNames('controls-container', { visible: initialized && showControls })}>
           <div className='controls'>
             <div className='toggle' onClick={this.handleTogglePaused} role='button' tabIndex='0' aria-pressed='false'>
               {paused ? <Icon icon='play' title={intl.formatMessage(messages.play)} strong /> : <Icon icon='pause' title={intl.formatMessage(messages.pause)} strong />}
