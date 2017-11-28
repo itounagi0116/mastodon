@@ -29,12 +29,12 @@
         display: block;
         height: var(--iconsize50);
         width: var(--iconsize50);
-        background-image: url('/packs/pawoo_music/play.png');
+        background-image: url('../../../images/pawoo_music/play.png');
         background-size: cover;
       }
 
       &:hover .playbutton-icon {
-        background-image: url('/packs/pawoo_music/play_hover.png');
+        background-image: url('../../../images/pawoo_music/play_hover.png');
       }
     }
   }

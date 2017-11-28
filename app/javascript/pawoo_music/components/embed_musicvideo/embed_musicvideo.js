@@ -15,17 +15,17 @@ export default class MusicvideoEntry extends React.PureComponent {
   render () {
     const { status: { id, account, track } } = this.props;
     const params = location.search.length > 1 ? querystring.parse(location.search.substr(1)) : {};
-    const color = (params.textcolor && params.textcolor.match(/^#[0-9a-f]{3,6}$/)) ? params.textcolor : '#000000';
-    const backgroundColor = (params.backgroundcolor && params.backgroundcolor.match(/^(#[0-9a-f]{3,6}|transparent)$/)) ? params.backgroundcolor : '#ffffff';
-    const style = { color, backgroundColor };
+    const showInfo = !params.hideinfo || Number(params.hideinfo) !== 1;
 
     return (
       <div className='app embed-musicvideo'>
         <Track track={Immutable.fromJS(track).set('id', id)} fitContain />
-        <div className='meta' style={style}>
-          <a className='artist' href={`/@${account.acct}`}       target='_blank'>{track.artist}</a><br />
-          <a className='title'  href={`/@${account.acct}/${id}`} target='_blank'>{track.title} </a>
-        </div>
+        {showInfo && (
+          <div className='meta'>
+            <a className='artist' href={`/@${account.acct}`}       target='_blank'>{track.artist}</a><br />
+            <a className='title'  href={`/@${account.acct}/${id}`} target='_blank'>{track.title} </a>
+          </div>
+        )}
       </div>
     );
   }

@@ -5,7 +5,9 @@ class Api::OEmbedController < Api::BaseController
 
   def show
     @status = status_finder.status
-    render json: @status, serializer: OEmbedSerializer, width: maxwidth_or_default, height: maxheight_or_default
+    extra_params = params.permit(:hideinfo)
+
+    render json: @status, serializer: OEmbedSerializer, width: maxwidth_or_default, height: maxheight_or_default, extra_params: extra_params
   end
 
   private
@@ -23,10 +25,10 @@ class Api::OEmbedController < Api::BaseController
   end
 
   def default_width
-    @stream_entry.status.music.is_a?(Track) ? 480 : 400
+    @status.music.is_a?(Track) ? '100%' : 400
   end
 
   def default_height
-    @stream_entry.status.music.is_a?(Track) ? (maxwidth_or_default + 32) : nil
+    nil
   end
 end

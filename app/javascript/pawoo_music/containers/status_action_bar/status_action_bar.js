@@ -206,7 +206,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
 
   handleEmbed = () => {
     const { dispatch, status } = this.props;
-    dispatch(openModal('UNIVERSAL', { children: <EmbedModalContent url={status.get('url')} /> }));
+    dispatch(openModal('UNIVERSAL', { children: <EmbedModalContent url={status.get('url')} isTrack={status.has('track')} /> }));
   }
 
   handleReport = () => {
