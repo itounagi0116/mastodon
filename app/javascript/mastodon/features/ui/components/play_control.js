@@ -11,30 +11,46 @@ import YouTubeArtwork from './youtube_artwork';
 import SoundCloudArtwork from './soundcloud_artwork';
 import AudioArtwork from './audio_artwork';
 
+import pawooMusicLogo from '../../../../images/pawoo_music/player/logos/pawoo-music.svg';
+import youtubeLogo from '../../../../images/pawoo_music/player/logos/youtube.svg';
+import boothLogo from '../../../../images/pawoo_music/player/logos/booth.svg';
+import apolloLogo from '../../../../images/pawoo_music/player/logos/apollo.png';
+import soundcloudLogo from '../../../../images/pawoo_music/player/logos/soundcloud.svg';
+import playlistApolloIcon from '../../../../images/pawoo_music/player/pawoo-music-playlist-apollo-icon.png';
+import playlistIcon from '../../../../images/pawoo_music/player/pawoo-music-playlist-icon.svg';
+
+const logos = {
+  'pawoo-music': pawooMusicLogo,
+  youtube: youtubeLogo,
+  booth: boothLogo,
+  apollo: apolloLogo,
+  soundcloud: soundcloudLogo,
+};
+
 const PlatformHelp = () => {
   const platforms = [
     {
-      icon: '/player/logos/pawoo-music.svg',
+      icon: pawooMusicLogo,
       title: 'Pawoo Music',
       url: 'https://music.pawoo.net/@[username]/[XXXXX…]',
     },
     {
-      icon: '/player/logos/youtube.svg',
+      icon: youtubeLogo,
       title: 'YouTube',
       url: 'https://www.youtube.com/watch?v=[XXXXX……]',
     },
     {
-      icon: '/player/logos/booth.svg',
+      icon: boothLogo,
       title: 'BOOTH',
       url: 'https://booth.pm/ja/items/[XXXXX……]',
     },
     {
-      icon: '/player/logos/apollo.png',
+      icon: apolloLogo,
       title: 'APOLLO',
       url: 'https://booth.pm/apollo/a06/item?id=[XXXXX……]',
     },
     {
-      icon: '/player/logos/soundcloud.svg',
+      icon: soundcloudLogo,
       title: 'SoundCloud',
       url: 'https://soundcloud.com/[username]/[trackname]',
     },
@@ -524,7 +540,7 @@ class PlayControl extends React.PureComponent {
         <div className='queue-item__datasource'>
           {queue_item && (
             <a href={queue_item.link} target='_blank' onClick={this.handleCancelOpenDeck}>
-              <img src={`/player/logos/${queue_item.source_type}.${queue_item.source_type === 'apollo' ? 'png' : 'svg'}`} />
+              <img src={logos[queue_item.source_type]} alt={queue_item.source_type} />
             </a>
           )}
         </div>
@@ -610,7 +626,7 @@ class PlayControl extends React.PureComponent {
                   onClick={this.handleClickDeckTab}
                   style={deckSelectorStyle}
                 >
-                  <img alt={deck.type} src={deck.type === 'apollo' ? '/player/pawoo-music-playlist-apollo-icon.png' : '/player/pawoo-music-playlist-icon.svg'} />
+                  <img alt={deck.type} src={deck.type === 'apollo' ? playlistApolloIcon : playlistIcon} />
                   <span>{deck.name}</span>
                 </li>
               ))}

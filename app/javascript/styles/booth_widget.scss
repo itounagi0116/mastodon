@@ -120,7 +120,7 @@ $apollo-color: #38b6c5;
   width: 78px;
   background-repeat: no-repeat;
   background-size: cover;
-  background-image: url('/booth/booth_logo.svg');
+  background-image: url('../images/pawoo_music/booth-widget/booth_logo.svg');
 }
 
 .booth-widget__viewer-btn {
@@ -202,7 +202,7 @@ $apollo-color: #38b6c5;
       background-color: #000;
     }
     .booth-widget__logo {
-      background-image: url('/booth/apollo_logo.svg');
+      background-image: url('../images/pawoo_music/booth-widget/apollo_logo.svg');
     }
   }
 }
