@@ -54,7 +54,7 @@ class Api::V1::AlbumsController < Api::BaseController
       raise
     end
 
-    render 'api/v1/statuses/show'
+    render json: @status, serializer: REST::StatusSerializer
   end
 
   def update
@@ -67,7 +67,7 @@ class Api::V1::AlbumsController < Api::BaseController
 
     @status.music.update! album_params
 
-    render 'api/v1/statuses/show'
+    render json: @status, serializer: REST::StatusSerializer
   end
 
   private

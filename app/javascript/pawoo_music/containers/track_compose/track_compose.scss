@@ -215,7 +215,7 @@
     padding: 0 20px;
     height: 40px;
     border-radius: 20px;
-    color: var(--tootcolor);
+    color: var(--linkcolor2);
     background-color: var(--color1);
     overflow: hidden;
     max-width: calc(var(--form-width) - var(--padding40) - var(--grid) * 2);
@@ -227,7 +227,7 @@
 
     &.settled {
       color: white;
-      background-color: var(--tootcolor);
+      background-color: var(--linkcolor2);
 
       svg {
         stroke: white;
@@ -240,7 +240,7 @@
       height: 40px;
     }
 
-    .icon-button {
+    .icon {
       display: block;
       padding-top: 4px;
     }
@@ -267,7 +267,7 @@
 
     svg {
       stroke-width: 2px;
-      stroke: var(--tootcolor);
+      stroke: var(--linkcolor2);
     }
   }
 
@@ -311,7 +311,7 @@
       transition: box-shadow 0.8s var(--hover-timing);
 
       &:focus {
-        box-shadow: 0 0 0 2px var(--tootcolor);
+        box-shadow: 0 0 0 2px var(--linkcolor2);
       }
     }
 
@@ -335,7 +335,7 @@
       transition: box-shadow 0.8s var(--hover-timing);
 
       &:focus {
-        box-shadow: 0 0 0 2px var(--tootcolor);
+        box-shadow: 0 0 0 2px var(--linkcolor2);
       }
     }
   }
@@ -354,7 +354,7 @@
       font-weight: bold;
 
       border-radius: 20px;
-      background-color: var(--tootcolor);
+      background-color: var(--linkcolor2);
       color: var(--color1);
 
       &.cancel {
@@ -364,12 +364,12 @@
 
       &.privacy-toggle {
         display: flex;
-        color: var(--tootcolor);
+        color: var(--linkcolor2);
         background-color: var(--color1);
 
         svg {
           stroke-width: 2px;
-          stroke: var(--tootcolor);
+          stroke: var(--linkcolor2);
         }
 
         .privacy-dropdown__value-button-text {

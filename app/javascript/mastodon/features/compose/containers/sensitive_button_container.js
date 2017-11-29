@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import IconButton from '../../../../pawoo_music/components/icon_button';
+import Icon from '../../../../pawoo_music/components/icon';
 import { changeComposeSensitivity } from '../../../actions/compose';
 import Motion from 'react-motion/lib/Motion';
 import spring from 'react-motion/lib/spring';
@@ -19,6 +19,7 @@ const mapStateToProps = (state, props) => {
   return {
     visible: state.getIn(['compose', 'media_attachments']).size > 0,
     active: state.getIn(['compose', 'sensitive']),
+    // disabled: state.getIn(['compose', 'spoiler']), // NOTE: CW時にNSFWにならない仕様に戻す
   };
 };
 
@@ -35,12 +36,13 @@ class SensitiveButton extends React.PureComponent {
   static propTypes = {
     visible: PropTypes.bool,
     active: PropTypes.bool,
+    disabled: PropTypes.bool,
     onClick: PropTypes.func.isRequired,
     intl: PropTypes.object.isRequired,
   };
 
   render () {
-    const { visible, active, onClick, intl } = this.props;
+    const { visible, active, disabled, onClick, intl } = this.props;
 
     return (
       <Motion defaultStyle={{ scale: 0.87 }} style={{ scale: spring(visible ? 1 : 0.87, { stiffness: 200, damping: 3 }) }}>
@@ -51,12 +53,15 @@ class SensitiveButton extends React.PureComponent {
           });
           return (
             <div className={className} style={{ transform: `translateZ(0) scale(${scale})` }}>
-              <IconButton
+              <Icon
                 className='compose-form__sensitive-button__icon'
                 title={intl.formatMessage(messages.title)}
-                src={icon}
+                icon={icon}
                 onClick={onClick}
                 active={active}
+                disabled={disabled}
+                strong
+                scale
               />
             </div>
           );

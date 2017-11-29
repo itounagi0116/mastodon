@@ -1,0 +1,43 @@
+.icon {
+  display: inline-flex;
+  align-items: center;
+
+  svg {
+    width: var(--iconsize13);
+    height: var(--iconsize13);
+    stroke: var(--linkcolor);
+    transition: all 0.2s var(--hover-timing);
+  }
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      svg {
+        stroke-width: 2px;
+        stroke: var(--strong1);
+      }
+    }
+  }
+
+  &.scale {
+    &:hover {
+      svg {
+        transform: scale(1.4);
+      }
+    }
+  }
+
+  &.strong {
+    svg {
+      stroke-width: 2px;
+    }
+  }
+
+  &.active {
+    svg {
+      stroke: var(--strong1);
+      stroke-width: 2px;
+    }
+  }
+}

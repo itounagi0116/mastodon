@@ -3,7 +3,7 @@
   display: block;
   margin:  var(--padding30) -8px;
 
-  .icon-button {
+  .icon {
     position: absolute;
     top: 6px;
     left: 7px;
@@ -28,7 +28,7 @@
     width:          100%;
     outline:        none;
 
-    background-image:       url();
+    background-color:       var(--color1);
     background-position:    left center;
     background-attachment:  fixed;
     background-repeat:      no-repeat;

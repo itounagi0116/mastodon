@@ -19,7 +19,7 @@ class Pubsubhubbub::DistributionWorker
     @subscriptions = active_subscriptions.to_a
 
     distribute_public!(stream_entries.reject(&:hidden?))
-    distribute_hidden!(stream_entries.reject { |s| !s.hidden? })
+    distribute_hidden!(stream_entries.select(&:hidden?)) if Rails.configuration.x.use_ostatus_privacy
   end
 
   private
@@ -27,7 +27,7 @@ class Pubsubhubbub::DistributionWorker
   def distribute_public!(stream_entries)
     return if stream_entries.empty?
 
-    @payload = AtomSerializer.render(AtomSerializer.new.feed(@account, stream_entries))
+    @payload = OStatus::AtomSerializer.render(OStatus::AtomSerializer.new.feed(@account, stream_entries))
 
     Pubsubhubbub::DeliveryWorker.push_bulk(@subscriptions) do |subscription|
       [subscription.id, @payload]
@@ -37,10 +37,10 @@ class Pubsubhubbub::DistributionWorker
   def distribute_hidden!(stream_entries)
     return if stream_entries.empty?
 
-    @payload = AtomSerializer.render(AtomSerializer.new.feed(@account, stream_entries))
+    @payload = OStatus::AtomSerializer.render(OStatus::AtomSerializer.new.feed(@account, stream_entries))
     @domains = @account.followers.domains
 
-    Pubsubhubbub::DeliveryWorker.push_bulk(@subscriptions.reject { |s| !allowed_to_receive?(s.callback_url, s.domain) }) do |subscription|
+    Pubsubhubbub::DeliveryWorker.push_bulk(@subscriptions.select { |s| allowed_to_receive?(s.callback_url, s.domain) }) do |subscription|
       [subscription.id, @payload]
     end
   end

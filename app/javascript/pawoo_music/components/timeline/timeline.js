@@ -16,10 +16,11 @@ export default class Timeline extends PureComponent {
     target: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
     gallery: PropTypes.node.isRequired,
+    galleryStyle: PropTypes.object,
   }
 
   render () {
-    const { target, children, gallery } = this.props;
+    const { target, children, gallery, galleryStyle } = this.props;
     const mobile = isMobile();
 
     return (
@@ -30,7 +31,7 @@ export default class Timeline extends PureComponent {
         <div className='lobby-column'>
           {children}
         </div>
-        <div className='gallery-column'>
+        <div className='gallery-column' style={galleryStyle}>
           {gallery}
         </div>
       </div>

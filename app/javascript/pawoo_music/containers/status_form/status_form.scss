@@ -284,13 +284,9 @@
         position: relative;
       }
 
-      .icon-button {
-        font-size:    var(--iconsize15);
-
-        svg {
-          width: var(--iconsize15);
-          height: var(--iconsize15);
-        }
+      .icon svg {
+        width: var(--iconsize15);
+        height: var(--iconsize15);
       }
 
       .time-limit-dropdown__dropdown {
@@ -339,7 +335,7 @@
 
             &:hover,
             &.active {
-              background: var(--tootcolor);
+              background: var(--linkcolor2);
               color:      var(--color1);
 
               .time-limit-dropdown__option__content {
@@ -349,7 +345,7 @@
             }
 
             &.active:hover {
-              background: var(--tootcolor);
+              background: var(--linkcolor2);
             }
           }
         }
@@ -394,8 +390,26 @@
     height: 100px;
     width: 100%;
 
-    .icon-button {
-      background-color: rgba(0, 0, 0, 0.15);
+    .icon {
+      background-color: var(--color3);
+      border-radius: var(--grid);
+      opacity: 0.6;
+
+      svg {
+        stroke: var(--textcolor);
+        width: var(--iconsize20);
+        height: var(--iconsize20);
+      }
+
+      &:active,
+      &:hover,
+      &:focus {
+        opacity: 1;
+
+        svg {
+          stroke: var(--textcolor);
+        }
+      }
     }
   }
 
@@ -430,12 +444,6 @@
         .compose-form__upload-button-icon {
           .privacy-dropdown__value-icon {
             height:   100%;
-          }
-        }
-
-        .icon-button {
-          svg {
-            stroke-width: 2px;
           }
         }
       }

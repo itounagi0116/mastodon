@@ -24,7 +24,7 @@ body {
   --color2:           #F3F3F3;
   --color3:           #d0d0d0;
 
-  --tootcolor:        #2495DB;
+  --linkcolor2:        #2495DB;
 
 
   // Basic Grid
@@ -87,6 +87,7 @@ body {
   --text50-font:      25px;
   --text50-line:      calc(var(--grid) * 8);
 
+  --iconsize8:        calc(var(--grid) * 3.5);
   --iconsize10:       calc(var(--grid) * 4);
   --iconsize13:       calc(var(--grid) * 4.5);
   --iconsize15:       calc(var(--grid) * 5);
@@ -160,7 +161,7 @@ a, a:link, a:visited {
 }
 
 a:hover {
-  color:          var(--tootcolor);
+  color:          var(--linkcolor2);
 }
 
 .app {
@@ -175,7 +176,8 @@ a:hover {
   --width-globalnavi:     calc(var(--grid) * 50);
   --width-lobby:          calc(var(--grid) * 80);
   --width-gallery-view:   calc(100vw - var(--grid) * 130);
-  --width-gallery:        calc(var(--grid) * 120);
+  --width-gallery-canvas: calc(var(--grid) * 120);
+  --width-gallery: calc(var(--width-gallery-canvas) + var(--padding20) * 2);
 
   --width-ago:            calc(var(--grid) * 6);
   --width-contextmenu:    calc(var(--grid) * 56);
@@ -189,11 +191,6 @@ a:hover {
   .app-bottom {
     z-index: var(--z-index-navigation);
     height: var(--height-deck);
-
-    // デッキフィールドだよとわかりやすくするための、pawoo-team 内部での指示用の色。
-    // TODO: 本番でこの色つかわないでね〜〜。
-    background-color:   var(--strong1);
-    color:              var(--color1);
   }
 
   .scrollarea .scrollbar-container {
@@ -216,6 +213,7 @@ a:hover {
   --width-gallery-slide:  100vw;
   --width-gallery-view:   100vw;
   --width-gallery:        calc(100vw - var(--grid) * 8);
+  --width-gallery-canvas: calc(var(--width-gallery) - var(--padding20) * 2);
 
   --width-ago:            calc(var(--grid) * 6);
 

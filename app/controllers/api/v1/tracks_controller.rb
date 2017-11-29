@@ -37,14 +37,14 @@ class Api::V1::TracksController < Api::BaseController
       raise
     end
 
-    render 'api/v1/statuses/show'
+    render json: @status, serializer: REST::StatusSerializer
   end
 
   def update
     raise ActiveRecord::RecordNotFound if @status.account != current_account
     @status.music.update! track_attributes
 
-    render 'api/v1/statuses/show'
+    render json: @status, serializer: REST::StatusSerializer
   end
 
   def prepare_video

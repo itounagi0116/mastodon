@@ -379,7 +379,7 @@ RSpec.describe Account, type: :model do
   describe '.triadic_closures' do
     let!(:me) { Fabricate(:account) }
     let!(:friend) { Fabricate(:account) }
-    let!(:friends_friend) { Fabricate(:account) }
+    let!(:friends_friend) { Fabricate(:account, statuses: [Fabricate(:status)]) }
     let!(:both_follow) { Fabricate(:account) }
 
     before do
@@ -396,7 +396,7 @@ RSpec.describe Account, type: :model do
 
     it 'limits by 5 with offset 0 by defualt' do
       first_degree = 6.times.map { Fabricate(:account) }
-      matches = 5.times.map { Fabricate(:account) }
+      matches = 5.times.map { Fabricate(:account, statuses: [Fabricate(:status)]) }
       first_degree.each { |account| me.follow!(account) }
       matches.each do |match|
         first_degree.each { |account| account.follow!(match) }
@@ -408,7 +408,7 @@ RSpec.describe Account, type: :model do
 
     it 'accepts arbitrary limits' do
       another_friend = Fabricate(:account)
-      higher_friends_friend = Fabricate(:account)
+      higher_friends_friend = Fabricate(:account, statuses: [Fabricate(:status)])
       me.follow!(another_friend)
       friend.follow!(higher_friends_friend)
       another_friend.follow!(higher_friends_friend)
@@ -416,9 +416,9 @@ RSpec.describe Account, type: :model do
       expect(described_class.triadic_closures(me, limit: 1)).to eq [higher_friends_friend]
     end
 
-    it 'acceps arbitrary offset' do
+    it 'accepts arbitrary offset' do
       another_friend = Fabricate(:account)
-      higher_friends_friend = Fabricate(:account)
+      higher_friends_friend = Fabricate(:account, statuses: [Fabricate(:status)])
       me.follow!(another_friend)
       friend.follow!(higher_friends_friend)
       another_friend.follow!(higher_friends_friend)

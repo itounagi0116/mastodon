@@ -7,7 +7,7 @@ import Link from '../../components/link_wrapper';
 import Avatar from '../../components/avatar';
 import DisplayName from '../../components/display_name';
 import { makeGetAccount } from '../../../mastodon/selectors';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
 
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
@@ -40,7 +40,7 @@ export default class Account extends ImmutablePureComponent {
       return null;
     }
 
-    const lockedIcon = account.get('locked') && <IconButton src='lock' />;
+    const lockedIcon = account.get('locked') && <Icon icon='lock' />;
 
     return (
       <div className='account'>

@@ -78,7 +78,7 @@
         float: right;
         font-size: 14px;
 
-        .status__relative-time {
+        .status__time {
           color: $ui-primary-color;
         }
       }
@@ -240,19 +240,6 @@
 
     .status-card__image {
       background: $ui-secondary-color;
-    }
-  }
-
-  .media-spoiler {
-    background: $ui-primary-color;
-    color: $white;
-    transition: all 100ms linear;
-
-    &:hover,
-    &:active,
-    &:focus {
-      background: darken($ui-primary-color, 5%);
-      color: unset;
     }
   }
 

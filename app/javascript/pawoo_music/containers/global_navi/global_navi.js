@@ -8,7 +8,7 @@ import { withRouter } from 'react-router';
 import { FormattedMessage } from 'react-intl';
 import SearchBox from '../search_box';
 import LoginBox from '../../components/login_box';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
 import EventCalendar from '../../components/event_calendar';
 import PinnedTagsContainer from '../pinned_tags';
 import TrendTagsContainer from '../trend_tags';
@@ -81,7 +81,7 @@ export default class GlobalNavi extends PureComponent {
       <li key={other.to}>
         <NavLink {...other} onClick={this.handleClick}>
           <div className='menu'>
-            <IconButton src={icons[messageKey]} strokeWidth={2} />
+            <Icon icon={icons[messageKey]} />
             <span>{intl.formatMessage(messages[messageKey])}</span>
             {(messageKey === 'notifications') && (unread > 0) && (
               <span className='unread'>{unread}</span>
@@ -115,6 +115,8 @@ export default class GlobalNavi extends PureComponent {
             {this.renderNavLinks()}
           </div>
 
+          {isLogin && <Announcements />}
+
           <h2>
             <FormattedMessage
               id='pawoo_music.global_navi.tag_timeline'
@@ -125,19 +127,18 @@ export default class GlobalNavi extends PureComponent {
           <EventCalendar />
           <PinnedTagsContainer currentTag={currentTag} />
           <TrendTagsContainer />
-          <Announcements />
         </div>
         <div className='global-navi-bottom'>
           {isLogin && (
             <a target='_blank' href='/settings/preferences'>
-              <IconButton src='settings' className='clickable' strokeWidth={2} /> &nbsp;
+              <Icon icon='settings' strong /> &nbsp;
               <div className='link-text'>
                 {intl.formatMessage(messages.preferences)}
               </div>
             </a>
           )}
           <a target='_blank' href='https://pawoo.zendesk.com/hc/ja/'>
-            <IconButton src='help-circle' className='clickable' strokeWidth={2} /> &nbsp;
+            <Icon icon='help-circle' strong /> &nbsp;
             <div className='link-text'>
               {intl.formatMessage(messages.help)}
             </div>

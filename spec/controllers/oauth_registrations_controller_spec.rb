@@ -50,10 +50,20 @@ RSpec.describe OauthRegistrationsController, type: :controller do
     context 'found cache of pixiv oauth' do
       let(:auth) { OmniAuth.config.mock_auth[:pixiv] }
 
+      before do
+        allow(BootstrapTimelineWorker).to receive(:perform_async)
+      end
+
       it 'creates user' do
         is_expected.to change {
           [User.count, Account.count]
         }.from([0, 0]).to([1, 1])
+      end
+
+      it 'queues up bootstrapping of home timeline' do
+        subject.call
+        user = User.find_by(email: auth.info.email)
+        expect(BootstrapTimelineWorker).to have_received(:perform_async).with(user.account_id)
       end
 
       context 'when the email is duplicated' do

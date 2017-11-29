@@ -1,0 +1,18 @@
+- content_for :page_title do
+  = t('settings.custom_color')
+
+= simple_form_for @custom_color, url: settings_custom_color_path, html: { method: :put } do |f|
+  = render 'shared/error_messages', object: @custom_color
+
+  = f.input :textcolor, :as => :hidden
+  = f.input :linkcolor, :as => :hidden
+  = f.input :linkcolor2, :as => :hidden
+  = f.input :strong1, :as => :hidden
+  = f.input :strong2, :as => :hidden
+  = f.input :color1, :as => :hidden
+  = f.input :color2, :as => :hidden
+  = f.input :color3, :as => :hidden
+
+  .actions
+    = f.button :button, t('generic.save_changes'), type: :submit
+    = link_to t('generic.initialize_settings'), settings_custom_color_path, data: { method: :delete }, class: 'block-button negative'

@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Status, type: :model do
   let(:alice) { Fabricate(:account, username: 'alice') }
   let(:bob)   { Fabricate(:account, username: 'bob') }
-  let(:other) { Fabricate(:status, account: bob, text: 'Skulls for the skull god! The enemy\'s gates are sideways!')}
+  let(:other) { Fabricate(:status, account: bob, text: 'Skulls for the skull god! The enemy\'s gates are sideways!') }
 
   subject { Fabricate(:status, account: alice) }
 
@@ -13,8 +13,14 @@ RSpec.describe Status, type: :model do
     end
 
     it 'returns false if a remote URI is set' do
-      subject.uri = 'a'
+      alice.update(domain: 'example.com')
+      subject.save
       expect(subject.local?).to be false
+    end
+
+    it 'returns true if a URI is set and `local` is true' do
+      subject.update(uri: 'example.com', local: true)
+      expect(subject.local?).to be true
     end
   end
 
@@ -186,19 +192,6 @@ RSpec.describe Status, type: :model do
       results = described_class.scheduled
       expect(results).not_to include(published_status)
       expect(results).to include(scheduled_status)
-    end
-  end
-
-  describe '.local_only' do
-    it 'returns only statuses from local accounts' do
-      local_account = Fabricate(:account, domain: nil)
-      remote_account = Fabricate(:account, domain: 'test.com')
-      local_status = Fabricate(:status, account: local_account)
-      remote_status = Fabricate(:status, account: remote_account)
-
-      results = described_class.local_only
-      expect(results).to include(local_status)
-      expect(results).not_to include(remote_status)
     end
   end
 
@@ -549,7 +542,7 @@ RSpec.describe Status, type: :model do
     end
   end
 
-  describe 'before_create' do
+  describe 'before_validation' do
     it 'sets account being replied to correctly over intermediary nodes' do
       first_status = Fabricate(:status, account: bob)
       intermediary = Fabricate(:status, thread: first_status, account: alice)
@@ -565,6 +558,31 @@ RSpec.describe Status, type: :model do
     it 'keeps conversation of parent node' do
       parent = Fabricate(:status, text: 'First')
       expect(Status.create(account: alice, thread: parent, text: 'Response').conversation_id).to eq parent.conversation_id
+    end
+
+    it 'sets `local` to true for status by local account' do
+      expect(Status.create(account: alice, text: 'foo').local).to be true
+    end
+
+    it 'sets `local` to false for status by remote account' do
+      alice.update(domain: 'example.com')
+      expect(Status.create(account: alice, text: 'foo').local).to be false
+    end
+  end
+
+  describe 'validation' do
+    it 'disallow empty uri for remote status' do
+      alice.update(domain: 'example.com')
+      status = Fabricate.build(:status, uri: '', account: alice)
+      expect(status).to model_have_error_on_field(:uri)
+    end
+  end
+
+  describe 'after_create' do
+    it 'saves ActivityPub uri as uri for local status' do
+      status = Status.create(account: alice, text: 'foo')
+      status.reload
+      expect(status.uri).to start_with('https://')
     end
   end
 end

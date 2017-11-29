@@ -44,6 +44,7 @@
 #  video_1920x1080_updated_at       :datetime
 #  video_backgroundcolor            :integer          default(1513239), not null
 #  video_banner_alpha               :float            default(1.0), not null
+#  albums_count                     :integer          default(0), not null
 #
 
 class Track < ApplicationRecord
@@ -58,8 +59,9 @@ class Track < ApplicationRecord
 
   has_many :album_tracks, inverse_of: :track, dependent: :destroy
   has_many :statuses, as: :music
+  has_one :original_status, -> { where(reblog: nil) }, class_name: 'Status', as: :music
   has_many :video_preparation_errors, inverse_of: :track, dependent: :destroy
-  has_one :notification, as: :activity, dependent: :destroy
+  has_many :notifications, as: :activity, dependent: :destroy
 
   has_attached_file :music
   has_attached_file :video

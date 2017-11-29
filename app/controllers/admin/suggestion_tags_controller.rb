@@ -9,7 +9,7 @@ module Admin
     end
 
     def new
-      @suggestion_tag = SuggestionTag.new
+      @suggestion_tag = SuggestionTag.new(suggestion_type: SuggestionTag.suggestion_types[:normal])
       @suggestion_tag.build_tag
     end
 
@@ -47,11 +47,11 @@ module Admin
     end
 
     def suggestion_tag_params
-      params.require(:suggestion_tag).permit(:order, :description, tag_attributes: [:name])
+      params.require(:suggestion_tag).permit(:order, :description, :suggestion_type, tag_attributes: [:name])
     end
 
     def suggestion_tag_params_for_update
-      params.require(:suggestion_tag).permit(:order, :description)
+      params.require(:suggestion_tag).permit(:order, :description, :suggestion_type)
     end
   end
 end

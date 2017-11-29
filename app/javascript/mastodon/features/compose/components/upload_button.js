@@ -1,5 +1,5 @@
 import React from 'react';
-import IconButton from '../../../../pawoo_music/components/icon_button';
+import Icon from '../../../../pawoo_music/components/icon';
 import PropTypes from 'prop-types';
 import { defineMessages, injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
@@ -50,17 +50,20 @@ export default class UploadButton extends ImmutablePureComponent {
 
     return (
       <div className='compose-form__upload-button'>
-        <IconButton src='camera' title={intl.formatMessage(messages.upload)} disabled={disabled} onClick={this.handleClick} className='compose-form__upload-button-icon' />
-        <input
-          key={resetFileKey}
-          ref={this.setRef}
-          type='file'
-          multiple={false}
-          accept={acceptContentTypes.toArray().join(',')}
-          onChange={this.handleChange}
-          disabled={disabled}
-          style={{ display: 'none' }}
-        />
+        <Icon icon='camera' title={intl.formatMessage(messages.upload)} disabled={disabled} onClick={this.handleClick} className='compose-form__upload-button-icon' strong scale />
+        <label>
+          <span style={{ display: 'none' }}>{intl.formatMessage(messages.upload)}</span>
+          <input
+            key={resetFileKey}
+            ref={this.setRef}
+            type='file'
+            multiple={false}
+            accept={acceptContentTypes.toArray().join(',')}
+            onChange={this.handleChange}
+            disabled={disabled}
+            style={{ display: 'none' }}
+          />
+        </label>
       </div>
     );
   }
