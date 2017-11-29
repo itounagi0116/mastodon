@@ -22,7 +22,7 @@ import {
   PublicTimeline,
   CommunityTimeline,
   AccountTimeline,
-  // AccountGallery,
+  AccountGallery,
   HomeTimeline,
   Followers,
   Following,
@@ -36,11 +36,6 @@ import {
   Blocks,
   Mutes,
   PinnedStatuses,
-  MediaTimeline,
-  SuggestedAccounts,
-  SuggestionTags,
-  StatusSearchResults,
-  AccountMediaTimeline,
 } from './util/async-components';
 
 // Dummy import, to make sure that <Status /> ends up in the application bundle.
@@ -241,17 +236,11 @@ export default class UI extends React.PureComponent {
             <WrappedRoute path='/accounts/:accountId' exact component={AccountTimeline} content={children} />
             <WrappedRoute path='/accounts/:accountId/followers' component={Followers} content={children} />
             <WrappedRoute path='/accounts/:accountId/following' component={Following} content={children} />
-            {/* use AccountMediaTimeline instead of <WrappedRoute path='/accounts/:accountId/media' component={AccountGallery} content={children} />*/}
+            <WrappedRoute path='/accounts/:accountId/media' component={AccountGallery} content={children} />
 
             <WrappedRoute path='/follow_requests' component={FollowRequests} content={children} />
             <WrappedRoute path='/blocks' component={Blocks} content={children} />
             <WrappedRoute path='/mutes' component={Mutes} content={children} />
-
-            <WrappedRoute path='/timelines/public/media' component={MediaTimeline} content={children} />
-            <WrappedRoute path='/suggested_accounts' component={SuggestedAccounts} content={children} />
-            <WrappedRoute path='/suggestion_tags/:type' component={SuggestionTags} content={children} />
-            <WrappedRoute path='/statuses/search/:keyword' component={StatusSearchResults} content={children} />
-            <WrappedRoute path='/accounts/:accountId/media' component={AccountMediaTimeline} content={children} />
 
             <WrappedRoute component={GenericNotFound} content={children} />
           </WrappedSwitch>
