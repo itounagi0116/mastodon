@@ -3,6 +3,7 @@ import acct_map from './acct_map';
 import album_compose from './album_compose';
 import track_compose from './track_compose';
 import tracks from './tracks';
+import account_gallery from './account_gallery';
 import account_tracks from './account_tracks';
 import column from './column';
 import timeline from './timeline';
@@ -13,6 +14,7 @@ export default combineReducers({
   album_compose,
   track_compose,
   tracks,
+  account_gallery,
   account_tracks,
   column,
   timeline,

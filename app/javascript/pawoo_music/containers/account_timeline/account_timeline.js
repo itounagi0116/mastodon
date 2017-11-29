@@ -36,7 +36,7 @@ export default class AccountTimeline extends PureComponent {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
     accountId: PropTypes.number.isRequired,
-    account: ImmutablePropTypes.map.isRequired,
+    account: ImmutablePropTypes.map,
     statusIds: ImmutablePropTypes.list.isRequired,
     isLoading: PropTypes.bool,
     hasMore: PropTypes.bool,
@@ -58,7 +58,10 @@ export default class AccountTimeline extends PureComponent {
     dispatch(fetchAccount(accountId));
     dispatch(refreshPinnedStatusTimeline(accountId));
     dispatch(refreshAccountTimeline(accountId));
-    this.appendStyle(account);
+
+    if (account) {
+      this.appendStyle(account);
+    }
   }
 
   componentWillReceiveProps (nextProps) {
@@ -71,6 +74,9 @@ export default class AccountTimeline extends PureComponent {
       dispatch(refreshPinnedStatusTimeline(accountId));
       dispatch(refreshAccountTimeline(accountId));
       this.removeStyle(this.props.accountId);
+    }
+
+    if (!Immutable.is(nextProps.account, this.props.account)) {
       this.appendStyle(nextProps.account);
     }
   }
@@ -115,7 +121,7 @@ export default class AccountTimeline extends PureComponent {
     const uniqueStatusIds = pinnedStatusIds.concat(statusIds).toOrderedSet().toList();
     const galleryStyle = {};
 
-    if (account.get('background_image')) {
+    if (account && account.get('background_image')) {
       galleryStyle.backgroundImage = `url(${account.get('background_image')})`;
     }
 
