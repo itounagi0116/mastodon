@@ -8,37 +8,32 @@ import { connectHashtagStream } from '../../actions/streaming';
 import { updateTimelineTitle } from '../../actions/timeline';
 import { changeFooterType } from '../../actions/footer';
 
-const mapStateToProps = (state, props) => ({
-  hashtag: props.match.params.id,
-  title: state.getIn(['pawoo_music', 'timeline', 'title']),
-});
-
-@connect(mapStateToProps)
+@connect()
 export default class HashtagTimeline extends PureComponent {
 
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-    hashtag: PropTypes.string.isRequired,
+    match: PropTypes.object.isRequired,
   };
 
   componentDidMount () {
-    const { dispatch, hashtag } = this.props;
+    const { dispatch, match: { params: { id } } } = this.props;
 
-    dispatch(refreshHashtagTimeline(hashtag));
-    dispatch(refreshHashtagTimeline(hashtag, { onlyMusics: true }));
-    dispatch(updateTimelineTitle(`#${hashtag} タイムライン`)); /* TODO: intl */
+    dispatch(refreshHashtagTimeline(id));
+    dispatch(refreshHashtagTimeline(id, { onlyMusics: true }));
+    dispatch(updateTimelineTitle(`#${id} タイムライン`)); /* TODO: intl */
     dispatch(changeFooterType('lobby_gallery'));
-    this._subscribe(dispatch, hashtag);
+    this._subscribe(dispatch, id);
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.hashtag !== this.props.hashtag) {
-      const { dispatch, hashtag } = nextProps;
-      dispatch(refreshHashtagTimeline(hashtag));
-      dispatch(refreshHashtagTimeline(hashtag, { onlyMusics: true }));
-      dispatch(updateTimelineTitle(`#${hashtag} タイムライン`)); /* TODO: intl */
+    if (nextProps.match.params.id !== this.props.match.params.id) {
+      const { dispatch, match: { params: { id } } } = nextProps;
+      dispatch(refreshHashtagTimeline(id));
+      dispatch(refreshHashtagTimeline(id, { onlyMusics: true }));
+      dispatch(updateTimelineTitle(`#${id} タイムライン`)); /* TODO: intl */
       this._unsubscribe();
-      this._subscribe(this.props.dispatch, nextProps.hashtag);
+      this._subscribe(this.props.dispatch, id);
     }
   }
 
@@ -47,7 +42,7 @@ export default class HashtagTimeline extends PureComponent {
   }
 
   handleLoadMore = (options) => {
-    this.props.dispatch(expandHashtagTimeline(this.props.hashtag, options));
+    this.props.dispatch(expandHashtagTimeline(this.props.match.params.id, options));
   }
 
   _subscribe (dispatch, id) {
@@ -62,11 +57,9 @@ export default class HashtagTimeline extends PureComponent {
   }
 
   render () {
-    const { hashtag } = this.props;
-
     return (
       <StatusTimelineContainer
-        timelineId={`hashtag:${hashtag}`}
+        timelineId={`hashtag:${this.props.match.params.id}`}
         scrollKeyBase='hashtag_timeline'
         loadMore={this.handleLoadMore}
         emptyMessage={<FormattedMessage id='empty_column.hashtag' defaultMessage='There is nothing in this hashtag yet.' />}
