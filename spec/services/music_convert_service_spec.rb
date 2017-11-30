@@ -43,4 +43,16 @@ describe MusicConvertService do
     expect(`ffprobe -v error -show_entries stream=width -of default=noprint_wrappers=1:nokey=1 #{file.path}`).to eq "1920\n"
     expect(`ffprobe -v error -show_entries stream=height -of default=noprint_wrappers=1:nokey=1 #{file.path}`).to eq "1080\n"
   end
+
+  it 'raises Mastodon::MusicvideoError after genmv failed' do
+    extend ActionDispatch::TestProcess
+
+    track = Fabricate.build(
+      :track,
+      video_image: fixture_file_upload('files/high.mp3')
+    )
+    track.save! validate: false
+
+    expect { MusicConvertService.new.call(track, '720x720') }.to raise_error Mastodon::MusicvideoError
+  end
 end

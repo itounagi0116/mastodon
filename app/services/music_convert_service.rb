@@ -10,15 +10,75 @@ class MusicConvertService < BaseService
           track.video_image.copy_to_local_file :original, image_file.path
         end
 
-        musicvideo = open_musicvideo(track, resolution, music_file, image_file)
+        IO.pipe do |video_readable, video_writable|
+          musicvideo_pid = create_musicvideo(track, resolution, music_file, image_file, video_writable)
 
-        video_file = Tempfile.new(['music-', '.mp4'])
-        begin
-          create_mp4 track, resolution, music_file, musicvideo, video_file
-          video_file
-        rescue
-          video_file.unlink
-          raise
+          begin
+            video_file = Tempfile.new(['music-', '.mp4'])
+            begin
+              mp4_pid = create_mp4(track, resolution, music_file, video_readable, video_file)
+
+              begin
+                musicvideo_thread = Thread.new do
+                  Process.waitpid musicvideo_pid
+
+                  if $?.success?
+                    video_writable.close
+                  else
+                    begin
+                      Process.kill 'SIGTERM', mp4_pid
+                    rescue Errno::ESRCH
+                    end
+
+                    video_writable.close
+                    raise Mastodon::MusicvideoError, $?.inspect
+                  end
+                end
+
+                begin
+                  mp4_thread = Thread.new do
+                    Process.waitpid mp4_pid
+
+                    if $?.success?
+                      video_readable.close
+                    else
+                      begin
+                        Process.kill 'SIGTERM', musicvideo_pid
+                      rescue Errno::ESRCH
+                      end
+
+                      video_readable.close
+                      raise Mastodon::FFmpegError, $?.inspect
+                    end
+                  end
+
+                  mp4_thread.join 32.minutes
+                  video_file
+                ensure
+                  musicvideo_thread.join 1.minute
+                end
+              rescue
+                begin
+                  Process.kill 'SIGKILL', mp4_pid
+                  Process.waitpid mp4_pid
+                rescue Errno::ESRCH
+                end
+
+                raise
+              end
+            rescue
+              video_file.unlink
+              raise
+            end
+          rescue
+            begin
+              Process.kill 'SIGKILL', musicvideo_pid
+              Process.waitpid musicvideo_pid
+            rescue Errno::ESRCH
+            end
+
+            raise
+          end
         end
       ensure
         image_file&.unlink
@@ -28,7 +88,7 @@ class MusicConvertService < BaseService
 
   private
 
-  def open_musicvideo(track, resolution, music_file, image_file)
+  def create_musicvideo(track, resolution, music_file, image_file, video_file)
     args = [
       Rails.root.join('node_modules', '.bin', 'electron'), 'genmv', '--',
       music_file.path, '--resolution', resolution,
@@ -89,18 +149,16 @@ class MusicConvertService < BaseService
       )
     end
 
-    IO.popen args.map(&:to_s)
+    spawn *args.map(&:to_s), out: video_file
   end
 
   def create_mp4(track, resolution, music_file, musicvideo, video_file)
-    Process.waitpid spawn(
+    spawn(
       'ffmpeg', '-y', '-i', music_file.path, '-f', 'rawvideo',
       '-framerate', '30', '-pixel_format', 'bgr32', '-video_size', resolution,
       '-i', 'pipe:', '-vf', 'format=yuv420p,vflip', '-metadata',
       "title=#{track.title}", '-metadata', "artist=#{track.artist}",
       *Rails.configuration.x.ffmpeg_options, video_file.path, in: musicvideo
     )
-
-    raise Mastodon::FFmpegError, $?.inspect unless $?.success?
   end
 end
