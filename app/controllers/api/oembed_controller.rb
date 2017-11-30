@@ -25,10 +25,10 @@ class Api::OEmbedController < Api::BaseController
   end
 
   def default_width
-    @status.music.is_a?(Track) ? '100%' : 400
+    @status.music.is_a?(Track) ? 480 : 400
   end
 
   def default_height
-    nil
+    @status.music.is_a?(Track) ? maxwidth_or_default : nil
   end
 end
