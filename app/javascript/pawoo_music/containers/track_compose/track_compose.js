@@ -465,7 +465,9 @@ export default class TrackCompose extends ImmutablePureComponent {
     return (
       <div className='track-compose'>
         <div className='content'>
-          <Musicvideo track={track} label={intl.formatMessage(messages.preview)} autoPlay={false} />
+          <div className='musicvideo-preview'>
+            <Musicvideo track={track} label={intl.formatMessage(messages.preview)} autoPlay={false} />
+          </div>
           <div className='form-content'>
             <form>
 
