@@ -342,5 +342,11 @@
   "pawoo_music.track_compose.video.particle": "パーティクル",
   "pawoo_music.track_compose.video.spectrum": "スペクトラム",
   "pawoo_music.track_compose.video.spectrum_form": "形状",
+  "pawoo_music.track_compose.video.sprite.movement.circle": "回転",
+  "pawoo_music.track_compose.video.sprite.movement.rad": "傾き",
+  "pawoo_music.track_compose.video.sprite.movement.random": "ランダム移動",
+  "pawoo_music.track_compose.video.sprite.movement.scale": "振れ幅",
+  "pawoo_music.track_compose.video.sprite.movement.speed": "速さ",
+  "pawoo_music.track_compose.video.sprite.movement.zoom": "拡大縮小",
   "pawoo_music.track_compose.video.text": "テキスト"
 }

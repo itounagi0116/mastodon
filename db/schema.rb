@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171114152234) do
+ActiveRecord::Schema.define(version: 20171130000000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -523,6 +523,13 @@ ActiveRecord::Schema.define(version: 20171114152234) do
     t.integer "video_backgroundcolor", default: 1513239, null: false
     t.float "video_banner_alpha", default: 1.0, null: false
     t.integer "albums_count", default: 0, null: false
+    t.float "video_sprite_movement_circle_rad", default: 0.0, null: false
+    t.float "video_sprite_movement_circle_scale", default: 0.0, null: false
+    t.float "video_sprite_movement_circle_speed", default: 0.0, null: false
+    t.float "video_sprite_movement_random_scale", default: 0.0, null: false
+    t.float "video_sprite_movement_random_speed", default: 0.0, null: false
+    t.float "video_sprite_movement_zoom_scale", default: 0.0, null: false
+    t.float "video_sprite_movement_zoom_speed", default: 0.0, null: false
   end
 
   create_table "trend_ng_words", id: :serial, force: :cascade do |t|

@@ -2,49 +2,56 @@
 #
 # Table name: tracks
 #
-#  id                               :integer          not null, primary key
-#  duration                         :integer          not null
-#  title                            :string           not null
-#  artist                           :string           not null
-#  text                             :string           default(""), not null
-#  music_file_name                  :string
-#  music_content_type               :string
-#  music_file_size                  :integer
-#  music_updated_at                 :datetime
-#  video_file_name                  :string
-#  video_content_type               :string
-#  video_file_size                  :integer
-#  video_updated_at                 :datetime
-#  video_image_file_name            :string
-#  video_image_content_type         :string
-#  video_image_file_size            :integer
-#  video_image_updated_at           :datetime
-#  video_blur_movement_band_bottom  :integer          default(0), not null
-#  video_blur_movement_band_top     :integer          default(0), not null
-#  video_blur_movement_threshold    :integer          default(0), not null
-#  video_blur_blink_band_bottom     :integer          default(0), not null
-#  video_blur_blink_band_top        :integer          default(0), not null
-#  video_blur_blink_threshold       :integer          default(0), not null
-#  video_particle_limit_band_bottom :integer          default(0), not null
-#  video_particle_limit_band_top    :integer          default(0), not null
-#  video_particle_limit_threshold   :integer          default(0), not null
-#  video_particle_alpha             :float            default(0.0), not null
-#  video_particle_color             :integer          default(0), not null
-#  video_lightleaks_alpha           :float            default(0.0), not null
-#  video_lightleaks_interval        :integer          default(0), not null
-#  video_spectrum_mode              :integer          default(0), not null
-#  video_spectrum_alpha             :float            default(0.0), not null
-#  video_spectrum_color             :integer          default(0), not null
-#  video_text_alpha                 :float            default(0.0), not null
-#  video_text_color                 :integer          default(0), not null
-#  view_count                       :integer          default(0), not null
-#  video_1920x1080_file_name        :string
-#  video_1920x1080_content_type     :string
-#  video_1920x1080_file_size        :integer
-#  video_1920x1080_updated_at       :datetime
-#  video_backgroundcolor            :integer          default(1513239), not null
-#  video_banner_alpha               :float            default(1.0), not null
-#  albums_count                     :integer          default(0), not null
+#  id                                 :integer          not null, primary key
+#  duration                           :integer          not null
+#  title                              :string           not null
+#  artist                             :string           not null
+#  text                               :string           default(""), not null
+#  music_file_name                    :string
+#  music_content_type                 :string
+#  music_file_size                    :integer
+#  music_updated_at                   :datetime
+#  video_file_name                    :string
+#  video_content_type                 :string
+#  video_file_size                    :integer
+#  video_updated_at                   :datetime
+#  video_image_file_name              :string
+#  video_image_content_type           :string
+#  video_image_file_size              :integer
+#  video_image_updated_at             :datetime
+#  video_blur_movement_band_bottom    :integer          default(0), not null
+#  video_blur_movement_band_top       :integer          default(0), not null
+#  video_blur_movement_threshold      :integer          default(0), not null
+#  video_blur_blink_band_bottom       :integer          default(0), not null
+#  video_blur_blink_band_top          :integer          default(0), not null
+#  video_blur_blink_threshold         :integer          default(0), not null
+#  video_particle_limit_band_bottom   :integer          default(0), not null
+#  video_particle_limit_band_top      :integer          default(0), not null
+#  video_particle_limit_threshold     :integer          default(0), not null
+#  video_particle_alpha               :float            default(0.0), not null
+#  video_particle_color               :integer          default(0), not null
+#  video_lightleaks_alpha             :float            default(0.0), not null
+#  video_lightleaks_interval          :integer          default(0), not null
+#  video_spectrum_mode                :integer          default(0), not null
+#  video_spectrum_alpha               :float            default(0.0), not null
+#  video_spectrum_color               :integer          default(0), not null
+#  video_text_alpha                   :float            default(0.0), not null
+#  video_text_color                   :integer          default(0), not null
+#  view_count                         :integer          default(0), not null
+#  video_1920x1080_file_name          :string
+#  video_1920x1080_content_type       :string
+#  video_1920x1080_file_size          :integer
+#  video_1920x1080_updated_at         :datetime
+#  video_backgroundcolor              :integer          default(1513239), not null
+#  video_banner_alpha                 :float            default(1.0), not null
+#  albums_count                       :integer          default(0), not null
+#  video_sprite_movement_circle_rad   :float            default(0.0), not null
+#  video_sprite_movement_circle_scale :float            default(0.0), not null
+#  video_sprite_movement_circle_speed :float            default(0.0), not null
+#  video_sprite_movement_random_scale :float            default(0.0), not null
+#  video_sprite_movement_random_speed :float            default(0.0), not null
+#  video_sprite_movement_zoom_scale   :float            default(0.0), not null
+#  video_sprite_movement_zoom_speed   :float            default(0.0), not null
 #
 
 class Track < ApplicationRecord

@@ -12,6 +12,7 @@ class REST::TrackSerializer < ActiveModel::Serializer
   def video
     hash = {
       backgroundcolor: object.video_backgroundcolor,
+      sprite: sprite,
       blur: blur,
       particle: particle,
       lightleaks: lightleaks,
@@ -36,6 +37,35 @@ class REST::TrackSerializer < ActiveModel::Serializer
     end
 
     hash
+  end
+
+  def sprite
+    hash = {}
+
+    if (object.video_sprite_movement_circle_rad != 0 || object.video_sprite_movement_circle_scale != 0) &&
+       object.video_sprite_movement_circle_speed != 0
+      hash[:circle] = {
+        rad: object.video_sprite_movement_circle_rad,
+        scale: object.video_sprite_movement_circle_scale,
+        speed: object.video_sprite_movement_circle_speed,
+      }
+    end
+
+    if object.video_sprite_movement_random_scale != 0 && object.video_sprite_movement_random_speed != 0
+      hash[:random] = {
+        scale: object.video_sprite_movement_random_scale,
+        speed: object.video_sprite_movement_random_speed,
+      }
+    end
+
+    if object.video_sprite_movement_zoom_scale != 0 && object.video_sprite_movement_zoom_speed != 0
+      hash[:zoom] = {
+        scale: object.video_sprite_movement_zoom_scale,
+        speed: object.video_sprite_movement_zoom_speed,
+      }
+    end
+
+    { movement: hash }
   end
 
   def blur

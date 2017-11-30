@@ -15,6 +15,16 @@ import {
   changeTrackComposeTrackMusic,
   changeTrackComposeTrackVideoBackgroundColor,
   changeTrackComposeTrackVideoImage,
+  changeTrackComposeTrackVideoSpriteMovementCircleEnabled,
+  changeTrackComposeTrackVideoSpriteMovementCircleRad,
+  changeTrackComposeTrackVideoSpriteMovementCircleScale,
+  changeTrackComposeTrackVideoSpriteMovementCircleSpeed,
+  changeTrackComposeTrackVideoSpriteMovementRandomEnabled,
+  changeTrackComposeTrackVideoSpriteMovementRandomScale,
+  changeTrackComposeTrackVideoSpriteMovementRandomSpeed,
+  changeTrackComposeTrackVideoSpriteMovementZoomEnabled,
+  changeTrackComposeTrackVideoSpriteMovementZoomScale,
+  changeTrackComposeTrackVideoSpriteMovementZoomSpeed,
   changeTrackComposeTrackVideoBlurVisibility,
   changeTrackComposeTrackVideoBlurMovementThreshold,
   changeTrackComposeTrackVideoBlurBlinkThreshold,
@@ -130,6 +140,46 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(changeTrackComposeTrackVideoImage(value));
   },
 
+  onChangeTrackVideoSpriteMovementCircleEnabled (value) {
+    dispatch(changeTrackComposeTrackVideoSpriteMovementCircleEnabled(value));
+  },
+
+  onChangeTrackVideoSpriteMovementCircleRad (value) {
+    dispatch(changeTrackComposeTrackVideoSpriteMovementCircleRad(value));
+  },
+
+  onChangeTrackVideoSpriteMovementCircleScale (value) {
+    dispatch(changeTrackComposeTrackVideoSpriteMovementCircleScale(value));
+  },
+
+  onChangeTrackVideoSpriteMovementCircleSpeed (value) {
+    dispatch(changeTrackComposeTrackVideoSpriteMovementCircleSpeed(value));
+  },
+
+  onChangeTrackVideoSpriteMovementRandomEnabled (value) {
+    dispatch(changeTrackComposeTrackVideoSpriteMovementRandomEnabled(value));
+  },
+
+  onChangeTrackVideoSpriteMovementRandomScale (value) {
+    dispatch(changeTrackComposeTrackVideoSpriteMovementRandomScale(value));
+  },
+
+  onChangeTrackVideoSpriteMovementRandomSpeed (value) {
+    dispatch(changeTrackComposeTrackVideoSpriteMovementRandomSpeed(value));
+  },
+
+  onChangeTrackVideoSpriteMovementZoomEnabled (value) {
+    dispatch(changeTrackComposeTrackVideoSpriteMovementZoomEnabled(value));
+  },
+
+  onChangeTrackVideoSpriteMovementZoomScale (value) {
+    dispatch(changeTrackComposeTrackVideoSpriteMovementZoomScale(value));
+  },
+
+  onChangeTrackVideoSpriteMovementZoomSpeed (value) {
+    dispatch(changeTrackComposeTrackVideoSpriteMovementZoomSpeed(value));
+  },
+
   onChangeTrackVideoBlurVisibility (value) {
     dispatch(changeTrackComposeTrackVideoBlurVisibility(value));
   },
@@ -231,6 +281,16 @@ export default class TrackCompose extends ImmutablePureComponent {
     onChangeTrackMusic: PropTypes.func.isRequired,
     onChangeTrackVideoBackgroundColor: PropTypes.func.isRequired,
     onChangeTrackVideoImage: PropTypes.func.isRequired,
+    onChangeTrackVideoSpriteMovementCircleEnabled: PropTypes.func.isRequired,
+    onChangeTrackVideoSpriteMovementCircleRad: PropTypes.func.isRequired,
+    onChangeTrackVideoSpriteMovementCircleScale: PropTypes.func.isRequired,
+    onChangeTrackVideoSpriteMovementCircleSpeed: PropTypes.func.isRequired,
+    onChangeTrackVideoSpriteMovementRandomEnabled: PropTypes.func.isRequired,
+    onChangeTrackVideoSpriteMovementRandomScale: PropTypes.func.isRequired,
+    onChangeTrackVideoSpriteMovementRandomSpeed: PropTypes.func.isRequired,
+    onChangeTrackVideoSpriteMovementZoomEnabled: PropTypes.func.isRequired,
+    onChangeTrackVideoSpriteMovementZoomScale: PropTypes.func.isRequired,
+    onChangeTrackVideoSpriteMovementZoomSpeed: PropTypes.func.isRequired,
     onChangeTrackVideoBlurVisibility: PropTypes.func.isRequired,
     onChangeTrackVideoBlurMovementThreshold: PropTypes.func.isRequired,
     onChangeTrackVideoBlurBlinkThreshold: PropTypes.func.isRequired,
@@ -374,6 +434,46 @@ export default class TrackCompose extends ImmutablePureComponent {
         }
       });
     }
+  }
+
+  handleChangeTrackVideoSpriteMovementCircleEnabled = ({ target }) => {
+    this.props.onChangeTrackVideoSpriteMovementCircleEnabled(target.checked);
+  }
+
+  handleChangeTrackVideoSpriteMovementCircleRad = (value) => {
+    this.props.onChangeTrackVideoSpriteMovementCircleRad(value);
+  }
+
+  handleChangeTrackVideoSpriteMovementCircleScale = (value) => {
+    this.props.onChangeTrackVideoSpriteMovementCircleScale(value);
+  }
+
+  handleChangeTrackVideoSpriteMovementCircleSpeed = (value) => {
+    this.props.onChangeTrackVideoSpriteMovementCircleSpeed(value);
+  }
+
+  handleChangeTrackVideoSpriteMovementRandomEnabled = ({ target }) => {
+    this.props.onChangeTrackVideoSpriteMovementRandomEnabled(target.checked);
+  }
+
+  handleChangeTrackVideoSpriteMovementRandomScale = (value) => {
+    this.props.onChangeTrackVideoSpriteMovementRandomScale(value);
+  }
+
+  handleChangeTrackVideoSpriteMovementRandomSpeed = (value) => {
+    this.props.onChangeTrackVideoSpriteMovementRandomSpeed(value);
+  }
+
+  handleChangeTrackVideoSpriteMovementZoomEnabled = ({ target }) => {
+    this.props.onChangeTrackVideoSpriteMovementZoomEnabled(target.checked);
+  }
+
+  handleChangeTrackVideoSpriteMovementZoomScale = (value) => {
+    this.props.onChangeTrackVideoSpriteMovementZoomScale(value);
+  }
+
+  handleChangeTrackVideoSpriteMovementZoomSpeed = (value) => {
+    this.props.onChangeTrackVideoSpriteMovementZoomSpeed(value);
   }
 
   handleToggleBackgroundColorPickerVisible = () => {
@@ -667,6 +767,174 @@ export default class TrackCompose extends ImmutablePureComponent {
                     onClick={this.handleToggleBackgroundColorPickerVisible}
                   />
                 </div>
+
+                {/* Sprite circular movement */}
+                <fieldset>
+                  <legend>
+                    <label className='horizontal'>
+                      <Checkbox checked={this.props.track.getIn(['video', 'sprite', 'movement', 'circle', 'enabled'])} onChange={this.handleChangeTrackVideoSpriteMovementCircleEnabled}>
+                        <FormattedMessage
+                          id='pawoo_music.track_compose.video.sprite.movement.circle'
+                          defaultMessage='Horizontal animation'
+                        />
+                      </Checkbox>
+                    </label>
+                  </legend>
+
+                  <Delay duration={480} className='legend'>
+                    {this.props.track.getIn(['video', 'sprite', 'movement', 'circle', 'enabled']) && (
+                      <div>
+                        <div className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.sprite.movement.rad'
+                              defaultMessage='Angle'
+                            />
+                          </span>
+                          <Slider
+                            min={Math.PI / 512}
+                            max={Math.PI / 4}
+                            step={Math.PI / 512}
+                            value={this.props.track.getIn(['video', 'sprite', 'movement', 'circle', 'rad'])}
+                            onChange={this.handleChangeTrackVideoSpriteMovementCircleRad}
+                          />
+                        </div>
+                        <div className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.sprite.movement.scale'
+                              defaultMessage='Scale'
+                            />
+                          </span>
+                          <Slider
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            value={this.props.track.getIn(['video', 'sprite', 'movement', 'circle', 'scale'])}
+                            onChange={this.handleChangeTrackVideoSpriteMovementCircleScale}
+                          />
+                        </div>
+                        <div className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.sprite.movement.speed'
+                              defaultMessage='Speed'
+                            />
+                          </span>
+                          <Slider
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            value={this.props.track.getIn(['video', 'sprite', 'movement', 'circle', 'speed'])}
+                            onChange={this.handleChangeTrackVideoSpriteMovementCircleSpeed}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </Delay>
+                </fieldset>
+
+                {/* Sprite random movement */}
+                <fieldset>
+                  <legend>
+                    <label className='horizontal'>
+                      <Checkbox checked={this.props.track.getIn(['video', 'sprite', 'movement', 'random', 'enabled'])} onChange={this.handleChangeTrackVideoSpriteMovementRandomEnabled}>
+                        <FormattedMessage
+                          id='pawoo_music.track_compose.video.sprite.movement.random'
+                          defaultMessage='Random animation'
+                        />
+                      </Checkbox>
+                    </label>
+                  </legend>
+
+                  <Delay duration={480} className='legend'>
+                    {this.props.track.getIn(['video', 'sprite', 'movement', 'random', 'enabled']) && (
+                      <div>
+                        <div className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.sprite.movement.scale'
+                              defaultMessage='Scale'
+                            />
+                          </span>
+                          <Slider
+                            min={0}
+                            max={100}
+                            step={1}
+                            value={this.props.track.getIn(['video', 'sprite', 'movement', 'random', 'scale'])}
+                            onChange={this.handleChangeTrackVideoSpriteMovementRandomScale}
+                          />
+                        </div>
+                        <div className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.sprite.movement.speed'
+                              defaultMessage='Speed'
+                            />
+                          </span>
+                          <Slider
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            value={this.props.track.getIn(['video', 'sprite', 'movement', 'random', 'speed'])}
+                            onChange={this.handleChangeTrackVideoSpriteMovementRandomSpeed}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </Delay>
+                </fieldset>
+
+                {/* Sprite zoom movement */}
+                <fieldset>
+                  <legend>
+                    <label className='horizontal'>
+                      <Checkbox checked={this.props.track.getIn(['video', 'sprite', 'movement', 'zoom', 'enabled'])} onChange={this.handleChangeTrackVideoSpriteMovementZoomEnabled}>
+                        <FormattedMessage
+                          id='pawoo_music.track_compose.video.sprite.movement.zoom'
+                          defaultMessage='Zoom animation'
+                        />
+                      </Checkbox>
+                    </label>
+                  </legend>
+
+                  <Delay duration={480} className='legend'>
+                    {this.props.track.getIn(['video', 'sprite', 'movement', 'zoom', 'enabled']) && (
+                      <div>
+                        <div className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.sprite.movement.scale'
+                              defaultMessage='Scale'
+                            />
+                          </span>
+                          <Slider
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            value={this.props.track.getIn(['video', 'sprite', 'movement', 'zoom', 'scale'])}
+                            onChange={this.handleChangeTrackVideoSpriteMovementZoomScale}
+                          />
+                        </div>
+                        <div className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.sprite.movement.speed'
+                              defaultMessage='Speed'
+                            />
+                          </span>
+                          <Slider
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            value={this.props.track.getIn(['video', 'sprite', 'movement', 'zoom', 'speed'])}
+                            onChange={this.handleChangeTrackVideoSpriteMovementZoomSpeed}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </Delay>
+                </fieldset>
 
                 {/* Spectrum */}
                 <fieldset>

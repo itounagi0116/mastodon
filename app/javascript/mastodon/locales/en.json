@@ -339,5 +339,11 @@
   "pawoo_music.track_compose.video.particle": "Particle",
   "pawoo_music.track_compose.video.spectrum": "Spectrum",
   "pawoo_music.track_compose.video.spectrum_form": "Form",
+  "pawoo_music.track_compose.video.sprite.movement.circle": "Rotation",
+  "pawoo_music.track_compose.video.sprite.movement.rad": "Angle",
+  "pawoo_music.track_compose.video.sprite.movement.random": "Random animation",
+  "pawoo_music.track_compose.video.sprite.movement.scale": "Scale",
+  "pawoo_music.track_compose.video.sprite.movement.speed": "Speed",
+  "pawoo_music.track_compose.video.sprite.movement.zoom": "Zoom animation",
   "pawoo_music.track_compose.video.text": "Text"
 }

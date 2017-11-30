@@ -120,9 +120,37 @@ const { argv } = yargs(remote.process.argv.slice(remote.process.argv.indexOf('--
     number: true,
     description: 'the alpha the banner in range from 0 to 1',
   },
-  'image': {
+  'sprite.image': {
     string: true,
-    description: 'the path to the image',
+    description: 'the path to the image for the sprite',
+  },
+  'sprite.movement.circle.rad': {
+    number: true,
+    description: 'the radian of the circular movement of the sprite',
+  },
+  'sprite.movement.circle.scale': {
+    number: true,
+    description: 'the scale of the circular movement of the sprite',
+  },
+  'sprite.movement.circle.speed': {
+    number: true,
+    description: 'the speed of the circular movement of the sprite',
+  },
+  'sprite.movement.random.scale': {
+    number: true,
+    description: 'the scale of the random linear movement of the sprite',
+  },
+  'sprite.movement.random.speed': {
+    number: true,
+    description: 'the speed of the random linear movement of the sprite',
+  },
+  'sprite.movement.zoom.scale': {
+    number: true,
+    description: 'the scale of the zooming movement of the sprite',
+  },
+  'sprite.movement.zoom.speed': {
+    number: true,
+    description: 'the speed of the zooming movement of the sprite',
   },
   '_': {
     string: true,
@@ -151,10 +179,13 @@ fetch(url.format({ pathname: path.resolve(argv._[0]), protocol: 'file:' }))
       fps: 30,
       resolution: { width, height },
       backgroundColor: argv.backgroundcolor,
-      image: argv.image === undefined ? null : url.format({
-        pathname: path.resolve(argv.image),
-        protocol: 'file:',
-      }),
+      sprite: argv.sprite === undefined ? null : {
+        image: url.format({
+          pathname: path.resolve(argv.sprite.image),
+          protocol: 'file:',
+        }),
+        movement: argv.sprite.movement,
+      },
       banner: argv.banner && {
         image: url.format({
           pathname: path.resolve(argv.banner.image),
