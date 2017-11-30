@@ -6,6 +6,9 @@ env:
   node: true
   es6: true
 
+globals:
+  MediaMetadata: false
+
 parser: babel-eslint
 
 plugins:

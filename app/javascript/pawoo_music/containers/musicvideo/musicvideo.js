@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
@@ -8,18 +9,35 @@ import { Canvas } from 'musicvideo-generator';
 import { BaseTexture } from 'pixi.js';
 import noop from 'lodash/noop';
 import { debounce } from 'lodash';
-import MusicvideoAudio from './audio';
-import Icon from '../icon';
-import Slider from '../slider';
+import { changePaused, changeSeekDestination } from '../../actions/player';
+import Icon from '../../components/icon';
+import Slider from '../../components/slider';
 import { constructGeneratorOptions } from '../../util/musicvideo';
 import { isMobile } from '../../util/is_mobile';
 
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 import lightLeaks from '../../../light_leaks.mp4';
 
-window.AudioContext = window.AudioContext || window.webkitAudioContext;
-window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+const mapStateToProps = (state) => ({
+  audio: state.getIn(['pawoo_music', 'player', 'audio']),
+  duration: state.getIn(['pawoo_music', 'player', 'duration']),
+  getCurrentTime: state.getIn(['pawoo_music', 'player', 'getCurrentTime']),
+  lastSeekDestination: state.getIn(['pawoo_music', 'player', 'lastSeekDestination']),
+  loading: state.getIn(['pawoo_music', 'player', 'loading']),
+  paused: state.getIn(['pawoo_music', 'player', 'paused']),
+  track: state.getIn(['pawoo_music', 'player', 'trackPath']) &&
+         state.getIn(state.getIn(['pawoo_music', 'player', 'trackPath'])),
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  onPausedChange (paused) {
+    dispatch(changePaused(paused));
+  },
+
+  onSeekDestinationChange (time) {
+    dispatch(changeSeekDestination(time));
+  },
+});
 
 const messages = defineMessages({
   play: { id: 'pawoo_music.musicvideo.play', defaultMessage: 'Play' },
@@ -28,65 +46,39 @@ const messages = defineMessages({
 
 const mobile = isMobile();
 
+@connect(mapStateToProps, mapDispatchToProps)
 @injectIntl
 class Musicvideo extends ImmutablePureComponent {
 
   static propTypes = {
+    bannerHidden: PropTypes.bool,
     intl: PropTypes.object.isRequired,
-    track: ImmutablePropTypes.map.isRequired,
     label: PropTypes.string,
-    autoPlay: PropTypes.bool,
-  };
-
-  static defaultProps = {
-    autoPlay: true,
+    lastSeekDestination: PropTypes.number.isRequired,
+    onPausedChange: PropTypes.func.isRequired,
+    onSeekDestinationChange: PropTypes.func,
+    audio: ImmutablePropTypes.map.isRequired,
+    getCurrentTime: PropTypes.func.isRequired,
+    track: ImmutablePropTypes.map.isRequired,
   };
 
   state = {
-    duration: Infinity,
     initialized: false,
-    loading: true,
-    paused: true,
-    currentTime: 0,
     showControls: false,
   };
 
   image = new BaseTexture(new Image());
 
   generator = new Canvas(
-    new AudioContext,
-    constructGeneratorOptions(this.props.track, this.image),
+    this.props.audio.get('context'),
+    constructGeneratorOptions(
+      this.props.bannerHidden ?
+        this.props.track.deleteIn(['video', 'banner']) : this.props.track,
+        this.image
+    ),
     lightLeaks,
-    () => this.audio.getCurrentTime()
+    () => this.props.getCurrentTime()
   );
-
-  setAudioState = () => {
-    const newState = {
-      duration: this.audio.duration,
-      initialized: this.audio.getInitialized(),
-      loading: this.audio.getLoading(),
-      paused: this.audio.getPaused(),
-      currentTime: this.audio.getCurrentTime(),
-    };
-
-    if (Object.keys(newState).some((key) => newState[key] !== this.state[key])) {
-      this.setState(newState);
-    }
-  }
-
-  audio = new MusicvideoAudio({
-    analyser: this.generator.audioAnalyserNode,
-    onDurationChange: this.setAudioState,
-    onSeeking: this.generator.initialize.bind(this.generator),
-    onStart: () => {
-      this.generator.start();
-      this.setAudioState();
-    },
-    onStop: () => {
-      this.generator.stop();
-      this.setAudioState();
-    },
-  });
 
   componentDidMount () {
     // ジャケット画像
@@ -98,15 +90,24 @@ class Musicvideo extends ImmutablePureComponent {
     this.updateImage();
 
     // 音声
-    this.audio.autoPlay = this.props.autoPlay;
+    const node = this.props.audio.get('node');
+    const destination = node.get('destination');
+    const source = node.get('source');
 
-    this.updateMusic();
+    if (destination !== null) {
+      this.generator.audioAnalyserNode.conneect(destination);
+    }
+
+    if (source !== null) {
+      source.connect(this.generator.audioAnalyserNode);
+    }
 
     // キャンバス更新
     this.updateCanvas();
 
     // キャンバス初期化
     this.generator.initialize();
+    if (!this.props.paused) this.generator.start();
 
     // キャンバス接続
     const { view } = this.generator.getRenderer();
@@ -116,17 +117,47 @@ class Musicvideo extends ImmutablePureComponent {
 
     this.canvasContainer.appendChild(view);
 
-    this.timer = setInterval(this.audioDidUpdate, 500);
+    this.timer = setInterval(() => this.forceUpdate(), 500);
   }
 
-  componentDidUpdate ({ autoPlay, track }) {
-    const id = track.get('id');
+  componentDidUpdate ({ audio, bannerHidden, lastSeekDestination, paused, track }) {
+    const { audioAnalyserNode } = this.generator;
     const image = track.getIn(['video', 'image']);
-    const music = track.get('music');
+    const oldDestination = this.props.audio.getIn(['node', 'destination']);
+    const destination = audio.getIn(['node', 'destination']);
+    const oldSource = this.props.audio.getIn(['node', 'source']);
+    const source = audio.getIn(['node', 'source']);
 
-    if (this.props.track.get('id') !== id ||
-        this.props.track.get('music') !== music) {
-      this.updateMusic();
+    if (destination !== oldDestination) {
+      if (oldDestination !== null) {
+        audioAnalyserNode.disconnect(oldDestination);
+      }
+
+      if (destination !== null) {
+        audioAnalyserNode.conneect(destination);
+      }
+    }
+
+    if (source !== oldSource) {
+      if (oldSource !== null) {
+        oldSource.disconnect(audioAnalyserNode);
+      }
+
+      source.connect(audioAnalyserNode);
+    }
+
+    if (![Infinity, NaN].includes(this.props.duration) &&
+        !this.state.initialized) {
+      this.setState({ initialized: true });
+    }
+
+    if (this.props.paused !== paused) {
+      this.updatePaused();
+    }
+
+    if (this.props.track.get('id') !== track.get('id') ||
+        this.props.track.get('music') !== track.get('music') ||
+        this.props.lastSeekDestination !== lastSeekDestination) {
       this.generator.initialize();
     }
 
@@ -137,11 +168,9 @@ class Musicvideo extends ImmutablePureComponent {
       this.updateImage();
     }
 
-    if (this.props.track !== track) {
+    if (this.props.track !== track || this.props.bannerHidden !== bannerHidden) {
       this.updateCanvas();
     }
-
-    this.audio.autoPlay = autoPlay;
   }
 
   componentWillUnmount () {
@@ -150,11 +179,9 @@ class Musicvideo extends ImmutablePureComponent {
     clearInterval(this.timer);
 
     this.image.source.removeEventListener('load', this.handleLoadImage);
-    this.audio.destroy();
 
     this.generator.stop();
     this.generator.destroy();
-    this.generator.audioAnalyserNode.context.close();
 
     if ((track.getIn(['video', 'image']) instanceof Blob)) {
       URL.revokeObjectURL(this.image.source.src);
@@ -173,34 +200,13 @@ class Musicvideo extends ImmutablePureComponent {
     }
   }
 
-  updateMusic = () => {
-    const { track } = this.props;
-
-    if (track.has('music') && track.get('music') !== null) {
-      this.audio.changeSource(track.get('music'));
-    } else if (track.has('id') && track.get('id') !== null) {
-      this.audio.changeSource(`/api/v1/statuses/${track.get('id')}/music`);
-    }
-  }
-
   handleLoadImage = () => {
     this.image.update();
     this.updateCanvas();
   }
 
   handleTogglePaused = () => {
-    if (this.audio.getPaused()) {
-      this.audio.play();
-    } else {
-      this.audio.pause();
-    }
-
-    this.audioDidUpdate();
-    this.showControls();
-  }
-
-  handleChangeCurrentTime = (value) => {
-    this.audio.seek(value);
+    this.props.onPausedChange(!this.props.paused);
     this.showControls();
   }
 
@@ -239,17 +245,26 @@ class Musicvideo extends ImmutablePureComponent {
   }
 
   updateCanvas = () => {
-    this.generator.changeParams(constructGeneratorOptions(this.props.track, this.image));
+    this.generator.changeParams(
+      constructGeneratorOptions(
+        this.props.bannerHidden ?
+          this.props.track.deleteIn(['video', 'banner']) : this.props.track,
+        this.image
+      )
+    );
   }
 
-  audioDidUpdate = () => {
-    this.audio.update();
-    this.setAudioState();
+  updatePaused = () => {
+    if (this.props.paused) {
+      this.generator.stop();
+    } else {
+      this.generator.start();
+    }
   }
 
   render() {
-    const { intl, label } = this.props;
-    const { duration, initialized, loading, paused, currentTime, showControls } = this.state;
+    const { duration, getCurrentTime, intl, label, loading, onSeekDestinationChange, paused } = this.props;
+    const { initialized, showControls } = this.state;
     const canPlay = ![Infinity, NaN].includes(duration);
 
     return (
@@ -283,9 +298,9 @@ class Musicvideo extends ImmutablePureComponent {
               min={0}
               max={duration}
               step={0.1}
-              value={currentTime}
-              onChange={this.handleChangeCurrentTime}
-              disabled={!initialized || !canPlay}
+              value={getCurrentTime()}
+              onChange={onSeekDestinationChange}
+              disabled={!canPlay}
             />
           </div>
         </div>

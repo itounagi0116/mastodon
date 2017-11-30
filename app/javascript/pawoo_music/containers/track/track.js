@@ -1,17 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import Immutable from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import Musicvideo from '../../components/musicvideo';
+import Musicvideo from '../musicvideo';
 import classNames from 'classnames';
-import { playTrack } from '../../actions/tracks';
+import { changePaused, changeTrackPath } from '../../actions/player';
 import { constructRgbCode } from '../../util/musicvideo';
 
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 
 const mapStateToProps = (state) => ({
-  trackId: state.getIn(['pawoo_music', 'tracks', 'trackId']),
+  pathToTrackBeingPlayed: state.getIn(['pawoo_music', 'player', 'trackPath']),
 });
 
 @connect(mapStateToProps)
@@ -19,49 +20,29 @@ class Track extends ImmutablePureComponent {
 
   static propTypes = {
     fitContain: PropTypes.bool,
-    track:  ImmutablePropTypes.map,
-    trackId: PropTypes.number,
-    onPlayTrack: PropTypes.func,
-    onStopTrack: PropTypes.func,
+    pathToTrackBeingPlayed: ImmutablePropTypes.list,
+    track: ImmutablePropTypes.map.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
 
-  state = {
-    thumbnailView: true,
-  }
-
-  componentWillReceiveProps = ({ trackId }) => {
-    if (!this.state.thumbnailView && trackId !== this.props.track.get('id')) {
-      this.setState({ thumbnailView: true });
-      if (this.props.onStopTrack) {
-        this.props.onStopTrack();
-      }
-    }
-  };
-
   componentWillUnmount () {
-    this.setState({ thumbnailView: true });
-    if (this.props.onStopTrack) {
-      this.props.onStopTrack();
+    const { dispatch, track, pathToTrackBeingPlayed } = this.props;
+
+    if (Immutable.List(['statuses', track.id, 'track']).equals(pathToTrackBeingPlayed)) {
+      dispatch(changePaused(true));
+      dispatch(changeTrackPath(null));
     }
   }
 
   handlePlayClick = () => {
-    const { onPlayTrack, track, dispatch } = this.props;
-    const { thumbnailView } = this.state;
+    const { dispatch, track } = this.props;
 
-    this.setState({ thumbnailView: !thumbnailView });
-    if (thumbnailView) {
-      dispatch(playTrack(track.get('id')));
-      if (onPlayTrack) {
-        onPlayTrack();
-      }
-    }
+    dispatch(changeTrackPath(['statuses', track.get('id'), 'track']));
+    dispatch(changePaused(false));
   }
 
   render() {
-    const { fitContain, track } = this.props;
-    const { thumbnailView } = this.state;
+    const { fitContain, track, pathToTrackBeingPlayed } = this.props;
     if (!track) {
       return null;
     }
@@ -72,15 +53,15 @@ class Track extends ImmutablePureComponent {
 
     return (
       <div className={classNames('track', { 'fit-contain': fitContain })} style={thumbnailStyle}>
-        {thumbnailView ? (
+        {Immutable.List(['statuses', track.get('id'), 'track']).equals(pathToTrackBeingPlayed) ? (
+          <Musicvideo bannerHidden />
+        ) : (
           <div className='thumbnail'>
             <img className='thumbnail-image' src={track.getIn(['video', 'image'], defaultArtwork)} alt='thumbnail' />
             <div className='playbutton' role='button' tabIndex='0' aria-pressed='false' onClick={this.handlePlayClick}>
               <span className='playbutton-icon' />
             </div>
           </div>
-        ) : (
-          <Musicvideo track={track.deleteIn(['video', 'banner'])} />
         )}
       </div>
     );

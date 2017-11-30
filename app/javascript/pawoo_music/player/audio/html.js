@@ -8,6 +8,8 @@
 
 export default class HTMLAudio {
 
+  _duration = NaN;
+
   /*
    * It is known that HTMLAudioElement causes small interruptions on some
    * environments such as Apple Safari when it is used for
@@ -16,61 +18,42 @@ export default class HTMLAudio {
   _forAnalysis = new Audio();
   _forOutput = new Audio();
 
-  duration = NaN;
+  canQueuePlayback = true;
 
-  constructor ({ analyser, onDurationChange, onSeeking, onStart, onStop }) {
+  constructor ({ context, onSourceNodeChange, onDurationChange, onEnded }) {
     this._forAnalysis.crossOrigin = 'anonymous';
     this._forOutput.crossOrigin = 'anonymous';
 
-    /*
-     * Events listed here can be fired by builtin controls provided in some
-     * environments, including Google Chromium on Android and Apple Safari on
-     * iOS.
-     */
+    this._forOutput.addEventListener('ended', onEnded);
     this._forOutput.addEventListener('loadedmetadata', this._handleLoadMetadata);
-    this._forOutput.addEventListener('playing', onStart);
-    this._forOutput.addEventListener('pause', onStop);
-    this._forOutput.addEventListener('seeking', this._handleSeeking);
     this._forOutput.addEventListener('seeked', this._handleSeeked);
-    this._forOutput.addEventListener('waiting', onStop);
 
     this._onDurationChange = onDurationChange;
-    this._onSeeking = onSeeking;
-    this._onStart = onStart;
-    this._onStop = onStop;
 
-    analyser.context
-            .createMediaElementSource(this._forAnalysis)
-            .connect(analyser);
+    onSourceNodeChange(context.createMediaElementSource(this._forAnalysis));
   }
 
   _handleLoadMetadata = () => {
-    if (this._forOutput.duration === Infinity) {
+    if (this._forOutput._duration === Infinity) {
       this._forOutput.currentTime = 9e9;
     } else {
-      this.duration = this._forOutput.duration;
-      this._onDurationChange();
+      this._duration = this._forOutput.duration;
+      this._onDurationChange(this._duration);
     }
-  }
-
-  _handleSeeking = () => {
-    this._onStop();
-    this._onSeeking();
   }
 
   _handleSeeked = () => {
     if (this._forOutput.paused) {
-      if (this.duration !== Infinity) {
+      if (this._duration !== Infinity) {
         return;
       }
 
-      this.duration = this._forOutput.currentTime;
+      this._duration = this._forOutput.currentTime;
+      this._onDurationChange(this._duration);
       this._forOutput.currentTime = 0;
       this._forAnalysis.play();
       this._forOutput.play();
     }
-
-    this._onStart();
   }
 
   changeSource (source) {
@@ -85,55 +68,17 @@ export default class HTMLAudio {
     }
 
     this._forOutput.src = this._forAnalysis.src;
-    this._onStop();
 
-    if (this.autoPlay) {
-      this._forAnalysis.play();
-      this._forOutput.play();
-    }
-
-    this.duration = Infinity;
-    this._onDurationChange();
-  }
-
-  destroy() {
-    this._forAnalysis.pause();
-    this._forOutput.pause();
-    this._forOutput.removeEventListener('loadedmetadata', this._handleLoadMetadata);
-    this._forOutput.removeEventListener('playing', this._onStart);
-    this._forOutput.removeEventListener('pause', this._onStop);
-    this._forOutput.removeEventListener('seeking', this._handleSeeking);
-    this._forOutput.removeEventListener('seeked', this._handleSeeked);
-    this._forOutput.removeEventListener('waiting', this._onStop);
-
-    if (this._forOutput.src.startsWith('blob:')) {
-      URL.revokeObjectURL(this._forOutput.src);
-    }
+    this._duration = Infinity;
+    this._onDurationChange(Infinity);
   }
 
   getCurrentTime () {
     return this._forOutput.currentTime;
   }
 
-  getInitialized() {
-    return this._forOutput.readyState !== this._forOutput.HAVE_NOTHING;
-  }
-
-  getLoading() {
-    return [
-      this._forOutput.NETWORK_IDLE,
-      this._forOutput.NETWORK_LOADING,
-    ].includes(this._forOutput.networkState) && [
-      this._forOutput.HAVE_NOTHING,
-      this._forOutput.HAVE_METADATA,
-    ].includes(this._forOutput.readyState);
-  }
-
-  getPaused() {
-    return this._forOutput.paused;
-  }
-
   pause () {
+    this._forAnalysis.pause();
     this._forOutput.pause();
   }
 

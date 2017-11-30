@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import Immutable from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import PropTypes from 'prop-types';
@@ -36,11 +37,12 @@ import {
   submitTrackCompose,
 } from '../../actions/track_compose';
 import {
-  stopTrack,
-} from '../../actions/tracks';
+  changePaused,
+  changeTrackPath,
+} from '../../actions/player';
 import { makeGetAccount } from '../../../mastodon/selectors';
 import Icon from '../../components/icon';
-import Musicvideo from '../../components/musicvideo';
+import Musicvideo from '../musicvideo';
 import Delay from '../../components/delay';
 import Slider from '../../components/slider';
 import Checkbox from '../../components/checkbox';
@@ -68,6 +70,7 @@ const makeMapStateToProps = () => {
   const mapStateToProps = (state) => ({
     tab: state.getIn(['pawoo_music', 'track_compose', 'tab']),
     track: state.getIn(['pawoo_music', 'track_compose', 'track']),
+    pathToTrackBeingPlayed: state.getIn(['pawoo_music', 'player', 'trackPath']),
     error: state.getIn(['pawoo_music', 'track_compose', 'error']),
     isSubmitting: state.getIn(['pawoo_music', 'track_compose', 'is_submitting']),
     account: getAccount(state, state.getIn(['meta', 'me'])),
@@ -78,8 +81,8 @@ const makeMapStateToProps = () => {
 
 
 const mapDispatchToProps = (dispatch) => ({
-  onStopTrack (value) {
-    dispatch(stopTrack(value));
+  onChangeTrackPath (value) {
+    dispatch(changeTrackPath(value));
   },
 
   onChangeTrackTitle (value) {
@@ -186,6 +189,10 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(changeTrackComposePrivacy(value));
   },
 
+  onPause () {
+    dispatch(changePaused(true));
+  },
+
   onSubmit () {
     dispatch(submitTrackCompose());
   },
@@ -196,7 +203,7 @@ const mapDispatchToProps = (dispatch) => ({
 export default class TrackCompose extends ImmutablePureComponent {
 
   static propTypes = {
-    onStopTrack: PropTypes.func.isRequired,
+    onChangeTrackPath: PropTypes.func.isRequired,
     onChangeTrackTitle: PropTypes.func.isRequired,
     onChangeTrackArtist: PropTypes.func.isRequired,
     onChangeTrackText: PropTypes.func.isRequired,
@@ -222,6 +229,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     onChangeTrackVideoTextColor: PropTypes.func.isRequired,
     onChangeTrackVideoBannerVisibility: PropTypes.func.isRequired,
     onChangeTrackVideoBannerAlpha: PropTypes.func.isRequired,
+    onPause: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
     tab: PropTypes.string.isRequired,
     track: ImmutablePropTypes.map.isRequired,
@@ -245,9 +253,18 @@ export default class TrackCompose extends ImmutablePureComponent {
   trackMusicRef = null;
   trackVideoImageRef = null;
 
-  componentDidMount = () => {
-    this.props.onStopTrack();
-  };
+  componentWillMount () {
+    this.props.onChangeTrackPath(['pawoo_music', 'track_compose', 'track']);
+  }
+
+  componentWillUnmount () {
+    const { onChangeTrackPath, onPause, pathToTrackBeingPlayed } = this.props;
+
+    if (Immutable.List(['pawoo_music', 'track_compose', 'track']).equals(pathToTrackBeingPlayed)) {
+      onPause();
+      onChangeTrackPath(null);
+    }
+  }
 
   componentWillReceiveProps ({ error, isSubmitting, track }) {
     if (track.get('music') === null && this.props.track.get('music') !== null &&
@@ -465,7 +482,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     return (
       <div className='track-compose'>
         <div className='content'>
-          <Musicvideo track={track} label={intl.formatMessage(messages.preview)} autoPlay={false} />
+          <Musicvideo label={intl.formatMessage(messages.preview)} />
           <div className='form-content'>
             <form>
 
