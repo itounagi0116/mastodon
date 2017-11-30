@@ -42,7 +42,7 @@ class OEmbedSerializer < ActiveModel::Serializer
 
   def html
     attributes = {
-      src: embed_short_account_status_url(object.account, object),
+      src: embed_short_account_status_url(object.account, object, extra_params),
       class: 'mastodon-embed',
       style: 'max-width: 100%; border: 0',
       width: width,
@@ -53,18 +53,14 @@ class OEmbedSerializer < ActiveModel::Serializer
   end
 
   def width
-    if object.music.is_a?(Track)
-      '480'
-    else
-      instance_options[:width]
-    end
+    instance_options[:width]
   end
 
   def height
-    if object.music.is_a?(Track)
-      '512'
-    else
-      instance_options[:height]
-    end
+    instance_options[:height]
+  end
+
+  def extra_params
+    instance_options[:extra_params] || {}
   end
 end

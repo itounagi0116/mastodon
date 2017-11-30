@@ -7,7 +7,10 @@ class Api::Web::EmbedsController < Api::BaseController
 
   def create
     status = StatusFinder.new(params[:url]).status
-    render json: status, serializer: OEmbedSerializer, width: 400
+    width = status.music.is_a?(Track) ? '100%' : 400
+    extra_params = params.permit(:hideinfo)
+
+    render json: status, serializer: OEmbedSerializer, width: width, extra_params: extra_params
   rescue ActiveRecord::RecordNotFound
     oembed = OEmbed::Providers.get(params[:url])
     render json: Oj.dump(oembed.fields)

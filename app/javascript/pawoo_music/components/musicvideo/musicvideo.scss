@@ -1,4 +1,5 @@
 .musicvideo {
+  position: relative;
   --controls-container-height: 40px;
 
   .loading {
@@ -23,13 +24,12 @@
   }
 
   .canvas-container {
-    position: relative;
-
     canvas {
       pointer-events: none;
       object-fit: contain;
       width: 100%;
       height: 100%;
+      display: block;
     }
   }
 
@@ -38,22 +38,37 @@
   }
 
   .controls-container {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    opacity: 0;
     overflow: hidden;
     height: 0;
-    transition: height 240ms ease-in-out;
+    transition: opacity 240ms ease-in-out;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0.7));
+    pointer-events: none;
 
     &.visible {
-      height: var(--controls-container-height);
+      height: calc(var(--controls-container-height) * 3);
+      opacity: 0.7;
+
+      .controls {
+        display: flex;
+      }
     }
   }
 
   .controls {
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     padding: var(--padding15);
-    background-color: #000000;
-    border-radius: 0 0 var(--grid) var(--grid);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    pointer-events: auto;
 
     .toggle {
       display:      block;
@@ -70,19 +85,20 @@
 
     .icon {
       svg {
-        stroke: #585858;
+        stroke: #ffffff;
       }
     }
 
     .rc-slider {
       .rc-slider-track {
-        background-color: #d6d6d6;
+        background-color: #e00000;
       }
       .rc-slider-rail {
-        background-color: #4a4a4a;
+        background-color: #ffffff;
       }
       .rc-slider-handle {
-        border: solid 2px #000000;
+        background-color: #e00000;
+        border: solid 2px #e00000;
       }
     }
   }

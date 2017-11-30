@@ -27,13 +27,14 @@
 
       .playbutton-icon {
         display: block;
-        height:     var(--iconsize40);
-        width:      var(--iconsize40);
+        height: var(--iconsize50);
+        width: var(--iconsize50);
+        background-image: url('../../../images/pawoo_music/play.png');
+        background-size: cover;
       }
 
       &:hover .playbutton-icon {
-        opacity:    var(--hover-opacity);
-        transition: var(--hover-transition);
+        background-image: url('../../../images/pawoo_music/play_hover.png');
       }
     }
   }
@@ -53,7 +54,12 @@
 
       .canvas-container {
         width: 100%;
-        height: calc(100% - var(--controls-container-height));
+        height: 100%;
+
+        * {
+          width: 100%;
+          height: 100%;
+        }
       }
     }
   }
