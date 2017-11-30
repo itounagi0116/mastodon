@@ -1,0 +1,56 @@
+.embed-musicvideo {
+  position: relative;
+  height: auto;
+
+  .track {
+    width: 100%;
+    height: calc(100% - var(--padding5-value) * 2 - var(--text20-line) - var(--text40-line));
+  }
+
+  .meta {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: var(--padding10);
+    box-sizing: border-box;
+
+    .artist, .title, .icon-link {
+      display: inline-block;
+      font-weight: 100;
+      padding: var(--padding5);
+
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .artist {
+      color: #cccccc;
+      font-size: var(--text10-font);
+      line-height: var(--text10-line);
+      text-decoration: underline;
+    }
+
+    .title {
+      color: #ffffff;
+      font-size: var(--text20-font);
+      line-height: var(--text20-line);
+      margin: var(--verticalspace10);
+    }
+
+    .icon-link {
+      opacity: 0;
+      transition: opacity 240ms ease-in-out;
+      background-color: #e00000;
+      border-radius: var(--iconsize35);
+
+      &.visible, &:hover {
+        opacity: 1;
+      }
+
+      > img {
+        display: block;
+        width: var(--iconsize35);
+        height: var(--iconsize35);
+      }
+    }
+  }
+}

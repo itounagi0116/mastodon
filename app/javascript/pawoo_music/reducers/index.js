@@ -4,6 +4,7 @@ import album_compose from './album_compose';
 import track_compose from './track_compose';
 import tracks from './tracks';
 import account_gallery from './account_gallery';
+import player from './player';
 import account_tracks from './account_tracks';
 import column from './column';
 import timeline from './timeline';
@@ -15,6 +16,7 @@ export default combineReducers({
   track_compose,
   tracks,
   account_gallery,
+  player,
   account_tracks,
   column,
   timeline,

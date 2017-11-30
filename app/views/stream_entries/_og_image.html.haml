@@ -17,6 +17,12 @@
       - unless media.file.meta.nil?
         = opengraph 'og:video:width', media.file.meta['small']['width']
         = opengraph 'og:video:height', media.file.meta['small']['height']
+- elsif activity.is_a?(Status) && activity.music.is_a?(Track)
+  = opengraph 'og:image', full_asset_url(activity.music.video_image.url(:small))
+  = opengraph 'og:image:type', activity.music.video_image_content_type
+  - unless activity.music.video_image.meta.nil?
+    = opengraph 'og:image:width', activity.music.video_image.meta['small']['width']
+    = opengraph 'og:image:height', activity.music.video_image.meta['small']['height']
 - else
   = opengraph 'og:image', full_asset_url(account.avatar.url(:original))
   = opengraph 'og:image:width', '120'

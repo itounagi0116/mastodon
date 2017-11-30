@@ -1,4 +1,7 @@
+const { ipcRenderer, remote, webFrame } = require('electron');
+
 onerror = message => {
+  ipcRenderer.sendSync('error');
   console.error(message);
   close();
 
@@ -6,6 +9,7 @@ onerror = message => {
 };
 
 onunhandledrejection = event => { // eslint-disable-line no-undef
+  ipcRenderer.sendSync('error');
   console.error(event.reason);
   close();
 
@@ -13,7 +17,6 @@ onunhandledrejection = event => { // eslint-disable-line no-undef
 };
 
 const { RgbaEmitter } = require('musicvideo-generator');
-const { remote, webFrame } = require('electron');
 const path = require('path');
 const url = require('url');
 const yargs = require('yargs');
@@ -171,6 +174,14 @@ fetch(url.format({ pathname: path.resolve(argv._[0]), protocol: 'file:' }))
     emitter.pipe(process.stdout, { end: false });
 
     emitter.on('end', () => process.stdout.end(close));
-    emitter.on('error', console.error);
-    process.stdout.on('error', console.error);
+
+    emitter.on('error', error => {
+      ipcRenderer.sendSync('error');
+      console.error(error);
+    });
+
+    process.stdout.on('error', error => {
+      ipcRenderer.sendSync('error');
+      console.error(error);
+    });
   });

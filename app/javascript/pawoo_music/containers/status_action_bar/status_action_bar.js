@@ -3,9 +3,10 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
+import ImmutablePureComponent from 'react-immutable-pure-component';
 import Icon from '../../components/icon';
 import DropdownMenuContainer from '../dropdown_menu';
-import ImmutablePureComponent from 'react-immutable-pure-component';
+import EmbedModalContent from '../../components/embed_modal_content';
 import { makeGetStatus } from '../../../mastodon/selectors';
 import {
   replyCompose,
@@ -26,7 +27,7 @@ import {
 import { muteStatus, unmuteStatus, deleteStatus } from '../../../mastodon/actions/statuses';
 import { initReport } from '../../../mastodon/actions/reports';
 import { openModal } from '../../../mastodon/actions/modal';
-import { generateTrackMv } from '../../actions/tracks';
+import { generateMusicvideo } from '../../actions/musicvideo';
 import { showTrackComposeModal, setTrackComposeData } from '../../actions/track_compose';
 import { isMobile } from '../../util/is_mobile';
 
@@ -48,6 +49,7 @@ const messages = defineMessages({
   unmuteConversation: { id: 'status.unmute_conversation', defaultMessage: 'Unmute conversation' },
   pin: { id: 'status.pin', defaultMessage: 'Pin to account page' },
   unpin: { id: 'status.unpin', defaultMessage: 'Unpin from account page' },
+  embed: { id: 'status.embed', defaultMessage: 'Embed' },
 
   resolution720x720: { id: 'status.resolution.720x720', defaultMessage: '720x720 (for Twitter, etc.)' },
   resolution1920x1080: { id: 'status.resolution.1920x1080', defaultMessage: '1920x1080 (for YouTube, etc.)' },
@@ -202,6 +204,11 @@ export default class StatusActionBar extends ImmutablePureComponent {
     }));
   }
 
+  handleEmbed = () => {
+    const { dispatch, status } = this.props;
+    dispatch(openModal('UNIVERSAL', { children: <EmbedModalContent url={status.get('url')} isTrack={status.has('track')} /> }));
+  }
+
   handleReport = () => {
     const { dispatch, status } = this.props;
     dispatch(initReport(status.get('account'), status));
@@ -227,7 +234,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
     dispatch(openModal('CONFIRM', {
       message: <FormattedMessage id='confirmations.generate_mv.message' defaultMessage='Generating animation takes time. When generation is completed, a notification is sent by e-mail.' />,
       confirm: intl.formatMessage(messages.generateMvConfirm),
-      onConfirm: () => dispatch(generateTrackMv(status.get('id'), resolution)),
+      onConfirm: () => dispatch(generateMusicvideo(status.get('id'), resolution)),
     }));
   }
 
@@ -250,6 +257,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
     const { status, me, isUserAdmin, intl, withDismiss } = this.props;
     const { schedule } = this.context;
     const favouriteDisabled = schedule;
+    const publicStatus = ['public', 'unlisted'].includes(status.get('visibility'));
     const reblogDisabled = status.get('visibility') === 'private' || status.get('visibility') === 'direct' || schedule;
     const mutingConversation = status.get('muted');
 
@@ -297,6 +305,11 @@ export default class StatusActionBar extends ImmutablePureComponent {
 
 
     moreMenu.push({ text: intl.formatMessage(messages.open), to: `/@${status.getIn(['account', 'acct'])}/${status.get('id')}` });
+
+    if (publicStatus) {
+      moreMenu.push({ text: intl.formatMessage(messages.embed), action: this.handleEmbed });
+    }
+
     moreMenu.push(null);
 
     if (withDismiss) {
