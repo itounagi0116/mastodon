@@ -1,33 +1,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import querystring from 'querystring';
 import { debounce } from 'lodash';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
-import Track from '../../containers/track';
+import Track from '../track';
 
 import pawooIcon from '../../../images/pawoo_music/pawoo_icon.svg';
 
-import '../../containers/app/app.scss';
+import '../app/app.scss';
 
+const mapStateToProps = (state, { statusId }) => ({
+  status: state.getIn(['statuses', statusId]),
+  trackIsMounted: Immutable.List(['statuses', statusId, 'track']).equals(
+    state.getIn(['pawoo_music', 'player', 'trackPath'])),
+});
+
+@connect(mapStateToProps)
 export default class EmbedMusicvideo extends React.PureComponent {
 
   static propTypes = {
-    status: PropTypes.object.isRequired,
+    status: ImmutablePropTypes.map.isRequired,
+    trackIsMounted: PropTypes.bool.isRequired,
   }
 
   state = {
-    isPlay: false,
     showIcon: false,
   };
-
-  handlePlayTrack = () => {
-    this.setState({ isPlay: true });
-  }
-
-  handleStopTrack = () => {
-    this.setState({ isPlay: false });
-  }
 
   handleMouseEnter = () => {
     this.setState({ showIcon: true });
@@ -48,12 +49,15 @@ export default class EmbedMusicvideo extends React.PureComponent {
   }, 3000);
 
   renderInfo () {
-    const { status: { id, account, track } } = this.props;
-    const { isPlay, showIcon } = this.state;
+    const { status, trackIsMounted } = this.props;
+    const { showIcon } = this.state;
+    const id = status.get('id');
+    const account = status.get('account');
+    const track = status.get('track');
     const params = location.search.length > 1 ? querystring.parse(location.search.substr(1)) : {};
     const hideInfo = params.hideinfo && Number(params.hideinfo) === 1;
 
-    if (isPlay) {
+    if (trackIsMounted) {
       return (
         <div className='meta'>
           <a className={classNames('icon-link', { visible: showIcon })} href={`/@${account.acct}/${id}`} target='_blank'>
@@ -63,11 +67,11 @@ export default class EmbedMusicvideo extends React.PureComponent {
       );
     }
 
-    if (!isPlay && !hideInfo) {
+    if (!hideInfo) {
       return (
         <div className='meta'>
-          <a className='artist' href={`/@${account.acct}`}       target='_blank'>{track.artist}</a><br />
-          <a className='title'  href={`/@${account.acct}/${id}`} target='_blank'>{track.title} </a>
+          <a className='artist' href={`/@${account.acct}`}       target='_blank'>{track.get('artist')}</a><br />
+          <a className='title'  href={`/@${account.acct}/${id}`} target='_blank'>{track.get('title')} </a>
         </div>
       );
     }
@@ -78,7 +82,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
   }
 
   render () {
-    const { status: { id, track } } = this.props;
+    const { status } = this.props;
 
     return (
       <div
@@ -87,7 +91,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
         onMouseMove={this.handleMouseMove}
         onMouseLeave={this.handleMouseLeave}
       >
-        <Track track={Immutable.fromJS(track).set('id', id)} fitContain onPlayTrack={this.handlePlayTrack} onStopTrack={this.handleStopTrack} />
+        <Track track={status.get('track')} fitContain />
         {this.renderInfo()}
       </div>
     );
