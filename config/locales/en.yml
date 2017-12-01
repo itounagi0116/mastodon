@@ -5,8 +5,8 @@ en:
     about_this: About
     closed_registrations: Registrations are currently closed on this instance. However! You can find a different instance to make an account on and get access to the very same network from there.
     contact: Contact
-    contact_body_mastodon: From here inside Pawoo
-    contact_body_twitter: From here inside Twitter
+    contact_body_mastodon: Via Pawoo Music
+    contact_body_twitter: Via Twitter
     contact_missing: Not set
     contact_unavailable: N/A
     description_headline: What is %{domain}?
