@@ -14,7 +14,7 @@ export default class Timeline extends PureComponent {
 
   static propTypes = {
     target: PropTypes.string.isRequired,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     gallery: PropTypes.node.isRequired,
     galleryStyle: PropTypes.object,
   }

@@ -4,24 +4,28 @@ import Immutable from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 import { debounce } from 'lodash';
-import { refreshAccountTimeline, expandAccountTimeline, refreshPinnedStatusTimeline } from '../../../mastodon/actions/timelines';
+import MissingIndicator from '../../../mastodon/components/missing_indicator';
 import AccountHeaderContainer from '../account_header';
 import AccountTimelineContainer from '../account_timeline';
 import StatusList from '../../components/status_list';
+import Timeline from '../../components/timeline';
 import { makeGetAccount } from '../../../mastodon/selectors';
 import MediaPostContainer from '../media_post';
-import { updateTimelineTitle } from '../../actions/timeline';
-import { changeFooterType } from '../../actions/footer';
-import { displayNameEllipsis } from '../../util/displayname_ellipsis';
+import {
+  openAccountGallery,
+  changeAccountGalleryAccount,
+  expandAccountGalleryTimeline,
+} from '../../actions/account_gallery';
 
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
 
-  const mapStateToProps = (state, props) => {
-    const acct = props.match.params.acct;
-    const accountId = Number(state.getIn(['pawoo_music', 'acct_map', acct]));
+  const mapStateToProps = (state) => {
+    const accountAcct = state.getIn(['pawoo_music', 'account_gallery', 'acct']);
+    const accountId = state.getIn(['pawoo_music', 'account_gallery', 'id']);
 
     return {
+      accountAcct,
       accountId,
       account: getAccount(state, accountId),
       statusIds: state.getIn(['timelines', `account:${accountId}:music`, 'items'], Immutable.List()),
@@ -40,9 +44,11 @@ export default class AccountGallery extends PureComponent {
 
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
-    accountId: PropTypes.number.isRequired,
-    account: ImmutablePropTypes.map.isRequired,
+    accountAcct: PropTypes.string,
+    accountId: PropTypes.number,
+    account: ImmutablePropTypes.map,
     statusIds: ImmutablePropTypes.list.isRequired,
+    match: PropTypes.object.isRequired,
     me: PropTypes.number,
     isLoading: PropTypes.bool,
     hasMore: PropTypes.bool,
@@ -59,61 +65,59 @@ export default class AccountGallery extends PureComponent {
   }
 
   componentWillMount () {
-    const { dispatch, accountId, account } = this.props;
-    const displayName = displayNameEllipsis(account);
+    const { dispatch, match } = this.props;
 
-    dispatch(refreshPinnedStatusTimeline(accountId, { onlyMusics: true }));
-    dispatch(refreshAccountTimeline(accountId, { onlyMusics: true }));
-    dispatch(updateTimelineTitle(`${displayName} のタイムライン`)); /* TODO: intl */
-    dispatch(changeFooterType('lobby_gallery'));
+    dispatch(changeAccountGalleryAccount(match.params.acct));
+    dispatch(openAccountGallery());
   }
 
-  componentWillReceiveProps (nextProps) {
-    const { dispatch } = this.props;
-
-    if (nextProps.accountId !== this.props.accountId && nextProps.accountId) {
-      const { accountId, account } = nextProps;
-      const displayName = displayNameEllipsis(account);
-
-      dispatch(refreshPinnedStatusTimeline(accountId, { onlyMusics: true }));
-      dispatch(refreshAccountTimeline(accountId, { onlyMusics: true }));
-      dispatch(updateTimelineTitle(`${displayName} のタイムライン`)); /* TODO: intl */
+  componentWillReceiveProps ({ match }) {
+    if (this.props.match.params.acct !== match.params.acct) {
+      this.props.dispatch(changeAccountGalleryAccount(match.params.acct));
     }
   }
 
   handleScrollToBottom = debounce(() => {
-    const { dispatch, isLoading, hasMore, accountId } = this.props;
+    const { dispatch, isLoading, hasMore } = this.props;
     if (!isLoading && hasMore) {
-      dispatch(expandAccountTimeline(accountId, { onlyMusics: true }));
+      dispatch(expandAccountGalleryTimeline());
     }
   }, 300, { leading: true })
 
   render () {
-    const { accountId, account, statusIds, me, pinnedStatusIds, isLoading, hasMore } = this.props;
+    const { accountAcct, accountId, account, statusIds, me, pinnedStatusIds, isLoading, hasMore } = this.props;
     const uniqueStatusIds = pinnedStatusIds.concat(statusIds).toOrderedSet().toList();
 
-    const prepend = (
-      <div className='prepend'>
-        <AccountHeaderContainer account={account} />
-        {me === accountId && <MediaPostContainer />}
-      </div>
-    );
+    if (accountAcct) {
+      if (accountId) {
+        const prepend = account && (
+          <div className='prepend'>
+            <AccountHeaderContainer account={account} />
+            {me === accountId && <MediaPostContainer />}
+          </div>
+        );
 
-    const gallery = (
-      <StatusList
-        scrollKey='account_gallery'
-        statusIds={uniqueStatusIds}
-        hasMore={hasMore}
-        isLoading={isLoading}
-        isGallery
-        prepend={prepend}
-        onScrollToBottom={this.handleScrollToBottom}
-      />
-    );
+        const gallery = (
+          <StatusList
+            scrollKey='account_gallery'
+            statusIds={uniqueStatusIds}
+            hasMore={hasMore}
+            isLoading={isLoading}
+            isGallery
+            prepend={prepend}
+            onScrollToBottom={this.handleScrollToBottom}
+          />
+        );
 
-    return (
-      <AccountTimelineContainer accountId={accountId} gallery={gallery} />
-    );
+        return (
+          <AccountTimelineContainer accountId={accountId} gallery={gallery} />
+        );
+      } else {
+        return <Timeline gallery={<MissingIndicator />} />;
+      }
+    } else {
+      return null;
+    }
   }
 
 };

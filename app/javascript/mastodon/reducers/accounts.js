@@ -1,4 +1,7 @@
 import {
+  ACCOUNT_GALLERY_ACCOUNTS_FETCH_SUCCESS,
+} from '../../pawoo_music/actions/account_gallery';
+import {
   ACCOUNT_FETCH_SUCCESS,
   FOLLOWERS_FETCH_SUCCESS,
   FOLLOWERS_EXPAND_SUCCESS,
@@ -109,6 +112,7 @@ export default function accounts(state = initialState, action) {
   case ACCOUNT_FETCH_SUCCESS:
   case NOTIFICATIONS_UPDATE:
     return normalizeAccount(state, action.account);
+  case ACCOUNT_GALLERY_ACCOUNTS_FETCH_SUCCESS:
   case FOLLOWERS_FETCH_SUCCESS:
   case FOLLOWERS_EXPAND_SUCCESS:
   case FOLLOWING_FETCH_SUCCESS:
