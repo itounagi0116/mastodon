@@ -7,18 +7,26 @@ import { debounce } from 'lodash';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import Track from '../track';
+import { makeGetStatus } from '../../../mastodon/selectors';
 
 import pawooIcon from '../../../images/pawoo_music/pawoo_icon.svg';
 
 import '../app/app.scss';
 
-const mapStateToProps = (state, { statusId }) => ({
-  status: state.getIn(['statuses', statusId]),
-  trackIsMounted: Immutable.List(['statuses', statusId, 'track']).equals(
-    state.getIn(['pawoo_music', 'player', 'trackPath'])),
-});
+const makeMapStateToProps = () => {
+  const getStatus = makeGetStatus();
 
-@connect(mapStateToProps)
+  const mapStateToProps = (state, { statusId }) => ({
+    status: getStatus(state, statusId),
+    trackIsMounted: Immutable.List(['statuses', statusId, 'track']).equals(
+      state.getIn(['pawoo_music', 'player', 'trackPath'])
+    ),
+  });
+
+  return mapStateToProps;
+};
+
+@connect(makeMapStateToProps)
 export default class EmbedMusicvideo extends React.PureComponent {
 
   static propTypes = {
@@ -52,7 +60,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
     const { status, trackIsMounted } = this.props;
     const { showIcon } = this.state;
     const id = status.get('id');
-    const account = status.get('account');
+    const acct = status.getIn(['account', 'acct']);
     const track = status.get('track');
     const params = location.search.length > 1 ? querystring.parse(location.search.substr(1)) : {};
     const hideInfo = params.hideinfo && Number(params.hideinfo) === 1;
@@ -60,7 +68,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
     if (trackIsMounted) {
       return (
         <div className='meta'>
-          <a className={classNames('icon-link', { visible: showIcon })} href={`/@${account.acct}/${id}`} target='_blank'>
+          <a className={classNames('icon-link', { visible: showIcon })} href={`/@${acct}/${id}`} target='_blank'>
             <img src={pawooIcon} alt='Pawoo Music' />
           </a>
         </div>
@@ -70,8 +78,8 @@ export default class EmbedMusicvideo extends React.PureComponent {
     if (!hideInfo) {
       return (
         <div className='meta'>
-          <a className='artist' href={`/@${account.acct}`}       target='_blank'>{track.get('artist')}</a><br />
-          <a className='title'  href={`/@${account.acct}/${id}`} target='_blank'>{track.get('title')} </a>
+          <a className='artist' href={`/@${acct}`}       target='_blank'>{track.get('artist')}</a><br />
+          <a className='title'  href={`/@${acct}/${id}`} target='_blank'>{track.get('title')} </a>
         </div>
       );
     }
