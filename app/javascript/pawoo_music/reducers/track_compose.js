@@ -66,7 +66,7 @@ const initialState = Immutable.fromJS({
       lightleaks: { visible: false, alpha: 1, interval: 0 },
       spectrum: {
         visible: true,
-        mode: 2,
+        mode: 1,
         alpha: 1,
         color: 0xffffff,
       },
