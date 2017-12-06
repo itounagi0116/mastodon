@@ -5,6 +5,7 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { SketchPicker } from 'react-color';
+import { Scrollbars } from 'react-custom-scrollbars';
 import { connect } from 'react-redux';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import {
@@ -55,6 +56,7 @@ import {
 import PrivacyDropdown from '../../../mastodon/features/compose/components/privacy_dropdown';
 import GenreTagPicker from '../../components/genre_tag_picker';
 import ColorTrigger from '../../components/color_trigger';
+import { isMobile } from '../../util/is_mobile';
 
 const messages = defineMessages({
   preview: { id: 'pawoo_music.track_compose.preview', defaultMessage: 'Video preview' },
@@ -63,6 +65,24 @@ const messages = defineMessages({
 });
 const allowedPrivacy = ['public', 'unlisted'];
 const isUserTouching = () => false;
+const mobile = isMobile();
+
+class Scrollable extends ImmutablePureComponent {
+
+  renderThumbVertical({ className, ...props }) {
+    return <div className={[className, 'thumb-vetical'].join(' ')} {...props} />;
+  }
+
+  render() {
+    return mobile ? this.props.children : (
+      <Scrollbars
+        className='scrollable'
+        renderThumbVertical={this.renderThumbVertical}
+      >{this.props.children}</Scrollbars>
+    );
+  }
+
+}
 
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
@@ -250,6 +270,39 @@ export default class TrackCompose extends ImmutablePureComponent {
     visibleColorPicker: null,
   };
 
+  colorPickers = {
+    background: {
+      path: ['video', 'backgroundcolor'],
+      handleChange: ({ rgb }) => {
+        this.props.onChangeTrackVideoBackgroundColor(extractRgbFromRgbObject(rgb));
+      },
+    },
+
+    particle: {
+      path: ['video', 'particle', 'color'],
+      handleChange: ({ rgb }) => {
+        this.props.onChangeTrackVideoParticleAlpha(rgb.a);
+        this.props.onChangeTrackVideoParticleColor(extractRgbFromRgbObject(rgb));
+      },
+    },
+
+    spectrum: {
+      path: ['video', 'spectrum', 'color'],
+      handleChange: ({ rgb }) => {
+        this.props.onChangeTrackVideoSpectrumAlpha(rgb.a);
+        this.props.onChangeTrackVideoSpectrumColor(extractRgbFromRgbObject(rgb));
+      },
+    },
+
+    text: {
+      path: ['video', 'text', 'color'],
+      handleChange: ({ rgb }) => {
+        this.props.onChangeTrackVideoTextAlpha(rgb.a);
+        this.props.onChangeTrackVideoTextColor(extractRgbFromRgbObject(rgb));
+      },
+    },
+  };
+
   trackMusicRef = null;
   trackVideoImageRef = null;
 
@@ -415,7 +468,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     let node = event.target;
     let inside = false;
     while (node.tagName !== 'BODY') {
-      if (/track-compose-effect-color-wrap/.test(node.className)) {
+      if (/color-picker/.test(node.className)) {
         inside = true;
         break;
       }
@@ -480,130 +533,130 @@ export default class TrackCompose extends ImmutablePureComponent {
     const { trackMusicTitle, trackVideoImageTitle } = this.state;
 
     return (
-      <div className='track-compose'>
+      <div className={classNames('track-compose', { mobile })}>
         <div className='content'>
           <div className='musicvideo-preview'>
             <Musicvideo label={intl.formatMessage(messages.preview)} />
           </div>
           <div className='form-content'>
-            <form>
+            <Scrollable>
+              <form>
 
-              {/* 音楽選択から画像選択まで */}
-              <fieldset>
-                <legend>
-                  <div className={classNames('track-compose-file-upload', { settled: track.get('music') instanceof File })}>
-                    <div className='track-compose-file-upload-body'>
-                      <Icon icon='music' />
-                      <span className='text'>
-                        {trackMusicTitle ? trackMusicTitle : (
-                          <FormattedMessage
-                            id='pawoo_music.track_compose.basic.music'
-                            defaultMessage='Select audio'
-                          />
-                        )}
-                      </span>
-                      <input
-                        accept='audio/mpeg'
-                        onChange={this.handleChangeTrackMusic}
-                        ref={this.setTrackMusicRef}
-                        required
-                        type='file'
-                      />
+                {/* 音楽選択から画像選択まで */}
+                <fieldset>
+                  <legend>
+                    <div className={classNames('track-compose-file-upload', { settled: track.get('music') instanceof File })}>
+                      <div className='track-compose-file-upload-body'>
+                        <Icon icon='music' />
+                        <span className='text'>
+                          {trackMusicTitle ? trackMusicTitle : (
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.basic.music'
+                              defaultMessage='Select audio'
+                            />
+                          )}
+                        </span>
+                        <input
+                          accept='audio/mpeg'
+                          onChange={this.handleChangeTrackMusic}
+                          ref={this.setTrackMusicRef}
+                          required
+                          type='file'
+                        />
+                      </div>
                     </div>
-                  </div>
-                </legend>
+                  </legend>
 
-                <legend>
-                  <div className='track-compose-text-input'>
-                    <label className=''>
-                      {this.props.track.get('title').length === 0 && (
-                        <span className='text'>
-                          <FormattedMessage
-                            id='pawoo_music.track_compose.basic.title'
-                            defaultMessage='Title'
-                          />
-                        </span>
-                      )}
-                      <input
-                        maxLength='128'
-                        onChange={this.handleChangeTrackTitle}
-                        required
-                        size='32'
-                        type='text'
-                        value={this.props.track.get('title')}
-                      />
-                    </label>
-                  </div>
-                </legend>
-
-                <legend>
-                  <div className='track-compose-text-input'>
-                    <label className=''>
-                      {this.props.track.get('artist').length === 0 && (
-                        <span className='text'>
-                          <FormattedMessage
-                            id='pawoo_music.track_compose.basic.artist'
-                            defaultMessage='Artist'
-                          />
-                        </span>
-                      )}
-                      <input
-                        maxLength='128'
-                        onChange={this.handleChangeTrackArtist}
-                        required
-                        size='32'
-                        type='text'
-                        value={this.props.track.get('artist')}
-                      />
-                    </label>
-                  </div>
-                </legend>
-
-                <legend>
-                  <div className='track-compose-text-textarea'>
-                    <label className=''>
-                      {this.props.track.get('text').length === 0 && (
-                        <span className='text'>
-                          <FormattedMessage
-                            id='pawoo_music.track_compose.basic.details'
-                            defaultMessage='Details'
-                          />
-                        </span>
-                      )}
-                      <textarea
-                        maxLength='500'
-                        onChange={this.handleChangeTrackText}
-                        value={this.props.track.get('text')}
-                      />
-                    </label>
-                  </div>
-                  <GenreTagPicker onSelectGenre={this.handleSelectGenre} />
-                </legend>
-
-                <legend>
-                  <div className={classNames('track-compose-file-upload', { settled: track.getIn(['video', 'image']) instanceof File })}>
-                    <div className='track-compose-file-upload-body'>
-                      <Icon icon='image' />
-                      <span className='text'>
-                        {trackVideoImageTitle ? trackVideoImageTitle : (
-                          <FormattedMessage
-                            id='pawoo_music.track_compose.video.image'
-                            defaultMessage='Image'
-                          />
+                  <legend>
+                    <div className='track-compose-text-input'>
+                      <label className=''>
+                        {this.props.track.get('title').length === 0 && (
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.basic.title'
+                              defaultMessage='Title'
+                            />
+                          </span>
                         )}
-                      </span>
-                      <input
-                        accept='image/jpeg,image/png'
-                        onChange={this.handleChangeTrackVideoImage}
-                        ref={this.setTrackVideoImageRef}
-                        type='file'
-                      />
+                        <input
+                          maxLength='128'
+                          onChange={this.handleChangeTrackTitle}
+                          required
+                          size='32'
+                          type='text'
+                          value={this.props.track.get('title')}
+                        />
+                      </label>
                     </div>
-                  </div>
-                </legend>
-              </fieldset>
+                  </legend>
 
-              <label className='track-compose-effect-color'>
+                  <legend>
+                    <div className='track-compose-text-input'>
+                      <label className=''>
+                        {this.props.track.get('artist').length === 0 && (
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.basic.artist'
+                              defaultMessage='Artist'
+                            />
+                          </span>
+                        )}
+                        <input
+                          maxLength='128'
+                          onChange={this.handleChangeTrackArtist}
+                          required
+                          size='32'
+                          type='text'
+                          value={this.props.track.get('artist')}
+                        />
+                      </label>
+                    </div>
+                  </legend>
+
+                  <legend>
+                    <div className='track-compose-text-textarea'>
+                      <label className=''>
+                        {this.props.track.get('text').length === 0 && (
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.basic.details'
+                              defaultMessage='Details'
+                            />
+                          </span>
+                        )}
+                        <textarea
+                          maxLength='500'
+                          onChange={this.handleChangeTrackText}
+                          value={this.props.track.get('text')}
+                        />
+                      </label>
+                    </div>
+                    <GenreTagPicker onSelectGenre={this.handleSelectGenre} />
+                  </legend>
+
+                  <legend>
+                    <div className={classNames('track-compose-file-upload', { settled: track.getIn(['video', 'image']) instanceof File })}>
+                      <div className='track-compose-file-upload-body'>
+                        <Icon icon='image' />
+                        <span className='text'>
+                          {trackVideoImageTitle ? trackVideoImageTitle : (
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.image'
+                              defaultMessage='Image'
+                            />
+                          )}
+                        </span>
+                        <input
+                          accept='image/jpeg,image/png'
+                          onChange={this.handleChangeTrackVideoImage}
+                          ref={this.setTrackVideoImageRef}
+                          type='file'
+                        />
+                      </div>
+                    </div>
+                  </legend>
+                </fieldset>
+
                 <div className='horizontal'>
                   <span className='text'>
                     <FormattedMessage
@@ -611,378 +664,323 @@ export default class TrackCompose extends ImmutablePureComponent {
                       defaultMessage='Background color'
                     />
                   </span>
-                  <div className='track-compose-effect-color-wrap'>
-                    <ColorTrigger
-                      alpha={1}
-                      color={this.props.track.getIn(['video', 'backgroundcolor'])}
-                      onClick={this.handleToggleBackgroundColorPickerVisible}
-                    />
-                    <Delay>
-                      {this.state.visibleColorPicker === 'background' && (
-                        <div className='track-compose-effect-color-content'>
-                          <SketchPicker
-                            color={constructRgbObject(this.props.track.getIn(['video', 'backgroundcolor']), 1)}
-                            disableAlpha
-                            onChange={this.handleChangeTrackVideoBackgroundColor}
-                          />
-                        </div>
-                      )}
-                    </Delay>
-                  </div>
+                  <ColorTrigger
+                    alpha={1}
+                    color={this.props.track.getIn(['video', 'backgroundcolor'])}
+                    onClick={this.handleToggleBackgroundColorPickerVisible}
+                  />
                 </div>
-              </label>
 
-              {/* Spectrum */}
-              <fieldset>
-                <legend>
-                  <label className='horizontal'>
-                    <Checkbox checked={this.props.track.getIn(['video', 'spectrum', 'visible'])} onChange={this.handleChangeTrackVideoSpectrumVisibility}>
-                      <FormattedMessage
-                        id='pawoo_music.track_compose.video.spectrum'
-                        defaultMessage='Spectrum'
-                      />
-                    </Checkbox>
-                  </label>
-                </legend>
+                {/* Spectrum */}
+                <fieldset>
+                  <legend>
+                    <label className='horizontal'>
+                      <Checkbox checked={this.props.track.getIn(['video', 'spectrum', 'visible'])} onChange={this.handleChangeTrackVideoSpectrumVisibility}>
+                        <FormattedMessage
+                          id='pawoo_music.track_compose.video.spectrum'
+                          defaultMessage='Spectrum'
+                        />
+                      </Checkbox>
+                    </label>
+                  </legend>
 
-                <Delay duration={480} className='legend'>
-                  {this.props.track.getIn(['video', 'spectrum', 'visible']) && (
-                    <legend className='track-compose-effect'>
-                      <div className='horizontal'>
-                        <span className='text'>
-                          <FormattedMessage
-                            id='pawoo_music.track_compose.video.spectrum_form'
-                            defaultMessage='Form'
-                          />
-                        </span>
-                        <div className='horizontal track-compose-radio'>
-                          <Checkbox circled value='1' checked={this.props.track.getIn(['video', 'spectrum', 'mode']) === 1} onChange={this.handleChangeTrackVideoSpectrumMode}>
+                  <Delay duration={480} className='legend'>
+                    {this.props.track.getIn(['video', 'spectrum', 'visible']) && (
+                      <legend className='track-compose-effect'>
+                        <div className='horizontal'>
+                          <span className='text'>
                             <FormattedMessage
-                              id='pawoo_music.track_compose.video.circle_columns'
-                              defaultMessage='Columns around circle'
+                              id='pawoo_music.track_compose.video.spectrum_form'
+                              defaultMessage='Form'
                             />
-                          </Checkbox>
-                          <Checkbox circled value='2' checked={this.props.track.getIn(['video', 'spectrum', 'mode']) === 2} onChange={this.handleChangeTrackVideoSpectrumMode}>
-                            <FormattedMessage
-                              id='pawoo_music.track_compose.video.circle'
-                              defaultMessage='Circle'
-                            />
-                          </Checkbox>
-                          <Checkbox circled value='0' checked={this.props.track.getIn(['video', 'spectrum', 'mode']) === 0} onChange={this.handleChangeTrackVideoSpectrumMode}>
-                            <FormattedMessage
-                              id='pawoo_music.track_compose.video.bottom_columns'
-                              defaultMessage='Columns at the bottom'
-                            />
-                          </Checkbox>
-                          <Checkbox circled value='3' checked={this.props.track.getIn(['video', 'spectrum', 'mode']) === 3} onChange={this.handleChangeTrackVideoSpectrumMode}>
-                            <FormattedMessage
-                              id='pawoo_music.track_compose.video.bottom_fill'
-                              defaultMessage='Filled graph at the bottom'
-                            />
-                          </Checkbox>
+                          </span>
+                          <div className='horizontal track-compose-radio'>
+                            <Checkbox circled value='1' checked={this.props.track.getIn(['video', 'spectrum', 'mode']) === 1} onChange={this.handleChangeTrackVideoSpectrumMode}>
+                              <FormattedMessage
+                                id='pawoo_music.track_compose.video.circle_columns'
+                                defaultMessage='Columns around circle'
+                              />
+                            </Checkbox>
+                            <Checkbox circled value='2' checked={this.props.track.getIn(['video', 'spectrum', 'mode']) === 2} onChange={this.handleChangeTrackVideoSpectrumMode}>
+                              <FormattedMessage
+                                id='pawoo_music.track_compose.video.circle'
+                                defaultMessage='Circle'
+                              />
+                            </Checkbox>
+                            <Checkbox circled value='0' checked={this.props.track.getIn(['video', 'spectrum', 'mode']) === 0} onChange={this.handleChangeTrackVideoSpectrumMode}>
+                              <FormattedMessage
+                                id='pawoo_music.track_compose.video.bottom_columns'
+                                defaultMessage='Columns at the bottom'
+                              />
+                            </Checkbox>
+                            <Checkbox circled value='3' checked={this.props.track.getIn(['video', 'spectrum', 'mode']) === 3} onChange={this.handleChangeTrackVideoSpectrumMode}>
+                              <FormattedMessage
+                                id='pawoo_music.track_compose.video.bottom_fill'
+                                defaultMessage='Filled graph at the bottom'
+                              />
+                            </Checkbox>
+                          </div>
                         </div>
-                      </div>
 
-                      <div className='track-compose-effect-color'>
+                        <div className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.color'
+                              defaultMessage='Color'
+                            />
+                          </span>
+                          <ColorTrigger
+                            alpha={this.props.track.getIn(['video', 'spectrum', 'alpha'])}
+                            color={this.props.track.getIn(['video', 'spectrum', 'color'])}
+                            onClick={this.handleToggleSpectrumColorPickerVisible}
+                          />
+                        </div>
+                      </legend>
+                    )}
+                  </Delay>
+                </fieldset>
+
+                {/* Blur */}
+                <fieldset>
+                  <legend>
+                    <label className='horizontal'>
+                      <Checkbox checked={this.props.track.getIn(['video', 'blur', 'visible'])} onChange={this.handleChangeTrackVideoBlurVisibility}>
+                        <FormattedMessage
+                          id='pawoo_music.track_compose.video.blur'
+                          defaultMessage='Blur'
+                        />
+                      </Checkbox>
+                    </label>
+                  </legend>
+
+                  <Delay duration={480} className='legend'>
+                    {this.props.track.getIn(['video', 'blur', 'visible']) && (
+                      <legend className='track-compose-effect'>
                         <label className='horizontal'>
                           <span className='text'>
                             <FormattedMessage
+                              id='pawoo_music.track_compose.video.movement_threshold'
+                              defaultMessage='Movement'
+                            />
+                          </span>
+                          <Slider
+                            min={128}
+                            max={256}
+                            value={this.props.track.getIn(['video', 'blur', 'movement', 'threshold'])}
+                            onChange={this.handleChangeTrackBlurMovementThreshold}
+                          />
+                        </label>
+                        <label className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.blink_threshold'
+                              defaultMessage='Blink'
+                            />
+                          </span>
+                          <Slider
+                            min={128}
+                            max={256}
+                            value={this.props.track.getIn(['video', 'blur', 'blink', 'threshold'])}
+                            onChange={this.handleChangeTrackVideoBlurBlinkThreshold}
+                          />
+                        </label>
+                      </legend>
+                    )}
+                  </Delay>
+                </fieldset>
+
+                {/* Particle */}
+                <fieldset>
+                  <legend>
+                    <label className='horizontal'>
+                      <Checkbox checked={this.props.track.getIn(['video', 'particle', 'visible'])} onChange={this.handleChangeTrackVideoParticleVisibility}>
+                        <FormattedMessage
+                          id='pawoo_music.track_compose.video.particle'
+                          defaultMessage='Particle'
+                        />
+                      </Checkbox>
+                    </label>
+                  </legend>
+
+                  <Delay duration={480} className='legend'>
+                    {this.props.track.getIn(['video', 'particle', 'visible']) && (
+                      <legend className='track-compose-effect'>
+                        <label className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.limit_threshold'
+                              defaultMessage='Limit'
+                            />
+                          </span>
+                          <Slider
+                            min={128}
+                            max={256}
+                            value={this.props.track.getIn(['video', 'particle', 'limit', 'threshold'])}
+                            onChange={this.handleChangeTrackVideoParticleLimitThreshold}
+                          />
+                        </label>
+                        <div className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
                               id='pawoo_music.track_compose.video.color'
                               defaultMessage='Color'
                             />
                           </span>
-                          <div className='track-compose-effect-color-wrap'>
-                            <ColorTrigger
-                              alpha={this.props.track.getIn(['video', 'spectrum', 'alpha'])}
-                              color={this.props.track.getIn(['video', 'spectrum', 'color'])}
-                              onClick={this.handleToggleSpectrumColorPickerVisible}
+                          <ColorTrigger
+                            alpha={this.props.track.getIn(['video', 'particle', 'alpha'])}
+                            color={this.props.track.getIn(['video', 'particle', 'color'])}
+                            onClick={this.handleToggleParticleColorPickerVisible}
+                          />
+                        </div>
+                      </legend>
+                    )}
+                  </Delay>
+                </fieldset>
+
+                {/* LightLeak */}
+                <fieldset>
+                  <legend>
+                    <label className='horizontal'>
+                      <Checkbox checked={this.props.track.getIn(['video', 'lightleaks', 'visible'])} onChange={this.handleChangeTrackVideoLightLeaksVisibility}>
+                        <FormattedMessage
+                          id='pawoo_music.track_compose.video.lightleaks'
+                          defaultMessage='Light leaks'
+                        />
+                      </Checkbox>
+                    </label>
+                  </legend>
+
+                  <Delay duration={480} className='legend'>
+                    {this.props.track.getIn(['video', 'lightleaks', 'visible']) && (
+                      <legend className='track-compose-effect'>
+                        <label className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.lightleaks_alpha'
+                              defaultMessage='Opacity'
                             />
-                            <Delay>
-                              {this.state.visibleColorPicker === 'spectrum' && (
-                                <div className='track-compose-effect-color-content'>
-                                  <SketchPicker
-                                    color={constructRgbObject(this.props.track.getIn(['video', 'spectrum', 'color']), this.props.track.getIn(['video', 'spectrum', 'alpha']))}
-                                    onChange={this.handleChangeTrackVideoSpectrumColor}
-                                  />
-                                </div>
-                              )}
-                            </Delay>
-                          </div>
+                          </span>
+                          <Slider
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            value={this.props.track.getIn(['video', 'lightleaks', 'alpha'])}
+                            onChange={this.handleChangeTrackVideoLightLeaksAlpha}
+                          />
+                        </label>
+
+                        <label className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.interval'
+                              defaultMessage='Interval'
+                            />
+                          </span>
+                          <Slider
+                            min={0}
+                            max={60}
+                            step={0.1}
+                            value={this.props.track.getIn(['video', 'lightleaks', 'interval'])}
+                            onChange={this.handleChangeTrackVideoLightLeaksInterval}
+                          />
+                        </label>
+                      </legend>
+                    )}
+                  </Delay>
+                </fieldset>
+
+                {/* Text */}
+                <fieldset>
+                  <legend>
+                    <label className='horizontal'>
+                      <Checkbox checked={this.props.track.getIn(['video', 'text', 'visible'])} onChange={this.handleChangeTrackComposeTrackVideoTextVisibility}>
+                        <FormattedMessage
+                          id='pawoo_music.track_compose.video.text'
+                          defaultMessage='Text'
+                        />
+                      </Checkbox>
+                    </label>
+                  </legend>
+
+                  <Delay duration={480} className='legend'>
+                    {this.props.track.getIn(['video', 'text', 'visible']) && (
+                      <legend className='track-compose-effect'>
+                        <div className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.color'
+                              defaultMessage='Color'
+                            />
+                          </span>
+                          <ColorTrigger
+                            alpha={this.props.track.getIn(['video', 'text', 'alpha'])}
+                            color={this.props.track.getIn(['video', 'text', 'color'])}
+                            onClick={this.handleToggleTextColorPickerVisible}
+                          />
+                        </div>
+                      </legend>
+                    )}
+                  </Delay>
+                </fieldset>
+
+                {/* Banner */}
+                <fieldset>
+                  <legend>
+                    <label className='horizontal'>
+                      <Checkbox checked={this.props.track.getIn(['video', 'banner', 'visible'])} onChange={this.handleChangeTrackVideoBannerVisibility}>
+                        <FormattedMessage
+                          id='pawoo_music.track_compose.video.banner'
+                          defaultMessage='"made with Pawoo Music" banner (only for exported video)'
+                        />
+                      </Checkbox>
+                    </label>
+                  </legend>
+
+                  <Delay duration={480}>
+                    {this.props.track.getIn(['video', 'banner', 'visible']) && (
+                      <div>
+                        <p>
+                          <FormattedMessage
+                            id='pawoo_music.track_compose.video.banner_note'
+                            defaultMessage='The banner will be shown only at the beginning of the video.'
+                          />
+                        </p>
+                        <label className='horizontal'>
+                          <span className='text'>
+                            <FormattedMessage
+                              id='pawoo_music.track_compose.video.banner_alpha'
+                              defaultMessage='Opacity'
+                            />
+                          </span>
+                          <Slider
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            value={this.props.track.getIn(['video', 'banner', 'alpha'])}
+                            onChange={this.handleChangeTrackVideoBannerAlpha}
+                          />
                         </label>
                       </div>
-                    </legend>
-                  )}
-                </Delay>
-              </fieldset>
+                    )}
+                  </Delay>
+                </fieldset>
 
-              {/* Blur */}
-              <fieldset>
-                <legend>
-                  <label className='horizontal'>
-                    <Checkbox checked={this.props.track.getIn(['video', 'blur', 'visible'])} onChange={this.handleChangeTrackVideoBlurVisibility}>
-                      <FormattedMessage
-                        id='pawoo_music.track_compose.video.blur'
-                        defaultMessage='Blur'
-                      />
-                    </Checkbox>
-                  </label>
-                </legend>
-
-                <Delay duration={480} className='legend'>
-                  {this.props.track.getIn(['video', 'blur', 'visible']) && (
-                    <legend className='track-compose-effect'>
-                      <label className='horizontal'>
-                        <span className='text'>
-                          <FormattedMessage
-                            id='pawoo_music.track_compose.video.movement_threshold'
-                            defaultMessage='Movement'
-                          />
-                        </span>
-                        <Slider
-                          min={128}
-                          max={256}
-                          value={this.props.track.getIn(['video', 'blur', 'movement', 'threshold'])}
-                          onChange={this.handleChangeTrackBlurMovementThreshold}
-                        />
-                      </label>
-                      <label className='horizontal'>
-                        <span className='text'>
-                          <FormattedMessage
-                            id='pawoo_music.track_compose.video.blink_threshold'
-                            defaultMessage='Blink'
-                          />
-                        </span>
-                        <Slider
-                          min={128}
-                          max={256}
-                          value={this.props.track.getIn(['video', 'blur', 'blink', 'threshold'])}
-                          onChange={this.handleChangeTrackVideoBlurBlinkThreshold}
-                        />
-                      </label>
-                    </legend>
-                  )}
-                </Delay>
-              </fieldset>
-
-              {/* Particle */}
-              <fieldset>
-                <legend>
-                  <label className='horizontal'>
-                    <Checkbox checked={this.props.track.getIn(['video', 'particle', 'visible'])} onChange={this.handleChangeTrackVideoParticleVisibility}>
-                      <FormattedMessage
-                        id='pawoo_music.track_compose.video.particle'
-                        defaultMessage='Particle'
-                      />
-                    </Checkbox>
-                  </label>
-                </legend>
-
-                <Delay duration={480} className='legend'>
-                  {this.props.track.getIn(['video', 'particle', 'visible']) && (
-                    <legend className='track-compose-effect'>
-                      <label className='horizontal'>
-                        <span className='text'>
-                          <FormattedMessage
-                            id='pawoo_music.track_compose.video.limit_threshold'
-                            defaultMessage='Limit'
-                          />
-                        </span>
-                        <Slider
-                          min={128}
-                          max={256}
-                          value={this.props.track.getIn(['video', 'particle', 'limit', 'threshold'])}
-                          onChange={this.handleChangeTrackVideoParticleLimitThreshold}
-                        />
-                      </label>
-                      <label className='track-compose-effect-color'>
-                        <div className='horizontal'>
-                          <span className='text'>
-                            <FormattedMessage
-                              id='pawoo_music.track_compose.video.color'
-                              defaultMessage='Color'
-                            />
-                          </span>
-                          <div className='track-compose-effect-color-wrap'>
-                            <ColorTrigger
-                              alpha={this.props.track.getIn(['video', 'particle', 'alpha'])}
-                              color={this.props.track.getIn(['video', 'particle', 'color'])}
-                              onClick={this.handleToggleParticleColorPickerVisible}
-                            />
-                            <Delay>
-                              {this.state.visibleColorPicker === 'particle' && (
-                                <div className='track-compose-effect-color-content'>
-                                  <SketchPicker
-                                    color={constructRgbObject(this.props.track.getIn(['video', 'particle', 'color']), this.props.track.getIn(['video', 'particle', 'alpha']))}
-                                    onChange={this.handleChangeTrackVideoParticleColor}
-                                  />
-                                </div>
-                              )}
-                            </Delay>
-                          </div>
-                        </div>
-                      </label>
-                    </legend>
-                  )}
-                </Delay>
-              </fieldset>
-
-              {/* LightLeak */}
-              <fieldset>
-                <legend>
-                  <label className='horizontal'>
-                    <Checkbox checked={this.props.track.getIn(['video', 'lightleaks', 'visible'])} onChange={this.handleChangeTrackVideoLightLeaksVisibility}>
-                      <FormattedMessage
-                        id='pawoo_music.track_compose.video.lightleaks'
-                        defaultMessage='Light leaks'
-                      />
-                    </Checkbox>
-                  </label>
-                </legend>
-
-                <Delay duration={480} className='legend'>
-                  {this.props.track.getIn(['video', 'lightleaks', 'visible']) && (
-                    <legend className='track-compose-effect'>
-                      <label className='horizontal'>
-                        <span className='text'>
-                          <FormattedMessage
-                            id='pawoo_music.track_compose.video.lightleaks_alpha'
-                            defaultMessage='Opacity'
-                          />
-                        </span>
-                        <Slider
-                          min={0}
-                          max={1}
-                          step={0.01}
-                          value={this.props.track.getIn(['video', 'lightleaks', 'alpha'])}
-                          onChange={this.handleChangeTrackVideoLightLeaksAlpha}
-                        />
-                      </label>
-
-                      <label className='horizontal'>
-                        <span className='text'>
-                          <FormattedMessage
-                            id='pawoo_music.track_compose.video.interval'
-                            defaultMessage='Interval'
-                          />
-                        </span>
-                        <Slider
-                          min={0}
-                          max={60}
-                          step={0.1}
-                          value={this.props.track.getIn(['video', 'lightleaks', 'interval'])}
-                          onChange={this.handleChangeTrackVideoLightLeaksInterval}
-                        />
-                      </label>
-                    </legend>
-                  )}
-                </Delay>
-              </fieldset>
-
-              {/* Text */}
-              <fieldset>
-                <legend>
-                  <label className='horizontal'>
-                    <Checkbox checked={this.props.track.getIn(['video', 'text', 'visible'])} onChange={this.handleChangeTrackComposeTrackVideoTextVisibility}>
-                      <FormattedMessage
-                        id='pawoo_music.track_compose.video.text'
-                        defaultMessage='Text'
-                      />
-                    </Checkbox>
-                  </label>
-                </legend>
-
-                <Delay duration={480} className='legend'>
-                  {this.props.track.getIn(['video', 'text', 'visible']) && (
-                    <legend className='track-compose-effect'>
-                      <div className='track-compose-effect-color'>
-                        <div className='horizontal'>
-                          <span className='text'>
-                            <FormattedMessage
-                              id='pawoo_music.track_compose.video.color'
-                              defaultMessage='Color'
-                            />
-                          </span>
-                          <div className='track-compose-effect-color-wrap'>
-                            <ColorTrigger
-                              alpha={this.props.track.getIn(['video', 'text', 'alpha'])}
-                              color={this.props.track.getIn(['video', 'text', 'color'])}
-                              onClick={this.handleToggleTextColorPickerVisible}
-                            />
-                            <Delay>
-                              {this.state.visibleColorPicker === 'text' && (
-                                <div className='track-compose-effect-color-content'>
-                                  <SketchPicker
-                                    color={constructRgbObject(this.props.track.getIn(['video', 'text', 'color']), this.props.track.getIn(['video', 'text', 'alpha']))}
-                                    onChange={this.handleChangeTrackComposeTrackVideoTextColor}
-                                  />
-                                </div>
-                              )}
-                            </Delay>
-                          </div>
-                        </div>
-                      </div>
-                    </legend>
-                  )}
-                </Delay>
-              </fieldset>
-
-              {/* Banner */}
-              <fieldset>
-                <legend>
-                  <label className='horizontal'>
-                    <Checkbox checked={this.props.track.getIn(['video', 'banner', 'visible'])} onChange={this.handleChangeTrackVideoBannerVisibility}>
-                      <FormattedMessage
-                        id='pawoo_music.track_compose.video.banner'
-                        defaultMessage='"made with Pawoo Music" banner (only for exported video)'
-                      />
-                    </Checkbox>
-                  </label>
-                </legend>
-
-                <Delay duration={480}>
-                  {this.props.track.getIn(['video', 'banner', 'visible']) && (
-                    <div>
-                      <p>
-                        <FormattedMessage
-                          id='pawoo_music.track_compose.video.banner_note'
-                          defaultMessage='The banner will be shown only at the beginning of the video.'
-                        />
-                      </p>
-                      <label className='horizontal'>
-                        <span className='text'>
-                          <FormattedMessage
-                            id='pawoo_music.track_compose.video.banner_alpha'
-                            defaultMessage='Opacity'
-                          />
-                        </span>
-                        <Slider
-                          min={0}
-                          max={1}
-                          step={0.01}
-                          value={this.props.track.getIn(['video', 'banner', 'alpha'])}
-                          onChange={this.handleChangeTrackVideoBannerAlpha}
-                        />
-                      </label>
-                    </div>
-                  )}
-                </Delay>
-              </fieldset>
-
-              <div className='caution'>
-                <b>作品（画像、音源、楽曲、テキスト等を含む）のアップロードにおいて、下記の注意事項を守ることを誓います。</b><br />
-                <br />
-                １．この作品をインターネットで配信することが、第三者のいかなる権利も侵害しないこと。<br />
-                <br />
-                ２．マストドンというソフトウェアの仕様上、この作品が自動で他の様々なマストドンインスタンスにも複製され、配信されることに同意すること。<br />
-                （前提として、マストドンのソフトウェアの規約上、複製された作品を第三者が商用利用する行為は禁止されています。権利を侵害する行為は関連法令により罰せられることがあります。）<br />
-                <br />
-                ３．この楽曲のインターネットでの配信（インタラクティブ配信）に係る権利について、著作権等管理団体に管理委託または信託していないこと。<br />
-                <br />
-                ４．楽曲のアップロード後に、当該楽曲のインターネットでの配信（インタラクティブ配信）に係る権利の管理を第三者に委託した場合は、管理委託・信託契約の効力発生日前に、当サービスからアップロードした作品を削除すること。<br />
-                <br />
-                ５．他人の作品を許可なくアップロードしたことにより、当サービスまたは第三者に損害を与えたときは、当該アップロード者が一切の責任を負うものとし、当社はその一切の責任を負いません。
-              </div>
-            </form>
+                <div className='caution'>
+                  <b>作品（画像、音源、楽曲、テキスト等を含む）のアップロードにおいて、下記の注意事項を守ることを誓います。</b><br />
+                  <br />
+                  １．この作品をインターネットで配信することが、第三者のいかなる権利も侵害しないこと。<br />
+                  <br />
+                  ２．マストドンというソフトウェアの仕様上、この作品が自動で他の様々なマストドンインスタンスにも複製され、配信されることに同意すること。<br />
+                  （前提として、マストドンのソフトウェアの規約上、複製された作品を第三者が商用利用する行為は禁止されています。権利を侵害する行為は関連法令により罰せられることがあります。）<br />
+                  <br />
+                  ３．この楽曲のインターネットでの配信（インタラクティブ配信）に係る権利について、著作権等管理団体に管理委託または信託していないこと。<br />
+                  <br />
+                  ４．楽曲のアップロード後に、当該楽曲のインターネットでの配信（インタラクティブ配信）に係る権利の管理を第三者に委託した場合は、管理委託・信託契約の効力発生日前に、当サービスからアップロードした作品を削除すること。<br />
+                  <br />
+                  ５．他人の作品を許可なくアップロードしたことにより、当サービスまたは第三者に損害を与えたときは、当該アップロード者が一切の責任を負うものとし、当社はその一切の責任を負いません。
+                </div>
+              </form>
+            </Scrollable>
 
             <div className='actions'>
               <button className='cancel' onClick={this.handleCancel}>
@@ -997,6 +995,16 @@ export default class TrackCompose extends ImmutablePureComponent {
                 )}
               </button>
             </div>
+
+            <Delay className='color-picker'>
+              {this.state.visibleColorPicker !== null && (
+                <SketchPicker
+                  color={constructRgbObject(this.props.track.getIn(this.colorPickers[this.state.visibleColorPicker].path), 1)}
+                  disableAlpha
+                  onChange={this.colorPickers[this.state.visibleColorPicker].handleChange}
+                />
+              )}
+            </Delay>
           </div>
         </div>
       </div>
