@@ -196,6 +196,9 @@ Rails.application.routes.draw do
 
           resource :pin, only: [:create, :destroy]
           post :unpin, to: 'pins#destroy'
+
+          post :react, to: 'reactions#create'
+          post :unreact, to: 'reactions#destroy'
         end
 
         member do

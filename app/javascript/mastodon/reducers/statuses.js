@@ -39,6 +39,14 @@ import {
 } from '../actions/pin_statuses';
 import { SEARCH_FETCH_SUCCESS } from '../actions/search';
 import {
+  REACTION_REQUEST,
+  REACTION_SUCCESS,
+  REACTION_FAIL,
+  UNREACTION_REQUEST,
+  UNREACTION_SUCCESS,
+  UNREACTION_FAIL,
+} from '../../pawoo_music/actions/reaction';
+import {
   SCHEDULED_STATUSES_FETCH_SUCCESS,
   SCHEDULED_STATUSES_EXPAND_SUCCESS,
   SCHEDULED_STATUSES_ADDITION,
@@ -103,6 +111,37 @@ const filterStatuses = (state, relationship) => {
   return state;
 };
 
+function addReactionToStatus(state, status, text) {
+  const id = status.get('id');
+  const reactions = state.getIn([id, 'reactions']);
+  const index = reactions.findIndex(reaction => reaction.get('text') === text);
+
+  if (index < 0) {
+    return state.setIn([id, 'reactions'],
+      reactions.push(ImmutableMap({ text, accounts_count: 1, reacted: true })));
+  }
+
+  const reaction = reactions.get(index);
+
+  return state.setIn([id, 'reactions', index], reaction.merge([
+    ['accounts_count', reaction.get('accounts_count') + 1],
+    ['reacted', true],
+  ]));
+}
+
+function removeReactionFromStatus(state, status, text) {
+  const id = status.get('id');
+  const reactions = state.getIn([id, 'reactions']);
+  const index = reactions.findIndex(reaction => reaction.get('text') === text);
+  const reaction = reactions.get(index);
+  const count = reaction.get('accounts_count');
+
+  return count > 1 ? state.setIn([id, 'reactions', index], reaction.merge([
+    ['accounts_count', count - 1],
+    ['reacted', false],
+  ])) : state.deleteIn([id, 'reactions', index]);
+}
+
 const initialState = ImmutableMap();
 
 export default function statuses(state = initialState, action) {
@@ -117,11 +156,19 @@ export default function statuses(state = initialState, action) {
   case UNFAVOURITE_SUCCESS:
   case PIN_SUCCESS:
   case UNPIN_SUCCESS:
+  case REACTION_SUCCESS:
+  case UNREACTION_SUCCESS:
     return normalizeStatus(state, action.response);
   case FAVOURITE_REQUEST:
     return state.setIn([action.status.get('id'), 'favourited'], true);
   case FAVOURITE_FAIL:
     return state.setIn([action.status.get('id'), 'favourited'], false);
+  case REACTION_REQUEST:
+  case UNREACTION_FAIL:
+    return addReactionToStatus(state, action.status, action.text);
+  case REACTION_FAIL:
+  case UNREACTION_REQUEST:
+    return removeReactionFromStatus(state, action.status, action.text);
   case REBLOG_REQUEST:
     return state.setIn([action.status.get('id'), 'reblogged'], true);
   case REBLOG_FAIL:

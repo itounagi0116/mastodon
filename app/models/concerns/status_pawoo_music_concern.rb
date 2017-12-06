@@ -6,6 +6,7 @@ module StatusPawooMusicConcern
   included do
     after_destroy { self.music&.destroy! unless self.reblog? }
     belongs_to :music, polymorphic: true
+    has_many :reactions, inverse_of: :status
     scope :musics_only, -> { where(music_type: 'Track') } # TODO: include Album
     scope :tracks_only, -> { where(music_type: 'Track') }
     scope :albums_only, -> { where(music_type: 'Album') }

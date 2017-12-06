@@ -113,7 +113,7 @@ export default class DropdownMenu extends React.PureComponent {
   }
 
   handleRedirectLoginPage = () => {
-    location.href = '/auth/sign_in';
+    top.location.href = '/auth/sign_in';
   }
 
   renderItem = (item, i) => {

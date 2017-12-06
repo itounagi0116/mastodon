@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171114152234) do
+ActiveRecord::Schema.define(version: 20171206000000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -85,6 +85,14 @@ ActiveRecord::Schema.define(version: 20171114152234) do
     t.index ["uri"], name: "index_accounts_on_uri"
     t.index ["url"], name: "index_accounts_on_url"
     t.index ["username", "domain"], name: "index_accounts_on_username_and_domain", unique: true
+  end
+
+  create_table "accounts_reactions", id: false, force: :cascade do |t|
+    t.bigint "reaction_id", null: false
+    t.bigint "account_id", null: false
+    t.index ["account_id"], name: "index_accounts_reactions_on_account_id"
+    t.index ["reaction_id", "account_id"], name: "index_accounts_reactions_on_reaction_id_and_account_id", unique: true
+    t.index ["reaction_id"], name: "index_accounts_reactions_on_reaction_id"
   end
 
   create_table "album_tracks", force: :cascade do |t|
@@ -345,6 +353,14 @@ ActiveRecord::Schema.define(version: 20171114152234) do
     t.index ["status_id", "preview_card_id"], name: "index_preview_cards_statuses_on_status_id_and_preview_card_id"
   end
 
+  create_table "reactions", force: :cascade do |t|
+    t.bigint "status_id", null: false
+    t.string "text", null: false
+    t.integer "accounts_count", default: 0, null: false
+    t.index ["status_id", "text"], name: "index_reactions_on_status_id_and_text", unique: true
+    t.index ["status_id"], name: "index_reactions_on_status_id"
+  end
+
   create_table "reports", id: :serial, force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "target_account_id", null: false
@@ -523,6 +539,13 @@ ActiveRecord::Schema.define(version: 20171114152234) do
     t.integer "video_backgroundcolor", default: 1513239, null: false
     t.float "video_banner_alpha", default: 1.0, null: false
     t.integer "albums_count", default: 0, null: false
+    t.float "video_sprite_movement_circle_rad", default: 0.0, null: false
+    t.float "video_sprite_movement_circle_scale", default: 0.0, null: false
+    t.float "video_sprite_movement_circle_speed", default: 0.0, null: false
+    t.float "video_sprite_movement_random_scale", default: 0.0, null: false
+    t.float "video_sprite_movement_random_speed", default: 0.0, null: false
+    t.float "video_sprite_movement_zoom_scale", default: 0.0, null: false
+    t.float "video_sprite_movement_zoom_speed", default: 0.0, null: false
   end
 
   create_table "trend_ng_words", id: :serial, force: :cascade do |t|
@@ -592,6 +615,8 @@ ActiveRecord::Schema.define(version: 20171114152234) do
 
   add_foreign_key "account_custom_colors", "accounts", on_delete: :cascade
   add_foreign_key "account_domain_blocks", "accounts", on_delete: :cascade
+  add_foreign_key "accounts_reactions", "accounts", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "accounts_reactions", "reactions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "album_tracks", "albums", on_update: :cascade, on_delete: :cascade
   add_foreign_key "album_tracks", "tracks", on_update: :cascade, on_delete: :cascade
   add_foreign_key "blocks", "accounts", column: "target_account_id", on_delete: :cascade
@@ -618,6 +643,7 @@ ActiveRecord::Schema.define(version: 20171114152234) do
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id", on_delete: :cascade
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id", on_delete: :cascade
   add_foreign_key "oauth_applications", "users", column: "owner_id", on_delete: :cascade
+  add_foreign_key "reactions", "statuses", on_update: :cascade, on_delete: :cascade
   add_foreign_key "reports", "accounts", column: "action_taken_by_account_id", on_delete: :nullify
   add_foreign_key "reports", "accounts", column: "target_account_id", on_delete: :cascade
   add_foreign_key "reports", "accounts", on_delete: :cascade

@@ -6,30 +6,29 @@ import querystring from 'querystring';
 import { debounce } from 'lodash';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import StatusReactions from '../status_reactions';
 import Track from '../track';
-import { makeGetStatus } from '../../../mastodon/selectors';
 
 import pawooIcon from '../../../images/pawoo_music/pawoo_icon.svg';
 
 import '../app/app.scss';
 
-const makeMapStateToProps = () => {
-  const getStatus = makeGetStatus();
+const mapStateToProps = (state, { statusId }) => {
+  const status = state.getIn(['statuses', statusId]);
 
-  const mapStateToProps = (state, { statusId }) => ({
-    status: getStatus(state, statusId),
+  return {
+    acct: state.getIn(['accounts', status.get('account'), 'acct']),
+    status,
     trackIsMounted: Immutable.List(['statuses', statusId, 'track']).equals(
-      state.getIn(['pawoo_music', 'player', 'trackPath'])
-    ),
-  });
-
-  return mapStateToProps;
+      state.getIn(['pawoo_music', 'player', 'trackPath'])),
+  };
 };
 
-@connect(makeMapStateToProps)
+@connect(mapStateToProps)
 export default class EmbedMusicvideo extends React.PureComponent {
 
   static propTypes = {
+    acct: PropTypes.string,
     status: ImmutablePropTypes.map.isRequired,
     trackIsMounted: PropTypes.bool.isRequired,
   }
@@ -57,10 +56,9 @@ export default class EmbedMusicvideo extends React.PureComponent {
   }, 3000);
 
   renderInfo () {
-    const { status, trackIsMounted } = this.props;
+    const { acct, status, trackIsMounted } = this.props;
     const { showIcon } = this.state;
     const id = status.get('id');
-    const acct = status.getIn(['account', 'acct']);
     const track = status.get('track');
     const params = location.search.length > 1 ? querystring.parse(location.search.substr(1)) : {};
     const hideInfo = params.hideinfo && Number(params.hideinfo) === 1;
@@ -80,6 +78,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
         <div className='meta'>
           <a className='artist' href={`/@${acct}`}       target='_blank'>{track.get('artist')}</a><br />
           <a className='title'  href={`/@${acct}/${id}`} target='_blank'>{track.get('title')} </a>
+          <StatusReactions status={status} />
         </div>
       );
     }

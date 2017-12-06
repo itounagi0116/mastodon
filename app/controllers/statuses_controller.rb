@@ -36,6 +36,13 @@ class StatusesController < ApplicationController
     raise ActiveRecord::RecordNotFound unless @account.local?
 
     if @status.music.is_a?(Track)
+      initial_state_params = {
+        current_account: current_account,
+        token: current_session&.token,
+        reactions: Reaction::PERMITTED_TEXTS,
+      }
+      initial_state = ActiveModelSerializers::SerializableResource.new(InitialStatePresenter.new(initial_state_params), serializer: InitialStateSerializer)
+      @initial_state_json   = initial_state.to_json
       @status_json = ActiveModelSerializers::SerializableResource.new(@status, serializer: REST::StatusSerializer, scope: current_user, scope_name: :current_user).to_json
 
       render 'stream_entries/musicvideo', layout: 'embedded'

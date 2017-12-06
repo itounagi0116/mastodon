@@ -52,5 +52,9 @@
         height: var(--iconsize35);
       }
     }
+
+    .status-reactions > li:not(.add) {
+      background: #ffffff88;
+    }
   }
 }

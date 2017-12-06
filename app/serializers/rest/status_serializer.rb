@@ -18,6 +18,7 @@ class REST::StatusSerializer < ActiveModel::Serializer
 
   has_many :media_attachments, serializer: REST::MediaAttachmentSerializer
   has_many :mentions
+  has_many :reactions, serializer: REST::ReactionSerializer, if: :music?
   has_many :tags
 
   def current_user?
@@ -77,6 +78,10 @@ class REST::StatusSerializer < ActiveModel::Serializer
 
   def track
     REST::TrackSerializer.new(object.track, account: object.account, scope: current_user, scope_name: :current_user) if object.track
+  end
+
+  def music?
+    !object.music.nil?
   end
 
   def track?
