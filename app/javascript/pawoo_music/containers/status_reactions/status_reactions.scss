@@ -1,8 +1,61 @@
-ul.status-reactions {
-  margin: var(--verticalspace20);
+.embed ul.status-reactions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: calc(var(--grid) * 30);
+  padding: var(--padding10);
+
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0.8));
+
+  margin: 0;
 
   > li {
-    display: inline-block;
+    background: transparent;
+    border: 1px solid var(--color3);
+    color: #ffffff;
+
+    &.add .dropdown-content {
+      bottom: var(--padding40);
+    }
+
+    &.add .icon svg {
+      stroke: #ffffff;
+    }
+  }
+}
+
+
+ul.status-reactions {
+  margin: var(--verticalspace20);
+  display: flex;
+  align-items: center;
+
+  > li {
+    display: inline-flex;
+    align-items: center;
+
+    border-radius: var(--radius);
+    background: var(--color1);
+    border: 1px solid var(--color3);
+
+    height: var(--iconsize30);
+    box-sizing: border-box;
+
+    color: var(--strong2);
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    &.add .icon svg {
+      stroke: var(--strong2);
+      width: var(--iconsize30);
+      stroke-width: 2px;
+    }
 
     &.add .dropdown-content {
       white-space: nowrap;
@@ -29,25 +82,10 @@ ul.status-reactions {
     }
 
     &:not(.add) {
-      border-radius: var(--radius);
-      border-style: solid;
-      border-width: 1px;
-
       vertical-align: bottom;
 
-      height: var(--iconsize13);
       margin: var(--rightspace15);
       padding: var(--padding5);
-
-      color: var(--linkcolor);
-
-      &.reacted, &:hover {
-        color: var(--strong1);
-      }
-    }
-
-    &.reacted, &:hover {
-      border-width: 2px;
     }
   }
 }

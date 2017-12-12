@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 import StatusReactions from '../status_reactions';
 import Track from '../track';
+import Icon from '../../components/icon';
 
 import pawooIcon from '../../../images/pawoo_music/pawoo_icon.svg';
 
@@ -75,16 +76,68 @@ export default class EmbedMusicvideo extends React.PureComponent {
 
     if (!hideInfo) {
       return (
-        <div className='meta'>
-          <a className='artist' href={`/@${acct}`}       target='_blank'>{track.get('artist')}</a><br />
-          <a className='title'  href={`/@${acct}/${id}`} target='_blank'>{track.get('title')} </a>
-          <StatusReactions status={status} />
+        <div className='info'>
+          <div className='meta'>
+            <a className='playlist_toggle' href='hogehoge'>ALBUM PLAYLIST <Icon icon='chevron-down' /></a><br />
+            <a className='artist' href={`/@${acct}`}       target='_blank'>{track.get('artist')}</a><br />
+            <a className='title'  href={`/@${acct}/${id}`} target='_blank'>{track.get('title')} </a>
+          </div>
+          <div className='actions'>
+            <div className='follow'>フォヨ〜</div>
+            <Icon className='share' icon='share-2' />
+          </div>
         </div>
       );
     }
 
     return (
       <div className='meta' />
+    );
+  }
+
+  renderStatusReactions () {
+    const { status } = this.props;
+    const params = location.search.length > 1 ? querystring.parse(location.search.substr(1)) : {};
+    const hideInfo = params.hideinfo && Number(params.hideinfo) === 1;
+
+    if (!hideInfo) {
+      return (
+        <StatusReactions status={status} />
+      );
+    }
+
+    return (
+      <span />
+    );
+  }
+
+  renderAlbumPlaylist () {
+    const params = location.search.length > 1 ? querystring.parse(location.search.substr(1)) : {};
+    const hideInfo = params.hideinfo && Number(params.hideinfo) === 1;
+
+    if (!hideInfo) {
+      return (
+        <ul className='album_playlist'>
+          <li><Icon icon='pause' /> 01. hogehogesong</li>
+          <li className='playing'><Icon icon='play' /> 02. hogehogesong</li>
+          <li><Icon icon='pause' /> 03. hogehogesongasdfasdfasdfasdfasdfasdfasdfasdfasdf</li>
+          <li><Icon icon='pause' /> 04. hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge</li>
+          <li><Icon icon='pause' /> 05. hogehogesong</li>
+          <li><Icon icon='pause' /> 06. hogehogesongasdfasdfasdfasdfasdfasdfngasdfasdfasdfasdfasdfasdfngasdfasdfasdfasdfasdfasdfasdfasdfasdf</li>
+          <li><Icon icon='pause' /> 07. あああああああああああああああああああああああああああああああああああああああ</li>
+          <li><Icon icon='pause' /> 08. 負け犬の歌</li>
+          <li><Icon icon='pause' /> 09. hogehogesongasdfasdfasdfasdfasdfasdfasdfasdfasdf</li>
+          <li><Icon icon='pause' /> 10. hoge hoge hoge hoge hoge hoge hoge hoge</li>
+          <li><Icon icon='pause' /> 11. hogehogesong</li>
+          <li><Icon icon='pause' /> 12. hogehogesongasdfasdfasdfasdfasdfasdfasdfasdfasdf</li>
+          <li><Icon icon='pause' /> 13. hoge hoge hoge hoge hoge hoge hoge hoge</li>
+          <li><Icon icon='pause' /> 14. hogehogesong</li>
+        </ul>
+      );
+    }
+
+    return (
+      <div />
     );
   }
 
@@ -100,6 +153,8 @@ export default class EmbedMusicvideo extends React.PureComponent {
       >
         <Track track={status.get('track')} fitContain />
         {this.renderInfo()}
+        {this.renderStatusReactions()}
+        {this.renderAlbumPlaylist()}
       </div>
     );
   }
