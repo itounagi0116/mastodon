@@ -36,8 +36,8 @@
         }
 
         .playlist_toggle {
-          color: #ffffff;
-          background-color: #000000;
+          color: #000000;
+          background-color: #ffffff;
           border-radius: var(--iconsize20);
           padding: var(--padding10) var(--padding15);
           height: var(--iconsize13);
@@ -51,7 +51,7 @@
           }
 
           .icon svg {
-            stroke: #ffffff;
+            stroke: #000000;
             stroke-width: 2px;
           }
         }
