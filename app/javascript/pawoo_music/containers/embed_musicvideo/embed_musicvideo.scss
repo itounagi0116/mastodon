@@ -101,11 +101,14 @@
     width: 100%;
     height: 100%;
     overflow-y: scroll;
-    background-color: var(--color2);
+    background-color: var(--color1);
     top: 0;
     font-size: var(--text20-font);
     line-height: var(--text20-line);
     box-sizing: border-box;
+
+    overflow-x: hidden;
+    white-space: nowrap;
 
 
     li {
@@ -123,6 +126,7 @@
 
       &.playing {
         color: var(--linkcolor2);
+        background-color: var(--color2);
 
         .icon svg {
           stroke: var(--linkcolor2);
