@@ -79,12 +79,12 @@ export default class EmbedMusicvideo extends React.PureComponent {
         <div className='embed-ui'>
           <div className='info'>
             <div className='meta'>
-              <a className='playlist_toggle' href='hogehoge'>ALBUM PLAYLIST <Icon icon='chevron-down' /></a><br />
+              <a className='playlist_toggle' href='hogehoge'><b>10</b>tracks<Icon icon='chevron-down' /></a><br />
               <a className='artist' href={`/@${acct}`}       target='_blank'>{track.get('artist')}</a><br />
               <a className='title'  href={`/@${acct}/${id}`} target='_blank'>{track.get('title')} </a>
             </div>
             <div className='actions'>
-              <div className='follow'>作家の新作を自動受信</div>
+              <div className='follow'>新作情報を自動受信</div>
               <Icon className='share' icon='share-2' />
             </div>
           </div>

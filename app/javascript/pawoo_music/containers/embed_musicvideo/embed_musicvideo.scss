@@ -36,16 +36,22 @@
         }
 
         .playlist_toggle {
-          color: #000000;
-          background-color: #ffffff;
+          color: #ffffff;
+          background-color: #000000;
           border-radius: var(--iconsize20);
-          padding: var(--padding10);
+          padding: var(--padding10) var(--padding15);
           height: var(--iconsize13);
-          font-size: var(--text20-font);
-          line-height: var(--text20-font);
+          font-size: var(--text10-font);
+          line-height: var(--text10-font);
+
+          b {
+            font-weight: bold;
+            font-size: var(--text20-font);
+            margin: var(--rightspace5);
+          }
 
           .icon svg {
-            stroke: #000000;
+            stroke: #ffffff;
             stroke-width: 2px;
           }
         }
@@ -80,11 +86,11 @@
           border-radius: 20px;
           box-sizing: border-box;
           display: flex;
-          width: 140px;
-          height: 40px;
+          padding: var(--padding10) var(--padding15);
+          margin: 0 0 0 var(--grid);
           justify-content: center;
           align-items: center;
-          font-size: var(--text20-font);
+          font-size: var(--text10-font);
           font-weight: bold;
         }
         // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -147,5 +153,7 @@
 
   .embed-ui:hover {
     opacity: 1;
+    transition: var(--hover-transition);
+    background-color: rgba(0, 0, 0, 0.7);
   }
 }
