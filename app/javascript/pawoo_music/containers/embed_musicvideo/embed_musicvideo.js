@@ -84,7 +84,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
               <a className='title'  href={`/@${acct}/${id}`} target='_blank'>{track.get('title')} </a>
             </div>
             <div className='actions'>
-              <div className='follow'>フォヨ〜</div>
+              <div className='follow'>作家の新作を自動受信</div>
               <Icon className='share' icon='share-2' />
             </div>
           </div>
