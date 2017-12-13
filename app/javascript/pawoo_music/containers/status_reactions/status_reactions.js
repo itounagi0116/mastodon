@@ -33,10 +33,6 @@ class Emoji extends ImmutablePureComponent {
 
 }
 
-function logIn() {
-  navigate('/auth/sign_in');
-}
-
 const mapStateToProps = (state) => ({
   loggedOut: !state.getIn(['meta', 'me']),
   permittedTexts: state.getIn(['pawoo_music', 'reactions']),
@@ -65,38 +61,24 @@ export default class StatusReactions extends ImmutablePureComponent {
     status: ImmutablePropTypes.map.isRequired,
   }
 
-  setReactionHandlers ({ loggedOut, onUnreact, onReact, permittedTexts, status }) {
-    this.setState({
-      reactionHandlers: Immutable.Map(permittedTexts.map(text => {
-        if (loggedOut) {
-          return [text, logIn];
-        }
+  reactionHandlers = Immutable.Map(this.props.permittedTexts.map(
+    text => [text, this.handleReaction.bind(this, text)]));
 
-        for (const reaction of status.get('reactions')) {
-          if (reaction.get('text') === text) {
-            const handle = reaction.get('reacted') ? onUnreact : onReact;
-
-            return [text, handle.bind(undefined, status, text)];
-          }
-        }
-
-        return [text, onReact.bind(undefined, status, text)];
-      })),
-    });
-  }
-
-  componentWillMount () {
-    this.setReactionHandlers(this.props);
-  }
-
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.loggedOut !== this.props.loggedOut ||
-        nextProps.onReact !== this.props.onReact ||
-        nextProps.onUnreact !== this.props.onUnreact ||
-        !nextProps.permittedTexts.equals(this.props.permittedTexts) ||
-        !nextProps.status.equals(this.props.status)) {
-      this.setReactionHandlers(nextProps);
+  handleReaction (text) {
+    if (this.props.loggedOut) {
+      return navigate('/auth/sign_in');
     }
+
+    for (const reaction of this.props.status.get('reactions')) {
+      if (reaction.get('text') === text) {
+        const handle = reaction.get('reacted') ?
+          this.props.onUnreact : this.props.onReact;
+
+        return handle(this.props.status, text);
+      }
+    }
+
+    return this.props.onReact(this.props.status, text);
   }
 
   render () {
@@ -114,7 +96,7 @@ export default class StatusReactions extends ImmutablePureComponent {
           return (
             <li
               className={classNames({ reacted })}
-              onClick={this.state.reactionHandlers.get(text)}
+              onClick={this.reactionHandlers.get(text)}
               key={text}
             ><Emoji text={text} />{count}</li>
           );
@@ -124,7 +106,7 @@ export default class StatusReactions extends ImmutablePureComponent {
             <DropdownMenuContainer
               icon='plus'
               items={dropdownTexts.map(text => ({
-                action: this.state.reactionHandlers.get(text),
+                action: this.reactionHandlers.get(text),
                 text: <Emoji text={text} />,
               }))}
               title={this.props.intl.formatMessage(messages.add)}
