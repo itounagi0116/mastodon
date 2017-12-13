@@ -8,6 +8,7 @@ import { ScrollContext } from 'react-router-scroll';
 import { hydrateStore } from '../../mastodon/actions/store';
 import store from '../../mastodon/store';
 import { getLocale } from '../../mastodon/locales';
+import { changeNavigate } from '../actions/navigate';
 import App from '../containers/app';
 import subscribeAsPlayer from '../player';
 
@@ -15,6 +16,7 @@ const { localeData, messages } = getLocale();
 addLocaleData(localeData);
 
 const initialState = JSON.parse(document.getElementById('initial-state').textContent);
+store.dispatch(changeNavigate(url => location.href = url));
 store.dispatch(hydrateStore(initialState));
 subscribeAsPlayer(store);
 

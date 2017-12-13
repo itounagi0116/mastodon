@@ -74,6 +74,7 @@ const makeMapStateToProps = () => {
     error: state.getIn(['pawoo_music', 'track_compose', 'error']),
     isSubmitting: state.getIn(['pawoo_music', 'track_compose', 'is_submitting']),
     account: getAccount(state, state.getIn(['meta', 'me'])),
+    navigate: state.getIn(['pawoo_music', 'navigate']),
   });
 
   return mapStateToProps;
@@ -238,6 +239,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     isSubmitting: PropTypes.bool.isRequired,
     intl: PropTypes.object.isRequired,
     onClose: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
+    navigate: PropTypes.func.isRequired,
   }
 
   static defaultProps = {
@@ -444,18 +446,13 @@ export default class TrackCompose extends ImmutablePureComponent {
   }
 
   handleCancel = () => {
-    const { account, track, onClose } = this.props;
+    const { account, navigate, track, onClose } = this.props;
 
     if (typeof onClose === 'function') {
       onClose();
     } else {
       const id = track.get('id');
-
-      if (id) {
-        location.href = `/@${account.get('acct')}/${id}`;
-      } else {
-        location.href = '/';
-      }
+      navigate(id ? `/@${account.get('acct')}/${id}` : '/');
     }
   }
 

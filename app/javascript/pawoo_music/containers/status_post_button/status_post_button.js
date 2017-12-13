@@ -7,6 +7,7 @@ import Icon from '../../components/icon';
 
 const mapStateToProps = (state) => ({
   isLogin: !!state.getIn(['meta', 'me']),
+  navigate: state.getIn(['pawoo_music', 'navigate']),
 });
 
 @connect(mapStateToProps)
@@ -15,6 +16,7 @@ export default class StatusPostButton extends React.PureComponent {
   static propTypes = {
     fixed: PropTypes.bool,
     isLogin: PropTypes.bool,
+    navigate: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
 
@@ -24,7 +26,7 @@ export default class StatusPostButton extends React.PureComponent {
   }
 
   handleRedirectLoginPage = () => {
-    location.href = '/auth/sign_in';
+    this.props.navigate('/auth/sign_in');
   }
 
   render () {

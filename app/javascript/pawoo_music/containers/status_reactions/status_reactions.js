@@ -32,12 +32,9 @@ class Emoji extends ImmutablePureComponent {
 
 }
 
-function logIn () {
-  top.location.href = '/auth/sign_in';
-}
-
 const mapStateToProps = (state) => ({
   loggedOut: !state.getIn(['meta', 'me']),
+  navigate: state.getIn(['pawoo_music', 'navigate']),
   permittedTexts: state.getIn(['pawoo_music', 'reactions']),
 });
 
@@ -58,17 +55,18 @@ export default class StatusReactions extends ImmutablePureComponent {
   static propTypes = {
     intl: PropTypes.object.isRequired,
     loggedOut: PropTypes.bool.isRequired,
+    navigate: PropTypes.func.isRequired,
     onReact: PropTypes.func.isRequired,
     onUnreact: PropTypes.func.isRequired,
     permittedTexts: ImmutablePropTypes.list.isRequired,
     status: ImmutablePropTypes.map.isRequired,
   }
 
-  setReactionHandlers ({ loggedOut, onUnreact, onReact, permittedTexts, status }) {
+  setReactionHandlers ({ loggedOut, navigate, onUnreact, onReact, permittedTexts, status }) {
     this.setState({
       reactionHandlers: Immutable.Map(permittedTexts.map(text => {
         if (loggedOut) {
-          return [text, logIn];
+          return [text, () => navigate('/auth/sign_in')];
         }
 
         for (const reaction of status.get('reactions')) {

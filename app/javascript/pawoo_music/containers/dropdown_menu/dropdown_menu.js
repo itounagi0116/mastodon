@@ -50,6 +50,7 @@ class DropdownContent extends React.PureComponent {
 
 const mapStateToProps = (state) => ({
   isLogin: !!state.getIn(['meta', 'me']),
+  navigate: state.getIn(['pawoo_music', 'navigate']),
 });
 
 @connect(mapStateToProps)
@@ -62,6 +63,7 @@ export default class DropdownMenu extends React.PureComponent {
     items: PropTypes.array.isRequired,
     title: PropTypes.string,
     isLogin: PropTypes.bool,
+    navigate: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
 
@@ -113,7 +115,7 @@ export default class DropdownMenu extends React.PureComponent {
   }
 
   handleRedirectLoginPage = () => {
-    top.location.href = '/auth/sign_in';
+    this.props.navigate('/auth/sign_in');
   }
 
   renderItem = (item, i) => {

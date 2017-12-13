@@ -9,6 +9,7 @@ import TipsBalloonContainer from '../../../mastodon/containers/tips_balloon_cont
 
 const mapStateToProps = (state) => ({
   isLogin: !!state.getIn(['meta', 'me']),
+  navigate: state.getIn(['pawoo_music', 'navigate']),
 });
 
 @connect(mapStateToProps)
@@ -16,6 +17,7 @@ export default class MediaPost extends PureComponent {
 
   static propTypes = {
     isLogin: PropTypes.bool.isRequired,
+    navigate: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
 
@@ -25,14 +27,14 @@ export default class MediaPost extends PureComponent {
   }
 
   handleMediaPost = () => {
-    const { isLogin, dispatch } = this.props;
+    const { isLogin, navigate, dispatch } = this.props;
     if (!isLogin) {
-      location.href = '/auth/sign_in';
+      navigate('/auth/sign_in');
       return;
     }
 
     if (this.mobile) {
-      location.href = '/tracks/new';
+      navigate('/tracks/new');
     } else {
       dispatch(resetTrackComposeData());
       dispatch(showTrackComposeModal());

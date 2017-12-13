@@ -84,6 +84,7 @@ const makeMapStateToProps = () => {
       boostModal: state.getIn(['meta', 'boost_modal']),
       deleteModal: state.getIn(['meta', 'delete_modal']),
       autoPlayGif: state.getIn(['meta', 'auto_play_gif']) || false,
+      navigate: state.getIn(['pawoo_music', 'navigate']),
     };
   };
 
@@ -107,6 +108,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
     deleteModal: PropTypes.bool,
     autoPlayGif: PropTypes.bool,
     intl: PropTypes.object.isRequired,
+    navigate: PropTypes.func.isRequired,
   };
 
   // Avoid checking props that are functions (and whose equality will always
@@ -239,10 +241,10 @@ export default class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleEditTrack = () => {
-    const { dispatch, status } = this.props;
+    const { dispatch, navigate, status } = this.props;
 
     if (mobile) {
-      location.href = `/tracks/${status.get('id')}/edit`;
+      navigate(`/tracks/${status.get('id')}/edit`);
     } else {
       dispatch(setTrackComposeData(status.get('track')));
       dispatch(showTrackComposeModal());
@@ -250,7 +252,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleRedirectLoginPage = () => {
-    location.href = '/auth/sign_in';
+    this.props.navigate('/auth/sign_in');
   }
 
   render () {

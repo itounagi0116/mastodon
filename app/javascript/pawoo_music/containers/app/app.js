@@ -32,6 +32,7 @@ import Icon from '../../components/icon';
 
 const mapStateToProps = state => ({
   isLogin: !!state.getIn(['meta', 'me']),
+  navigate: state.getIn(['pawoo_music', 'navigate']),
   target: state.getIn(['pawoo_music', 'column', 'target']),
   title: state.getIn(['pawoo_music', 'timeline', 'title']),
   footerType: state.getIn(['pawoo_music', 'footer', 'footerType']),
@@ -42,6 +43,7 @@ const mapStateToProps = state => ({
 export default class App extends PureComponent {
 
   static propTypes = {
+    navigate: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     target: PropTypes.string.isRequired,
     footerType: PropTypes.string.isRequired,
@@ -130,9 +132,9 @@ export default class App extends PureComponent {
   }
 
   handleRedirectLoginPage = (e) => {
-    const { isLogin } = this.props;
+    const { isLogin, navigate } = this.props;
     if (!isLogin) {
-      location.href = '/auth/sign_in';
+      navigate('/auth/sign_in');
       e.preventDefault();
     }
   }
