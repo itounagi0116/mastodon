@@ -18,40 +18,27 @@ class Reaction < ApplicationRecord
   validates :text, inclusion: { in: PERMITTED_TEXTS }
 
   def self.push_account(account, attributes)
-    ApplicationRecord.transaction do
-      reaction = find_by(attributes)
+    begin
+      ApplicationRecord.transaction do
+        reaction = find_by(attributes)
 
-      if reaction.nil?
-        reaction = Reaction.create!(attributes.merge(accounts_count: 1))
-      else
-        reaction.increment! :accounts_count
+        if reaction.nil?
+          reaction = Reaction.create!(attributes.merge(accounts_count: 1))
+        else
+          reaction.increment! :accounts_count
+        end
+
+        reaction.accounts << account
       end
-
-      reaction.accounts << account
+    rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordNotUnique
+      retry
     end
   end
 
   def self.destroy_account(account, attributes)
-    ApplicationRecord.transaction isolation: :repeatable_read do
-      reaction = find_by!(attributes)
-
-      if reaction.accounts_count <= 1
-        reaction.destroy!
-      else
-        reaction.accounts.destroy account
-        reaction.decrement! :accounts_count
-      end
-    end
-  end
-
-  def self.destroy_account_all(account)
-    scope = account.reactions
-
-    while !scope.nil?
-      scope = ApplicationRecord.transaction isolation: :repeatable_read do
-        reaction = scope.order(:id).first
-
-        next if reaction.nil?
+    begin
+      ApplicationRecord.transaction isolation: :repeatable_read do
+        reaction = find_by!(attributes)
 
         if reaction.accounts_count <= 1
           reaction.destroy!
@@ -59,8 +46,33 @@ class Reaction < ApplicationRecord
           reaction.accounts.destroy account
           reaction.decrement! :accounts_count
         end
+      end
+    rescue ActiveRecord::SerializationFailure
+      retry
+    end
+  end
 
-        account.reactions.where('id > ?', reaction)
+  def self.destroy_account_all(account)
+    scope = account.reactions
+
+    while !scope.nil?
+      begin
+        scope = ApplicationRecord.transaction isolation: :repeatable_read do
+          reaction = scope.order(:id).first
+
+          next if reaction.nil?
+
+          if reaction.accounts_count <= 1
+            reaction.destroy!
+          else
+            reaction.accounts.destroy account
+            reaction.decrement! :accounts_count
+          end
+
+          account.reactions.where('id > ?', reaction)
+        end
+      rescue ActiveRecord::SerializationFailure
+        retry
       end
     end
   end
