@@ -7,7 +7,6 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { defineMessages, injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { unicodeMapping } from '../../../mastodon/emojione_light';
-import { makeGetStatus } from '../../../mastodon/selectors';
 import { react, unreact } from '../../actions/reaction';
 import DropdownMenuContainer from '../dropdown_menu';
 
@@ -37,10 +36,9 @@ function logIn () {
   top.location.href = '/auth/sign_in';
 }
 
-const mapStateToProps = (state, { status, id }) => ({
+const mapStateToProps = (state) => ({
   loggedOut: !state.getIn(['meta', 'me']),
   permittedTexts: state.getIn(['pawoo_music', 'reactions']),
-  reactions: (status || makeGetStatus()(state, id)).get('reactions'),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -92,21 +90,22 @@ export default class StatusReactions extends ImmutablePureComponent {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.loggedOut !== this.props.loggedOut ||
-        nextProps.onUnreact !== this.props.onReact ||
-        nextProps.permittedTexts !== this.props.permittedTexts ||
-        !nextProps.reactions.is(this.props.reactions)) {
+        nextProps.onReact !== this.props.onReact ||
+        nextProps.onUnreact !== this.props.onUnreact ||
+        !nextProps.permittedTexts.equals(this.props.permittedTexts) ||
+        !nextProps.status.equals(this.props.status)) {
       this.setReactionHandlers(nextProps);
     }
   }
 
   render () {
     const dropdownTexts = this.props.permittedTexts.toArray().filter(
-      text => this.props.reactions.every(
+      text => this.props.status.get('reactions').every(
         reaction => reaction.get('text') !== text));
 
     return (
       <ul className='status-reactions'>
-        {this.props.reactions.map(reaction => {
+        {this.props.status.get('reactions').map(reaction => {
           const count = reaction.get('accounts_count');
           const reacted = reaction.get('reacted');
           const text = reaction.get('text');
