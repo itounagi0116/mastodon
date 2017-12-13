@@ -18,8 +18,6 @@ export default class HTMLAudio {
   _forAnalysis = new Audio();
   _forOutput = new Audio();
 
-  canQueuePlayback = true;
-
   constructor ({ context, onSourceNodeChange, onDurationChange, onEnded }) {
     this._forAnalysis.crossOrigin = 'anonymous';
     this._forOutput.crossOrigin = 'anonymous';

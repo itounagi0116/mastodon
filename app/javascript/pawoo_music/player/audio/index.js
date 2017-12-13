@@ -107,7 +107,7 @@ export default store => {
       playerAudio.seek(newSeekDestination);
     }
 
-    if (playerAudio.canQueuePlayback && oldPaused !== newPaused) {
+    if (oldPaused !== newPaused) {
       if (newPaused) {
         playerAudio.pause();
       } else {

@@ -7,8 +7,6 @@ export default class BufferAudio {
   _bufferSource = null;
   _lastSeekDestinationOffsetToMusicTime = 0;
 
-  canQueuePlayback = false;
-
   constructor ({ context, onEnded, onLoadStart, onLoadEnd, onDestinationNodeChange, onSourceNodeChange, onDurationChange }) {
     this._cancelMusic = noop;
     this._context = context;
@@ -69,7 +67,6 @@ export default class BufferAudio {
 
           this._onLoadEnd();
           this._onDurationChange(buffer.duration);
-          this.canQueuePlayback = true;
         }
       });
     });
@@ -104,14 +101,16 @@ export default class BufferAudio {
   }
 
   play () {
-    if (this._lastSeekDestinationOffsetToMusicTime < this._buffer.duration) {
-      this._offsetToContextTime = this._lastSeekDestinationOffsetToMusicTime - this._context.currentTime;
-    } else {
-      this._offsetToContextTime = -this._context.currentTime;
-      this._lastSeekDestinationOffsetToMusicTime = 0;
-    }
+    if (this._buffer !== null) {
+      if (this._lastSeekDestinationOffsetToMusicTime < this._buffer.duration) {
+        this._offsetToContextTime = this._lastSeekDestinationOffsetToMusicTime - this._context.currentTime;
+      } else {
+        this._offsetToContextTime = -this._context.currentTime;
+        this._lastSeekDestinationOffsetToMusicTime = 0;
+      }
 
-    this._createBufferSource(this._buffer);
+      this._createBufferSource(this._buffer);
+    }
   }
 
   seek (time) {
