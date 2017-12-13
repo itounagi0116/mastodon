@@ -95,7 +95,7 @@ class Musicvideo extends ImmutablePureComponent {
     const source = node.get('source');
 
     if (destination !== null) {
-      this.generator.audioAnalyserNode.conneect(destination);
+      this.generator.audioAnalyserNode.connect(destination);
     }
 
     if (source !== null) {
@@ -134,7 +134,7 @@ class Musicvideo extends ImmutablePureComponent {
       }
 
       if (destination !== null) {
-        audioAnalyserNode.conneect(destination);
+        audioAnalyserNode.connect(destination);
       }
     }
 
