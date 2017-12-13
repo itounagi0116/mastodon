@@ -400,6 +400,14 @@ en:
     reblog:
       body: 'Your status was boosted by %{name}:'
       subject: "%{name} boosted your status"
+    new_track:
+      body: |
+        %{name} posted a new track.
+
+        Title:  %{title}
+        Artist: %{artist}
+        %{text}
+      subject: '%{name} posted a new track'
     video_preparation_error:
       body: 'Unfortuntely, the video genration for your track, %{title}, was failed:'
       subject: The video generation for your track, %{title}, was failed

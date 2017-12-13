@@ -50,6 +50,16 @@ class NotificationMailer < ApplicationMailer
     end
   end
 
+  def new_track(recipient, notification)
+    @me = recipient
+    @track = notification.activity
+    @status = @track.statuses.find_by!(reblog: nil)
+
+    locale_for_account(@me) do
+      mail to: @me.user.email, subject: I18n.t('notification_mailer.new_track.subject', name: @status.account.acct)
+    end
+  end
+
   def video_preparation_success(recipient, notification)
     @me = recipient
     @track = notification.activity

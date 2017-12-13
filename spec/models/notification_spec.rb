@@ -25,5 +25,15 @@ RSpec.describe Notification, type: :model do
       notification = Notification.new(activity: Follow.new)
       expect(notification.type).to eq :follow
     end
+
+    it 'returns :new_track for a Track with from_account' do
+      notification = Notification.new(activity: Fabricate(:track), from_account: Fabricate(:account))
+      expect(notification.type).to eq :new_track
+    end
+
+    it 'returns :video_preparation_success for a Track without from_account' do
+      notification = Notification.new(activity: Fabricate(:track), from_account: nil)
+      expect(notification.type).to eq :video_preparation_success
+    end
   end
 end

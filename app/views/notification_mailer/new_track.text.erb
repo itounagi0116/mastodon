@@ -1,0 +1,5 @@
+<%= raw t('application_mailer.salutation', name: display_name(@me)) %>
+
+<%= raw t('notification_mailer.new_track.body', name: @status.account.acct, title: @track.title, artist: @track.artist, text: @track.text) %>
+
+<%= raw t('application_mailer.view')%> <%= short_account_status_url(@status.account, @status) %>

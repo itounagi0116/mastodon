@@ -22,8 +22,9 @@ class Notification < ApplicationRecord
     follow:                    'Follow',
     follow_request:            'FollowRequest',
     favourite:                 'Favourite',
+
+    track:                     'Track',
     video_preparation_error:   'VideoPreparationError',
-    video_preparation_success: 'Track',
   }.freeze
 
   ACCOUNT_INCLUDES = [:oauth_authentications, :custom_color]
@@ -39,8 +40,9 @@ class Notification < ApplicationRecord
   belongs_to :follow,         foreign_type: 'Follow',        foreign_key: 'activity_id'
   belongs_to :follow_request, foreign_type: 'FollowRequest', foreign_key: 'activity_id'
   belongs_to :favourite,      foreign_type: 'Favourite',     foreign_key: 'activity_id'
+
+  belongs_to :track,                     foreign_type: 'Track',                 foreign_key: 'activity_id'
   belongs_to :video_preparation_error,   foreign_type: 'VideoPreparationError', foreign_key: 'activity_id'
-  belongs_to :video_preparation_success, foreign_type: 'Track',                 foreign_key: 'activity_id', class_name: 'Track'
 
   validates :account_id, uniqueness: { scope: [:activity_type, :activity_id] }
   validates :activity_type, inclusion: { in: TYPE_CLASS_MAP.values }
@@ -53,10 +55,18 @@ class Notification < ApplicationRecord
   }
 
   cache_associated :from_account, status: STATUS_INCLUDES, mention: [status: STATUS_INCLUDES], favourite: [account: ACCOUNT_INCLUDES, status: STATUS_INCLUDES], follow: { account: ACCOUNT_INCLUDES },
-    video_preparation_success: :original_status, video_preparation_error: { track: :original_status }
+    track: :original_status, video_preparation_error: { track: :original_status }
 
   def type
-    @type ||= TYPE_CLASS_MAP.invert[activity_type].to_sym
+    return @type if @type.present?
+
+    if activity_type != 'Track'
+      @type = TYPE_CLASS_MAP.invert[activity_type].to_sym
+    elsif from_account_id?
+      @type = :new_track
+    else
+      @type = :video_preparation_success
+    end
   end
 
   def target_status
@@ -67,8 +77,8 @@ class Notification < ApplicationRecord
       favourite&.status
     when :mention
       mention&.status
-    when :video_preparation_success
-      video_preparation_success&.original_status
+    when :new_track, :video_preparation_success
+      track&.original_status
     when :video_preparation_error
       video_preparation_error&.track&.original_status
     end

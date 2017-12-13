@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 class NotifyService < BaseService
-  def call(recipient, activity)
+  def call(recipient, activity, **attributes)
     @recipient    = recipient
     @activity     = activity
-    @notification = Notification.new(account: @recipient, activity: @activity)
+    @notification = Notification.new(account: @recipient, activity: @activity, **attributes)
 
     return if recipient.user.nil? || blocked?
 
     create_notification
     send_email if email_enabled?
-    if [:video_preparation_error, :video_preparation_success].exclude?(@notification.type) &&
+    if [:new_track, :video_preparation_error, :video_preparation_success].exclude?(@notification.type) &&
        firebase_cloud_messaging_enabled?
       send_firebase_cloud_messaging
     end
@@ -37,6 +37,10 @@ class NotifyService < BaseService
   end
 
   def blocked_follow_request?
+    false
+  end
+
+  def blocked_new_track?
     false
   end
 
