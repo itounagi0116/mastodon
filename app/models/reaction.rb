@@ -45,7 +45,7 @@ class Reaction < ApplicationRecord
   end
 
   def self.destroy_account_all(account)
-    scope = all
+    scope = account.reactions
 
     while scope.present?
       scope = ApplicationRecord.transaction isolation: :repeatable_read do
@@ -60,7 +60,7 @@ class Reaction < ApplicationRecord
           reaction.decrement! :accounts_count
         end
 
-        where('id > ?', reaction)
+        account.reactions.where('id > ?', reaction)
       end
     end
   end
