@@ -26,6 +26,13 @@ describe Settings::DeletesController do
   end
 
   describe 'DELETE #destroy' do
+    before do
+      DatabaseCleaner.clean
+      DatabaseCleaner.strategy = :truncation
+      DatabaseCleaner.clean_with :truncation
+      DatabaseCleaner.start
+    end
+
     context 'when signed in' do
       let(:user) { Fabricate(:user, password: 'petsmoldoggos') }
 
