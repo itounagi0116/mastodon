@@ -18,6 +18,8 @@ class Reaction < ApplicationRecord
   validates :text, inclusion: { in: PERMITTED_TEXTS }
 
   def self.push_account(account, attributes)
+    tries = 2
+
     begin
       ApplicationRecord.transaction do
         reaction = find_by(attributes)
@@ -31,11 +33,15 @@ class Reaction < ApplicationRecord
         reaction.accounts << account
       end
     rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordNotUnique
-      retry
+      tries -= 1
+      retry if tries > 0
+      raise
     end
   end
 
   def self.destroy_account(account, attributes)
+    tries = 2
+
     begin
       ApplicationRecord.transaction isolation: :repeatable_read do
         reaction = find_by!(attributes)
@@ -48,7 +54,9 @@ class Reaction < ApplicationRecord
         end
       end
     rescue ActiveRecord::SerializationFailure
-      retry
+      tires -= 1
+      retry if tries > 0
+      raise
     end
   end
 
@@ -56,6 +64,8 @@ class Reaction < ApplicationRecord
     scope = account.reactions
 
     while !scope.nil?
+      tries = 2
+
       begin
         scope = ApplicationRecord.transaction isolation: :repeatable_read do
           reaction = scope.order(:id).first
@@ -72,7 +82,9 @@ class Reaction < ApplicationRecord
           account.reactions.where('id > ?', reaction)
         end
       rescue ActiveRecord::SerializationFailure
-        retry
+        tries -= 1
+        retry if tries > 0
+        raise
       end
     end
   end
