@@ -59,6 +59,7 @@ export default class BufferAudio {
       this._context.decodeAudioData(arrayBuffer, buffer => {
         if (promise !== null) {
           if (this._bufferSource !== null) {
+            this._bufferSource.onended = null;
             this._bufferSource.stop();
           }
 
