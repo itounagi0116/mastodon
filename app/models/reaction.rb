@@ -47,7 +47,7 @@ class Reaction < ApplicationRecord
   def self.destroy_account_all(account)
     scope = account.reactions
 
-    while scope.present?
+    while !scope.nil?
       scope = ApplicationRecord.transaction isolation: :repeatable_read do
         reaction = scope.order(:id).first
 
