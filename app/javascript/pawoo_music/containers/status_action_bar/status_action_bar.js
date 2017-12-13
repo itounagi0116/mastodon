@@ -30,6 +30,7 @@ import { openModal } from '../../../mastodon/actions/modal';
 import { generateMusicvideo } from '../../actions/musicvideo';
 import { showTrackComposeModal, setTrackComposeData } from '../../actions/track_compose';
 import { isMobile } from '../../util/is_mobile';
+import { navigate } from '../../util/navigator';
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -84,7 +85,6 @@ const makeMapStateToProps = () => {
       boostModal: state.getIn(['meta', 'boost_modal']),
       deleteModal: state.getIn(['meta', 'delete_modal']),
       autoPlayGif: state.getIn(['meta', 'auto_play_gif']) || false,
-      navigate: state.getIn(['pawoo_music', 'navigate']),
     };
   };
 
@@ -108,7 +108,6 @@ export default class StatusActionBar extends ImmutablePureComponent {
     deleteModal: PropTypes.bool,
     autoPlayGif: PropTypes.bool,
     intl: PropTypes.object.isRequired,
-    navigate: PropTypes.func.isRequired,
   };
 
   // Avoid checking props that are functions (and whose equality will always
@@ -241,7 +240,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleEditTrack = () => {
-    const { dispatch, navigate, status } = this.props;
+    const { dispatch, status } = this.props;
 
     if (mobile) {
       navigate(`/tracks/${status.get('id')}/edit`);
@@ -252,7 +251,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleRedirectLoginPage = () => {
-    this.props.navigate('/auth/sign_in');
+    navigate('/auth/sign_in');
   }
 
   render () {

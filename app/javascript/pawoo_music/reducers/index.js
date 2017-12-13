@@ -8,7 +8,6 @@ import account_tracks from './account_tracks';
 import column from './column';
 import timeline from './timeline';
 import footer from './footer';
-import navigate from './navigate';
 import reactions from './reactions';
 
 export default combineReducers({
@@ -21,6 +20,5 @@ export default combineReducers({
   column,
   timeline,
   footer,
-  navigate,
   reactions,
 });

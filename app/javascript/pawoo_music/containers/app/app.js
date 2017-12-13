@@ -22,6 +22,7 @@ import AccountFollowersContainer from '../account_followers';
 import AccountFollowingContainer from '../account_following';
 import StatusThreadContainer from '../status_thread';
 import { isMobile } from '../../util/is_mobile';
+import { navigate } from '../../util/navigator';
 import StatusPostButtonContainer from '../status_post_button';
 import TrackComposeModalContainer from '../track_compose_modal';
 import PlayControlContainer from '../../../mastodon/features/ui/containers/play_control_container';
@@ -32,7 +33,6 @@ import Icon from '../../components/icon';
 
 const mapStateToProps = state => ({
   isLogin: !!state.getIn(['meta', 'me']),
-  navigate: state.getIn(['pawoo_music', 'navigate']),
   target: state.getIn(['pawoo_music', 'column', 'target']),
   title: state.getIn(['pawoo_music', 'timeline', 'title']),
   footerType: state.getIn(['pawoo_music', 'footer', 'footerType']),
@@ -43,7 +43,6 @@ const mapStateToProps = state => ({
 export default class App extends PureComponent {
 
   static propTypes = {
-    navigate: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     target: PropTypes.string.isRequired,
     footerType: PropTypes.string.isRequired,
@@ -132,7 +131,7 @@ export default class App extends PureComponent {
   }
 
   handleRedirectLoginPage = (e) => {
-    const { isLogin, navigate } = this.props;
+    const { isLogin } = this.props;
     if (!isLogin) {
       navigate('/auth/sign_in');
       e.preventDefault();

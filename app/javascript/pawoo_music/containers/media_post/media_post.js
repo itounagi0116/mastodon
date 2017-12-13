@@ -4,12 +4,12 @@ import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import Icon from '../../components/icon';
 import { isMobile } from '../../util/is_mobile';
+import { navigate } from '../../util/navigator';
 import { showTrackComposeModal, resetTrackComposeData } from '../../actions/track_compose';
 import TipsBalloonContainer from '../../../mastodon/containers/tips_balloon_container';
 
 const mapStateToProps = (state) => ({
   isLogin: !!state.getIn(['meta', 'me']),
-  navigate: state.getIn(['pawoo_music', 'navigate']),
 });
 
 @connect(mapStateToProps)
@@ -17,7 +17,6 @@ export default class MediaPost extends PureComponent {
 
   static propTypes = {
     isLogin: PropTypes.bool.isRequired,
-    navigate: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
 
@@ -27,7 +26,7 @@ export default class MediaPost extends PureComponent {
   }
 
   handleMediaPost = () => {
-    const { isLogin, navigate, dispatch } = this.props;
+    const { isLogin, dispatch } = this.props;
     if (!isLogin) {
       navigate('/auth/sign_in');
       return;

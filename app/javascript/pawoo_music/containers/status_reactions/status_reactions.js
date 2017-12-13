@@ -8,6 +8,7 @@ import { defineMessages, injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { unicodeMapping } from '../../../mastodon/emojione_light';
 import { react, unreact } from '../../actions/reaction';
+import { navigate } from '../../util/navigator';
 import DropdownMenuContainer from '../dropdown_menu';
 
 const messages = defineMessages({
@@ -32,9 +33,12 @@ class Emoji extends ImmutablePureComponent {
 
 }
 
+function logIn() {
+  navigate('/auth/sign_in');
+}
+
 const mapStateToProps = (state) => ({
   loggedOut: !state.getIn(['meta', 'me']),
-  navigate: state.getIn(['pawoo_music', 'navigate']),
   permittedTexts: state.getIn(['pawoo_music', 'reactions']),
 });
 
@@ -55,18 +59,17 @@ export default class StatusReactions extends ImmutablePureComponent {
   static propTypes = {
     intl: PropTypes.object.isRequired,
     loggedOut: PropTypes.bool.isRequired,
-    navigate: PropTypes.func.isRequired,
     onReact: PropTypes.func.isRequired,
     onUnreact: PropTypes.func.isRequired,
     permittedTexts: ImmutablePropTypes.list.isRequired,
     status: ImmutablePropTypes.map.isRequired,
   }
 
-  setReactionHandlers ({ loggedOut, navigate, onUnreact, onReact, permittedTexts, status }) {
+  setReactionHandlers ({ loggedOut, onUnreact, onReact, permittedTexts, status }) {
     this.setState({
       reactionHandlers: Immutable.Map(permittedTexts.map(text => {
         if (loggedOut) {
-          return [text, () => navigate('/auth/sign_in')];
+          return [text, logIn];
         }
 
         for (const reaction of status.get('reactions')) {

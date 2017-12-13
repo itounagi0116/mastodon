@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import Icon from '../../components/icon';
 import Link from '../../components/link_wrapper';
 import { isMobile } from '../../util/is_mobile';
+import { navigate } from '../../util/navigator';
 import { openModal, closeModal } from '../../../mastodon/actions/modal';
 
 const mobile = isMobile();
@@ -50,7 +51,6 @@ class DropdownContent extends React.PureComponent {
 
 const mapStateToProps = (state) => ({
   isLogin: !!state.getIn(['meta', 'me']),
-  navigate: state.getIn(['pawoo_music', 'navigate']),
 });
 
 @connect(mapStateToProps)
@@ -63,7 +63,6 @@ export default class DropdownMenu extends React.PureComponent {
     items: PropTypes.array.isRequired,
     title: PropTypes.string,
     isLogin: PropTypes.bool,
-    navigate: PropTypes.func.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
 
@@ -115,7 +114,7 @@ export default class DropdownMenu extends React.PureComponent {
   }
 
   handleRedirectLoginPage = () => {
-    this.props.navigate('/auth/sign_in');
+    navigate('/auth/sign_in');
   }
 
   renderItem = (item, i) => {
