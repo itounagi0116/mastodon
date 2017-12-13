@@ -1,3 +1,9 @@
+/*
+  NOTE: Overlaying UIs for the embedded view is depending on the layout of
+        this component. Do not forget to check the embedded view and adjust it
+        if necessary.
+*/
+
 .musicvideo {
   position: relative;
   --controls-container-height: 40px;
