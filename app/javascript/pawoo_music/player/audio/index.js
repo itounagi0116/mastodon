@@ -99,6 +99,9 @@ export default store => {
         playerAudio.changeSource(newMusic);
       } else if (![null, undefined].includes(newId)) {
         playerAudio.changeSource(`/api/v1/statuses/${newId}/music`);
+      } else {
+        playerAudio.pause();
+        store.dispatch(changeDuration(NaN));
       }
     } else if (newDuration !== Infinity && oldSeekDestination !== newSeekDestination) {
       playerAudio.seek(newSeekDestination);
