@@ -176,6 +176,8 @@ class Musicvideo extends ImmutablePureComponent {
   componentWillUnmount () {
     const { track } = this.props;
 
+    this.hideControlsDebounce.cancel();
+
     clearInterval(this.timer);
 
     this.image.source.removeEventListener('load', this.handleLoadImage);
