@@ -11,6 +11,7 @@ export default class BufferAudio {
 
   constructor ({ context, onEnded, onLoadStart, onLoadEnd, onDestinationNodeChange, onSourceNodeChange, onDurationChange }) {
     this._cancelMusic = noop;
+    this._context = context;
     this._onEnded = onEnded;
     this._onLoadStart = onLoadStart;
     this._onLoadEnd = onLoadEnd;
@@ -57,7 +58,7 @@ export default class BufferAudio {
        * Promise based decodeAudioData is not supported by:
        * Mozilla/5.0 (iPhone; CPU iPhone OS 10_2_1 like Mac OS X) AppleWebKit/602.4.46 (KHTML, like Gecko) Version/10.0 Mobile/14D27 Safari/602.1
        */
-      this._analyser.context.decodeAudioData(arrayBuffer, buffer => {
+      this._context.decodeAudioData(arrayBuffer, buffer => {
         if (promise !== null) {
           if (this._bufferSource !== null) {
             this._bufferSource.stop();
@@ -75,14 +76,13 @@ export default class BufferAudio {
   }
 
   _createBufferSource () {
-    this._bufferSource = this._analyser.context.createBufferSource();
+    this._bufferSource = this._context.createBufferSource();
     this._bufferSource.buffer = this._buffer;
     this._bufferSource.onended = () => {
       this._bufferSource = null;
       this._lastSeekDestinationOffsetToMusicTime = this._buffer.duration;
       this._onEnded();
     };
-    this._bufferSource.connect(this._analyser);
     this._bufferSource.start(0, this.getCurrentTime());
 
     this._onSourceNodeChange(this._bufferSource);
@@ -91,21 +91,23 @@ export default class BufferAudio {
   getCurrentTime () {
     return this._bufferSource === null ?
       this._lastSeekDestinationOffsetToMusicTime :
-      this._analyser.context.currentTime + this._offsetToContextTime;
+      this._context.currentTime + this._offsetToContextTime;
   }
 
   pause () {
-    this._lastSeekDestinationOffsetToMusicTime = this.getCurrentTime();
-    this._bufferSource.onended = null;
-    this._bufferSource.stop();
-    this._bufferSource = null;
+    if (this._bufferSource !== null) {
+      this._lastSeekDestinationOffsetToMusicTime = this.getCurrentTime();
+      this._bufferSource.onended = null;
+      this._bufferSource.stop();
+      this._bufferSource = null;
+    }
   }
 
   play () {
     if (this._lastSeekDestinationOffsetToMusicTime < this._buffer.duration) {
-      this._offsetToContextTime = this._lastSeekDestinationOffsetToMusicTime - this._analyser.context.currentTime;
+      this._offsetToContextTime = this._lastSeekDestinationOffsetToMusicTime - this._context.currentTime;
     } else {
-      this._offsetToContextTime = -this._analyser.context.currentTime;
+      this._offsetToContextTime = -this._context.currentTime;
       this._lastSeekDestinationOffsetToMusicTime = 0;
     }
 
@@ -118,7 +120,7 @@ export default class BufferAudio {
       this._bufferSource.stop();
     }
 
-    this._offsetToContextTime = time - this._analyser.context.currentTime;
+    this._offsetToContextTime = time - this._context.currentTime;
     this._lastSeekDestinationOffsetToMusicTime = time;
 
     if (this._bufferSource !== null) {
