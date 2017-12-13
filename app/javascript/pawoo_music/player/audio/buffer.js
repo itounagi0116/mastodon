@@ -22,6 +22,7 @@ export default class BufferAudio {
   changeSource (source) {
     let promise;
 
+    this._buffer = null;
     this._cancelMusic();
 
     this._onLoadStart();
