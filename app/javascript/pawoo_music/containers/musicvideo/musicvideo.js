@@ -59,6 +59,8 @@ class Musicvideo extends ImmutablePureComponent {
     onSeekDestinationChange: PropTypes.func,
     audio: ImmutablePropTypes.map.isRequired,
     getCurrentTime: PropTypes.func.isRequired,
+    loading: PropTypes.bool.isRequired,
+    paused: PropTypes.bool.isRequired,
     track: ImmutablePropTypes.map.isRequired,
   };
 
