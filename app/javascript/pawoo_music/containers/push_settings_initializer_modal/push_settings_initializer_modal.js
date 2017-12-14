@@ -11,7 +11,6 @@ import Button from '../../components/button';
 import { isMobile } from '../../util/is_mobile';
 
 const messages = defineMessages({
-  mention: { id: 'account.mention', defaultMessage: 'Mention @{name}' },
   favourite: { id: 'pawoo_music.push_settings.preferences.toggle.favourite', defaultMessage: 'Favourites' },
   follow: { id: 'pawoo_music.push_settings.preferences.toggle.follow', defaultMessage: 'New followers' },
   mention: { id: 'pawoo_music.push_settings.preferences.toggle.mention', defaultMessage: 'Mentions' },
