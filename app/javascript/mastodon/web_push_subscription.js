@@ -46,6 +46,16 @@ const sendSubscriptionToBackend = (subscription) =>
 // Last one checks for payload support: https://web-push-book.gauntface.com/chapter-06/01-non-standards-browsers/#no-payload
 const supportsPushNotifications = ('serviceWorker' in navigator && 'PushManager' in window && 'getKey' in PushSubscription.prototype);
 
+const renewSubscription = (registration) => new Promise((resolve, reject) => {
+  const onSubscribe = () => {
+    const promise = subscribe(registration).then(sendSubscriptionToBackend).then(resolve);
+    promise.catch(reject);
+    return promise;
+  };
+
+    store.dispatch(openModalUnclosable('UNIVERSAL', { children: <PushSettingsInitializerModal onSubscribe={onSubscribe} /> }));
+});
+
 export function register () {
   if (!store.getState().getIn(['meta', 'me'])) {
     return;
@@ -71,47 +81,42 @@ export function register () {
           // If the VAPID public key did not change and the endpoint corresponds
           // to the endpoint saved in the backend, the subscription is valid
           if (subscriptionServerKey === currentServerKey && subscription.endpoint === serverEndpoint) {
-            return store.dispatch(setSubscription(subscription));
+            return subscription;
           } else {
             // Something went wrong, try to subscribe again
-            return unsubscribe({ registration, subscription }).then(subscribeAndSet);
+            return unsubscribe({ registration, subscription }).then(renewSubscription);
           }
         }
 
         // No subscription, try to subscribe
-        return store.dispatch(openModalUnclosable('UNIVERSAL', { children: <PushSettingsInitializerModal registration={registration} /> }));
+        return renewSubscription(registration);
+      })
+      .then(subscription => {
+        // If we got a PushSubscription (and not a subscription object from the backend)
+        // it means that the backend subscription is valid (and was set during hydration)
+        if (!(subscription instanceof PushSubscription)) {
+          store.dispatch(setSubscription(subscription));
+        }
+      })
+      .catch(error => {
+        if (error.code === 20 && error.name === 'AbortError') {
+          console.warn('Your browser supports Web Push Notifications, but does not seem to implement the VAPID protocol.');
+        } else if (error.code === 5 && error.name === 'InvalidCharacterError') {
+          console.error('The VAPID public key seems to be invalid:', getApplicationServerKey());
+        }
+
+        // Clear alerts and hide UI settings
+        store.dispatch(clearSubscription());
+
+        try {
+          getRegistration()
+            .then(getPushSubscription)
+            .then(unsubscribe);
+        } catch (e) {
+
+        }
       });
   } else {
     console.warn('Your browser does not support Web Push Notifications.');
   }
-}
-
-export function subscribeAndSet (registration) {
-  return subscribe(registration).then(sendSubscriptionToBackend).then(subscription => {
-    // If we got a PushSubscription (and not a subscription object from the backend)
-    // it means that the backend subscription is valid (and was set during hydration)
-    if (!(subscription instanceof PushSubscription)) {
-      store.dispatch(setSubscription(subscription));
-    }
-  })
-  .catch(error => {
-    if (error.code === 20 && error.name === 'AbortError') {
-      console.warn('Your browser supports Web Push Notifications, but does not seem to implement the VAPID protocol.');
-    } else if (error.code === 5 && error.name === 'InvalidCharacterError') {
-      console.error('The VAPID public key seems to be invalid:', getApplicationServerKey());
-    }
-
-    // Clear alerts and hide UI settings
-    store.dispatch(clearSubscription());
-
-    try {
-      getRegistration()
-        .then(getPushSubscription)
-        .then(unsubscribe);
-    } catch (e) {
-
-    }
-
-    return error;
-  });
 }

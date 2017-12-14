@@ -6,7 +6,6 @@ import { FormattedMessage, defineMessages, injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { closeModal } from '../../../mastodon/actions/modal';
 import { changeAlerts, saveSettings } from '../../../mastodon/actions/push_notifications';
-import { subscribeAndSet } from '../../../mastodon/web_push_subscription';
 import SettingToggle from '../../../mastodon/features/notifications/components/setting_toggle';
 import Button from '../../components/button';
 import { isMobile } from '../../util/is_mobile';
@@ -47,7 +46,7 @@ export default class PushSettingsInitializerModal extends ImmutablePureComponent
     onChange: PropTypes.func.isRequired,
     onClose: PropTypes.func,
     onSave: PropTypes.func.isRequired,
-    registration: PropTypes.object.isRequired,
+    onSubscribe: PropTypes.func.isRequired,
     settings: ImmutablePropTypes.map.isRequired,
   };
 
@@ -58,7 +57,7 @@ export default class PushSettingsInitializerModal extends ImmutablePureComponent
   handleSubscribe = () => {
     this.setState({ scene: 'Pending' });
 
-    subscribeAndSet(this.props.registration).then(() => {
+    this.props.onSubscribe().then(() => {
       this.props.onSave();
       this.setState({ scene: 'Success' });
     }, error => {
