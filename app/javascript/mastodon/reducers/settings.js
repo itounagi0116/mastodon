@@ -24,6 +24,7 @@ const initialState = ImmutableMap({
       favourite: true,
       reblog: true,
       mention: true,
+      new_track: true,
     }),
 
     shows: ImmutableMap({
@@ -31,6 +32,7 @@ const initialState = ImmutableMap({
       favourite: true,
       reblog: true,
       mention: true,
+      new_track: true,
     }),
 
     sounds: ImmutableMap({
@@ -38,6 +40,7 @@ const initialState = ImmutableMap({
       favourite: true,
       reblog: true,
       mention: true,
+      new_track: false,
     }),
   }),
 
