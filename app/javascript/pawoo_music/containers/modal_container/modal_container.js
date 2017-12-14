@@ -4,6 +4,7 @@ import { closeModal } from '../../../mastodon/actions/modal';
 import ModalRoot from '../../components/modal_root';
 
 const mapStateToProps = state => ({
+  closable: state.get('modal').modalClosable,
   type: state.get('modal').modalType,
   props: state.get('modal').modalProps,
 });
