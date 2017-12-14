@@ -5,11 +5,11 @@ import Immutable from 'immutable';
 const initialState = Immutable.Map({
   subscription: null,
   alerts: new Immutable.Map({
-    follow: true,
-    favourite: true,
-    reblog: true,
-    mention: true,
-    new_track: true,
+    follow: false,
+    favourite: false,
+    reblog: false,
+    mention: false,
+    new_track: false,
   }),
   isSubscribed: false,
   browserSupport: false,
