@@ -92,7 +92,6 @@ ActiveRecord::Schema.define(version: 20171206000000) do
     t.bigint "account_id", null: false
     t.index ["account_id"], name: "index_accounts_reactions_on_account_id"
     t.index ["reaction_id", "account_id"], name: "index_accounts_reactions_on_reaction_id_and_account_id", unique: true
-    t.index ["reaction_id"], name: "index_accounts_reactions_on_reaction_id"
   end
 
   create_table "album_tracks", force: :cascade do |t|
@@ -358,7 +357,6 @@ ActiveRecord::Schema.define(version: 20171206000000) do
     t.string "text", null: false
     t.integer "accounts_count", default: 0, null: false
     t.index ["track_id", "text"], name: "index_reactions_on_track_id_and_text", unique: true
-    t.index ["track_id"], name: "index_reactions_on_track_id"
   end
 
   create_table "reports", id: :serial, force: :cascade do |t|
