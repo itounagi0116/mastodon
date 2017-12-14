@@ -35,6 +35,8 @@ class Web::NotificationSerializer < ActiveModel::Serializer
         web_url("statuses/#{object.target_status.id}")
       when :reblog
         web_url("statuses/#{object.target_status.id}")
+      when :new_track
+        short_account_status_url(object.from_account, object.target_status)
       end
     end
 
@@ -43,7 +45,7 @@ class Web::NotificationSerializer < ActiveModel::Serializer
 
       @actions = []
 
-      if object.type == :mention
+      if [:mention, :new_track].include? object.type
         @actions << expand_action if collapsed?
         @actions << favourite_action
         @actions << reblog_action if rebloggable?
@@ -72,6 +74,8 @@ class Web::NotificationSerializer < ActiveModel::Serializer
       when :favourite
         object.target_status.text
       when :reblog
+        object.target_status.text
+      when :new_track
         object.target_status.text
       end
     end
@@ -133,6 +137,8 @@ class Web::NotificationSerializer < ActiveModel::Serializer
       I18n.t('push_notifications.favourite.title', name: name)
     when :reblog
       I18n.t('push_notifications.reblog.title', name: name)
+    when :new_track
+      I18n.t('push_notifications.new_track.title', name: name)
     end
   end
 

@@ -454,6 +454,8 @@ ja:
       action_expand: もっと見る
       action_favourite: お気に入り
       title: "%{name} さんから返信がありました"
+    new_track:
+      title: "%{name} さんが新しいトラックを投稿しました"
     reblog:
       title: あなたのトゥートが %{name} さんにブーストされました
   remote_follow:

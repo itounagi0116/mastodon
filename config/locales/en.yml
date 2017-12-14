@@ -452,6 +452,8 @@ en:
       action_expand: Show more
       action_favourite: Favourite
       title: "%{name} mentioned you"
+    new_track:
+      title: "%{name} posted a new track"
     reblog:
       title: "%{name} boosted your status"
   remote_follow:
