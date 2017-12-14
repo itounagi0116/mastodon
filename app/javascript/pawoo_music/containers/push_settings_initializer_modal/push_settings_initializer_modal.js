@@ -1,3 +1,4 @@
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
@@ -6,13 +7,11 @@ import { FormattedMessage, defineMessages, injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { closeModal } from '../../../mastodon/actions/modal';
 import { changeAlerts, saveSettings } from '../../../mastodon/actions/push_notifications';
-import { subscribeAndSet } from '../../../mastodon/web_push_subscription';
 import SettingToggle from '../../../mastodon/features/notifications/components/setting_toggle';
 import Button from '../../components/button';
 import { isMobile } from '../../util/is_mobile';
 
 const messages = defineMessages({
-  mention: { id: 'account.mention', defaultMessage: 'Mention @{name}' },
   favourite: { id: 'pawoo_music.push_settings.preferences.toggle.favourite', defaultMessage: 'Favourites' },
   follow: { id: 'pawoo_music.push_settings.preferences.toggle.follow', defaultMessage: 'New followers' },
   mention: { id: 'pawoo_music.push_settings.preferences.toggle.mention', defaultMessage: 'Mentions' },
@@ -25,8 +24,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onChange(key, checked) {
-    dispatch(changeAlerts(key, checked));
+  onChange(alerts) {
+    dispatch(changeAlerts(['alerts'], alerts));
   },
 
   onClose() {
@@ -47,19 +46,30 @@ export default class PushSettingsInitializerModal extends ImmutablePureComponent
     onChange: PropTypes.func.isRequired,
     onClose: PropTypes.func,
     onSave: PropTypes.func.isRequired,
-    registration: PropTypes.object.isRequired,
+    onSubscribe: PropTypes.func.isRequired,
     settings: ImmutablePropTypes.map.isRequired,
   };
 
   state = {
     scene: 'Preferences',
+    alerts: Immutable.Map({
+      follow: true,
+      favourite: true,
+      mention: true,
+      reblog: true,
+      new_track: true,
+    }),
+  };
+
+  handleChange = (key, checked) => {
+    this.setState({ alerts: this.state.alerts.setIn(key, checked) });
   };
 
   handleSubscribe = () => {
     this.setState({ scene: 'Pending' });
 
-    subscribeAndSet(this.props.registration).then(() => {
-      this.props.onSave();
+    this.props.onSubscribe().then(() => {
+      this.props.onChange(this.state.alerts);
       this.setState({ scene: 'Success' });
     }, error => {
       this.setState({ scene: error.name === 'NotAllowedError' ? 'NotAllowed' : 'Error' });
@@ -101,15 +111,15 @@ export default class PushSettingsInitializerModal extends ImmutablePureComponent
             <div className='toggles'>
               <div className='toggle-column'>
                 <div>
-                  <SettingToggle prefix='notifications_push' settings={this.props.settings} settingKey={['alerts', 'follow']} onChange={this.props.onChange} label={this.props.intl.formatMessage(messages.follow)} />
-                  <SettingToggle prefix='notifications_push' settings={this.props.settings} settingKey={['alerts', 'favourite']} onChange={this.props.onChange} label={this.props.intl.formatMessage(messages.favourite)} />
+                  <SettingToggle prefix='notifications_push' settings={this.state.alerts} settingKey={['follow']} onChange={this.handleChange} label={this.props.intl.formatMessage(messages.follow)} />
+                  <SettingToggle prefix='notifications_push' settings={this.state.alerts} settingKey={['favourite']} onChange={this.handleChange} label={this.props.intl.formatMessage(messages.favourite)} />
                 </div>
                 <div>
-                  <SettingToggle prefix='notifications_push' settings={this.props.settings} settingKey={['alerts', 'mention']} onChange={this.props.onChange} label={this.props.intl.formatMessage(messages.mention)} />
-                  <SettingToggle prefix='notifications_push' settings={this.props.settings} settingKey={['alerts', 'reblog']} onChange={this.props.onChange} label={this.props.intl.formatMessage(messages.reblog)} />
+                  <SettingToggle prefix='notifications_push' settings={this.state.alerts} settingKey={['mention']} onChange={this.handleChange} label={this.props.intl.formatMessage(messages.mention)} />
+                  <SettingToggle prefix='notifications_push' settings={this.state.alerts} settingKey={['reblog']} onChange={this.handleChange} label={this.props.intl.formatMessage(messages.reblog)} />
                 </div>
               </div>
-              <SettingToggle prefix='notifications_push' settings={this.props.settings} settingKey={['alerts', 'new_track']} onChange={this.props.onChange} label={this.props.intl.formatMessage(messages.newTrack)} />
+              <SettingToggle prefix='notifications_push' settings={this.state.alerts} settingKey={['new_track']} onChange={this.handleChange} label={this.props.intl.formatMessage(messages.newTrack)} />
             </div>
           </div>
           <div className='button-wrapper'>
