@@ -46,10 +46,7 @@ export default function player(state = initialState, action) {
   case PLAYER_SEEK_DESTINATION_CHANGE:
     return state.set('lastSeekDestination', action.time);
   case PLAYER_TRACK_PATH_CHANGE:
-    return state.merge([
-      ['trackPath', Immutable.fromJS(action.path)],
-      ['paused', true],
-    ]);
+    return state.set('trackPath', Immutable.fromJS(action.path));
   default:
     return state;
   }
