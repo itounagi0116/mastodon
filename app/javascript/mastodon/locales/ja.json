@@ -147,6 +147,7 @@
   "notification.favourite": "{name}さんがあなたのトゥートをお気に入りに登録しました",
   "notification.follow": "{name}さんにフォローされました",
   "notification.mention": "{name}さんがあなたに返信しました",
+  "notification.new_track": "{name} さんが新しいトラックを投稿しました",
   "notification.reblog": "{name}さんがあなたのトゥートをブーストしました",
   "notification.video_preparation_error": "トラックの動画の生成に失敗しました",
   "notification.video_preparation_success": "トラックの動画の生成が完了しました",

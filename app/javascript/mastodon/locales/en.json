@@ -147,6 +147,7 @@
   "notification.favourite": "{name} favourited your status",
   "notification.follow": "{name} followed you",
   "notification.mention": "{name} mentioned you",
+  "notification.new_track": "{name} posted a new track",
   "notification.reblog": "{name} boosted your status",
   "notification.video_preparation_error": "The video generation for your track was failed",
   "notification.video_preparation_success": "The video for your track was generated",
