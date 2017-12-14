@@ -46,9 +46,17 @@ const sendSubscriptionToBackend = (subscription) =>
 // Last one checks for payload support: https://web-push-book.gauntface.com/chapter-06/01-non-standards-browsers/#no-payload
 const supportsPushNotifications = ('serviceWorker' in navigator && 'PushManager' in window && 'getKey' in PushSubscription.prototype);
 
+const set = subscription => {
+  // If we got a PushSubscription (and not a subscription object from the backend)
+  // it means that the backend subscription is valid (and was set during hydration)
+  if (!(subscription instanceof PushSubscription)) {
+    store.dispatch(setSubscription(subscription));
+  }
+};
+
 const renewSubscription = (registration) => new Promise((resolve, reject) => {
   const onSubscribe = () => {
-    const promise = subscribe(registration).then(sendSubscriptionToBackend).then(resolve);
+    const promise = subscribe(registration).then(sendSubscriptionToBackend).then(set).then(resolve);
     promise.catch(reject);
     return promise;
   };
@@ -81,7 +89,7 @@ export function register () {
           // If the VAPID public key did not change and the endpoint corresponds
           // to the endpoint saved in the backend, the subscription is valid
           if (subscriptionServerKey === currentServerKey && subscription.endpoint === serverEndpoint) {
-            return subscription;
+            return set(subscription);
           } else {
             // Something went wrong, try to subscribe again
             return unsubscribe({ registration, subscription }).then(renewSubscription);
@@ -90,13 +98,6 @@ export function register () {
 
         // No subscription, try to subscribe
         return renewSubscription(registration);
-      })
-      .then(subscription => {
-        // If we got a PushSubscription (and not a subscription object from the backend)
-        // it means that the backend subscription is valid (and was set during hydration)
-        if (!(subscription instanceof PushSubscription)) {
-          store.dispatch(setSubscription(subscription));
-        }
       })
       .catch(error => {
         if (error.code === 20 && error.name === 'AbortError') {
