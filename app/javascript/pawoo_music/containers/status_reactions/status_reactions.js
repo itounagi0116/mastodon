@@ -69,7 +69,7 @@ export default class StatusReactions extends ImmutablePureComponent {
       return navigate('/auth/sign_in');
     }
 
-    for (const reaction of this.props.status.get('reactions')) {
+    for (const reaction of this.props.status.getIn(['track', 'reactions'])) {
       if (reaction.get('text') === text) {
         const handle = reaction.get('reacted') ?
           this.props.onUnreact : this.props.onReact;
@@ -82,13 +82,18 @@ export default class StatusReactions extends ImmutablePureComponent {
   }
 
   render () {
+    const reactions = this.props.status.getIn(['track', 'reactions']);
+
+    if (reactions === undefined) {
+      return null;
+    }
+
     const dropdownTexts = this.props.permittedTexts.toArray().filter(
-      text => this.props.status.get('reactions').every(
-        reaction => reaction.get('text') !== text));
+      text => reactions.every(reaction => reaction.get('text') !== text));
 
     return (
       <ul className='status-reactions'>
-        {this.props.status.get('reactions').map(reaction => {
+        {reactions.map(reaction => {
           const count = reaction.get('accounts_count');
           const reacted = reaction.get('reacted');
           const text = reaction.get('text');

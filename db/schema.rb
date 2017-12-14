@@ -354,11 +354,11 @@ ActiveRecord::Schema.define(version: 20171206000000) do
   end
 
   create_table "reactions", force: :cascade do |t|
-    t.bigint "status_id", null: false
+    t.bigint "track_id", null: false
     t.string "text", null: false
     t.integer "accounts_count", default: 0, null: false
-    t.index ["status_id", "text"], name: "index_reactions_on_status_id_and_text", unique: true
-    t.index ["status_id"], name: "index_reactions_on_status_id"
+    t.index ["track_id", "text"], name: "index_reactions_on_track_id_and_text", unique: true
+    t.index ["track_id"], name: "index_reactions_on_track_id"
   end
 
   create_table "reports", id: :serial, force: :cascade do |t|
@@ -539,13 +539,6 @@ ActiveRecord::Schema.define(version: 20171206000000) do
     t.integer "video_backgroundcolor", default: 1513239, null: false
     t.float "video_banner_alpha", default: 1.0, null: false
     t.integer "albums_count", default: 0, null: false
-    t.float "video_sprite_movement_circle_rad", default: 0.0, null: false
-    t.float "video_sprite_movement_circle_scale", default: 0.0, null: false
-    t.float "video_sprite_movement_circle_speed", default: 0.0, null: false
-    t.float "video_sprite_movement_random_scale", default: 0.0, null: false
-    t.float "video_sprite_movement_random_speed", default: 0.0, null: false
-    t.float "video_sprite_movement_zoom_scale", default: 0.0, null: false
-    t.float "video_sprite_movement_zoom_speed", default: 0.0, null: false
   end
 
   create_table "trend_ng_words", id: :serial, force: :cascade do |t|
@@ -643,7 +636,7 @@ ActiveRecord::Schema.define(version: 20171206000000) do
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id", on_delete: :cascade
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id", on_delete: :cascade
   add_foreign_key "oauth_applications", "users", column: "owner_id", on_delete: :cascade
-  add_foreign_key "reactions", "statuses", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "reactions", "tracks", on_update: :cascade, on_delete: :cascade
   add_foreign_key "reports", "accounts", column: "action_taken_by_account_id", on_delete: :nullify
   add_foreign_key "reports", "accounts", column: "target_account_id", on_delete: :cascade
   add_foreign_key "reports", "accounts", on_delete: :cascade

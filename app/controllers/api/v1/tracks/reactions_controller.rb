@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::V1::Statuses::ReactionsController < Api::BaseController
+class Api::V1::Tracks::ReactionsController < Api::BaseController
   include Authorization
 
   before_action -> { doorkeeper_authorize! :write }
@@ -12,7 +12,7 @@ class Api::V1::Statuses::ReactionsController < Api::BaseController
   def create
     Reaction.push_account(
       current_account,
-      status: @status,
+      track: @status.track,
       text: params.require(:text)
     )
 
@@ -22,7 +22,7 @@ class Api::V1::Statuses::ReactionsController < Api::BaseController
   def destroy
     Reaction.destroy_account(
       current_account,
-      status: @status,
+      track: @status.track,
       text: params.require(:text)
     )
 
@@ -32,6 +32,6 @@ class Api::V1::Statuses::ReactionsController < Api::BaseController
   private
 
   def set_status
-    @status = Status.find(params.require(:status_id))
+    @status = Status.find(params.require(:id))
   end
 end

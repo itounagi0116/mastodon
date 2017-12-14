@@ -4,6 +4,7 @@ class REST::TrackSerializer < ActiveModel::Serializer
   include RoutingHelper
 
   attributes :title, :artist, :text, :content, :video
+  has_many :reactions, serializer: REST::ReactionSerializer
 
   def content
     Formatter.instance.format_for_music(object)

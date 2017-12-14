@@ -113,17 +113,17 @@ const filterStatuses = (state, relationship) => {
 
 function addReactionToStatus(state, status, text) {
   const id = status.get('id');
-  const reactions = state.getIn([id, 'reactions']);
+  const reactions = state.getIn([id, 'track', 'reactions']);
   const index = reactions.findIndex(reaction => reaction.get('text') === text);
 
   if (index < 0) {
-    return state.setIn([id, 'reactions'],
+    return state.setIn([id, 'track', 'reactions'],
       reactions.push(ImmutableMap({ text, accounts_count: 1, reacted: true })));
   }
 
   const reaction = reactions.get(index);
 
-  return state.setIn([id, 'reactions', index], reaction.merge([
+  return state.setIn([id, 'track', 'reactions', index], reaction.merge([
     ['accounts_count', reaction.get('accounts_count') + 1],
     ['reacted', true],
   ]));
@@ -131,15 +131,15 @@ function addReactionToStatus(state, status, text) {
 
 function removeReactionFromStatus(state, status, text) {
   const id = status.get('id');
-  const reactions = state.getIn([id, 'reactions']);
+  const reactions = state.getIn([id, 'track', 'reactions']);
   const index = reactions.findIndex(reaction => reaction.get('text') === text);
   const reaction = reactions.get(index);
   const count = reaction.get('accounts_count');
 
-  return count > 1 ? state.setIn([id, 'reactions', index], reaction.merge([
+  return count > 1 ? state.setIn([id, 'track', 'reactions', index], reaction.merge([
     ['accounts_count', count - 1],
     ['reacted', false],
-  ])) : state.deleteIn([id, 'reactions', index]);
+  ])) : state.deleteIn([id, 'track', 'reactions', index]);
 }
 
 const initialState = ImmutableMap();

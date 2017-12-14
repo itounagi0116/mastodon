@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe Api::V1::Statuses::ReactionsController do
+describe Api::V1::Tracks::ReactionsController do
   render_views
 
   let(:user)  { Fabricate(:user, account: Fabricate(:account, username: 'alice')) }
@@ -19,10 +19,10 @@ describe Api::V1::Statuses::ReactionsController do
     end
 
     describe 'POST #create' do
-      let(:status) { Fabricate(:status, account: user.account, music: Fabricate(:album)) }
+      let(:status) { Fabricate(:status, account: user.account, music: Fabricate(:track)) }
 
       before do
-        post :create, params: { status_id: status, text: '😺' }
+        post :create, params: { track_id: status, text: '😺' }
       end
 
       it 'returns http success' do
@@ -35,16 +35,16 @@ describe Api::V1::Statuses::ReactionsController do
 
       it 'return json with updated attributes' do
         expect(body_as_json[:id]).to eq status.id
-        expect(body_as_json[:reactions]).to include({ accounts_count: 1, text: '😺', reacted: true })
+        expect(body_as_json[:track][:reactions]).to include({ accounts_count: 1, text: '😺', reacted: true })
       end
     end
 
     describe 'POST #destroy' do
-      let(:status) { Fabricate(:status, account: user.account, music: Fabricate(:album)) }
+      let(:status) { Fabricate(:status, account: user.account, music: Fabricate(:track)) }
       let!(:reaction) { Fabricate(:reaction, accounts: [user.account], status: status, text: '😺') }
 
       before do
-        post :destroy, params: { status_id: status, text: '😺' }
+        post :destroy, params: { track_id: status, text: '😺' }
       end
 
       it 'returns http success' do
@@ -57,17 +57,17 @@ describe Api::V1::Statuses::ReactionsController do
 
       it 'return json with updated attributes' do
         expect(body_as_json[:id]).to eq status.id
-        expect(body_as_json[:reactions]).not_to include({ accounts_count: 1, text: '😺', reacted: true })
+        expect(body_as_json[:track][:reactions]).not_to include({ accounts_count: 1, text: '😺', reacted: true })
       end
     end
   end
 
   context 'without an oauth token' do
     describe 'POST #create' do
-      let(:status) { Fabricate(:status, account: user.account, music: Fabricate(:album)) }
+      let(:status) { Fabricate(:status, account: user.account, music: Fabricate(:track)) }
 
       before do
-        post :create, params: { status_id: status, text: '😺' }
+        post :create, params: { track_id: status, text: '😺' }
       end
 
       it 'returns http unauthorized' do

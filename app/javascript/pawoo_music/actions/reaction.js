@@ -12,7 +12,7 @@ export function react(status, text) {
   return function (dispatch, getState) {
     dispatch(reactionRequest(status, text));
 
-    api(getState).post(`/api/v1/statuses/${status.get('id')}/react`, { text }).then(({ data }) => {
+    api(getState).post(`/api/v1/tracks/${status.get('id')}/react`, { text }).then(({ data }) => {
       dispatch(reactionSuccess(status, text, data));
     }).catch(error => {
       dispatch(reactionFail(status, text, error));
@@ -50,7 +50,7 @@ export function unreact(status, text) {
   return function (dispatch, getState) {
     dispatch(unreactionRequest(status, text));
 
-    api(getState).post(`/api/v1/statuses/${status.get('id')}/unreact`, { text }).then(({ data }) => {
+    api(getState).post(`/api/v1/tracks/${status.get('id')}/unreact`, { text }).then(({ data }) => {
       dispatch(unreactionSuccess(status, text, data));
     }).catch(error => {
       dispatch(unreactionFail(status, text, error));

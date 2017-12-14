@@ -4,16 +4,15 @@
 # Table name: reactions
 #
 #  id             :integer          not null, primary key
-#  status_id      :integer          not null
+#  track_id       :integer          not null
 #  text           :string           not null
 #  accounts_count :integer          default(0), not null
 #
 
-
 class Reaction < ApplicationRecord
   PERMITTED_TEXTS = %w(👍 ♥ 😺 🤔)
 
-  belongs_to :status, inverse_of: :reactions
+  belongs_to :track, inverse_of: :reactions
   has_and_belongs_to_many :accounts
   validates :text, inclusion: { in: PERMITTED_TEXTS }
 
