@@ -59,6 +59,7 @@ en:
         follow_request: Send e-mail when someone requests to follow you
         mention: Send e-mail when someone mentions you
         reblog: Send e-mail when someone boosts your status
+        new_track: Send e-mail when someone you follow posts a new track
         video_preparation_error: Send e-mail when the video generation for your track was failed
         video_preparation_success: Send e-mail when the video for your track was generated
       notification_firebase_cloud_messagings:
