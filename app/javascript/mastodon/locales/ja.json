@@ -156,6 +156,7 @@
   "notifications.column_settings.favourite": "お気に入り",
   "notifications.column_settings.follow": "新しいフォロワー",
   "notifications.column_settings.mention": "返信",
+  "notifications.column_settings.new_track": "フォローしている人の新しいトラック:",
   "notifications.column_settings.push": "プッシュ通知",
   "notifications.column_settings.push_meta": "このデバイス",
   "notifications.column_settings.reblog": "ブースト",
