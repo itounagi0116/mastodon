@@ -34,6 +34,24 @@ class Announcements extends React.PureComponent {
 
     announcements.push(
       {
+        id: 12,
+        body: this.props.intl.formatMessage({
+          id: 'pawoo_music.announcements.12',
+          defaultMessage: 'フォロー中の作家の作品の通知をメール・Push通知で受け取れるようになりました！',
+        }),
+        link: [
+          {
+            reactRouter: false,
+            inline: false,
+            href: '/settings/timeline',
+            body: this.props.intl.formatMessage({
+              id: 'pawoo_music.announcements.12.link.1',
+              defaultMessage: '通知の設定を変更',
+            }),
+          },
+        ],
+      },
+      {
         id: 11,
         body: this.props.intl.formatMessage({
           id: 'pawoo_music.announcements.11',
@@ -60,15 +78,7 @@ class Announcements extends React.PureComponent {
           },
         ],
       },
-      {
-        id: 10,
-        body: this.props.intl.formatMessage({
-          id: 'pawoo_music.announcements.10',
-          defaultMessage: 'Pawoo Musicをリニューアル！ MVの自動生成機能などをはじめ、新しいPawoo Musicをお楽しみください！',
-        }),
-        link: [],
-      },
-      // NOTE: id: 11 まで使用した
+      // NOTE: id: 12 まで使用した
     );
 
     this.announcements = Immutable.fromJS(announcements);

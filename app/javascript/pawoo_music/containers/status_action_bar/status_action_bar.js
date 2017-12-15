@@ -206,7 +206,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
 
   handleEmbed = () => {
     const { dispatch, status } = this.props;
-    dispatch(openModal('UNIVERSAL', { children: <EmbedModalContent url={status.get('url')} isTrack={status.has('track')} /> }));
+    dispatch(openModal('UNIVERSAL', { children: <EmbedModalContent status={status} /> }));
   }
 
   handleReport = () => {
@@ -356,6 +356,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
 
     const reblogTitle = reblogDisabled ? intl.formatMessage(messages.cannot_reblog) : intl.formatMessage(messages.reblog);
     const favouriteTitle = favouriteDisabled ? intl.formatMessage(messages.cannot_favourite) : intl.formatMessage(messages.favourite);
+    const embedTitle = intl.formatMessage(messages.embed);
     const moreTitle = intl.formatMessage(messages.more);
 
     const reblogged = status.get('reblogged');
@@ -366,6 +367,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
         <li><Icon title={replyTitle} icon='message-square' scale onClick={me ? this.handleReplyClick : this.handleRedirectLoginPage} /></li>
         <li><Icon title={reblogTitle} icon={reblogIcon} scale onClick={me ? this.handleReblogClick : this.handleRedirectLoginPage} disabled={reblogDisabled} active={reblogged} /></li>
         <li><Icon title={favouriteTitle} icon='heart' scale onClick={me ? this.handleFavouriteClick : this.handleRedirectLoginPage} disabled={favouriteDisabled} active={favourited} /></li>
+        {status.has('track') && publicStatus && <li><Icon title={embedTitle} icon='share-2' scale onClick={this.handleEmbed} /></li>}
         <li><DropdownMenuContainer items={moreMenu} scale icon='more-horizontal' title={moreTitle} /></li>
         {editButton}
         {downloadButton}

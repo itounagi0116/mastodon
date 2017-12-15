@@ -43,6 +43,21 @@
 
     }
 
+    .embed-modal-share-box {
+      display: flex;
+      align-items: center;
+
+      .embed-modal-html {
+        width: auto;
+        flex: 1;
+        margin-bottom: 0;
+      }
+
+      .twitter-share-button {
+        margin-left: 10px;
+      }
+    }
+
     .embed-modal-html {
       outline: 0;
       box-sizing: border-box;
