@@ -30,6 +30,8 @@ class Api::Web::PushSubscriptionsController < Api::BaseController
       },
     }
 
+    data.deep_merge!(params[:data]) if params[:data]
+
     web_subscription = ::Web::PushSubscription.create!(
       endpoint: params[:subscription][:endpoint],
       key_p256dh: params[:subscription][:keys][:p256dh],
