@@ -1,9 +1,9 @@
 import axios from 'axios';
-import React from 'react';
+// import React from 'react';
 import store from './store';
 import { setBrowserSupport, setSubscription, clearSubscription } from './actions/push_notifications';
-import { openModalUnclosable } from './actions/modal';
-import PushSettingsInitializerModal from '../pawoo_music/containers/push_settings_initializer_modal';
+// import { openModalUnclosable } from './actions/modal';
+// import PushSettingsInitializerModal from '../pawoo_music/containers/push_settings_initializer_modal';
 
 // Taken from https://www.npmjs.com/package/web-push
 const urlBase64ToUint8Array = (base64String) => {
@@ -55,13 +55,11 @@ const set = subscription => {
 };
 
 const renewSubscription = (registration) => new Promise((resolve, reject) => {
-  const onSubscribe = () => {
-    const promise = subscribe(registration).then(sendSubscriptionToBackend).then(set).then(resolve);
-    promise.catch(reject);
-    return promise;
-  };
+  const promise = subscribe(registration).then(sendSubscriptionToBackend).then(set).then(resolve);
+  promise.catch(reject);
+  return promise;
 
-    store.dispatch(openModalUnclosable('UNIVERSAL', { children: <PushSettingsInitializerModal onSubscribe={onSubscribe} /> }));
+  // store.dispatch(openModalUnclosable('UNIVERSAL', { children: <PushSettingsInitializerModal onSubscribe={onSubscribe} /> }));
 });
 
 export function register () {
