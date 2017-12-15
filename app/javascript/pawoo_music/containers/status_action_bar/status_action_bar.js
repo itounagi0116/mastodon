@@ -257,7 +257,6 @@ export default class StatusActionBar extends ImmutablePureComponent {
     const { status, me, isUserAdmin, intl, withDismiss } = this.props;
     const { schedule } = this.context;
     const favouriteDisabled = schedule;
-    const publicStatus = ['public', 'unlisted'].includes(status.get('visibility'));
     const reblogDisabled = status.get('visibility') === 'private' || status.get('visibility') === 'direct' || schedule;
     const mutingConversation = status.get('muted');
 
@@ -305,11 +304,6 @@ export default class StatusActionBar extends ImmutablePureComponent {
 
 
     moreMenu.push({ text: intl.formatMessage(messages.open), to: `/@${status.getIn(['account', 'acct'])}/${status.get('id')}` });
-
-    if (publicStatus) {
-      moreMenu.push({ text: intl.formatMessage(messages.embed), action: this.handleEmbed });
-    }
-
     moreMenu.push(null);
 
     if (withDismiss) {
@@ -356,6 +350,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
 
     const reblogTitle = reblogDisabled ? intl.formatMessage(messages.cannot_reblog) : intl.formatMessage(messages.reblog);
     const favouriteTitle = favouriteDisabled ? intl.formatMessage(messages.cannot_favourite) : intl.formatMessage(messages.favourite);
+    const embedTitle = intl.formatMessage(messages.embed);
     const moreTitle = intl.formatMessage(messages.more);
 
     const reblogged = status.get('reblogged');
@@ -366,11 +361,11 @@ export default class StatusActionBar extends ImmutablePureComponent {
         <li><Icon title={replyTitle} icon='message-square' scale onClick={me ? this.handleReplyClick : this.handleRedirectLoginPage} /></li>
         <li><Icon title={reblogTitle} icon={reblogIcon} scale onClick={me ? this.handleReblogClick : this.handleRedirectLoginPage} disabled={reblogDisabled} active={reblogged} /></li>
         <li><Icon title={favouriteTitle} icon='heart' scale onClick={me ? this.handleFavouriteClick : this.handleRedirectLoginPage} disabled={favouriteDisabled} active={favourited} /></li>
+        <li><Icon title={embedTitle} icon='share-2' scale onClick={this.handleEmbed} /></li>
         <li><DropdownMenuContainer items={moreMenu} scale icon='more-horizontal' title={moreTitle} /></li>
         {editButton}
         {downloadButton}
       </ul>
     );
   }
-
 }

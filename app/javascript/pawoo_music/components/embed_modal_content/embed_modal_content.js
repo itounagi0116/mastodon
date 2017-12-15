@@ -71,6 +71,22 @@ export default class EmbedModalContent extends ImmutablePureComponent {
 
     return (
       <div className='embed-modal-content'>
+        <h4><FormattedMessage id='status.share' defaultMessage='Share' /></h4>
+
+        <div className='embed-modal-container'>
+          <p className='hint'>
+            <FormattedMessage id='embed.instructions.share' defaultMessage='Share the link below.' />
+          </p>
+
+          <input
+            type='text'
+            className='embed-modal-html'
+            readOnly
+            value={oembed && oembed.html || ''}
+            onClick={this.handleTextareaClick}
+          />
+        </div>
+
         <h4><FormattedMessage id='status.embed' defaultMessage='Embed' /></h4>
 
         <div className='embed-modal-container'>

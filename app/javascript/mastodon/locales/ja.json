@@ -88,6 +88,7 @@
   "custom_color.color3": "背景色3",
   "custom_color.preview": "プレビュー",
   "embed.instructions": "下記のコードをコピーしてウェブサイトに埋め込みます。",
+  "embed.instructions.share": "下記のURLをシェアしてください。",
   "embed.options": "オプション",
   "embed.preview": "表示例:",
   "embed.showinfo": "アーティストとタイトルを表示する",
