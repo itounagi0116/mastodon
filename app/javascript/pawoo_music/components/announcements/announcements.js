@@ -42,7 +42,7 @@ class Announcements extends React.PureComponent {
         link: [
           {
             reactRouter: false,
-            inline: true,
+            inline: false,
             href: '/settings/timeline',
             body: this.props.intl.formatMessage({
               id: 'pawoo_music.announcements.12.link.1',
