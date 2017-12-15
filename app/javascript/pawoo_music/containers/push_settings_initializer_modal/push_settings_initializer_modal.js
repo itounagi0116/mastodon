@@ -1,12 +1,10 @@
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React from 'react';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { FormattedMessage, defineMessages, injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { closeModal } from '../../../mastodon/actions/modal';
-import { changeAlerts, saveSettings } from '../../../mastodon/actions/push_notifications';
 import SettingToggle from '../../../mastodon/features/notifications/components/setting_toggle';
 import Button from '../../components/button';
 import { isMobile } from '../../util/is_mobile';
@@ -19,35 +17,24 @@ const messages = defineMessages({
   reblog: { id: 'pawoo_music.push_settings.preferences.toggle.reblog', defaultMessage: 'Boosts' },
 });
 
-const mapStateToProps = state => ({
-  settings: state.get('push_notifications'),
+const mapStateToProps = () => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onChange(alerts) {
-    dispatch(changeAlerts(['alerts'], alerts));
-  },
-
   onClose() {
     dispatch(closeModal());
   },
-
-  onSave() {
-    dispatch(saveSettings());
-  },
 });
 
-@connect(mapStateToProps, mapDispatchToProps)
+@connect((mapStateToProps), mapDispatchToProps)
 @injectIntl
 export default class PushSettingsInitializerModal extends ImmutablePureComponent {
 
   static propTypes = {
     intl: PropTypes.object.isRequired,
-    onChange: PropTypes.func.isRequired,
     onClose: PropTypes.func,
-    onSave: PropTypes.func.isRequired,
-    onSubscribe: PropTypes.func.isRequired,
-    settings: ImmutablePropTypes.map.isRequired,
+    onResolve: PropTypes.func.isRequired,
+    onReject: PropTypes.func.isRequired,
   };
 
   state = {
@@ -66,14 +53,8 @@ export default class PushSettingsInitializerModal extends ImmutablePureComponent
   };
 
   handleSubscribe = () => {
-    this.setState({ scene: 'Pending' });
-
-    this.props.onSubscribe().then(() => {
-      this.props.onChange(this.state.alerts);
-      this.setState({ scene: 'Success' });
-    }, error => {
-      this.setState({ scene: error.name === 'NotAllowedError' ? 'NotAllowed' : 'Error' });
-    });
+    this.props.onResolve({ alerts: this.state.alerts });
+    this.setState({ scene: 'Success' });
   }
 
   render () {
@@ -133,82 +114,6 @@ export default class PushSettingsInitializerModal extends ImmutablePureComponent
         </div>
       );
 
-    case 'Pending':
-      return (
-        <div className='push-settings-initializer-modal'>
-          <h1>
-            <FormattedMessage
-              id='pawoo_music.push_settings.pending.title'
-              defaultMessage='Enabling Notifications'
-            />
-          </h1>
-          <div className='body description'>
-            <p>
-              <FormattedMessage
-                id='pawoo_music.push_settings.pending.description'
-                defaultMessage='Please check if there is a dialog window to confirm your notification preferences.'
-              />
-            </p>
-          </div>
-        </div>
-      );
-
-    case 'NotAllowed':
-      return (
-        <div className='push-settings-initializer-modal'>
-          <h1>
-            <FormattedMessage
-              id='pawoo_music.push_settings.not_allowed.title'
-              defaultMessage='Notification Configuration Has Been Canceled'
-            />
-          </h1>
-          <div className='body description'>
-            <p>
-              <FormattedMessage
-                id='pawoo_music.push_settings.generic_end.description'
-                defaultMessage='You can change the notification configuration later by chosing "Timeline" in "Preferences" page.'
-              />
-            </p>
-          </div>
-          <div className='button-wrapper'>
-            <Button onClick={this.props.onClose}>
-              <FormattedMessage
-                id='pawoo_music.push_settings.generic_end.button'
-                defaultMessage='OK'
-              />
-            </Button>
-          </div>
-        </div>
-      );
-
-    case 'Error':
-      return (
-        <div className='push-settings-initializer-modal'>
-          <h1>
-            <FormattedMessage
-              id='pawoo_music.push_settings.error.title'
-              defaultMessage='Notification Configuration Has Been Failed'
-            />
-          </h1>
-          <div className='body description'>
-            <p>
-              <FormattedMessage
-                id='pawoo_music.push_settings.generic_end.description'
-                defaultMessage='You can change the notification configuration later by chosing "Timeline" in "Preferences" page.'
-              />
-            </p>
-          </div>
-          <div className='button-wrapper'>
-            <Button onClick={this.props.onClose}>
-              <FormattedMessage
-                id='pawoo_music.push_settings.generic_end.button'
-                defaultMessage='OK'
-              />
-            </Button>
-          </div>
-        </div>
-      );
-
     case 'Success':
       return (
         <div className='push-settings-initializer-modal'>
@@ -221,7 +126,13 @@ export default class PushSettingsInitializerModal extends ImmutablePureComponent
           <div className='body description'>
             <p>
               <FormattedMessage
-                id='pawoo_music.push_settings.generic_end.description'
+                id='pawoo_music.push_settings.generic_end.description1'
+                defaultMessage='Please check if there is a dialog window to confirm your notification preferences.'
+              />
+            </p>
+            <p>
+              <FormattedMessage
+                id='pawoo_music.push_settings.generic_end.description2'
                 defaultMessage='You can change the notification configuration later by chosing "Timeline" in "Preferences" page.'
               />
             </p>
