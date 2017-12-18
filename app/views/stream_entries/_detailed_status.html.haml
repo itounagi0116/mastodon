@@ -46,7 +46,3 @@
     %span<
       = fa_icon('star')
       %span= status.favourites_count
-
-    - if user_signed_in?
-      ·
-      = link_to t('statuses.open_in_web'), web_url("statuses/#{status.id}"), class: 'open-in-web-link', target: '_blank'

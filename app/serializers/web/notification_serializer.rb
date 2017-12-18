@@ -28,13 +28,13 @@ class Web::NotificationSerializer < ActiveModel::Serializer
     def url
       case object.type
       when :mention
-        web_url("statuses/#{object.target_status.id}")
+        short_account_status_url(object.target_status.account, object.target_status)
       when :follow
-        web_url("accounts/#{object.from_account.id}")
+        short_account_url(object.from_account)
       when :favourite
-        web_url("statuses/#{object.target_status.id}")
+        short_account_status_url(object.target_status.account, object.target_status)
       when :reblog
-        web_url("statuses/#{object.target_status.id}")
+        short_account_status_url(object.target_status.account, object.target_status)
       when :new_track
         short_account_status_url(object.from_account, object.target_status)
       end
