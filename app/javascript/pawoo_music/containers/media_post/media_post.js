@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import Icon from '../../components/icon';
 import { isMobile } from '../../util/is_mobile';
+import { navigate } from '../../util/navigator';
 import { showTrackComposeModal, resetTrackComposeData } from '../../actions/track_compose';
 import TipsBalloonContainer from '../../../mastodon/containers/tips_balloon_container';
 
@@ -27,12 +28,12 @@ export default class MediaPost extends PureComponent {
   handleMediaPost = () => {
     const { isLogin, dispatch } = this.props;
     if (!isLogin) {
-      location.href = '/auth/sign_in';
+      navigate('/auth/sign_in');
       return;
     }
 
     if (this.mobile) {
-      location.href = '/tracks/new';
+      navigate('/tracks/new');
     } else {
       dispatch(resetTrackComposeData());
       dispatch(showTrackComposeModal());

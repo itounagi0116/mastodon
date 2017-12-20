@@ -22,6 +22,7 @@ import AccountFollowersContainer from '../account_followers';
 import AccountFollowingContainer from '../account_following';
 import StatusThreadContainer from '../status_thread';
 import { isMobile } from '../../util/is_mobile';
+import { navigate } from '../../util/navigator';
 import StatusPostButtonContainer from '../status_post_button';
 import TrackComposeModalContainer from '../track_compose_modal';
 import PlayControlContainer from '../../../mastodon/features/ui/containers/play_control_container';
@@ -132,7 +133,7 @@ export default class App extends PureComponent {
   handleRedirectLoginPage = (e) => {
     const { isLogin } = this.props;
     if (!isLogin) {
-      location.href = '/auth/sign_in';
+      navigate('/auth/sign_in');
       e.preventDefault();
     }
   }

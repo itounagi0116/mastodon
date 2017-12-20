@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { openModalFormCompose } from '../../../mastodon/actions/compose';
 import Icon from '../../components/icon';
+import { navigate } from '../../util/navigator';
 
 const mapStateToProps = (state) => ({
   isLogin: !!state.getIn(['meta', 'me']),
@@ -24,7 +25,7 @@ export default class StatusPostButton extends React.PureComponent {
   }
 
   handleRedirectLoginPage = () => {
-    location.href = '/auth/sign_in';
+    navigate('/auth/sign_in');
   }
 
   render () {

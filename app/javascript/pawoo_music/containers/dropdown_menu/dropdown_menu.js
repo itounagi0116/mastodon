@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import Icon from '../../components/icon';
 import Link from '../../components/link_wrapper';
 import { isMobile } from '../../util/is_mobile';
+import { navigate } from '../../util/navigator';
 import { openModal, closeModal } from '../../../mastodon/actions/modal';
 
 const mobile = isMobile();
@@ -113,7 +114,7 @@ export default class DropdownMenu extends React.PureComponent {
   }
 
   handleRedirectLoginPage = () => {
-    location.href = '/auth/sign_in';
+    navigate('/auth/sign_in');
   }
 
   renderItem = (item, i) => {
