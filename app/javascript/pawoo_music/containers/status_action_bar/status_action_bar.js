@@ -30,6 +30,7 @@ import { openModal } from '../../../mastodon/actions/modal';
 import { generateMusicvideo } from '../../actions/musicvideo';
 import { showTrackComposeModal, setTrackComposeData } from '../../actions/track_compose';
 import { isMobile } from '../../util/is_mobile';
+import { navigate } from '../../util/navigator';
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -242,7 +243,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
     const { dispatch, status } = this.props;
 
     if (mobile) {
-      location.href = `/tracks/${status.get('id')}/edit`;
+      navigate(`/tracks/${status.get('id')}/edit`);
     } else {
       dispatch(setTrackComposeData(status.get('track')));
       dispatch(showTrackComposeModal());
@@ -250,7 +251,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
   }
 
   handleRedirectLoginPage = () => {
-    location.href = '/auth/sign_in';
+    navigate('/auth/sign_in');
   }
 
   render () {

@@ -6,86 +6,110 @@ import querystring from 'querystring';
 import { debounce } from 'lodash';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import noop from 'lodash/noop';
 import Track from '../track';
-import { makeGetStatus } from '../../../mastodon/selectors';
-
-import pawooIcon from '../../../images/pawoo_music/pawoo_icon.svg';
+import FollowButton from '../follow_button';
+import { fetchRelationships } from '../../../mastodon/actions/accounts';
+import { isMobile } from '../../util/is_mobile';
 
 import '../app/app.scss';
 
-const makeMapStateToProps = () => {
-  const getStatus = makeGetStatus();
+const params = location.search.length > 1 ? querystring.parse(location.search.substr(1)) : {};
+const hideInfo = params.hideinfo && Number(params.hideinfo) === 1;
+const mobile = isMobile();
 
-  const mapStateToProps = (state, { statusId }) => ({
-    status: getStatus(state, statusId),
+const mapStateToProps = (state, { statusId }) => {
+  const status = state.getIn(['statuses', statusId]);
+
+  return {
+    acct: state.getIn(['accounts', status.get('account'), 'acct']),
+    status,
     trackIsMounted: Immutable.List(['statuses', statusId, 'track']).equals(
-      state.getIn(['pawoo_music', 'player', 'trackPath'])
-    ),
-  });
-
-  return mapStateToProps;
+      state.getIn(['pawoo_music', 'player', 'trackPath'])),
+  };
 };
 
-@connect(makeMapStateToProps)
+@connect(mapStateToProps)
 export default class EmbedMusicvideo extends React.PureComponent {
 
   static propTypes = {
+    acct: PropTypes.string,
     status: ImmutablePropTypes.map.isRequired,
     trackIsMounted: PropTypes.bool.isRequired,
+    dispatch: PropTypes.func.isRequired,
   }
 
   state = {
-    showIcon: false,
+    visibleInfo: false,
   };
 
+  componentDidMount () {
+    const { status } = this.props;
+    const accountId = status.get('account');
+
+    this.props.dispatch(fetchRelationships([accountId]));
+  }
+
+  handleClick = () => {
+    const { visibleInfo } = this.state;
+
+    if (!visibleInfo) {
+      // クリックした瞬間に、非表示だった要素もクリックしないように少し遅らせる
+      // stopPropagationはTrackまでイベントが伝搬されなくなるので使わない
+      setTimeout(() => {
+        this.changeVisibleInfo();
+      }, 10);
+    }
+  }
+
   handleMouseEnter = () => {
-    this.setState({ showIcon: true });
-    this.hideLogoDebounce();
+    this.changeVisibleInfo();
   }
 
   handleMouseMove = () => {
-    this.setState({ showIcon: true });
-    this.hideLogoDebounce();
+    this.changeVisibleInfo();
   }
 
   handleMouseLeave = () => {
-    this.setState({ showIcon: false });
+    this.setState({ visibleInfo: false });
   }
 
   hideLogoDebounce = debounce(() => {
-    this.setState({ showIcon: false });
+    this.setState({ visibleInfo: false });
   }, 3000);
 
+  changeVisibleInfo () {
+    this.setState({ visibleInfo: true });
+    this.hideLogoDebounce();
+  }
+
   renderInfo () {
-    const { status, trackIsMounted } = this.props;
-    const { showIcon } = this.state;
+    const { acct, status, trackIsMounted } = this.props;
+    const { visibleInfo } = this.state;
     const id = status.get('id');
-    const acct = status.getIn(['account', 'acct']);
     const track = status.get('track');
-    const params = location.search.length > 1 ? querystring.parse(location.search.substr(1)) : {};
-    const hideInfo = params.hideinfo && Number(params.hideinfo) === 1;
+    const visible = !trackIsMounted || visibleInfo;
 
-    if (trackIsMounted) {
+    if (!trackIsMounted && hideInfo) {
       return (
-        <div className='meta'>
-          <a className={classNames('icon-link', { visible: showIcon })} href={`/@${acct}/${id}`} target='_blank'>
-            <img src={pawooIcon} alt='Pawoo Music' />
-          </a>
-        </div>
-      );
-    }
-
-    if (!hideInfo) {
-      return (
-        <div className='meta'>
-          <a className='artist' href={`/@${acct}`}       target='_blank'>{track.get('artist')}</a><br />
-          <a className='title'  href={`/@${acct}/${id}`} target='_blank'>{track.get('title')} </a>
-        </div>
+        <div className='embed-ui' />
       );
     }
 
     return (
-      <div className='meta' />
+      <div className={classNames('embed-ui', { visible })}>
+        {visible && (
+          <div className='info'>
+            <div className='meta'>
+              <a className='artist' href={`/@${acct}`} target='_blank'>{track.get('artist')}</a><br />
+              <a className='title' href={`/@${acct}/${id}`} target='_blank'>{track.get('title')}</a>
+            </div>
+            <div className='actions'>
+              <FollowButton id={status.get('account')} onlyFollow />
+            </div>
+          </div>
+        )}
+      </div>
     );
   }
 
@@ -95,9 +119,12 @@ export default class EmbedMusicvideo extends React.PureComponent {
     return (
       <div
         className='app embed-musicvideo'
-        onMouseEnter={this.handleMouseEnter}
-        onMouseMove={this.handleMouseMove}
-        onMouseLeave={this.handleMouseLeave}
+        onClickCapture={mobile ? this.handleClick : noop}
+        role='button'
+        aria-pressed='false'
+        onMouseEnter={mobile ? noop : this.handleMouseEnter}
+        onMouseMove={mobile ? noop : this.handleMouseMove}
+        onMouseLeave={mobile ? noop : this.handleMouseLeave}
       >
         <Track track={status.get('track')} fitContain />
         {this.renderInfo()}

@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { makeGetAccount } from '../../../mastodon/selectors';
 import Button from '../../components/button';
 import { followAccount, unfollowAccount } from '../../../mastodon/actions/accounts';
+import { navigate } from '../../util/navigator';
 
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
@@ -49,14 +50,18 @@ export default class FollowButton extends ImmutablePureComponent {
     this.setState({ isChange: true });
   }
 
+  handleLogin = () => {
+    navigate('/auth/sign_in');
+  }
+
   render () {
     const { account, me, onlyFollow } = this.props;
     const { isChange } = this.state;
 
     if (!me) {
       return (
-        <Button className='follow' href={`/users/${account.get('acct')}/remote_follow`}>
-          <FormattedMessage id='account.remote_follow' defaultMessage='Remote follow' />
+        <Button className='follow' onClick={this.handleLogin}>
+          <FormattedMessage id='account.follow' defaultMessage='Follow' />
         </Button>
       );
     }

@@ -3,8 +3,6 @@
 class Api::Web::EmbedsController < Api::BaseController
   respond_to :json
 
-  before_action :require_user!
-
   def create
     status = StatusFinder.new(params[:url]).status
     width = status.music.is_a?(Track) ? '100%' : 400

@@ -53,6 +53,7 @@ import {
   validateIsFileMp3,
   validateIsFileImage,
 } from '../../util/musicvideo';
+import { navigate } from '../../util/navigator';
 import PrivacyDropdown from '../../../mastodon/features/compose/components/privacy_dropdown';
 import GenreTagPicker from '../../components/genre_tag_picker';
 import ColorTrigger from '../../components/color_trigger';
@@ -504,11 +505,7 @@ export default class TrackCompose extends ImmutablePureComponent {
     } else {
       const id = track.get('id');
 
-      if (id) {
-        location.href = `/@${account.get('acct')}/${id}`;
-      } else {
-        location.href = '/';
-      }
+      navigate(id ? `/@${account.get('acct')}/${id}` : '/');
     }
   }
 
