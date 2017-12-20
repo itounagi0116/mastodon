@@ -20,11 +20,11 @@ const initialState = ImmutableMap({
 
   notifications: ImmutableMap({
     alerts: ImmutableMap({
-      follow: true,
-      favourite: true,
-      reblog: true,
-      mention: true,
-      new_track: true,
+      follow: false,
+      favourite: false,
+      reblog: false,
+      mention: false,
+      new_track: false,
     }),
 
     shows: ImmutableMap({
