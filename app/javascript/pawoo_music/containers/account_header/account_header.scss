@@ -82,7 +82,7 @@
         height: 24px;
         justify-content: center;
 
-        ul {
+        ul.oauth-authentications {
           display:    flex;
           justify-content: flex-end;
 
@@ -90,6 +90,10 @@
             margin: var(--rightspace5);
             width:  var(--iconsize20);
           }
+        }
+
+        .button + ul.oauth-authentications {
+          margin-left: 5px
         }
       }
     }
