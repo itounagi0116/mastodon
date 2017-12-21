@@ -105,13 +105,7 @@ export default class BufferAudio {
 
   play () {
     if (this._buffer !== null) {
-      if (this._lastSeekDestinationOffsetToMusicTime < this._buffer.duration) {
-        this._offsetToContextTime = this._lastSeekDestinationOffsetToMusicTime - this._context.currentTime;
-      } else {
-        this._offsetToContextTime = -this._context.currentTime;
-        this._lastSeekDestinationOffsetToMusicTime = 0;
-      }
-
+      this._offsetToContextTime = this._lastSeekDestinationOffsetToMusicTime - this._context.currentTime;
       this._createBufferSource(this._buffer);
     }
   }
