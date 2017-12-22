@@ -32,11 +32,13 @@ export default class FollowButton extends ImmutablePureComponent {
     account: ImmutablePropTypes.map.isRequired,
     me: PropTypes.number,
     onlyFollow: PropTypes.bool,
+    embed: PropTypes.bool,
     dispatch: PropTypes.func.isRequired,
   };
 
   state = {
     isChange: false,
+    embed: false,
   }
 
   handleFollow = () => {
@@ -54,6 +56,26 @@ export default class FollowButton extends ImmutablePureComponent {
     navigate('/auth/sign_in');
   }
 
+  renderFollowMessage () {
+    const { embed } = this.props;
+
+    return embed ? (
+      <FormattedMessage id='account.follow_for_embed' defaultMessage='Notify New Release' />
+    ) : (
+      <FormattedMessage id='account.follow' defaultMessage='Follow' />
+    );
+  }
+
+  renderUnfollowMessage () {
+    const { embed } = this.props;
+
+    return embed ? (
+      <FormattedMessage id='account.unfollow_for_embed' defaultMessage='Stop notifying new releases' />
+    ) : (
+      <FormattedMessage id='account.unfollow' defaultMessage='Unfollow' />
+    );
+  }
+
   render () {
     const { account, me, onlyFollow } = this.props;
     const { isChange } = this.state;
@@ -61,7 +83,7 @@ export default class FollowButton extends ImmutablePureComponent {
     if (!me) {
       return (
         <Button className='follow' onClick={this.handleLogin}>
-          <FormattedMessage id='account.follow' defaultMessage='Follow' />
+          {this.renderFollowMessage()}
         </Button>
       );
     }
@@ -81,15 +103,9 @@ export default class FollowButton extends ImmutablePureComponent {
           </Button>
         );
       } else {
-        const message = type === 'follow' ? (
-          <FormattedMessage id='account.follow' defaultMessage='Follow' />
-        ) : (
-          <FormattedMessage id='account.unfollow' defaultMessage='Unfollow' />
-        );
-
         return (
           <Button className={type} onClick={this.handleFollow}>
-            {message}
+            {type === 'follow' ? this.renderFollowMessage() : this.renderUnfollowMessage()}
           </Button>
         );
       }
