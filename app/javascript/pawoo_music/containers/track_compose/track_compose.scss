@@ -207,8 +207,8 @@
     border-radius: 20px;
     color: var(--linkcolor2);
     background-color: var(--color1);
-    overflow: hidden;
-    max-width: calc(var(--form-width) - var(--padding40) - var(--grid) * 2);
+    box-sizing: border-box;
+    max-width: calc(var(--form-width) - var(--scrollbar-margin) - var(--padding40));
     transition: all 0.2s var(--hover-timing);
 
     &:hover {
