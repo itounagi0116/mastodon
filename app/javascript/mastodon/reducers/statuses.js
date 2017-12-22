@@ -72,7 +72,10 @@ const normalizeStatus = (state, status) => {
   normalStatus.contentHtml = emojify(normalStatus.content);
   normalStatus.spoilerHtml = emojify(escapeTextContentForBrowser(normalStatus.spoiler_text || ''));
 
-  return state.update(status.id, ImmutableMap(), map => map.mergeDeep(fromJS(normalStatus)));
+  return state.update(status.id, ImmutableMap(), map => map.withMutations(mutable => {
+    mutable.delete('track');
+    mutable.mergeDeep(fromJS(normalStatus));
+  }));
 };
 
 const normalizeStatuses = (state, statuses) => {

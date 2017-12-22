@@ -92,13 +92,38 @@ class MusicConvertService < BaseService
     args = [
       Rails.root.join('node_modules', '.bin', 'electron'), 'genmv', '--',
       music_file.path, '--resolution', resolution,
-      '--backgroundcolor', track.video_backgroundcolor, '--image',
+      '--backgroundcolor', track.video_backgroundcolor, '--sprite.image',
       if image_file.nil?
         Rails.root.join('app', 'javascript', 'images', 'pawoo_music', 'default_artwork.png')
       else
         image_file.path
       end,
     ]
+
+    if (track.video_sprite_movement_circle_rad != 0 || track.video_sprite_movement_circle_scale != 0) &&
+       track.video_sprite_movement_circle_speed != 0
+      args.push(
+        '--sprite.movement.circle.rad', track.video_sprite_movement_circle_rad,
+        '--sprite.movement.circle.scale', track.video_sprite_movement_circle_scale,
+        '--sprite.movement.circle.speed', track.video_sprite_movement_circle_speed
+      )
+    end
+
+    if track.video_sprite_movement_random_scale != 0 &&
+       track.video_sprite_movement_random_speed != 0
+      args.push(
+        '--sprite.movement.random.scale', track.video_sprite_movement_random_scale,
+        '--sprite.movement.random.speed', track.video_sprite_movement_random_speed
+      )
+    end
+
+    if track.video_sprite_movement_zoom_scale != 0 &&
+       track.video_sprite_movement_zoom_speed != 0
+      args.push(
+        '--sprite.movement.zoom.scale', track.video_sprite_movement_zoom_scale,
+        '--sprite.movement.zoom.speed', track.video_sprite_movement_zoom_speed
+      )
+    end
 
     if track.video_banner_alpha != 0
       args.push(

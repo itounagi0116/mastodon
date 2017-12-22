@@ -32,34 +32,45 @@ describe Api::V1::TracksController, type: :controller do
       it 'creates and renders status and track' do
         video_params = {
           backgroundcolor: 0xffffff,
+          sprite: {
+            movement: {
+              circle: { rad: 1, scale: 1, speed: 1 },
+              random: { scale: 1, speed: 1 },
+              zoom: { scale: 1, speed: 1 },
+            },
+          },
           blur: {
+            visible: true,
             movement: { band: { bottom: 50, top: 300 }, threshold: 165 },
             blink: { band: { bottom: 2000, top: 15000 }, threshold: 165 },
           },
           particle: {
+            visible: true,
             limit: { band: { bottom: 300, top: 2000 }, threshold: 165 },
             alpha: 1,
             color: 0xff0000,
           },
           lightleaks: {
+            visible: true,
             alpha: 1,
             interval: 1,
           },
           spectrum: {
+            visible: true,
             mode: 0,
             alpha: 1,
             color: 0xff0000,
           },
           text: {
+            visible: true,
             alpha: 1,
             color: 0xffffff,
           },
           banner: {
+            visible: true,
             alpha: 0.5,
           },
         }
-
-        expected_video_params = video_params.map { |k, v| [k, v.is_a?(Hash) ? v.merge(visible: true) : v] }.to_h
 
         post :create,
              params: { title: 'title', artist: 'artist', text: 'text', visibility: 'public', music: music, video: video_params }
@@ -76,6 +87,13 @@ describe Api::V1::TracksController, type: :controller do
         expect(status.music.text).to eq 'text'
         expect(status.music.duration).to eq 2
         expect(status.music.video_backgroundcolor).to eq 0xffffff
+        expect(status.music.video_sprite_movement_circle_rad).to eq 1
+        expect(status.music.video_sprite_movement_circle_scale).to eq 1
+        expect(status.music.video_sprite_movement_circle_speed).to eq 1
+        expect(status.music.video_sprite_movement_random_scale).to eq 1
+        expect(status.music.video_sprite_movement_random_speed).to eq 1
+        expect(status.music.video_sprite_movement_zoom_scale).to eq 1
+        expect(status.music.video_sprite_movement_zoom_speed).to eq 1
         expect(status.music.video_blur_movement_band_bottom).to eq 50
         expect(status.music.video_blur_movement_band_top).to eq 300
         expect(status.music.video_blur_movement_threshold).to eq 165
@@ -99,7 +117,7 @@ describe Api::V1::TracksController, type: :controller do
         expect(body_as_json[:track][:title]).to eq 'title'
         expect(body_as_json[:track][:artist]).to eq 'artist'
         expect(body_as_json[:track][:text]).to eq 'text'
-        expect(body_as_json[:track][:video]).to eq expected_video_params
+        expect(body_as_json[:track][:video]).to eq video_params
       end
 
       it 'joins given artist, title, text and URL to create status text' do
@@ -156,32 +174,42 @@ describe Api::V1::TracksController, type: :controller do
 
         video_params = {
           backgroundcolor: 0xbac010,
+          sprite: {
+            movement: {
+              circle: { rad: 1, scale: 1, speed: 1 },
+              random: { scale: 1, speed: 1 },
+              zoom: { scale: 1, speed: 1 },
+            },
+          },
           blur: {
+            visible: true,
             movement: { band: { bottom: 50, top: 300 }, threshold: 165 },
             blink: { band: { bottom: 2000, top: 15000 }, threshold: 165 },
           },
           particle: {
+            visible: true,
             limit: { band: { bottom: 300, top: 2000 }, threshold: 165 },
             alpha: 1,
             color: 0xff0000,
           },
           lightleaks: {
+            visible: true,
             alpha: 1,
             interval: 1,
           },
           spectrum: {
+            visible: true,
             mode: 0,
             alpha: 1,
             color: 0xff0000,
           },
           text: {
+            visible: true,
             alpha: 1,
             color: 0xffffff,
           },
-          banner: { alpha: 0.5 },
+          banner: { visible: true, alpha: 0.5 },
         }
-
-        expected_video_params = video_params.map { |k, v| [k, v.is_a?(Hash) ? v.merge(visible: true) : v] }.to_h
 
         patch :update,
               params: { id: status.id, title: 'updated title', artist: 'updated artist', text: 'updated text', music: another_music, video: video_params }
@@ -191,6 +219,13 @@ describe Api::V1::TracksController, type: :controller do
         expect(track.artist).to eq 'updated artist'
         expect(track.text).to eq 'updated text'
         expect(track.duration).to eq 2
+        expect(track.video_sprite_movement_circle_rad).to eq 1
+        expect(track.video_sprite_movement_circle_scale).to eq 1
+        expect(track.video_sprite_movement_circle_speed).to eq 1
+        expect(track.video_sprite_movement_random_scale).to eq 1
+        expect(track.video_sprite_movement_random_speed).to eq 1
+        expect(track.video_sprite_movement_zoom_scale).to eq 1
+        expect(track.video_sprite_movement_zoom_speed).to eq 1
         expect(track.video_blur_movement_band_bottom).to eq 50
         expect(track.video_blur_movement_band_top).to eq 300
         expect(track.video_blur_movement_threshold).to eq 165
@@ -214,7 +249,7 @@ describe Api::V1::TracksController, type: :controller do
         expect(body_as_json[:track][:title]).to eq 'updated title'
         expect(body_as_json[:track][:artist]).to eq 'updated artist'
         expect(body_as_json[:track][:text]).to eq 'updated text'
-        expect(body_as_json[:track][:video]).to eq expected_video_params
+        expect(body_as_json[:track][:video]).to eq video_params
       end
 
       it 'returns http unprocessable entity if empty string is given as background color' do
@@ -235,6 +270,100 @@ describe Api::V1::TracksController, type: :controller do
         expect(response).to have_http_status :success
         track.reload
         expect(track.video_backgroundcolor).to eq 0x171717
+      end
+
+      it 'unsets video sprite movement circle parameters if empty string is given' do
+        track = Fabricate(
+          :track,
+          video_sprite_movement_circle_rad: 1,
+          video_sprite_movement_circle_scale: 1,
+          video_sprite_movement_circle_speed: 1
+        )
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
+
+        patch :update, params: { id: status, video: { sprite: { movement: { circle: '' } } } }
+
+        track.reload
+        expect(track.video_sprite_movement_circle_rad).to eq 0
+        expect(track.video_sprite_movement_circle_scale).to eq 0
+        expect(track.video_sprite_movement_circle_speed).to eq 0
+      end
+
+      it 'does not change video sprite movement circle parameters if nothing is given' do
+        track = Fabricate(
+          :track,
+          video_sprite_movement_circle_rad: 1,
+          video_sprite_movement_circle_scale: 1,
+          video_sprite_movement_circle_speed: 1
+        )
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
+
+        patch :update, params: { id: status }
+
+        track.reload
+        expect(track.video_sprite_movement_circle_rad).to eq 1
+        expect(track.video_sprite_movement_circle_scale).to eq 1
+        expect(track.video_sprite_movement_circle_speed).to eq 1
+      end
+
+      it 'unsets video sprite movement random parameters if empty string is given' do
+        track = Fabricate(
+          :track,
+          video_sprite_movement_random_scale: 1,
+          video_sprite_movement_random_speed: 1
+        )
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
+
+        patch :update, params: { id: status, video: { sprite: { movement: { random: '' } } } }
+
+        track.reload
+        expect(track.video_sprite_movement_random_scale).to eq 0
+        expect(track.video_sprite_movement_random_speed).to eq 0
+      end
+
+      it 'does not change video sprite movement random parameters if nothing is given' do
+        track = Fabricate(
+          :track,
+          video_sprite_movement_random_scale: 1,
+          video_sprite_movement_random_speed: 1
+        )
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
+
+        patch :update, params: { id: status }
+
+        track.reload
+        expect(track.video_sprite_movement_random_scale).to eq 1
+        expect(track.video_sprite_movement_random_speed).to eq 1
+      end
+
+      it 'unsets video sprite movement zoom parameters if empty string is given' do
+        track = Fabricate(
+          :track,
+          video_sprite_movement_zoom_scale: 1,
+          video_sprite_movement_zoom_speed: 1
+        )
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
+
+        patch :update, params: { id: status, video: { sprite: { movement: { zoom: '' } } } }
+
+        track.reload
+        expect(track.video_sprite_movement_zoom_scale).to eq 0
+        expect(track.video_sprite_movement_zoom_speed).to eq 0
+      end
+
+      it 'does not change video sprite movement zoom parameters if nothing is given' do
+        track = Fabricate(
+          :track,
+          video_sprite_movement_zoom_scale: 1,
+          video_sprite_movement_zoom_speed: 1
+        )
+        status = Fabricate(:status, account: user.account, music: track, reblog: nil)
+
+        patch :update, params: { id: status }
+
+        track.reload
+        expect(track.video_sprite_movement_zoom_scale).to eq 1
+        expect(track.video_sprite_movement_zoom_speed).to eq 1
       end
 
       it 'unsets video blur parameters if empty string is given' do

@@ -81,11 +81,6 @@ export default class HTMLAudio {
   }
 
   play () {
-    if (this._forOutput.ended) {
-      this._forAnalysis.currentTime = 0;
-      this._forOutput.currentTime = 0;
-    }
-
     this._forAnalysis.play();
     this._forOutput.play();
   }
