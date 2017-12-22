@@ -105,7 +105,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
               <a className='title' href={`/@${acct}/${id}`} target='_blank'>{track.get('title')}</a>
             </div>
             <div className='actions'>
-              <FollowButton id={status.get('account')} onlyFollow />
+              <FollowButton id={status.get('account')} onlyFollow embed />
             </div>
           </div>
         )}
