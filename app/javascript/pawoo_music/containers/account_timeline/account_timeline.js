@@ -100,6 +100,8 @@ export default class AccountTimeline extends PureComponent {
       return;
     }
 
+    this.removeStyle(account.get('id'));
+
     const head = document.head || document.getElementsByTagName('head')[0];
     const style = createCustomColorStyle(customColor, `user-style-${account.get('id')}`);
     head.appendChild(style);
