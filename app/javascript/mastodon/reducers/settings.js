@@ -20,10 +20,11 @@ const initialState = ImmutableMap({
 
   notifications: ImmutableMap({
     alerts: ImmutableMap({
-      follow: true,
-      favourite: true,
-      reblog: true,
-      mention: true,
+      follow: false,
+      favourite: false,
+      reblog: false,
+      mention: false,
+      new_track: false,
     }),
 
     shows: ImmutableMap({
@@ -31,6 +32,7 @@ const initialState = ImmutableMap({
       favourite: true,
       reblog: true,
       mention: true,
+      new_track: true,
     }),
 
     sounds: ImmutableMap({
@@ -38,6 +40,7 @@ const initialState = ImmutableMap({
       favourite: true,
       reblog: true,
       mention: true,
+      new_track: false,
     }),
   }),
 

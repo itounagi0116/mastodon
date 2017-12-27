@@ -38,7 +38,17 @@ export function changeLoading(loading) {
 }
 
 export function changePaused(paused) {
-  return { type: PLAYER_PAUSED_CHANGE, paused };
+  return (dispatch, getState) => {
+    if (!paused) {
+      const player = getState().getIn(['pawoo_music', 'player']);
+
+      if (player.get('getCurrentTime')() >= player.get('duration')) {
+        dispatch(changeSeekDestination(0));
+      }
+    }
+
+    dispatch({ type: PLAYER_PAUSED_CHANGE, paused });
+  };
 }
 
 export function changeSeekDestination(time) {

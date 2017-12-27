@@ -8,6 +8,16 @@ import {
   TRACK_COMPOSE_TRACK_MUSIC_CHANGE,
   TRACK_COMPOSE_TRACK_VIDEO_BACKGROUNDCOLOR_CHANGE,
   TRACK_COMPOSE_TRACK_VIDEO_IMAGE_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_ENABLED_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_RAD_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_SCALE_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_SPEED_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_ENABLED_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_SCALE_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_SPEED_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_ENABLED_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_SCALE_CHANGE,
+  TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_SPEED_CHANGE,
   TRACK_COMPOSE_TRACK_VIDEO_BLUR_VISIBLITY_CHANGE,
   TRACK_COMPOSE_TRACK_VIDEO_BLUR_MOVEMENT_THRESHOLD_CHANGE,
   TRACK_COMPOSE_TRACK_VIDEO_BLUR_BLINK_THRESHOLD_CHANGE,
@@ -52,6 +62,14 @@ const initialState = Immutable.fromJS({
     video: {
       backgroundcolor: 0x171717,
       image: null,
+      sprite: {
+        visible: true,
+        movement: {
+          circle: { enabled: false, rad: Math.PI / 16, scale: 0.2, speed: 0.2 },
+          random: { enabled: false, scale: 50, speed: 0.1 },
+          zoom: { enabled: false, scale: 0.1, speed: 0.5 },
+        },
+      },
       blur: {
         visible: false,
         movement: { threshold: 190, band: { bottom: 50, top: 300 } },
@@ -78,15 +96,23 @@ const initialState = Immutable.fromJS({
 
 function convertTrackData(track) {
   return initialState.get('track').withMutations((map) => {
-    return ['blur', 'particle', 'lightleaks', 'spectrum', 'text', 'banner'].reduce((base, trackKey) => {
-      if (base.getIn(['video', trackKey, 'visible'])) {
-        return base;
+    map.mergeDeep(track);
+
+    ['circle', 'random', 'zoom'].forEach(movementKey => {
+      if (track.hasIn(['video', 'sprite', 'movement', movementKey])) {
+        map.setIn(['video', 'sprite', 'movement', movementKey, 'enabled'], true);
+      }
+    });
+
+    ['blur', 'particle', 'lightleaks', 'spectrum', 'text', 'banner'].forEach(trackKey => {
+      if (map.getIn(['video', trackKey, 'visible'])) {
+        return;
       }
 
       // visibleがfalseの場合は保存された値がすべて0なので、代わりにデフォルト値を使用する
       const defaultParam = initialState.getIn(['track', 'video', trackKey]);
-      return base.setIn(['video', trackKey], defaultParam.set('visible', false));
-    }, map.mergeDeep(track));
+      map.setIn(['video', trackKey], defaultParam.set('visible', false));
+    });
   });
 }
 
@@ -110,6 +136,26 @@ export default function track_compose(state = initialState, action) {
     return state.setIn(['track', 'video', 'backgroundcolor'], action.value);
   case TRACK_COMPOSE_TRACK_VIDEO_IMAGE_CHANGE:
     return state.setIn(['track', 'video', 'image'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_ENABLED_CHANGE:
+    return state.setIn(['track', 'video', 'sprite', 'movement', 'circle', 'enabled'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_RAD_CHANGE:
+    return state.setIn(['track', 'video', 'sprite', 'movement', 'circle', 'rad'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_SCALE_CHANGE:
+    return state.setIn(['track', 'video', 'sprite', 'movement', 'circle', 'scale'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_SPEED_CHANGE:
+    return state.setIn(['track', 'video', 'sprite', 'movement', 'circle', 'speed'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_ENABLED_CHANGE:
+    return state.setIn(['track', 'video', 'sprite', 'movement', 'random', 'enabled'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_SCALE_CHANGE:
+    return state.setIn(['track', 'video', 'sprite', 'movement', 'random', 'scale'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_SPEED_CHANGE:
+    return state.setIn(['track', 'video', 'sprite', 'movement', 'random', 'speed'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_ENABLED_CHANGE:
+    return state.setIn(['track', 'video', 'sprite', 'movement', 'zoom', 'enabled'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_SCALE_CHANGE:
+    return state.setIn(['track', 'video', 'sprite', 'movement', 'zoom', 'scale'], action.value);
+  case TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_SPEED_CHANGE:
+    return state.setIn(['track', 'video', 'sprite', 'movement', 'zoom', 'speed'], action.value);
   case TRACK_COMPOSE_TRACK_VIDEO_BLUR_VISIBLITY_CHANGE:
     return state.setIn(['track', 'video', 'blur', 'visible'], action.value);
   case TRACK_COMPOSE_TRACK_VIDEO_BLUR_MOVEMENT_THRESHOLD_CHANGE:

@@ -9,10 +9,11 @@
     left: 0;
     width: 100%;
     height: 100%;
+    opacity: 0;
+    transition: opacity var(--hover-transition) ease-in-out;
 
-    .track {
-      width: 100%;
-      height: calc(100% - var(--padding5-value) * 2 - var(--text20-line) - var(--text40-line));
+    &.visible {
+      opacity: 1;
     }
 
     .info {
@@ -26,34 +27,13 @@
       display: flex;
       justify-content: space-between;
 
-
       .meta {
-        .playlist_toggle, .artist, .title {
+        .artist, .title {
           display: inline-flex;
           align-items: center;
           font-weight: 100;
           padding: var(--padding5);
-        }
-
-        .playlist_toggle {
-          color: #000000;
-          background-color: #ffffff;
-          border-radius: var(--iconsize20);
-          padding: var(--padding10) var(--padding15);
-          height: var(--iconsize13);
-          font-size: var(--text10-font);
-          line-height: var(--text10-font);
-
-          b {
-            font-weight: bold;
-            font-size: var(--text20-font);
-            margin: var(--rightspace5);
-          }
-
-          .icon svg {
-            stroke: #000000;
-            stroke-width: 2px;
-          }
+          pointer-events: auto;
         }
 
         .artist {
@@ -74,41 +54,12 @@
         }
       }
 
-
       .actions {
-        text-align: right;
-
-        // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-        // フォローボタンのコンポーネントに置き換えた後は、ここをけして　OK!!!!!!!!!!
-        .follow {
-          color: #ffffff;
-          border: 1px solid #ffffff;
-          border-radius: 20px;
-          box-sizing: border-box;
-          display: flex;
-          padding: var(--padding10) var(--padding15);
-          margin: 0 0 0 var(--grid);
-          justify-content: center;
-          align-items: center;
-          font-size: var(--text10-font);
-          font-weight: bold;
-        }
-        // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
-        .share {
-          margin: var(--verticalspace20);
-          padding: var(--padding10);
-
-          &.icon svg {
-            width: var(--iconsize20);
-            height: var(--iconsize20);
-            stroke: #ffffff;
-            stroke-width: 2px;
-          }
+        > .button {
+          pointer-events: auto;
         }
       }
     }
-
 
     .album_playlist {
       position: absolute;

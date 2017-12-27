@@ -161,6 +161,50 @@ class Api::V1::TracksController < Api::BaseController
       )
     end
 
+    case params.dig('video', 'sprite', 'movement', 'circle')
+    when nil
+    when ''
+      attributes.merge!(
+        video_sprite_movement_circle_rad: 0,
+        video_sprite_movement_circle_scale: 0,
+        video_sprite_movement_circle_speed: 0,
+      )
+    else
+      attributes.merge!(
+        video_sprite_movement_circle_rad: params.dig('video', 'sprite', 'movement', 'circle', 'rad'),
+        video_sprite_movement_circle_scale: params.dig('video', 'sprite', 'movement', 'circle', 'scale'),
+        video_sprite_movement_circle_speed: params.dig('video', 'sprite', 'movement', 'circle', 'speed')
+      )
+    end
+
+    case params.dig('video', 'sprite', 'movement', 'random')
+    when nil
+    when ''
+      attributes.merge!(
+        video_sprite_movement_random_scale: 0,
+        video_sprite_movement_random_speed: 0
+      )
+    else
+      attributes.merge!(
+        video_sprite_movement_random_scale: params.dig('video', 'sprite', 'movement', 'random', 'scale'),
+        video_sprite_movement_random_speed: params.dig('video', 'sprite', 'movement', 'random', 'speed')
+      )
+    end
+
+    case params.dig('video', 'sprite', 'movement', 'zoom')
+    when nil
+    when ''
+      attributes.merge!(
+        video_sprite_movement_zoom_scale: 0,
+        video_sprite_movement_zoom_speed: 0
+      )
+    else
+      attributes.merge!(
+        video_sprite_movement_zoom_scale: params.dig('video', 'sprite', 'movement', 'zoom', 'scale'),
+        video_sprite_movement_zoom_speed: params.dig('video', 'sprite', 'movement', 'zoom', 'speed')
+      )
+    end
+
     case params.dig('video', 'text')
     when nil
     when ''

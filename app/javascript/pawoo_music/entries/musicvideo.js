@@ -10,7 +10,6 @@ import EmbedMusicvideo from '../containers/embed_musicvideo';
 import subscribeAsPlayer from '../player';
 import { setNavigate } from '../util/navigator';
 
-
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
 

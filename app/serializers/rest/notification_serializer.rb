@@ -7,6 +7,6 @@ class REST::NotificationSerializer < ActiveModel::Serializer
   belongs_to :target_status, key: :status, if: :status_type?, serializer: REST::StatusSerializer
 
   def status_type?
-    [:favourite, :reblog, :mention, :video_preparation_success, :video_preparation_error].include?(object.type)
+    [:favourite, :reblog, :mention, :new_track, :video_preparation_success, :video_preparation_error].include?(object.type)
   end
 end

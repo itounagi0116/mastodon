@@ -1,21 +1,21 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { FormattedMessage } from 'react-intl';
 import axios from 'axios';
 import Checkbox from '../../components/checkbox';
+import TweetButton from '../../../mastodon/components/tweet_button';
 
 export default class EmbedModalContent extends ImmutablePureComponent {
 
   static propTypes = {
-    url: PropTypes.string.isRequired,
-    isTrack: PropTypes.bool,
+    status: ImmutablePropTypes.map.isRequired,
   }
 
   state = {
     loading: false,
     oembed: null,
-    showinfo: false,
+    showinfo: true,
   };
 
   componentDidMount () {
@@ -31,12 +31,12 @@ export default class EmbedModalContent extends ImmutablePureComponent {
   }
 
   loadIframe () {
-    const { url, isTrack } = this.props;
+    const { status } = this.props;
     const { showinfo } = this.state;
 
     this.setState({ loading: true });
 
-    axios.post('/api/web/embed', { url, hideinfo: Number(!showinfo) }).then(res => {
+    axios.post('/api/web/embed', { url: status.get('url'), hideinfo: Number(!showinfo) }).then(res => {
       this.setState({ loading: false, oembed: res.data });
 
       const iframeDocument = this.iframe.contentWindow.document;
@@ -47,7 +47,7 @@ export default class EmbedModalContent extends ImmutablePureComponent {
 
       iframeDocument.body.style.margin = 0;
       this.iframe.width  = iframeDocument.body.scrollWidth;
-      this.iframe.height = isTrack ? this.iframe.width : iframeDocument.body.scrollHeight;
+      this.iframe.height = status.has('track') ? this.iframe.width : iframeDocument.body.scrollHeight;
     });
   }
 
@@ -66,11 +66,30 @@ export default class EmbedModalContent extends ImmutablePureComponent {
   }
 
   render () {
-    const { isTrack } = this.props;
+    const { status } = this.props;
     const { oembed, showinfo } = this.state;
 
     return (
       <div className='embed-modal-content'>
+        <h4><FormattedMessage id='status.share' defaultMessage='Share' /></h4>
+
+        <div className='embed-modal-container'>
+          <p className='hint'>
+            <FormattedMessage id='embed.instructions.share' defaultMessage='Share the link below.' />
+          </p>
+
+          <div className='embed-modal-share-box'>
+            <input
+              type='text'
+              className='embed-modal-html'
+              readOnly
+              value={status.get('url')}
+              onClick={this.handleTextareaClick}
+            />
+            {status.has('track') && <TweetButton text={`${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}`} url={status.get('url')} hashtags='PawooMusic' />}
+          </div>
+        </div>
+
         <h4><FormattedMessage id='status.embed' defaultMessage='Embed' /></h4>
 
         <div className='embed-modal-container'>
@@ -86,7 +105,7 @@ export default class EmbedModalContent extends ImmutablePureComponent {
             onClick={this.handleTextareaClick}
           />
 
-          {isTrack && (
+          {status.has('track') && (
             <div className='options'>
               <p className='hint'>
                 <FormattedMessage id='embed.options' defaultMessage='Options' />

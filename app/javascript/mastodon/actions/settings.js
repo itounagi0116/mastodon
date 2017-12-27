@@ -10,7 +10,15 @@ export function changeSetting(key, value) {
       value,
     });
 
-    dispatch(saveSettings());
+    if (key.length === 3 && key[0] === 'notifications' && key[1] === 'alerts' && value) {
+      Notification.requestPermission().then(result => dispatch(result === 'granted' ? saveSettings() : {
+        type: SETTING_CHANGE,
+        key,
+        value: false,
+      }));
+    } else {
+      dispatch(saveSettings());
+    }
   };
 };
 

@@ -5,7 +5,7 @@ class REST::AccountSerializer < ActiveModel::Serializer
 
   attributes :id, :username, :acct, :display_name, :locked, :created_at,
              :note, :url, :avatar, :avatar_static, :header, :header_static,
-             :followers_count, :following_count, :statuses_count, :tracks_count, :albums_count
+             :followers_count, :following_count, :statuses_count, :tracks_count, :albums_count, :background_image
 
   belongs_to :oauth_authentications
   has_many :popular_media_attachments, key: :media_attachments, serializer: REST::MediaAttachmentSerializer, if: :show_with_media?

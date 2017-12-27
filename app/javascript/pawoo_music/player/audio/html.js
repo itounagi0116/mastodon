@@ -18,8 +18,6 @@ export default class HTMLAudio {
   _forAnalysis = new Audio();
   _forOutput = new Audio();
 
-  canQueuePlayback = true;
-
   constructor ({ context, onSourceNodeChange, onDurationChange, onEnded }) {
     this._forAnalysis.crossOrigin = 'anonymous';
     this._forOutput.crossOrigin = 'anonymous';
@@ -83,11 +81,6 @@ export default class HTMLAudio {
   }
 
   play () {
-    if (this._forOutput.ended) {
-      this._forAnalysis.currentTime = 0;
-      this._forOutput.currentTime = 0;
-    }
-
     this._forAnalysis.play();
     this._forOutput.play();
   }

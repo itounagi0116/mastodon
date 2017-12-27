@@ -1,6 +1,10 @@
 import axios from 'axios';
+import React from 'react';
 import store from './store';
 import { setBrowserSupport, setSubscription, clearSubscription } from './actions/push_notifications';
+import { pushNotificationsSetting } from './settings';
+import { openModalUnclosable } from './actions/modal';
+import PushSettingsInitializerModal from '../pawoo_music/containers/push_settings_initializer_modal';
 
 // Taken from https://www.npmjs.com/package/web-push
 const urlBase64ToUint8Array = (base64String) => {
@@ -35,15 +39,64 @@ const subscribe = (registration) =>
 const unsubscribe = ({ registration, subscription }) =>
   subscription ? subscription.unsubscribe().then(() => registration) : registration;
 
-const sendSubscriptionToBackend = (subscription) =>
-  axios.post('/api/web/push_subscriptions', {
-    subscription,
-  }).then(response => response.data);
+const sendSubscriptionToBackend = (params) => {
+  return axios.post('/api/web/push_subscriptions', params).then(response => response.data);
+};
+
+const renewSubscription = (registration) => {
+  const me = store.getState().getIn(['meta', 'me']);
+  const localStorageData = pushNotificationsSetting.get(me);
+  let initialData = null;
+
+  return new Promise((resolve, reject) => {
+    const notificationAvailable = typeof window.Notification !== 'undefined' && Notification.permission !== 'denied';
+    if (!me) {
+      reject();
+      return;
+    }
+
+    if (localStorageData) {
+      resolve(localStorageData);
+    } else if (notificationAvailable) {
+      store.dispatch(openModalUnclosable('UNIVERSAL', { children: <PushSettingsInitializerModal onResolve={resolve} onReject={reject} /> }));
+    } else {
+      resolve(null);
+    }
+  }).then((data) => {
+    // localStorageにデータがない場合は、サブスクリプションの有無に関わらずデータをlocalStorageに書き込んで、2回目以降にモーダルが表示されないようにする
+    if (!localStorageData && data) {
+      pushNotificationsSetting.set(me, data);
+    }
+    initialData = data;
+
+    return subscribe(registration);
+  }).then((subscription) => {
+    const params = { subscription };
+    if (initialData) {
+      params.data = initialData;
+    }
+
+    return sendSubscriptionToBackend(params);
+  });
+};
 
 // Last one checks for payload support: https://web-push-book.gauntface.com/chapter-06/01-non-standards-browsers/#no-payload
 const supportsPushNotifications = ('serviceWorker' in navigator && 'PushManager' in window && 'getKey' in PushSubscription.prototype);
 
 export function register () {
+  const me = store.getState().getIn(['meta', 'me']);
+
+  if (!me) {
+    return;
+  }
+
+  if (!pushNotificationsSetting.get(me)) {
+    const alerts = store.getState().getIn(['push_notifications', 'alerts']);
+    if (store.getState().getIn(['push_notifications', 'subscription']) && alerts) {
+      pushNotificationsSetting.set(me, { alerts: alerts });
+    }
+  }
+
   store.dispatch(setBrowserSupport(supportsPushNotifications));
 
   if (supportsPushNotifications) {
@@ -67,18 +120,21 @@ export function register () {
             return subscription;
           } else {
             // Something went wrong, try to subscribe again
-            return unsubscribe({ registration, subscription }).then(subscribe).then(sendSubscriptionToBackend);
+            return unsubscribe({ registration, subscription }).then(renewSubscription);
           }
         }
 
         // No subscription, try to subscribe
-        return subscribe(registration).then(sendSubscriptionToBackend);
+        return renewSubscription(registration);
       })
       .then(subscription => {
         // If we got a PushSubscription (and not a subscription object from the backend)
         // it means that the backend subscription is valid (and was set during hydration)
         if (!(subscription instanceof PushSubscription)) {
           store.dispatch(setSubscription(subscription));
+          if (me) {
+            pushNotificationsSetting.set(me, { alerts: subscription.alerts });
+          }
         }
       })
       .catch(error => {
@@ -90,6 +146,9 @@ export function register () {
 
         // Clear alerts and hide UI settings
         store.dispatch(clearSubscription());
+        if (me) {
+          pushNotificationsSetting.remove(me);
+        }
 
         try {
           getRegistration()

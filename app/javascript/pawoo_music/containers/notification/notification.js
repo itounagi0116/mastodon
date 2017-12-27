@@ -70,6 +70,19 @@ export default class Notification extends ImmutablePureComponent {
     );
   }
 
+  renderNewTrack (notification, link) {
+    const prepend = (
+      <div className='prepend-inline'>
+        <Icon icon='music' />
+        <FormattedMessage id='notification.new_track' defaultMessage='{name} posted a new track' values={{ name: link }} />
+      </div>
+    );
+
+    return (
+      <StatusContainer id={notification.get('status')} prepend={prepend} muted withDismiss />
+    );
+  }
+
   renderVideoPreparationSuccess (notification) {
     const prepend = (
       <div className='prepend-inline'>
@@ -112,6 +125,8 @@ export default class Notification extends ImmutablePureComponent {
       return this.renderFavourite(notification, link);
     case 'reblog':
       return this.renderReblog(notification, link);
+    case 'new_track':
+      return this.renderNewTrack(notification, link);
     case 'video_preparation_success':
       return this.renderVideoPreparationSuccess(notification);
     case 'video_preparation_error':

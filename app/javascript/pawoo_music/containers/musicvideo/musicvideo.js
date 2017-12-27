@@ -59,6 +59,8 @@ class Musicvideo extends ImmutablePureComponent {
     onSeekDestinationChange: PropTypes.func,
     audio: ImmutablePropTypes.map.isRequired,
     getCurrentTime: PropTypes.func.isRequired,
+    loading: PropTypes.bool.isRequired,
+    paused: PropTypes.bool.isRequired,
     track: ImmutablePropTypes.map.isRequired,
   };
 
@@ -95,7 +97,7 @@ class Musicvideo extends ImmutablePureComponent {
     const source = node.get('source');
 
     if (destination !== null) {
-      this.generator.audioAnalyserNode.conneect(destination);
+      this.generator.audioAnalyserNode.connect(destination);
     }
 
     if (source !== null) {
@@ -123,27 +125,27 @@ class Musicvideo extends ImmutablePureComponent {
   componentDidUpdate ({ audio, bannerHidden, lastSeekDestination, paused, track }) {
     const { audioAnalyserNode } = this.generator;
     const image = track.getIn(['video', 'image']);
-    const oldDestination = this.props.audio.getIn(['node', 'destination']);
+    const newDestination = this.props.audio.getIn(['node', 'destination']);
     const destination = audio.getIn(['node', 'destination']);
-    const oldSource = this.props.audio.getIn(['node', 'source']);
+    const newSource = this.props.audio.getIn(['node', 'source']);
     const source = audio.getIn(['node', 'source']);
 
-    if (destination !== oldDestination) {
-      if (oldDestination !== null) {
-        audioAnalyserNode.disconnect(oldDestination);
+    if (newDestination !== destination) {
+      if (destination !== null) {
+        audioAnalyserNode.disconnect(destination);
       }
 
-      if (destination !== null) {
-        audioAnalyserNode.conneect(destination);
+      if (newDestination !== null) {
+        audioAnalyserNode.connect(newDestination);
       }
     }
 
-    if (source !== oldSource) {
-      if (oldSource !== null) {
-        oldSource.disconnect(audioAnalyserNode);
+    if (newSource !== source) {
+      if (source !== null) {
+        source.disconnect(audioAnalyserNode);
       }
 
-      source.connect(audioAnalyserNode);
+      newSource.connect(audioAnalyserNode);
     }
 
     if (![Infinity, NaN].includes(this.props.duration) &&
@@ -175,6 +177,8 @@ class Musicvideo extends ImmutablePureComponent {
 
   componentWillUnmount () {
     const { track } = this.props;
+
+    this.hideControlsDebounce.cancel();
 
     clearInterval(this.timer);
 

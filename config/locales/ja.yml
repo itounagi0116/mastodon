@@ -403,6 +403,13 @@ ja:
     reblog:
       body: 'あなたのトゥートが %{name} さんにブーストされました:'
       subject: あなたのトゥートが %{name} さんにブーストされました
+    new_track:
+      body: |
+        %{name} さんが新しいトラックを投稿しました。
+
+        『%{title}』 by %{artist}
+        %{text}
+      subject: '%{name} さんが新しいトラックを投稿しました'
     video_preparation_error:
       body: 'トラック『%{title}』の動画の生成に失敗しました:'
       subject: トラック『%{title}』の動画の生成に失敗しました
@@ -447,6 +454,8 @@ ja:
       action_expand: もっと見る
       action_favourite: お気に入り
       title: "%{name} さんから返信がありました"
+    new_track:
+      title: "%{name} さんが新しいトラックを投稿しました"
     reblog:
       title: あなたのトゥートが %{name} さんにブーストされました
   remote_follow:

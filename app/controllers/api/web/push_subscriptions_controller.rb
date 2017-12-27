@@ -26,8 +26,11 @@ class Api::Web::PushSubscriptionsController < Api::BaseController
         favourite: alerts_enabled,
         reblog: alerts_enabled,
         mention: alerts_enabled,
+        new_track: alerts_enabled,
       },
     }
+
+    data.deep_merge!(params[:data]) if params[:data]
 
     web_subscription = ::Web::PushSubscription.create!(
       endpoint: params[:subscription][:endpoint],

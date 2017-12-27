@@ -31,6 +31,7 @@ defaults: &defaults
     mention: false
     follow_request: true
     digest: true
+    new_track: true
     video_preparation_error: true
     video_preparation_success: true
   notification_firebase_cloud_messagings:

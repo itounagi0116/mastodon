@@ -30,10 +30,10 @@ export function constructGeneratorOptions(track, image) {
     resolution,
     fps,
     backgroundColor: video.get('backgroundcolor'),
-    image,
   };
 
   for (const [trackKey, optionKey] of [
+    ['sprite', 'sprite'],
     ['blur', 'blur'],
     ['particle', 'particle'],
     ['lightleaks', 'lightLeaks'],
@@ -55,6 +55,18 @@ export function constructGeneratorOptions(track, image) {
 
   if (options.banner) {
     options.banner.image = banner;
+  }
+
+  if (options.sprite) {
+    for (const key in options.sprite.movement) {
+      if (options.sprite.movement[key].enabled === false) {
+        delete options.sprite.movement[key];
+      }
+    }
+
+    options.sprite.image = image;
+  } else {
+    options.sprite = { image };
   }
 
   return options;

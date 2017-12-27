@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 class Api::V1::SearchController < Api::BaseController
-  before_action :require_user!, only: [:statuses]
   RESULTS_LIMIT = 5
   MAX_HITS_TOTAL = 10_000 # this value should be the same with index.max_result.window in ElasticSearch
 
-  before_action -> { doorkeeper_authorize! :read }
-  before_action :require_user!
+  before_action -> { doorkeeper_authorize! :read }, only: [:statuses]
+  before_action :require_user!, only: [:statuses]
 
   respond_to :json
 

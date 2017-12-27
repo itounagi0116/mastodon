@@ -42,7 +42,7 @@ class StatusesController < ApplicationController
         reactions: Reaction::PERMITTED_TEXTS,
       }
       initial_state = ActiveModelSerializers::SerializableResource.new(InitialStatePresenter.new(initial_state_params), serializer: InitialStateSerializer)
-      @initial_state_json   = initial_state.to_json
+      @initial_state_json = initial_state.to_json
       @status_json = ActiveModelSerializers::SerializableResource.new(@status, serializer: REST::StatusSerializer, scope: current_user, scope_name: :current_user).to_json
 
       render 'stream_entries/musicvideo', layout: 'embedded'

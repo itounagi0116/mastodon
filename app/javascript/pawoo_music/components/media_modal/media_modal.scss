@@ -3,6 +3,7 @@
   max-height: 80vh;
   position: relative;
 
+  .extended-video-player,
   img,
   canvas,
   video {
@@ -10,12 +11,25 @@
     max-height: 80vh;
     width: auto;
     height: auto;
+    margin: auto;
+  }
+
+  .extended-video-player,
+  video {
+    display: flex;
+    width: 80vw;
+    height: 80vh;
   }
 
   img,
   canvas {
     display: block;
     background: url('../../../images/void.png') repeat;
+    object-fit: contain;
+  }
+
+  .react-swipeable-view-container {
+    max-width: 80vw;
   }
 }
 
