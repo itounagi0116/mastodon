@@ -112,6 +112,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
             <StatusReactions status={status} />
           </div>
         )}
+        {null &&
         <ul className='album_playlist'>
           <li><Icon icon='pause' /> 01. hogehogesong</li>
           <li className='playing'><Icon icon='play' /> 02. hogehogesong</li>
@@ -128,6 +129,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
           <li><Icon icon='pause' /> 13. hoge hoge hoge hoge hoge hoge hoge hoge</li>
           <li><Icon icon='pause' /> 14. hogehogesong</li>
         </ul>
+        }
       </div>
     );
   }
