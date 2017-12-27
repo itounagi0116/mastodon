@@ -101,14 +101,15 @@ export default class EmbedMusicvideo extends React.PureComponent {
     return (
       <div className={classNames('embed-ui', { visible })}>
         {visible && (
-          <div className='info'>
-            <div className='meta'>
-              <a className='artist' href={`/@${acct}`} target='_blank'>{track.get('artist')}</a><br />
-              <a className='title' href={`/@${acct}/${id}`} target='_blank'>{track.get('title')}</a>
-            </div>
-            <div className='actions'>
-              <FollowButton id={status.get('account')} onlyFollow embed />
-            </div>
+          <div className='meta'>
+            <a className='artist' href={`/@${acct}`} target='_blank'>{track.get('artist')}</a><br />
+            <a className='title' href={`/@${acct}/${id}`} target='_blank'>{track.get('title')}</a>
+          </div>
+        )}
+        {visible && (
+          <div className='actions'>
+            <FollowButton id={status.get('account')} onlyFollow={false} embed />
+            <StatusReactions status={status} />
           </div>
         )}
         <ul className='album_playlist'>
@@ -148,7 +149,6 @@ export default class EmbedMusicvideo extends React.PureComponent {
       >
         <Track track={status.get('track')} fitContain />
         {showUIs && this.renderInfo()}
-        {showUIs && <StatusReactions status={status} />}
       </div>
     );
   }
