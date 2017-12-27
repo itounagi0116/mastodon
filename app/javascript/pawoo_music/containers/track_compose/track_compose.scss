@@ -2,11 +2,12 @@
   --video-width: 600px;
   --form-width: 400px;
   --controls-height: 30px;
-  color: #C3C3C3;
-  background-color: #1F1F1F;
-  border-radius: var(--radius-big);
-  text-align: left;
-  box-shadow: var(--shadow-strong);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 100%;
 
   button {
     width: 100%;
@@ -24,10 +25,9 @@
   }
 
   &.mobile {
-    padding: var(--padding40);
-
     .content {
       display: block;
+      padding: var(--padding40);
 
       .form-content {
         width: calc(100% - var(--padding10) * 2);
@@ -45,10 +45,10 @@
 
   &:not(.mobile) {
     --scrollbar-margin: var(--padding20);
-    padding: var(--padding40) calc(var(--padding40) - var(--scrollbar-margin)) var(--padding40) var(--padding40);
 
     .content {
       display: flex;
+      padding: var(--padding40) calc(var(--padding40) - var(--scrollbar-margin)) var(--padding40) var(--padding40);
 
       .form-content {
         width: var(--form-width);
@@ -65,7 +65,11 @@
   }
 
   .content {
-    width: 100%;
+    color: #C3C3C3;
+    background-color: #1F1F1F;
+    border-radius: var(--radius-big);
+    text-align: left;
+    box-shadow: var(--shadow-strong);
 
     > div {
       max-width: var(--video-width);
