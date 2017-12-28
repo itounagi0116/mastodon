@@ -52,8 +52,16 @@ class Auth::SessionsController < Devise::SessionsController
 
     if home_paths(resource).include?(last_url)
       root_path
+    elsif last_url.nil?
+      root_path
     else
-      last_url || root_path
+      params = Rails.application.routes.recognize_path last_url
+
+      if params[:controller] == 'statuses' && params[:action] == 'embed'
+        short_account_status_url params[:account_username], params[:id]
+      else
+        last_url
+      end
     end
   end
 

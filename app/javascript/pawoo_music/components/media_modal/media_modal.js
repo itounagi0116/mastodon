@@ -1,12 +1,17 @@
 import React from 'react';
-import ReactSwipeable from 'react-swipeable';
+import ReactSwipeableViews from 'react-swipeable-views';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
 import ExtendedVideoPlayer from '../../../mastodon/components/extended_video_player';
-import { injectIntl } from 'react-intl';
+import { injectIntl, defineMessages } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import ImageLoader from '../../../mastodon/features/ui/components/image_loader';
-import IconButton from '../icon_button';
+
+const messages = defineMessages({
+  close: { id: 'lightbox.close', defaultMessage: 'Close' },
+  previous: { id: 'lightbox.previous', defaultMessage: 'Previous' },
+  next: { id: 'lightbox.next', defaultMessage: 'Next' },
+});
 
 @injectIntl
 export default class MediaModal extends ImmutablePureComponent {
@@ -22,14 +27,16 @@ export default class MediaModal extends ImmutablePureComponent {
     index: null,
   };
 
-  handleNextClick = (e) => {
-    e.stopPropagation();
+  handleSwipe = (index) => {
+    this.setState({ index: (index) % this.props.media.size });
+  }
+
+  handleNextClick = () => {
     this.setState({ index: (this.getIndex() + 1) % this.props.media.size });
   }
 
-  handlePrevClick = (e) => {
-    e.stopPropagation();
-    this.setState({ index: (this.getIndex() - 1) % this.props.media.size });
+  handlePrevClick = () => {
+    this.setState({ index: (this.props.media.size + this.getIndex() - 1) % this.props.media.size });
   }
 
   handleKeyUp = (e) => {
@@ -56,33 +63,36 @@ export default class MediaModal extends ImmutablePureComponent {
   }
 
   render () {
-    const { media, onClose } = this.props;
+    const { media, onClose, intl } = this.props;
 
     const index = this.getIndex();
-    const attachment = media.get(index);
-    const url = attachment.get('url');
 
-    let leftNav, rightNav, content;
+    const leftNav  = media.size > 1 && <button tabIndex='0' className='modal-container__nav modal-container__nav--left' onClick={this.handlePrevClick} aria-label={intl.formatMessage(messages.previous)}><i className='fa fa-fw fa-chevron-left' /></button>;
+    const rightNav = media.size > 1 && <button tabIndex='0' className='modal-container__nav  modal-container__nav--right' onClick={this.handleNextClick} aria-label={intl.formatMessage(messages.next)}><i className='fa fa-fw fa-chevron-right' /></button>;
 
-    leftNav = rightNav = content = '';
+    const content = media.map((image) => {
+      const width  = image.getIn(['meta', 'original', 'width']) || null;
+      const height = image.getIn(['meta', 'original', 'height']) || null;
 
-    if (media.size > 1) {
-      leftNav  = <div role='button' tabIndex='0' className='modal-container__nav modal-container__nav--left' onClick={this.handlePrevClick}><IconButton src='chevron-left' /></div>;
-      rightNav = <div role='button' tabIndex='0' className='modal-container__nav modal-container__nav--right' onClick={this.handleNextClick}><IconButton src='chevron-right' /></div>;
-    }
+      if (image.get('type') === 'image') {
+        return <ImageLoader previewSrc={image.get('preview_url')} src={image.get('url')} width={width} height={height} key={image.get('preview_url')} />;
+      } else if (image.get('type') === 'gifv') {
+        return <ExtendedVideoPlayer src={image.get('url')} muted controls={false} width={width} height={height} key={image.get('preview_url')} />;
+      }
 
-    if (attachment.get('type') === 'image') {
-      content = <ImageLoader previewSrc={attachment.get('preview_url')} src={url} width={attachment.getIn(['meta', 'original', 'width'])} height={attachment.getIn(['meta', 'original', 'height'])} />;
-    } else if (attachment.get('type') === 'gifv') {
-      content = <ExtendedVideoPlayer src={url} muted controls={false} />;
-    }
+      return null;
+    }).toArray();
 
     return (
-      <div role='button' tabIndex='0' className='media-modal' onClick={onClose}>
-        <ReactSwipeable onSwipedRight={this.handlePrevClick} onSwipedLeft={this.handleNextClick}>
-          {content}
-        </ReactSwipeable>
+      <div className='modal-root__modal media-modal'>
         {leftNav}
+
+        <div className='media-modal__content' role='button' tabIndex='0' onClick={onClose}>
+          <ReactSwipeableViews onChangeIndex={this.handleSwipe} index={index} animateHeight={media.every(image => image.hasIn(['meta', 'original', 'height']))}>
+            {content}
+          </ReactSwipeableViews>
+        </div>
+
         {rightNav}
       </div>
     );

@@ -8,7 +8,7 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Scrollbars } from 'react-custom-scrollbars';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
 import PrivacyDropdown from '../../../mastodon/features/compose/components/privacy_dropdown';
 import GenreTagPicker from '../../components/genre_tag_picker';
 import {
@@ -23,7 +23,7 @@ import {
   changeAlbumComposePrivacy,
   submitAlbumCompose,
 } from '../../actions/album_compose';
-import { fetchAlbumTracks } from '../../actions/albums';
+import { fetchAlbumTracks } from '../../actions/albums_tracks';
 import { validateIsFileImage } from '../../util/musicvideo';
 import { makeGetAccount } from '../../../mastodon/selectors';
 import { constructRgbCode } from '../../util/musicvideo';
@@ -302,7 +302,7 @@ export default class AlbumCompose extends ImmutablePureComponent {
                 <legend>
                   <div className={classNames('album-compose-file-upload', { settled: album.get('image') instanceof File })}>
                     <div className='album-compose-file-upload-body'>
-                      <IconButton src='image' />
+                      <Icon icon='image' />
                       <span className='text'>
                         {albumImageTitle ? albumImageTitle : (
                           <FormattedMessage

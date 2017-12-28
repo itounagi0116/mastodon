@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { openModalFormCompose } from '../../../mastodon/actions/compose';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
+import { navigate } from '../../util/navigator';
 
 const mapStateToProps = (state) => ({
   isLogin: !!state.getIn(['meta', 'me']),
@@ -24,20 +25,18 @@ export default class StatusPostButton extends React.PureComponent {
   }
 
   handleRedirectLoginPage = () => {
-    location.href = '/auth/sign_in';
+    navigate('/auth/sign_in');
   }
 
   render () {
     const { fixed, isLogin } = this.props;
 
     return (
-      <IconButton
-        src='plus'
+      <Icon
+        icon='plus'
         className={classNames('status-post-button', { fixed })}
-        role='button'
-        tabIndex='0'
-        aria-pressed='false'
         onClick={isLogin ? this.handleClick : this.handleRedirectLoginPage}
+        strong
       />
     );
   }

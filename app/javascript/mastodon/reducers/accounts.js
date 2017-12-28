@@ -1,4 +1,7 @@
 import {
+  ACCOUNT_GALLERY_ACCOUNTS_FETCH_SUCCESS,
+} from '../../pawoo_music/actions/account_gallery';
+import {
   ACCOUNT_FETCH_SUCCESS,
   FOLLOWERS_FETCH_SUCCESS,
   FOLLOWERS_EXPAND_SUCCESS,
@@ -44,7 +47,9 @@ import {
   FAVOURITED_STATUSES_EXPAND_SUCCESS,
 } from '../actions/favourites';
 import { STORE_HYDRATE } from '../actions/store';
-import Immutable from 'immutable';
+import emojify from '../emoji';
+import { Map as ImmutableMap, fromJS } from 'immutable';
+import escapeTextContentForBrowser from 'escape-html';
 
 const normalizeAccount = (state, account) => {
   if (!account) {
@@ -65,7 +70,11 @@ const normalizeAccount = (state, account) => {
     account.media_attachments = mediaAttachments.toJS();
   }
 
-  return state.set(account.id, Immutable.fromJS(account));
+  const displayName = account.display_name.length === 0 ? account.username : account.display_name;
+  account.display_name_html = emojify(escapeTextContentForBrowser(displayName));
+  account.note_emojified = emojify(account.note);
+
+  return state.set(account.id, fromJS(account));
 };
 
 const normalizeAccounts = (state, accounts) => {
@@ -94,7 +103,7 @@ const normalizeAccountsFromStatuses = (state, statuses) => {
   return state;
 };
 
-const initialState = Immutable.Map();
+const initialState = ImmutableMap();
 
 export default function accounts(state = initialState, action) {
   switch(action.type) {
@@ -103,6 +112,7 @@ export default function accounts(state = initialState, action) {
   case ACCOUNT_FETCH_SUCCESS:
   case NOTIFICATIONS_UPDATE:
     return normalizeAccount(state, action.account);
+  case ACCOUNT_GALLERY_ACCOUNTS_FETCH_SUCCESS:
   case FOLLOWERS_FETCH_SUCCESS:
   case FOLLOWERS_EXPAND_SUCCESS:
   case FOLLOWING_FETCH_SUCCESS:

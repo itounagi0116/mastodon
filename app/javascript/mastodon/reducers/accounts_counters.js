@@ -1,4 +1,7 @@
 import {
+  ACCOUNT_GALLERY_ACCOUNTS_FETCH_SUCCESS,
+} from '../../pawoo_music/actions/account_gallery';
+import {
   ACCOUNT_FETCH_SUCCESS,
   FOLLOWERS_FETCH_SUCCESS,
   FOLLOWERS_EXPAND_SUCCESS,
@@ -46,14 +49,14 @@ import {
   FAVOURITED_STATUSES_EXPAND_SUCCESS,
 } from '../actions/favourites';
 import { STORE_HYDRATE } from '../actions/store';
-import Immutable from 'immutable';
+import { Map as ImmutableMap, fromJS } from 'immutable';
 
 const normalizeAccount = (state, account) => {
   if (!account) {
     return state;
   }
 
-  return state.set(account.id, Immutable.fromJS({
+  return state.set(account.id, fromJS({
     followers_count: account.followers_count,
     following_count: account.following_count,
     statuses_count: account.statuses_count,
@@ -88,12 +91,12 @@ const normalizeAccountsFromStatuses = (state, statuses) => {
   return state;
 };
 
-const initialState = Immutable.Map();
+const initialState = ImmutableMap();
 
 export default function accountsCounters(state = initialState, action) {
   switch(action.type) {
   case STORE_HYDRATE:
-    return state.merge(action.state.get('accounts').map(item => Immutable.fromJS({
+    return state.merge(action.state.get('accounts').map(item => fromJS({
       followers_count: item.get('followers_count'),
       following_count: item.get('following_count'),
       statuses_count: item.get('statuses_count'),
@@ -103,6 +106,7 @@ export default function accountsCounters(state = initialState, action) {
   case ACCOUNT_FETCH_SUCCESS:
   case NOTIFICATIONS_UPDATE:
     return normalizeAccount(state, action.account);
+  case ACCOUNT_GALLERY_ACCOUNTS_FETCH_SUCCESS:
   case FOLLOWERS_FETCH_SUCCESS:
   case FOLLOWERS_EXPAND_SUCCESS:
   case FOLLOWING_FETCH_SUCCESS:

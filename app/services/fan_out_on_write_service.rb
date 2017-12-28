@@ -36,7 +36,8 @@ class FanOutOnWriteService < BaseService
   def deliver_to_followers(status)
     Rails.logger.debug "Delivering status #{status.id} to followers"
 
-    followers = status.account.followers.where(domain: nil).joins(:user).where('users.current_sign_in_at > ?', 14.days.ago).select(:id).reorder(nil)
+    followers = status.account.followers.where(domain: nil).joins(:user).where('users.current_sign_in_at > ?', 14.days.ago).reorder(nil)
+    followers = followers.select(:id) if status.track.nil?
 
     batch_size = Rails.configuration.x.fan_out_job_batch_size
     if batch_size > 1
@@ -44,10 +45,17 @@ class FanOutOnWriteService < BaseService
         group.each_slice(batch_size) do |followers|
           FeedInsertWorker.perform_async(status.id, followers.map(&:id))
         end
+
+        if status.track.present?
+          group.each do |follower|
+            NotifyService.new.call(follower, status.track, from_account: status.account)
+          end
+        end
       end
     else
       followers.find_each do |follower|
         FeedInsertWorker.perform_async(status.id, follower.id)
+        NotifyService.new.call(follower, status.track, from_account: status.account) if status.track.present?
       end
     end
   end
@@ -63,7 +71,7 @@ class FanOutOnWriteService < BaseService
   end
 
   def render_anonymous_payload(status)
-    @payload = InlineRenderer.render(status, nil, 'api/v1/statuses/show')
+    @payload = InlineRenderer.render(status, nil, :status)
     @payload = Oj.dump(event: :update, payload: @payload)
   end
 

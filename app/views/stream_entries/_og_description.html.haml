@@ -1,4 +1,6 @@
-- if activity.is_a?(Status) && activity.spoiler_text?
-  %meta{ property: 'og:description', content: activity.spoiler_text }/
+- if activity.is_a?(Status) && activity.music.is_a?(Track)
+  = opengraph 'og:description', activity.music.text
+- elsif activity.is_a?(Status) && activity.spoiler_text?
+  = opengraph 'og:description', activity.spoiler_text
 - else
-  %meta{ property: 'og:description', content: activity.content }/
+  = opengraph 'og:description', activity.content

@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
 class Api::V1::SearchController < Api::BaseController
-  before_action :require_user!, only: [:statuses]
   RESULTS_LIMIT = 5
   MAX_HITS_TOTAL = 10_000 # this value should be the same with index.max_result.window in ElasticSearch
+
+  before_action -> { doorkeeper_authorize! :read }, only: [:statuses]
+  before_action :require_user!, only: [:statuses]
 
   respond_to :json
 
   def index
-    @search = OpenStruct.new(search_results)
+    @search = Search.new(search_results)
+    render json: @search, serializer: REST::SearchSerializer
   end
 
   def statuses
@@ -29,6 +32,7 @@ class Api::V1::SearchController < Api::BaseController
     # JS gives an error. Since it is quite a rare case, we leave this issue for a while.
     @statuses = search_results.records
     @hits_total = [search_results.records.total, MAX_HITS_TOTAL].min
+    render json: { statuses: @statuses, hits_total: @hits_total }, serializer: REST::SearchResultSerializer
   end
 
   private

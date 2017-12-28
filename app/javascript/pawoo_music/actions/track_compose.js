@@ -11,6 +11,16 @@ export const TRACK_COMPOSE_TRACK_VISIBILITY_CHANGE = 'TRACK_COMPOSE_TRACK_VISIBI
 export const TRACK_COMPOSE_TRACK_MUSIC_CHANGE = 'TRACK_COMPOSE_TRACK_MUSIC_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_BACKGROUNDCOLOR_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_BACKGROUNDCOLOR_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_IMAGE_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_IMAGE_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_ENABLED_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_ENABLED_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_RAD_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_RAD_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_SCALE_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_SCALE_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_SPEED_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_SPEED_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_ENABLED_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_ENABLED_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_SCALE_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_SCALE_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_SPEED_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_SPEED_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_ENABLED_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_ENABLED_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_SCALE_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_SCALE_CHANGE';
+export const TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_SPEED_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_SPEED_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_BLUR_VISIBLITY_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_BLUR_VISIBLITY_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_BLUR_MOVEMENT_THRESHOLD_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_BLUR_MOVEMENT_THRESHOLD_CHANGE';
 export const TRACK_COMPOSE_TRACK_VIDEO_BLUR_BLINK_THRESHOLD_CHANGE = 'TRACK_COMPOSE_TRACK_VIDEO_BLUR_BLINK_THRESHOLD_CHANGE';
@@ -36,17 +46,16 @@ export const TRACK_COMPOSE_SUBMIT_FAIL = 'TRACK_COMPOSE_SUBMIT_FAIL';
 export const TRACK_COMPOSE_SHOW_MODAL = 'TRACK_COMPOSE_SHOW_MODAL';
 export const TRACK_COMPOSE_HIDE_MODAL = 'TRACK_COMPOSE_HIDE_MODAL';
 export const TRACK_COMPOSE_SET_DATA = 'TRACK_COMPOSE_SET_DATA';
+export const TRACK_COMPOSE_RESET_DATA = 'TRACK_COMPOSE_RESET_DATA';
 export const TRACK_COMPOSE_CHANGE_PRIVACY = 'TRACK_COMPOSE_CHANGE_PRIVACY';
 
-function appendMapToFormData(formData, prefix, value) {
-  for (const [childKey, childValue] of value) {
-    const childPrefix = `${prefix}[${childKey}]`;
-
-    if (Immutable.Map.isMap(childValue)) {
-      appendMapToFormData(formData, childPrefix, childValue);
-    } else {
-      formData.append(childPrefix, childValue);
+function appendChildParamToFormData(formData, prefix, value) {
+  if (Immutable.Map.isMap(value)) {
+    for (const [childKey, childValue] of value) {
+      appendChildParamToFormData(formData, `${prefix}[${childKey}]`, childValue);
     }
+  } else {
+    formData.append(prefix, value);
   }
 }
 
@@ -62,13 +71,7 @@ function appendParamToFormData(formData, prefix, value) {
       continue;
     }
 
-    const childPrefix = `${prefix}[${childKey}]`;
-
-    if (Immutable.Map.isMap(childValue)) {
-      appendMapToFormData(formData, childPrefix, childValue);
-    } else {
-      formData.append(childPrefix, childValue);
-    }
+    appendChildParamToFormData(formData, `${prefix}[${childKey}]`, childValue);
   }
 }
 
@@ -80,6 +83,7 @@ export function submitTrackCompose() {
     const music = track.get('music');
     const video = track.get('video');
     const image = video.get('image');
+    const sprite = video.get('sprite');
     const blur = video.get('blur');
     const particle = video.get('particle');
     const lightLeaks = video.get('lightleaks');
@@ -103,6 +107,21 @@ export function submitTrackCompose() {
 
     if (image instanceof File) {
       formData.append('video[image]', image);
+    }
+
+    for (const [key, value] of sprite.get('movement')) {
+      if (value.get('enabled')) {
+        for (const [childKey, childValue] of value) {
+          if (childKey !== 'enabled') {
+            appendChildParamToFormData(
+              formData,
+              `video[sprite][movement][${key}][${childKey}]`,
+              childValue);
+          }
+        }
+      } else {
+        formData.append(`video[sprite][movement][${key}]`, '');
+      }
     }
 
     appendParamToFormData(formData, 'video[blur]', blur);
@@ -201,6 +220,76 @@ export function changeTrackComposeTrackVideoBackgroundColor(value) {
 export function changeTrackComposeTrackVideoImage(value) {
   return {
     type: TRACK_COMPOSE_TRACK_VIDEO_IMAGE_CHANGE,
+    value,
+  };
+};
+
+export function changeTrackComposeTrackVideoSpriteMovementCircleEnabled(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_ENABLED_CHANGE,
+    value,
+  };
+};
+
+export function changeTrackComposeTrackVideoSpriteMovementCircleRad(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_RAD_CHANGE,
+    value,
+  };
+};
+
+export function changeTrackComposeTrackVideoSpriteMovementCircleScale(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_SCALE_CHANGE,
+    value,
+  };
+};
+
+export function changeTrackComposeTrackVideoSpriteMovementCircleSpeed(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_CIRCLE_SPEED_CHANGE,
+    value,
+  };
+};
+
+export function changeTrackComposeTrackVideoSpriteMovementRandomEnabled(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_ENABLED_CHANGE,
+    value,
+  };
+};
+
+export function changeTrackComposeTrackVideoSpriteMovementRandomScale(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_SCALE_CHANGE,
+    value,
+  };
+};
+
+export function changeTrackComposeTrackVideoSpriteMovementRandomSpeed(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_RANDOM_SPEED_CHANGE,
+    value,
+  };
+};
+
+export function changeTrackComposeTrackVideoSpriteMovementZoomEnabled(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_ENABLED_CHANGE,
+    value,
+  };
+};
+
+export function changeTrackComposeTrackVideoSpriteMovementZoomScale(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_SCALE_CHANGE,
+    value,
+  };
+};
+
+export function changeTrackComposeTrackVideoSpriteMovementZoomSpeed(value) {
+  return {
+    type: TRACK_COMPOSE_TRACK_VIDEO_SPRITE_MOVEMENT_ZOOM_SPEED_CHANGE,
     value,
   };
 };
@@ -368,6 +457,12 @@ export function hideTrackComposeModal() {
     type: TRACK_COMPOSE_HIDE_MODAL,
   };
 };
+
+export function resetTrackComposeData() {
+  return {
+    type: TRACK_COMPOSE_RESET_DATA,
+  };
+}
 
 export function setTrackComposeData(track) {
   return {

@@ -28,6 +28,7 @@ const MODAL_COMPONENTS = {
 export default class ModalRoot extends React.PureComponent {
 
   static propTypes = {
+    closable: PropTypes.bool,
     type: PropTypes.string,
     props: PropTypes.object,
     onClose: PropTypes.func.isRequired,
@@ -35,7 +36,7 @@ export default class ModalRoot extends React.PureComponent {
 
   handleKeyUp = (e) => {
     if ((e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27)
-         && !!this.props.type) {
+         && !!this.props.type && this.props.closable) {
       this.props.onClose();
     }
   }
@@ -61,13 +62,13 @@ export default class ModalRoot extends React.PureComponent {
   }
 
   render () {
-    const { type, props, onClose } = this.props;
+    const { closable, type, props, onClose } = this.props;
 
     if(type) {
       const ModalDom   = MODAL_COMPONENTS[type];
       const properties = props;
       return (
-        <div className='modal_root' role='button' tabIndex='0' onClick={onClose}>
+        <div className='modal_root' role='button' tabIndex='0' onClick={closable && onClose}>
           <div className='modal' role='button' tabIndex='0' onClick={this.handleClick}>
             <ModalDom {...properties} onClose={onClose} />
           </div>

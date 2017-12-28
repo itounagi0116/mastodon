@@ -1,4 +1,4 @@
-<%= display_name(@me) %>,
+<%= raw t('application_mailer.salutation', name: display_name(@me)) %>
 
 <%= raw t('notification_mailer.digest.body', since: l(@since), instance: root_url) %>
 <% @notifications.each do |notification| %>
@@ -7,7 +7,7 @@
 
   <%= raw Formatter.instance.plaintext(notification.target_status) %>
 
-  <%= raw t('application_mailer.view')%> <%= web_url("statuses/#{notification.target_status.id}") %>
+  <%= raw t('application_mailer.view')%> <%= short_account_status_url(notification.target_status.account, notification.target_status) %>
 <% end %>
 <% if @follows_since > 0 %>
 

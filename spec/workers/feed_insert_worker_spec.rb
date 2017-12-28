@@ -11,7 +11,7 @@ describe FeedInsertWorker do
 
     context 'when there are no records' do
       it 'skips push with missing status' do
-        instance = double(push: nil)
+        instance = double(push: nil, filter?: false)
         allow(FeedManager).to receive(:instance).and_return(instance)
         result = subject.perform(nil, follower.id)
 
@@ -19,8 +19,8 @@ describe FeedInsertWorker do
         expect(instance).not_to have_received(:push)
       end
 
-      xit 'skips push with missing account' do
-        instance = double(push: nil)
+      it 'skips push with missing account' do
+        instance = double(push: nil, filter?: false)
         allow(FeedManager).to receive(:instance).and_return(instance)
         result = subject.perform(status.id, nil)
 

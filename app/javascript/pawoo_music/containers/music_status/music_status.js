@@ -94,12 +94,12 @@ export default class MusicStatus extends ImmutablePureComponent {
     }
 
     let credit = null;
-    let content = null;
+    let contentHtml = null;
     let albumsButton = null;
 
     if (status.has('track')) {
       credit = `${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}`;
-      content = status.getIn(['track', 'content']);
+      contentHtml = status.getIn(['track', 'contentHtml']);
 
       const albumsCount = status.getIn(['track', 'albums_count']);
       if (albumsCount > 0) {
@@ -114,7 +114,7 @@ export default class MusicStatus extends ImmutablePureComponent {
 
     if (status.has('album')) {
       credit = status.getIn(['album', 'title']);
-      content = status.getIn(['album', 'content']);
+      contentHtml = status.getIn(['album', 'contentHtml']);
     }
 
     return (
@@ -129,7 +129,7 @@ export default class MusicStatus extends ImmutablePureComponent {
         {status.has('album') && <AlbumContainer album={status.get('album')} />}
 
         <div className='credit'>{credit}</div>
-        <StatusContent status={status.set('content', content)} />
+        <StatusContent status={status.set('contentHtml', contentHtml)} />
 
         <StatusActionBar status={status} />
         {albumsButton}

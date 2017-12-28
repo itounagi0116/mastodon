@@ -73,7 +73,7 @@ export default class Status extends ImmutablePureComponent {
     while (node !== e.currentTarget) {
       if (['A', 'BUTTON'].includes(node.tagName) ||
         node.getAttribute('role') === 'button' ||
-        ['dropdown-menu', 'booth-widget'].some((className) => node.classList.contains(className))) {
+        ['dropdown-menu', 'booth-widget', 'video-player'].some((className) => node.classList.contains(className))) {
         return;
       }
       node = node.parentNode;

@@ -3,9 +3,10 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
-import IconButton from '../../components/icon_button';
-import DropdownMenuContainer from '../dropdown_menu';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import Icon from '../../components/icon';
+import DropdownMenuContainer from '../dropdown_menu';
+import EmbedModalContent from '../../components/embed_modal_content';
 import { makeGetStatus } from '../../../mastodon/selectors';
 import {
   replyCompose,
@@ -16,18 +17,21 @@ import {
   favourite,
   unreblog,
   unfavourite,
+  pin,
+  unpin,
 } from '../../../mastodon/actions/interactions';
 import {
   blockAccount,
   muteAccount,
 } from '../../../mastodon/actions/accounts';
-import { muteStatus, unmuteStatus, deleteStatus, pinStatus, unpinStatus } from '../../../mastodon/actions/statuses';
+import { muteStatus, unmuteStatus, deleteStatus } from '../../../mastodon/actions/statuses';
 import { initReport } from '../../../mastodon/actions/reports';
 import { openModal } from '../../../mastodon/actions/modal';
-import { generateTrackMv } from '../../actions/tracks';
+import { generateMusicvideo } from '../../actions/musicvideo';
 import { showTrackComposeModal, setTrackComposeData } from '../../actions/track_compose';
 import { showAlbumComposeModal, setAlbumComposeData } from '../../actions/album_compose';
 import { isMobile } from '../../util/is_mobile';
+import { navigate } from '../../util/navigator';
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -47,6 +51,7 @@ const messages = defineMessages({
   unmuteConversation: { id: 'status.unmute_conversation', defaultMessage: 'Unmute conversation' },
   pin: { id: 'status.pin', defaultMessage: 'Pin to account page' },
   unpin: { id: 'status.unpin', defaultMessage: 'Unpin from account page' },
+  embed: { id: 'status.embed', defaultMessage: 'Embed' },
 
   resolution720x720: { id: 'status.resolution.720x720', defaultMessage: '720x720 (for Twitter, etc.)' },
   resolution1920x1080: { id: 'status.resolution.1920x1080', defaultMessage: '1920x1080 (for YouTube, etc.)' },
@@ -78,6 +83,7 @@ const makeMapStateToProps = () => {
     return {
       status,
       me: state.getIn(['meta', 'me']),
+      isUserAdmin: state.getIn(['meta', 'is_user_admin']),
       boostModal: state.getIn(['meta', 'boost_modal']),
       deleteModal: state.getIn(['meta', 'delete_modal']),
       autoPlayGif: state.getIn(['meta', 'auto_play_gif']) || false,
@@ -98,6 +104,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
   static propTypes = {
     status: ImmutablePropTypes.map.isRequired,
     me: PropTypes.number,
+    isUserAdmin: PropTypes.bool,
     withDismiss: PropTypes.bool,
     boostModal: PropTypes.bool,
     deleteModal: PropTypes.bool,
@@ -162,13 +169,13 @@ export default class StatusActionBar extends ImmutablePureComponent {
       dispatch(openModal('CONFIRM', {
         message: <FormattedMessage id='confirmations.unpin.message' defaultMessage='Unpin from your profile. Are you sure?' />,
         confirm: intl.formatMessage(messages.unpinConfirm),
-        onConfirm: () => dispatch(unpinStatus(status.get('id'))),
+        onConfirm: () => dispatch(unpin(status)),
       }));
     } else {
       dispatch(openModal('CONFIRM', {
         message: <FormattedMessage id='confirmations.pin.message' defaultMessage='This will prepend any previously pinned Toot. Are you sure?' />,
         confirm: intl.formatMessage(messages.pinConfirm),
-        onConfirm: () => dispatch(pinStatus(status.get('id'))),
+        onConfirm: () => dispatch(pin(status)),
       }));
     }
   }
@@ -200,6 +207,11 @@ export default class StatusActionBar extends ImmutablePureComponent {
     }));
   }
 
+  handleEmbed = () => {
+    const { dispatch, status } = this.props;
+    dispatch(openModal('UNIVERSAL', { children: <EmbedModalContent status={status} /> }));
+  }
+
   handleReport = () => {
     const { dispatch, status } = this.props;
     dispatch(initReport(status.get('account'), status));
@@ -225,7 +237,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
     dispatch(openModal('CONFIRM', {
       message: <FormattedMessage id='confirmations.generate_mv.message' defaultMessage='Generating animation takes time. When generation is completed, a notification is sent by e-mail.' />,
       confirm: intl.formatMessage(messages.generateMvConfirm),
-      onConfirm: () => dispatch(generateTrackMv(status.get('id'), resolution)),
+      onConfirm: () => dispatch(generateMusicvideo(status.get('id'), resolution)),
     }));
   }
 
@@ -233,7 +245,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
     const { dispatch, status } = this.props;
 
     if (mobile) {
-      location.href = `/tracks/${status.get('id')}/edit`;
+      navigate(`/tracks/${status.get('id')}/edit`);
     } else {
       dispatch(setTrackComposeData(status.get('track')));
       dispatch(showTrackComposeModal());
@@ -253,13 +265,14 @@ export default class StatusActionBar extends ImmutablePureComponent {
 
 
   handleRedirectLoginPage = () => {
-    location.href = '/auth/sign_in';
+    navigate('/auth/sign_in');
   }
 
   render () {
-    const { status, me, intl, withDismiss } = this.props;
+    const { status, me, isUserAdmin, intl, withDismiss } = this.props;
     const { schedule } = this.context;
     const favouriteDisabled = schedule;
+    const publicStatus = ['public', 'unlisted'].includes(status.get('visibility'));
     const reblogDisabled = status.get('visibility') === 'private' || status.get('visibility') === 'direct' || schedule;
     const mutingConversation = status.get('muted');
 
@@ -272,7 +285,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
     let editButton     = null;
     let downloadButton = null;
 
-    if (status.getIn(['account', 'id']) === me) {
+    if (status.getIn(['account', 'id']) === me || isUserAdmin) {
       if (status.has('track')) {
         const videoMenu = [];
 
@@ -297,27 +310,23 @@ export default class StatusActionBar extends ImmutablePureComponent {
           }
         }
 
-        downloadButton = (
-          <li>
-            <DropdownMenuContainer items={videoMenu} src='download' strong title={intl.formatMessage(messages.download_mv_title)} />
-          </li>
-        );
-        editButton = (
-          <li>
-            <IconButton className='strong' src='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} />
-          </li>
-        );
+        downloadButton = <li><DropdownMenuContainer items={videoMenu} icon='download' strong scale title={intl.formatMessage(messages.download_mv_title)} /></li>;
+
+        if (status.getIn(['account', 'id']) === me) {
+          editButton = <li><Icon strong scale icon='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} /></li>;
+        }
       } else if(status.has('album')) {
-        editButton = (
-          <li>
-            <IconButton className='strong' src='edit' title={intl.formatMessage(messages.editAlbum)} onClick={this.handleEditAlbum} />
-          </li>
-        );
+        editButton = <li><Icon strong scale icon='edit' title={intl.formatMessage(messages.editAlbum)} onClick={this.handleEditAlbum} /></li>;
       }
     }
 
 
     moreMenu.push({ text: intl.formatMessage(messages.open), to: `/@${status.getIn(['account', 'acct'])}/${status.get('id')}` });
+
+    if (publicStatus) {
+      moreMenu.push({ text: intl.formatMessage(messages.embed), action: this.handleEmbed });
+    }
+
     moreMenu.push(null);
 
     if (withDismiss) {
@@ -364,6 +373,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
 
     const reblogTitle = reblogDisabled ? intl.formatMessage(messages.cannot_reblog) : intl.formatMessage(messages.reblog);
     const favouriteTitle = favouriteDisabled ? intl.formatMessage(messages.cannot_favourite) : intl.formatMessage(messages.favourite);
+    const embedTitle = intl.formatMessage(messages.embed);
     const moreTitle = intl.formatMessage(messages.more);
 
     const reblogged = status.get('reblogged');
@@ -371,10 +381,11 @@ export default class StatusActionBar extends ImmutablePureComponent {
 
     return (
       <ul className='status-action-bar'>
-        <li><IconButton title={replyTitle} src='message-square' onClick={me ? this.handleReplyClick : this.handleRedirectLoginPage} /></li>
-        <li><IconButton title={reblogTitle} src={reblogIcon} onClick={me ? this.handleReblogClick : this.handleRedirectLoginPage} disabled={reblogDisabled} active={reblogged} strokeWidth={reblogged ? 2 : 1} /></li>
-        <li><IconButton title={favouriteTitle} src='heart' onClick={me ? this.handleFavouriteClick : this.handleRedirectLoginPage} disabled={favouriteDisabled} active={favourited} strokeWidth={favourited ? 2 : 1} /></li>
-        <li><DropdownMenuContainer items={moreMenu} src='more-horizontal' title={moreTitle} /></li>
+        <li><Icon title={replyTitle} icon='message-square' scale onClick={me ? this.handleReplyClick : this.handleRedirectLoginPage} /></li>
+        <li><Icon title={reblogTitle} icon={reblogIcon} scale onClick={me ? this.handleReblogClick : this.handleRedirectLoginPage} disabled={reblogDisabled} active={reblogged} /></li>
+        <li><Icon title={favouriteTitle} icon='heart' scale onClick={me ? this.handleFavouriteClick : this.handleRedirectLoginPage} disabled={favouriteDisabled} active={favourited} /></li>
+        {status.has('track') && publicStatus && <li><Icon title={embedTitle} icon='share-2' scale onClick={this.handleEmbed} /></li>}
+        <li><DropdownMenuContainer items={moreMenu} scale icon='more-horizontal' title={moreTitle} /></li>
         {editButton}
         {downloadButton}
       </ul>

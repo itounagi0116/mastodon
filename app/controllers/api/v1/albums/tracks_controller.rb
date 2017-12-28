@@ -70,7 +70,7 @@ class Api::V1::Albums::TracksController < Api::BaseController
     set_maps(@statuses)
 
     insert_pagination_headers
-    render 'api/v1/statuses/index'
+    render json: @statuses, each_serializer: REST::StatusSerializer, relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id)
   end
 
   private

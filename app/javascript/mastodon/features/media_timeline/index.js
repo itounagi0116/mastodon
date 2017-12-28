@@ -7,15 +7,11 @@ import ColumnHeader from '../../components/column_header';
 import {
   refreshMediaTimeline,
   expandMediaTimeline,
-  updateTimeline,
-  deleteFromTimelines,
-  connectTimeline,
-  disconnectTimeline,
 } from '../../actions/timelines';
 import { addColumn, removeColumn, moveColumn } from '../../actions/columns';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import ColumnSettingsContainer from './containers/column_settings_container';
-import createStream from '../../stream';
+import { connectMediaStream } from '../../actions/streaming';
 
 const messages = defineMessages({
   title: { id: 'column.media', defaultMessage: 'Media timeline' },
@@ -34,8 +30,6 @@ class MediaTimeline extends React.PureComponent {
     intl: PropTypes.object.isRequired,
     columnId: PropTypes.string,
     multiColumn: PropTypes.bool,
-    streamingAPIBaseURL: PropTypes.string.isRequired,
-    accessToken: PropTypes.string.isRequired,
     hasUnread: PropTypes.bool,
   };
 
@@ -59,49 +53,16 @@ class MediaTimeline extends React.PureComponent {
   }
 
   componentDidMount () {
-    const { dispatch, streamingAPIBaseURL, accessToken } = this.props;
+    const { dispatch } = this.props;
 
     dispatch(refreshMediaTimeline());
-
-    if (typeof this._subscription !== 'undefined') {
-      return;
-    }
-
-    this._subscription = createStream(streamingAPIBaseURL, accessToken, 'public:local', {
-
-      connected () {
-        dispatch(connectTimeline('media'));
-      },
-
-      reconnected () {
-        dispatch(connectTimeline('media'));
-      },
-
-      disconnected () {
-        dispatch(disconnectTimeline('media'));
-      },
-
-      received (data) {
-        switch(data.event) {
-        case 'update':
-          const status = JSON.parse(data.payload);
-          if (0 < status.media_attachments.length) {
-            dispatch(updateTimeline('media', status));
-          }
-          break;
-        case 'delete':
-          dispatch(deleteFromTimelines(data.payload));
-          break;
-        }
-      },
-
-    });
+    this.disconnect = dispatch(connectMediaStream());
   }
 
   componentWillUnmount () {
-    if (typeof this._subscription !== 'undefined') {
-      this._subscription.close();
-      this._subscription = null;
+    if (this.disconnect) {
+      this.disconnect();
+      this.disconnect = null;
     }
   }
 

@@ -1,4 +1,6 @@
 import loadPolyfills from '../mastodon/load_polyfills';
+import * as OfflinePluginRuntime from 'offline-plugin/runtime';
+import * as WebPushSubscription from '../mastodon/web_push_subscription';
 
 function onDomContentLoaded(callback) {
   if (document.readyState !== 'loading') {
@@ -16,6 +18,11 @@ function loaded() {
   const props = JSON.parse(mountNode.getAttribute('data-props'));
 
   ReactDOM.render(<SettingsEntry {...props} />, mountNode);
+  if (process.env.NODE_ENV === 'production') {
+    // avoid offline in dev mode because it's harder to debug
+    OfflinePluginRuntime.install();
+    WebPushSubscription.register();
+  }
 }
 
 function main() {

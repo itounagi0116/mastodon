@@ -3,6 +3,7 @@
   max-height: 80vh;
   position: relative;
 
+  .extended-video-player,
   img,
   canvas,
   video {
@@ -10,29 +11,59 @@
     max-height: 80vh;
     width: auto;
     height: auto;
+    margin: auto;
+  }
+
+  .extended-video-player,
+  video {
+    display: flex;
+    width: 80vw;
+    height: 80vh;
   }
 
   img,
   canvas {
     display: block;
     background: url('../../../images/void.png') repeat;
+    object-fit: contain;
+  }
+
+  .react-swipeable-view-container {
+    max-width: 80vw;
   }
 }
 
-.modal-container__nav--left {
-  float: left;
-}
-
-.modal-container__nav--right {
-  float: right;
-}
-
-.modal-container__nav--right,
-.modal-container__nav--left {
-  margin: var(--verticalspace20);
+.modal-container__nav {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-size: 24px;
+  height: 100%;
+  padding: 30px 15px;
+  position: absolute;
+  top: 0;
 
   svg {
     stroke: var(--color1);
     stroke-width: 2;
   }
+}
+
+.modal-container__nav--left {
+  left: -61px;
+}
+
+.modal-container__nav--right {
+  right: -61px;
+}
+
+.media-modal__close {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  z-index: var(--z-index-lightbox_and-icon);
 }

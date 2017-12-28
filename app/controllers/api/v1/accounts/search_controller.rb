@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
 class Api::V1::Accounts::SearchController < Api::BaseController
-  before_action -> { doorkeeper_authorize! :read }
-  before_action :require_user!
-
   respond_to :json
 
   def show
     @accounts = account_search
-
-    render 'api/v1/accounts/index'
+    render json: @accounts, each_serializer: REST::AccountSerializer
   end
 
   private

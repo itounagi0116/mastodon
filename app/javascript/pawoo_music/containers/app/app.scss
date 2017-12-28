@@ -24,7 +24,7 @@ body {
   --color2:           #F3F3F3;
   --color3:           #d0d0d0;
 
-  --tootcolor:        #2495DB;
+  --linkcolor2:        #2495DB;
 
 
   // Basic Grid
@@ -59,16 +59,25 @@ body {
   --rightspace10:          0 var(--rightspace10-value) 0 0;
   --rightspace15:          0 var(--rightspace15-value) 0 0;
 
+  // Values for padding
+  --padding5-value:  calc(var(--grid) * 1);
+  --padding10-value: calc(var(--grid) * 2);
+  --padding15-value: calc(var(--grid) * 3);
+  --padding20-value: calc(var(--grid) * 4);
+  --padding30-value: calc(var(--grid) * 6);
+  --padding40-value: calc(var(--grid) * 8);
+  --padding50-value: calc(var(--grid) * 16);
+  --padding-dropdown-option-value: calc(var(--grid) * 2) calc(var(--grid) * 4);
 
   // 'padding'
-  --padding5:         calc(var(--grid) * 1);
-  --padding10:        calc(var(--grid) * 2);
-  --padding15:        calc(var(--grid) * 3);
-  --padding20:        calc(var(--grid) * 4);
-  --padding30:        calc(var(--grid) * 6);
-  --padding40:        calc(var(--grid) * 8);
-  --padding50:        calc(var(--grid) * 16);
-  --padding-dropdown-option:  calc(var(--grid) * 2) calc(var(--grid) * 4);
+  --padding5:        var(--padding5-value);
+  --padding10:       var(--padding10-value);
+  --padding15:       var(--padding15-value);
+  --padding20:       var(--padding20-value);
+  --padding30:       var(--padding30-value);
+  --padding40:       var(--padding40-value);
+  --padding50:       var(--padding50-value);
+  --padding-dropdown-option:  var(--padding-dropdown-option-value);
 
 
   // 'font-size' and 'line-height'
@@ -87,6 +96,7 @@ body {
   --text50-font:      25px;
   --text50-line:      calc(var(--grid) * 8);
 
+  --iconsize8:        calc(var(--grid) * 3.5);
   --iconsize10:       calc(var(--grid) * 4);
   --iconsize13:       calc(var(--grid) * 4.5);
   --iconsize15:       calc(var(--grid) * 5);
@@ -160,7 +170,7 @@ a, a:link, a:visited {
 }
 
 a:hover {
-  color:          var(--tootcolor);
+  color:          var(--linkcolor2);
 }
 
 .app {
@@ -175,7 +185,8 @@ a:hover {
   --width-globalnavi:     calc(var(--grid) * 50);
   --width-lobby:          calc(var(--grid) * 80);
   --width-gallery-view:   calc(100vw - var(--grid) * 130);
-  --width-gallery:        calc(var(--grid) * 120);
+  --width-gallery-canvas: calc(var(--grid) * 120);
+  --width-gallery: calc(var(--width-gallery-canvas) + var(--padding20) * 2);
 
   --width-ago:            calc(var(--grid) * 6);
   --width-contextmenu:    calc(var(--grid) * 56);
@@ -189,11 +200,6 @@ a:hover {
   .app-bottom {
     z-index: var(--z-index-navigation);
     height: var(--height-deck);
-
-    // デッキフィールドだよとわかりやすくするための、pawoo-team 内部での指示用の色。
-    // TODO: 本番でこの色つかわないでね〜〜。
-    background-color:   var(--strong1);
-    color:              var(--color1);
   }
 
   .scrollarea .scrollbar-container {
@@ -216,6 +222,7 @@ a:hover {
   --width-gallery-slide:  100vw;
   --width-gallery-view:   100vw;
   --width-gallery:        calc(100vw - var(--grid) * 8);
+  --width-gallery-canvas: calc(var(--width-gallery) - var(--padding20) * 2);
 
   --width-ago:            calc(var(--grid) * 6);
 
@@ -324,8 +331,4 @@ a:hover {
       }
     }
   }
-}
-
-.app.embed {
-  background-color: var(--color2);
 }

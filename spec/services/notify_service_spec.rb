@@ -87,7 +87,25 @@ RSpec.describe NotifyService do
     end
   end
 
-  context 'when the activity is track' do
+  context 'when the type video_preparation_success' do
+    let(:activity) { Fabricate(:track) }
+    let!(:status) { Fabricate(:status, music: activity) }
+
+    it { is_expected.to change(Notification, :count).by(1) }
+
+    it 'does not queue FirebaseCloudMessagingWorker' do
+      Sidekiq::Testing.fake! do
+        subject
+        expect(FirebaseCloudMessagingWorker).not_to have_enqueued_sidekiq_job
+      end
+    end
+  end
+
+  context 'when the type new_track' do
+    subject do
+      -> { described_class.new.call(recipient, activity, from_account: status.account) }
+    end
+
     let(:activity) { Fabricate(:track) }
     let!(:status) { Fabricate(:status, music: activity) }
 

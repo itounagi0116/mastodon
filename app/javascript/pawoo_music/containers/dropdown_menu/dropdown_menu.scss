@@ -1,12 +1,14 @@
 .lobby-column {
   .dropdown-menu {
     &.active .dropdown-content {
-      left: var(--padding30);
+      left: calc(-1 * var(--padding50));
     }
   }
 }
 
 .dropdown-menu {
+  position: relative;
+
   &.active .dropdown-content {
     display:    block;
     position:   absolute;

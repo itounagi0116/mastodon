@@ -1,0 +1,72 @@
+.push-settings-initializer-modal {
+  display:        flex;
+  flex-direction: column;
+
+  text-align: left;
+
+  border-radius:      var(--radius);
+  background-color:   var(--color1);
+
+  color:        var(--textcolor);
+  font-size:    var(--text20-font);
+  line-height:  var(--text20-line);
+
+  margin:     var(--verticalspace40);
+
+  padding: var(--padding20);
+  box-sizing: border-box;
+
+  @media(min-width: 528px) {
+    min-width: 520px;
+
+    > .body > .toggles {
+      min-width: 384px;
+    }
+  }
+
+  min-height: 288px;
+
+  > h1 {
+    color:          var(--strong2);
+    font-weight:    bold;
+    font-size:      var(--text30-font);
+    line-height:    var(--text20-line);
+  }
+
+  > .button-wrapper {
+    text-align: right;
+
+    > button {
+      display: inline;
+      height:  100%;
+      padding: var(--padding5) var(--padding15);
+    }
+  }
+
+  > .description {
+    padding: var(--padding15);
+
+    > p {
+      font-size: var(--text20-font);
+      line-height: calc(var(--text20-font) * 1.5);
+      border-radius: var(--radius);
+      background-color: var(--color1);
+    }
+  }
+
+  > .body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+
+    > .toggles {
+      margin: 0 auto;
+
+      > .toggle-column {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+  }
+}

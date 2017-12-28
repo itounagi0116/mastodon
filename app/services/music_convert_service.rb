@@ -1,7 +1,6 @@
 class MusicConvertService < BaseService
   def call(track, resolution)
-    music_file = Tempfile.new
-    begin
+    Tempfile.create do |music_file|
       track.music.copy_to_local_file :original, music_file.path
 
       image_file = nil
@@ -11,31 +10,89 @@ class MusicConvertService < BaseService
           track.video_image.copy_to_local_file :original, image_file.path
         end
 
-        musicvideo = open_musicvideo(track, resolution, music_file, image_file)
+        IO.pipe do |video_readable, video_writable|
+          musicvideo_pid = create_musicvideo(track, resolution, music_file, image_file, video_writable)
 
-        video_file = Tempfile.new(['music-', '.mp4'])
-        begin
-          create_mp4 track, resolution, music_file, musicvideo, video_file
-          video_file
-        rescue
-          video_file.unlink
-          raise
+          begin
+            video_file = Tempfile.new(['music-', '.mp4'])
+            begin
+              mp4_pid = create_mp4(track, resolution, music_file, video_readable, video_file)
+
+              begin
+                musicvideo_thread = Thread.new do
+                  Process.waitpid musicvideo_pid
+
+                  if $?.success?
+                    video_writable.close
+                  else
+                    begin
+                      Process.kill 'SIGTERM', mp4_pid
+                    rescue Errno::ESRCH
+                    end
+
+                    video_writable.close
+                    raise Mastodon::MusicvideoError, $?.inspect
+                  end
+                end
+
+                begin
+                  mp4_thread = Thread.new do
+                    Process.waitpid mp4_pid
+
+                    if $?.success?
+                      video_readable.close
+                    else
+                      begin
+                        Process.kill 'SIGTERM', musicvideo_pid
+                      rescue Errno::ESRCH
+                      end
+
+                      video_readable.close
+                      raise Mastodon::FFmpegError, $?.inspect
+                    end
+                  end
+
+                  mp4_thread.join 32.minutes
+                  video_file
+                ensure
+                  musicvideo_thread.join 1.minute
+                end
+              rescue
+                begin
+                  Process.kill 'SIGKILL', mp4_pid
+                  Process.waitpid mp4_pid
+                rescue Errno::ESRCH
+                end
+
+                raise
+              end
+            rescue
+              video_file.unlink
+              raise
+            end
+          rescue
+            begin
+              Process.kill 'SIGKILL', musicvideo_pid
+              Process.waitpid musicvideo_pid
+            rescue Errno::ESRCH
+            end
+
+            raise
+          end
         end
       ensure
         image_file&.unlink
       end
-    ensure
-      music_file.unlink
     end
   end
 
   private
 
-  def open_musicvideo(track, resolution, music_file, image_file)
+  def create_musicvideo(track, resolution, music_file, image_file, video_file)
     args = [
       Rails.root.join('node_modules', '.bin', 'electron'), 'genmv', '--',
       music_file.path, '--resolution', resolution,
-      '--backgroundcolor', track.video_backgroundcolor, '--image',
+      '--backgroundcolor', track.video_backgroundcolor, '--sprite.image',
       if image_file.nil?
         Rails.root.join('app', 'javascript', 'images', 'pawoo_music', 'default_artwork.png')
       else
@@ -43,67 +100,90 @@ class MusicConvertService < BaseService
       end,
     ]
 
+    if (track.video_sprite_movement_circle_rad != 0 || track.video_sprite_movement_circle_scale != 0) &&
+       track.video_sprite_movement_circle_speed != 0
+      args.push(
+        '--sprite.movement.circle.rad', track.video_sprite_movement_circle_rad,
+        '--sprite.movement.circle.scale', track.video_sprite_movement_circle_scale,
+        '--sprite.movement.circle.speed', track.video_sprite_movement_circle_speed
+      )
+    end
+
+    if track.video_sprite_movement_random_scale != 0 &&
+       track.video_sprite_movement_random_speed != 0
+      args.push(
+        '--sprite.movement.random.scale', track.video_sprite_movement_random_scale,
+        '--sprite.movement.random.speed', track.video_sprite_movement_random_speed
+      )
+    end
+
+    if track.video_sprite_movement_zoom_scale != 0 &&
+       track.video_sprite_movement_zoom_speed != 0
+      args.push(
+        '--sprite.movement.zoom.scale', track.video_sprite_movement_zoom_scale,
+        '--sprite.movement.zoom.speed', track.video_sprite_movement_zoom_speed
+      )
+    end
+
     if track.video_banner_alpha != 0
       args.push(
-        '--banner-image', Rails.root.join('app', 'made-with-pawoomusic.png'),
-        '--banner-alpha', track.video_banner_alpha
+        '--banner.image', Rails.root.join('app', 'made-with-pawoomusic.png'),
+        '--banner.alpha', track.video_banner_alpha
       )
     end
 
     if track.video_text_alpha != 0
       args.push(
-        '--text-alpha', track.video_text_alpha,
-        '--text-color', track.video_text_color,
-        '--text-title', track.title, '--text-sub', track.artist
+        '--text.alpha', track.video_text_alpha,
+        '--text.color', track.video_text_color,
+        '--text.title', track.title, '--text.sub', track.artist
       )
     end
 
     if track.video_blur_movement_band_top != 0 && track.video_blur_blink_band_top != 0
       args.push(
-        '--blur-movement-band-top', track.video_blur_movement_band_top,
-        '--blur-movement-band-bottom', track.video_blur_movement_band_bottom,
-        '--blur-movement-threshold', track.video_blur_movement_threshold,
-        '--blur-blink-band-top', track.video_blur_blink_band_top,
-        '--blur-blink-band-bottom', track.video_blur_blink_band_bottom,
-        '--blur-blink-threshold', track.video_blur_blink_threshold,
+        '--blur.movement.band.top', track.video_blur_movement_band_top,
+        '--blur.movement.band.bottom', track.video_blur_movement_band_bottom,
+        '--blur.movement.threshold', track.video_blur_movement_threshold,
+        '--blur.blink.band.top', track.video_blur_blink_band_top,
+        '--blur.blink.band.bottom', track.video_blur_blink_band_bottom,
+        '--blur.blink.threshold', track.video_blur_blink_threshold,
       )
     end
 
     if track.video_particle_alpha != 0
       args.push(
-        '--particle-limit-band-top', track.video_particle_limit_band_top,
-        '--particle-limit-band-bottom', track.video_particle_limit_band_bottom,
-        '--particle-limit-threshold', track.video_particle_limit_threshold,
-        '--particle-alpha', track.video_particle_alpha,
-        '--particle-color', track.video_particle_color,
+        '--particle.limit.band.top', track.video_particle_limit_band_top,
+        '--particle.limit.band.bottom', track.video_particle_limit_band_bottom,
+        '--particle.limit.threshold', track.video_particle_limit_threshold,
+        '--particle.alpha', track.video_particle_alpha,
+        '--particle.color', track.video_particle_color,
       )
     end
 
     if track.video_lightleaks_alpha != 0
-      args.push '--lightleaks-alpha', track.video_lightleaks_alpha
-      args.push '--lightleaks-interval', track.video_lightleaks_interval
+      args.push '--lightleaks.alpha', track.video_lightleaks_alpha
+      args.push '--lightleaks.interval', track.video_lightleaks_interval
     end
 
     if track.video_spectrum_alpha != 0
       args.push(
-        '--spectrum-mode', track.video_spectrum_mode,
-        '--spectrum-alpha', track.video_spectrum_alpha,
-        '--spectrum-color', track.video_spectrum_color,
+        '--spectrum.mode', track.video_spectrum_mode,
+        '--spectrum.alpha', track.video_spectrum_alpha,
+        '--spectrum.color', track.video_spectrum_color,
       )
     end
 
-    IO.popen args.map(&:to_s)
+    spawn *args.map(&:to_s), out: video_file
   end
 
   def create_mp4(track, resolution, music_file, musicvideo, video_file)
-    Process.waitpid spawn(
+    spawn(
       'ffmpeg', '-y', '-i', music_file.path, '-f', 'rawvideo',
       '-framerate', '30', '-pixel_format', 'bgr32', '-video_size', resolution,
       '-i', 'pipe:', '-vf', 'format=yuv420p,vflip', '-metadata',
       "title=#{track.title}", '-metadata', "artist=#{track.artist}",
       *Rails.configuration.x.ffmpeg_options, video_file.path, in: musicvideo
     )
-
-    raise Mastodon::FFmpegError, $?.inspect unless $?.success?
   end
 end

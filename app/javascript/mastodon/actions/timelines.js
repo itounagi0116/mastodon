@@ -1,5 +1,5 @@
 import api, { getLinks } from '../api';
-import Immutable from 'immutable';
+import Immutable, { Map as ImmutableMap, List as ImmutableList } from 'immutable';
 import { fetchRelationships } from './accounts';
 
 export const TIMELINE_UPDATE  = 'TIMELINE_UPDATE';
@@ -88,13 +88,13 @@ export function refreshTimeline(timelineId, path, onlyMusics, params = {}) {
       }
     }
 
-    const timeline = getState().getIn(['timelines', timelineId], Immutable.Map());
+    const timeline = getState().getIn(['timelines', timelineId], ImmutableMap());
 
     if (timeline.get('isLoading') || timeline.get('online')) {
       return;
     }
 
-    const ids      = timeline.get('items', Immutable.List());
+    const ids      = timeline.get('items', ImmutableList());
     const newestId = ids.size > 0 ? ids.first() : null;
 
     let skipLoading = timeline.get('loaded');
@@ -137,7 +137,7 @@ export function refreshTimelineFail(timeline, error, skipLoading) {
     timeline,
     error,
     skipLoading,
-    skipAlert: error.response.status === 404,
+    skipAlert: error.response && error.response.status === 404,
   };
 };
 
@@ -156,7 +156,7 @@ export function expandTimeline(timelineId, path, onlyMusics, params = {}) {
       }
     }
 
-    const timeline = getState().getIn(['timelines', timelineId], Immutable.Map());
+    const timeline = getState().getIn(['timelines', timelineId], ImmutableMap());
     const ids      = timeline.get('items', Immutable.List());
 
     if (timeline.get('isLoading') || ids.size === 0) {

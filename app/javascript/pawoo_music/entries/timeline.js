@@ -6,16 +6,17 @@ import { IntlProvider, addLocaleData } from 'react-intl';
 import { ScrollContext } from 'react-router-scroll';
 
 import { hydrateStore } from '../../mastodon/actions/store';
-import configureStore from '../../mastodon/store/configureStore';
+import store from '../../mastodon/store';
 import { getLocale } from '../../mastodon/locales';
 import App from '../containers/app';
+import subscribeAsPlayer from '../player';
 
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
 
-const store = configureStore();
 const initialState = JSON.parse(document.getElementById('initial-state').textContent);
 store.dispatch(hydrateStore(initialState));
+subscribeAsPlayer(store);
 
 export default class TimelineEntry extends React.PureComponent {
 

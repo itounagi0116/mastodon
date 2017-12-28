@@ -5,7 +5,7 @@ module Mastodon
   class NotPermittedError < Error; end
   class ValidationError < Error; end
   class RaceConditionError < Error; end
-  class FFmpegError < Error; end
+  class MusicConvertError < Error; end
   class MusicSourceNotFoundError < Error; end
   class MusicSourceForbiddenError < Error; end
   class MusicSourceFetchFailedError < Error; end
@@ -17,13 +17,16 @@ module Mastodon
   class RedisMaxRetryError < Error; end
   class TrackNotFoundError < Error; end
 
+  class MusicvideoError < MusicConvertError; end
+  class FFmpegError < MusicConvertError; end
+
   class UnexpectedResponseError < Error
     def initialize(response = nil)
-      @response = response
-    end
-
-    def to_s
-      "#{@response.uri} returned code #{@response.code}"
+      if response.respond_to? :uri
+        super("#{response.uri} returned code #{response.code}")
+      else
+        super
+      end
     end
   end
 end

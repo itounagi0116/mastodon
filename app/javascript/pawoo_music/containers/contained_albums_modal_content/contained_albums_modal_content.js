@@ -4,11 +4,11 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { connect } from 'react-redux';
 import MusicStatusContainer from '../music_status';
-import { fetchContainedAlbums } from '../../actions/tracks';
+import { fetchTrackAlbums } from '../../actions/tracks_albums';
 import { closeModal } from '../../../mastodon/actions/modal';
 
 const mapStateToProps = (state, { id }) => ({
-  containedAlbums: state.getIn(['pawoo_music', 'tracks', 'containedAlbums', id]),
+  containedAlbums: state.getIn(['pawoo_music', 'tracks_albums', id]),
 });
 
 @connect(mapStateToProps)
@@ -27,7 +27,7 @@ export default class ContainedAlbumsModalContent extends ImmutablePureComponent 
   componentDidMount = () => {
     const { id, dispatch } = this.props;
 
-    dispatch(fetchContainedAlbums(id));
+    dispatch(fetchTrackAlbums(id));
     this.unlisten = this.context.router.history.listen(() => {
       dispatch(closeModal());
     });

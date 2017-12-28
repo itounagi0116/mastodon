@@ -16,6 +16,8 @@ class Pubsubhubbub::DeliveryWorker
     @subscription = Subscription.find(subscription_id)
     @payload = payload
     process_delivery unless blocked_domain?
+  rescue => e
+    raise e.class, "Delivery failed for #{subscription&.callback_url}: #{e.message}"
   end
 
   private
@@ -43,7 +45,7 @@ class Pubsubhubbub::DeliveryWorker
   end
 
   def host
-    Addressable::URI.parse(subscription.callback_url).normalize.host
+    Addressable::URI.parse(subscription.callback_url).normalized_host
   end
 
   def headers

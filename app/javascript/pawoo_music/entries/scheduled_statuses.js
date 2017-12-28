@@ -6,7 +6,7 @@ import { IntlProvider, addLocaleData } from 'react-intl';
 import { ScrollContext } from 'react-router-scroll';
 
 import { hydrateStore } from '../../mastodon/actions/store';
-import configureStore from '../../mastodon/store/configureStore';
+import store from '../../mastodon/store';
 import { getLocale } from '../../mastodon/locales';
 import ScheduledStatusesContainer from '../containers/scheduled_statuses';
 import Compose from '../../mastodon/features/compose';
@@ -15,7 +15,6 @@ import UI from '../../mastodon/features/ui';
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
 
-const store = configureStore();
 const initialState = JSON.parse(document.getElementById('initial-state').textContent);
 store.dispatch(hydrateStore(initialState));
 

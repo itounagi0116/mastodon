@@ -2,22 +2,36 @@
   margin: var(--verticalspace30);
   text-align: justify;
 
-  li {
+  .announcement-item {
     margin: var(--verticalspace20);
     display: flex;
-    padding: 10px;
+    flex-direction: column;
+    padding: var(--padding10);
     color: var(--textcolor);
     background-color: var(--color2);
     border-radius: var(--radius);
+
+    &:first-child {
+      margin: 0;
+    }
   }
 
-  li:first-child {
-    margin: 0;
+  .announcement-header {
+    display: flex;
+    padding-bottom: var(--grid);
+
+    .header-text {
+      font-weight: bold;
+      font-size: var(--text10-font);
+    }
+
+    .dismiss-button {
+      margin-left: auto;
+    }
   }
 
   .announcements__body {
     width: 100%;
-    float: left;
 
     p {
       font-size: var(--text10-font);
@@ -37,9 +51,4 @@
     margin-top: 5px;
     margin-right: 3px;
   }
-
-  .announcements__body__dismiss {
-    float: right;
-  }
-
 }

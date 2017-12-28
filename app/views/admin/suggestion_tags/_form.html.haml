@@ -1,6 +1,8 @@
 = simple_form_for [:admin, suggestion_tag] do |f|
   = render 'shared/error_messages', object: f.object
 
+  = f.input :suggestion_type, collection: SuggestionTag.suggestion_types.keys.to_a, include_blank: false, wrapper: :with_label, label: 'タイプ'
+
   - if f.object.new_record?
     = f.fields_for :tag do |ff|
       = ff.input :name, placeholder: 'タグ名'
@@ -13,4 +15,4 @@
   %p.hint 数が小さい順に表示されます
 
   .actions
-    = f.button :button, 'タグを作成する', type: :submit
+    = f.button :button, (f.object.new_record? ? '作成' : '保存'), type: :submit

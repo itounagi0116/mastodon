@@ -35,7 +35,7 @@ class Playlist < ApplicationRecord
 
     return false unless updated_items
 
-    PushPlaylistWorker.perform_async(deck, 'add', queue_item.to_json)
+    PushPlaylistWorker.perform_async(deck, 'add', queue_item.as_json)
     PlaylistLog.create(
       account: account,
       uuid: queue_item.id,
@@ -76,7 +76,7 @@ class Playlist < ApplicationRecord
 
     return false unless updated_items
 
-    PushPlaylistWorker.perform_async(deck, 'end', { id: id }.to_json)
+    PushPlaylistWorker.perform_async(deck, 'end', id: id)
     first_item = updated_items.first
 
     if first_item
@@ -127,8 +127,12 @@ class Playlist < ApplicationRecord
   def play_item(queue_item_id, duration, gap = 10)
     set_start_time
     NextPlaylistWorker.perform_in(duration + gap, deck, queue_item_id)
-    PushPlaylistWorker.perform_async(deck, 'play', { id: queue_item_id }.to_json)
-    PlaylistLog.find_by(uuid: queue_item_id)&.update(started_at: Time.now)
+    PushPlaylistWorker.perform_async(deck, 'play', id: queue_item_id)
+    playlist_log = PlaylistLog.find_by!(uuid: queue_item_id)
+    if playlist_log
+      playlist_log.update(started_at: Time.now)
+      PostNowPlayingService.new.call(playlist_log)
+    end
   end
 
   def playlist_key

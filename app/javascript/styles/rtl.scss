@@ -101,6 +101,7 @@ body.rtl {
     left: 0;
   }
 
+  .status__time,
   .status__relative-time,
   .activity-stream .status.light .status__header .status__meta {
     float: left;
@@ -231,7 +232,7 @@ body.rtl {
     margin-left: 30px;
   }
 
-  @media screen and (min-width: 631px) {
+  @media screen and (min-width: 1025px) {
     .column,
     .drawer {
       padding-left: 5px;

@@ -22,12 +22,14 @@ class Notification < ApplicationRecord
     follow:                    'Follow',
     follow_request:            'FollowRequest',
     favourite:                 'Favourite',
+
+    track:                     'Track',
     video_preparation_error:   'VideoPreparationError',
-    video_preparation_success: 'Track',
   }.freeze
 
-  STATUS_INCLUDES = [:stream_entry, :media_attachments, :tags, mentions: { account: :oauth_authentications },
-                     reblog: [:stream_entry, :media_attachments, :tags, account: :oauth_authentications, mentions: { account: :oauth_authentications }], account: :oauth_authentications].freeze
+  ACCOUNT_INCLUDES = [:oauth_authentications, :custom_color]
+  STATUS_INCLUDES = [:stream_entry, :media_attachments, :tags, :music, mentions: { account: ACCOUNT_INCLUDES },
+                     reblog: [:stream_entry, :media_attachments, :tags, account: ACCOUNT_INCLUDES, mentions: { account: ACCOUNT_INCLUDES }], account: ACCOUNT_INCLUDES].freeze
 
   belongs_to :account
   belongs_to :from_account, class_name: 'Account'
@@ -39,6 +41,9 @@ class Notification < ApplicationRecord
   belongs_to :follow_request, foreign_type: 'FollowRequest', foreign_key: 'activity_id'
   belongs_to :favourite,      foreign_type: 'Favourite',     foreign_key: 'activity_id'
 
+  belongs_to :track,                     foreign_type: 'Track',                 foreign_key: 'activity_id'
+  belongs_to :video_preparation_error,   foreign_type: 'VideoPreparationError', foreign_key: 'activity_id'
+
   validates :account_id, uniqueness: { scope: [:activity_type, :activity_id] }
   validates :activity_type, inclusion: { in: TYPE_CLASS_MAP.values }
 
@@ -49,18 +54,33 @@ class Notification < ApplicationRecord
     where(activity_type: types)
   }
 
-  cache_associated :from_account, status: STATUS_INCLUDES, mention: [status: STATUS_INCLUDES], favourite: [:account, status: STATUS_INCLUDES], follow: :account
+  cache_associated :from_account, status: STATUS_INCLUDES, mention: [status: STATUS_INCLUDES], favourite: [account: ACCOUNT_INCLUDES, status: STATUS_INCLUDES], follow: { account: ACCOUNT_INCLUDES },
+    track: :original_status, video_preparation_error: { track: :original_status }
 
   def type
-    @type ||= TYPE_CLASS_MAP.invert[activity_type].to_sym
+    return @type if @type.present?
+
+    if activity_type != 'Track'
+      @type = TYPE_CLASS_MAP.invert[activity_type].to_sym
+    elsif from_account_id?
+      @type = :new_track
+    else
+      @type = :video_preparation_success
+    end
   end
 
   def target_status
     case type
     when :reblog
-      activity&.reblog
-    when :favourite, :mention
-      activity&.status
+      status&.reblog
+    when :favourite
+      favourite&.status
+    when :mention
+      mention&.status
+    when :new_track, :video_preparation_success
+      track&.original_status
+    when :video_preparation_error
+      video_preparation_error&.track&.original_status
     end
   end
 

@@ -1,26 +1,41 @@
 .track {
   display: block;
-  position: relative;
   box-shadow: var(--shadow);
   background-size: cover;
   background-position: center center;
   background-color: black;
 
   .thumbnail {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
+    position: relative;
 
-    .playbutton {
+    .thumbnail-image {
+      width: 100%;
       display: block;
-      height:     var(--iconsize40);
-      width:      var(--iconsize40);
     }
 
-    &:hover .playbutton {
-      opacity:    var(--hover-opacity);
-      transition: var(--hover-transition);
+    .playbutton {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+
+      .playbutton-icon {
+        display: block;
+        height: var(--iconsize50);
+        width: var(--iconsize50);
+        background-image: url('../../../images/pawoo_music/play.png');
+        background-size: cover;
+      }
+
+      &:hover .playbutton-icon {
+        background-image: url('../../../images/pawoo_music/play_hover.png');
+      }
     }
   }
 
@@ -39,20 +54,25 @@
 
       .canvas-container {
         width: 100%;
-        height: calc(100% - var(--controls-container-height));
+        height: 100%;
+
+        * {
+          width: 100%;
+          height: 100%;
+        }
       }
     }
   }
 
   &:not(.fit-contain) {
     .thumbnail {
-      width:  var(--width-gallery);
-      height: var(--width-gallery); // aspect ratio 1:1
+      width: var(--width-gallery-canvas);
+      height: var(--width-gallery-canvas);
     }
 
     .canvas-container {
-      width: var(--width-gallery);
-      height: var(--width-gallery);
+      width: var(--width-gallery-canvas);
+      height: var(--width-gallery-canvas);
     }
   }
 }

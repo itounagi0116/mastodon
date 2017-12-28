@@ -13,6 +13,14 @@ module StatusPawooMusicConcern
     counter_culture :account, column_name: -> (model) { (!model.reblog? && !model.music_type.nil?) ? "#{model.music_type.downcase.pluralize}_count" : nil }
   end
 
+  def track
+    music if music_type == 'Track'
+  end
+
+  def album
+    music if music_type == 'Album'
+  end
+
   class_methods do
     def next_id
       ApplicationRecord.connection.select_value "SELECT nextval('statuses_id_seq')"

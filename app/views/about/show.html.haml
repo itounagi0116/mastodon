@@ -2,40 +2,10 @@
   Mastodon (マストドン) hosted by pixiv
 
 - content_for :header_tags do
-  :ruby
-    initial_state = {
-      meta: {
-        streaming_api_base_url: Rails.configuration.x.streaming_api_base_url,
-        access_token: '',
-        locale: I18n.locale,
-        domain: site_hostname,
-        auto_play_gif: false,
-        appmode: 'about'
-      },
-      compose: {},
-      accounts: {},
-      media_attachments: {
-        accept_content_types: MediaAttachment::IMAGE_MIME_TYPES + MediaAttachment::VIDEO_MIME_TYPES
-      },
-      settings: {
-        onboarded: true # related: app/javascript/mastodon/actions/onboarding.js
-      }
-    }
-
-  %script#initial-state{ type: 'application/json' }!= json_escape(initial_state.to_json)
+  %script#initial-state{ type: 'application/json' }!= json_escape(@initial_state_json)
   = javascript_pack_tag 'application', integrity: true, crossorigin: 'anonymous'
   = javascript_pack_tag 'public', integrity: true, crossorigin: 'anonymous'
-
-- content_for :header_tags do
-  %meta{ property: 'og:site_name', content: site_title }/
-  %meta{ property: 'og:url', content: about_url }/
-  %meta{ property: 'og:type', content: 'website' }/
-  %meta{ property: 'og:title', content: site_hostname }/
-  %meta{ property: 'og:description', content: strip_tags(@instance_presenter.site_description.presence || t('about.about_mastodon')) }/
-  %meta{ property: 'og:image', content: asset_pack_path('pawoo_music_small.png', protocol: :request) }/
-  %meta{ property: 'og:image:width', content: '400' }/
-  %meta{ property: 'og:image:height', content: '400' }/
-  %meta{ property: 'twitter:card', content: 'summary' }/
+  = render partial: 'og'
 
 .about-cols
   .about-col.left

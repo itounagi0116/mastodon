@@ -10,14 +10,20 @@ defaults: &defaults
   site_title: Pawoo Music
   site_description: ''
   site_extended_description: ''
+  site_terms: ''
   site_contact_username: ''
   site_contact_email: ''
   open_registrations: true
   closed_registrations_message: ''
   open_deletion: true
+  timeline_preview: true
+  default_sensitive: false
+  unfollow_modal: false
   boost_modal: false
-  auto_play_gif: true
   delete_modal: true
+  auto_play_gif: false
+  system_font_ui: false
+  noindex: false
   notification_emails:
     follow: false
     reblog: false
@@ -25,6 +31,7 @@ defaults: &defaults
     mention: false
     follow_request: true
     digest: true
+    new_track: true
     video_preparation_error: true
     video_preparation_success: true
   notification_firebase_cloud_messagings:
@@ -49,6 +56,7 @@ defaults: &defaults
     - root
     - webmaster
     - administrator
+  bootstrap_timeline_accounts: ''
 
 development:
   <<: *defaults

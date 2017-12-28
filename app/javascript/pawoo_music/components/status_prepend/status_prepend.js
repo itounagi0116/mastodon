@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 import DisplayName from '../display_name';
 import Link from '../link_wrapper';
-import IconButton from '../icon_button';
+import Icon from '../icon';
 
 export default class StatusPrepend extends ImmutablePureComponent {
 
@@ -32,14 +32,14 @@ export default class StatusPrepend extends ImmutablePureComponent {
 
       return (
         <div className={classNames('status-prepend', className)}>
-          <IconButton src='repeat' />
+          <Icon icon='repeat' />
           <FormattedMessage id='status.reblogged_by' defaultMessage='{name} boosted' values={{ name }} />
         </div>
       );
     } else if (displayPinned && status.get('pinned')) {
       return (
         <div className={classNames('status-prepend', className)}>
-          <IconButton src='feather' />
+          <Icon icon='feather' />
           <FormattedMessage id='status.pinned' defaultMessage='Pinned Toot' />
         </div>
       );

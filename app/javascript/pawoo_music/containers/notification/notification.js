@@ -8,7 +8,7 @@ import { FormattedMessage } from 'react-intl';
 import Link from '../../components/link_wrapper';
 import DisplayName from '../../components/display_name';
 import { makeGetNotification } from '../../../mastodon/selectors';
-import IconButton from '../../components/icon_button';
+import Icon from '../../components/icon';
 
 const makeMapStateToProps = () => {
   const getNotification = makeGetNotification();
@@ -31,7 +31,7 @@ export default class Notification extends ImmutablePureComponent {
     return (
       <div className='notification notification-follow'>
         <div className='message'>
-          <IconButton src='user-plus' />
+          <Icon icon='user-plus' />
           <FormattedMessage id='notification.follow' defaultMessage='{name} followed you' values={{ name: link }} />
         </div>
 
@@ -47,7 +47,7 @@ export default class Notification extends ImmutablePureComponent {
   renderFavourite (notification, link) {
     const prepend = (
       <div className='prepend-inline'>
-        <IconButton src='heart' />
+        <Icon icon='heart' />
         <FormattedMessage id='notification.favourite' defaultMessage='{name} favourited your status' values={{ name: link }} />
       </div>
     );
@@ -60,8 +60,21 @@ export default class Notification extends ImmutablePureComponent {
   renderReblog (notification, link) {
     const prepend = (
       <div className='prepend-inline'>
-        <IconButton src='repeat' />
+        <Icon icon='repeat' />
         <FormattedMessage id='notification.reblog' defaultMessage='{name} boosted your status' values={{ name: link }} />
+      </div>
+    );
+
+    return (
+      <StatusContainer id={notification.get('status')} prepend={prepend} muted withDismiss />
+    );
+  }
+
+  renderNewTrack (notification, link) {
+    const prepend = (
+      <div className='prepend-inline'>
+        <Icon icon='music' />
+        <FormattedMessage id='notification.new_track' defaultMessage='{name} posted a new track' values={{ name: link }} />
       </div>
     );
 
@@ -112,6 +125,8 @@ export default class Notification extends ImmutablePureComponent {
       return this.renderFavourite(notification, link);
     case 'reblog':
       return this.renderReblog(notification, link);
+    case 'new_track':
+      return this.renderNewTrack(notification, link);
     case 'video_preparation_success':
       return this.renderVideoPreparationSuccess(notification);
     case 'video_preparation_error':

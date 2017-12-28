@@ -102,6 +102,30 @@ RSpec.describe NotificationMailer, type: :mailer do
     end
   end
 
+  describe 'new_track' do
+    let(:account) { Fabricate(:account, username: 'account_username') }
+    let(:track) { Fabricate(:track, artist: 'Track Artist', title: 'Track Title', text: 'Track text') }
+    let!(:status) { Fabricate(:status, account: account, music: track) }
+    let(:mail) { NotificationMailer.new_track(receiver.account, Notification.create!(account: receiver.account, activity: track, from_account: account)) }
+
+    include_examples 'localized subject', 'notification_mailer.new_track.subject', name: 'account_username'
+
+    it 'renders the headers' do
+      expect(mail.subject).to eq 'account_username posted a new track'
+      expect(mail.to).to eq [receiver.email]
+    end
+
+    it 'renders the body' do
+      expect(mail.body.encoded).to include <<~TEXT.encode(crlf_newline: true)
+        account_username posted a new track.
+
+        Title:  Track Title
+        Artist: Track Artist
+        Track text
+      TEXT
+    end
+  end
+
   describe 'video_preparation_error' do
     let(:track) { Fabricate(:track, title: 'title') }
     let!(:status) { Fabricate(:status, music: track) }

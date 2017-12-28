@@ -37,20 +37,23 @@ class Api::V1::TracksController < Api::BaseController
       raise
     end
 
-    render 'api/v1/statuses/show'
+    render json: @status, serializer: REST::StatusSerializer
   end
 
   def update
+    raise ActiveRecord::RecordNotFound if @status.account != current_account
     @status.music.update! track_attributes
 
-    render 'api/v1/statuses/show'
+    render json: @status, serializer: REST::StatusSerializer
   end
 
   def prepare_video
+    raise ActiveRecord::RecordNotFound if !current_user.admin && @status.account != current_account
+
     resolution = params.require('resolution')
     raise Mastodon::ValidationError if Track::RESOLUTIONS.exclude? resolution
 
-    VideoPreparingWorker.perform_async @status.id, resolution
+    VideoPreparingWorker.perform_async @status.id, current_account.id, resolution
 
     render_empty
   end
@@ -60,13 +63,13 @@ class Api::V1::TracksController < Api::BaseController
     @statuses = cache_collection(status.music.album_statuses, Status)
     set_maps(@statuses)
 
-    render 'api/v1/statuses/index'
+    render json: @statuses, each_serializer: REST::StatusSerializer
   end
 
   private
 
   def set_status
-    @status = Status.tracks_only.find_by!(id: params[:id], account: current_account, reblog: nil)
+    @status = Status.tracks_only.find_by!(id: params[:id], reblog: nil)
   end
 
   def track_attributes
@@ -163,6 +166,50 @@ class Api::V1::TracksController < Api::BaseController
         video_spectrum_mode: params.dig('video', 'spectrum', 'mode'),
         video_spectrum_alpha: params.dig('video', 'spectrum', 'alpha'),
         video_spectrum_color: params.dig('video', 'spectrum', 'color'),
+      )
+    end
+
+    case params.dig('video', 'sprite', 'movement', 'circle')
+    when nil
+    when ''
+      attributes.merge!(
+        video_sprite_movement_circle_rad: 0,
+        video_sprite_movement_circle_scale: 0,
+        video_sprite_movement_circle_speed: 0,
+      )
+    else
+      attributes.merge!(
+        video_sprite_movement_circle_rad: params.dig('video', 'sprite', 'movement', 'circle', 'rad'),
+        video_sprite_movement_circle_scale: params.dig('video', 'sprite', 'movement', 'circle', 'scale'),
+        video_sprite_movement_circle_speed: params.dig('video', 'sprite', 'movement', 'circle', 'speed')
+      )
+    end
+
+    case params.dig('video', 'sprite', 'movement', 'random')
+    when nil
+    when ''
+      attributes.merge!(
+        video_sprite_movement_random_scale: 0,
+        video_sprite_movement_random_speed: 0
+      )
+    else
+      attributes.merge!(
+        video_sprite_movement_random_scale: params.dig('video', 'sprite', 'movement', 'random', 'scale'),
+        video_sprite_movement_random_speed: params.dig('video', 'sprite', 'movement', 'random', 'speed')
+      )
+    end
+
+    case params.dig('video', 'sprite', 'movement', 'zoom')
+    when nil
+    when ''
+      attributes.merge!(
+        video_sprite_movement_zoom_scale: 0,
+        video_sprite_movement_zoom_speed: 0
+      )
+    else
+      attributes.merge!(
+        video_sprite_movement_zoom_scale: params.dig('video', 'sprite', 'movement', 'zoom', 'scale'),
+        video_sprite_movement_zoom_speed: params.dig('video', 'sprite', 'movement', 'zoom', 'speed')
       )
     end
 

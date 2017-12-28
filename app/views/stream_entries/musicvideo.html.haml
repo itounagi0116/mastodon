@@ -1,6 +1,11 @@
 - content_for :header_tags do
-  = javascript_pack_tag 'musicvideo', integrity: true, crossorigin: 'anonymous'
   = stylesheet_pack_tag 'musicvideo', integrity: true, crossorigin: 'anonymous'
+  %script#initial-state{ type: 'application/json' }!= json_escape(@initial_state_json)
 
 #pawoo-music-default-props{ data: { props: Oj.dump(default_props) } }
-#pawoo-music-musicvideo{ data: { props: json_escape(render(file: 'api/v1/statuses/show', formats: :json)) } }
+#pawoo-music-musicvideo{ data: { props: json_escape(@status_json) } }
+  -# These loads fonts required for music videos.
+  %div{ style: 'font-family: Roboto; font-weight: 500' } Loading…
+  %div{ style: 'font-family: Roboto; font-weight: normal' } Please wait for a moment.
+
+  = javascript_pack_tag 'musicvideo', integrity: true, crossorigin: 'anonymous'
