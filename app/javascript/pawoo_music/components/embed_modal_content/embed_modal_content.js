@@ -3,7 +3,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { FormattedMessage } from 'react-intl';
 import axios from 'axios';
-import Checkbox from '../../components/checkbox';
+import Checkbox from '../checkbox';
 import Oembed from '../../components/oembed';
 import EmbedMusicvideo from '../../containers/embed_musicvideo';
 import TweetButton from '../../../mastodon/components/tweet_button';
