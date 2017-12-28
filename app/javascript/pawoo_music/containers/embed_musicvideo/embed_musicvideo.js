@@ -39,7 +39,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
   }
 
   state = {
-    visibleInfo: false,
+    visibleControls: false,
   };
 
   componentDidMount () {
@@ -56,38 +56,38 @@ export default class EmbedMusicvideo extends React.PureComponent {
       // クリックした瞬間に、非表示だった要素もクリックしないように少し遅らせる
       // stopPropagationはTrackまでイベントが伝搬されなくなるので使わない
       setTimeout(() => {
-        this.changeVisibleInfo();
+        this.changeVisibleControls();
       }, 10);
     }
   }
 
   handleMouseEnter = () => {
-    this.changeVisibleInfo();
+    this.changeVisibleControls();
   }
 
   handleMouseMove = () => {
-    this.changeVisibleInfo();
+    this.changeVisibleControls();
   }
 
   handleMouseLeave = () => {
-    this.setState({ visibleInfo: false });
+    this.setState({ visibleControls: false });
   }
 
   hideLogoDebounce = debounce(() => {
-    this.setState({ visibleInfo: false });
+    this.setState({ visibleControls: false });
   }, 3000);
 
-  changeVisibleInfo () {
-    this.setState({ visibleInfo: true });
+  changeVisibleControls () {
+    this.setState({ visibleControls: true });
     this.hideLogoDebounce();
   }
 
   renderInfo () {
     const { acct, infoHidden, preview, status, trackIsMounted } = this.props;
-    const { visibleInfo } = this.state;
+    const { visibleControls } = this.state;
     const id = status.get('id');
     const track = status.get('track');
-    const visible = !trackIsMounted || visibleInfo;
+    const visible = !trackIsMounted || visibleControls;
 
     if (!trackIsMounted && infoHidden) {
       return (
@@ -114,6 +114,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
 
   render () {
     const { status } = this.props;
+    const { visibleControls } = this.state;
 
     return (
       <div
@@ -125,7 +126,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
         onMouseMove={mobile ? noop : this.handleMouseMove}
         onMouseLeave={mobile ? noop : this.handleMouseLeave}
       >
-        <Track track={status.get('track')} fitContain />
+        <Track overriddenControlVisibility={visibleControls} track={status.get('track')} fitContain />
         {this.renderInfo()}
       </div>
     );

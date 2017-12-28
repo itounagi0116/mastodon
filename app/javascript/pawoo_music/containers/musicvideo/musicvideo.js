@@ -52,6 +52,7 @@ class Musicvideo extends ImmutablePureComponent {
 
   static propTypes = {
     bannerHidden: PropTypes.bool,
+    overriddenControlVisibility: PropTypes.bool,
     intl: PropTypes.object.isRequired,
     label: PropTypes.string,
     lastSeekDestination: PropTypes.number.isRequired,
@@ -232,7 +233,9 @@ class Musicvideo extends ImmutablePureComponent {
   }
 
   handleMouseLeave = () => {
-    this.setState({ showControls: false });
+    if (typeof this.props.overriddenControlVisibility !== 'boolean') {
+      this.setState({ showControls: false });
+    }
   }
 
   hideControlsDebounce = debounce(() => {
@@ -240,8 +243,10 @@ class Musicvideo extends ImmutablePureComponent {
   }, 3000);
 
   showControls () {
-    this.setState({ showControls: true });
-    this.hideControlsDebounce();
+    if (typeof this.props.overriddenControlVisibility !== 'boolean') {
+      this.setState({ showControls: true });
+      this.hideControlsDebounce();
+    }
   }
 
   setCanvasContainerRef = (ref) => {
@@ -267,9 +272,11 @@ class Musicvideo extends ImmutablePureComponent {
   }
 
   render() {
-    const { duration, getCurrentTime, intl, label, loading, onSeekDestinationChange, paused } = this.props;
-    const { initialized, showControls } = this.state;
+    const { overriddenControlVisibility, duration, getCurrentTime, intl, label, loading, onSeekDestinationChange, paused } = this.props;
+    const { initialized } = this.state;
     const canPlay = ![Infinity, NaN].includes(duration);
+    const showControls = typeof overriddenControlVisibility === 'boolean' ?
+      overriddenControlVisibility : this.state.showControls;
 
     return (
       <div
