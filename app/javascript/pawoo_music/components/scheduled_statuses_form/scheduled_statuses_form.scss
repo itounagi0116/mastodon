@@ -1,0 +1,19 @@
+.scheduled-statuses-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  > .status-form {
+    textarea {
+      border: solid;
+    }
+
+    input {
+      border: solid;
+    }
+  }
+
+  > .statuses {
+    flex: 1;
+  }
+}
