@@ -15,7 +15,7 @@ export default class Timeline extends PureComponent {
   static propTypes = {
     target: PropTypes.string.isRequired,
     children: PropTypes.node,
-    gallery: PropTypes.node.isRequired,
+    gallery: PropTypes.node,
     galleryStyle: PropTypes.object,
   }
 
@@ -28,12 +28,14 @@ export default class Timeline extends PureComponent {
         <div className='navigation-column'>
           <GlobalNaviContainer />
         </div>
-        <div className='lobby-column'>
+        <div className={classNames('lobby-column', { 'with-gallery': gallery })}>
           {children}
         </div>
-        <div className='gallery-column' style={galleryStyle}>
-          {gallery}
-        </div>
+        {gallery && (
+          <div className='gallery-column' style={galleryStyle}>
+            {gallery}
+          </div>
+        )}
       </div>
     );
   }
