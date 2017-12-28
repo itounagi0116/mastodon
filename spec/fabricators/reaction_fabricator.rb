@@ -1,4 +1,4 @@
 Fabricator :reaction do
-  status { Fabricate :status }
+  track { Fabricate :track }
   text { Reaction::PERMITTED_TEXTS.sample }
 end
