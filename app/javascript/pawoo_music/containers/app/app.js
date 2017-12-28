@@ -17,14 +17,13 @@ import FavouritedStatusesContainer from '../favourited_statuses';
 import Intent from '../../components/intent';
 import LoadingBarContainer from '../../../mastodon/features/ui/containers/loading_bar_container';
 import NotificationsContainer from '../../../mastodon/features/ui/containers/notifications_container';
-import ModalContainer from '../modal_container';
 import AccountFollowersContainer from '../account_followers';
 import AccountFollowingContainer from '../account_following';
 import StatusThreadContainer from '../status_thread';
 import { isMobile } from '../../util/is_mobile';
 import { navigate } from '../../util/navigator';
 import StatusPostButtonContainer from '../status_post_button';
-import TrackComposeModalContainer from '../track_compose_modal';
+import ModalContextContainer from '../modal_context';
 import PlayControlContainer from '../../../mastodon/features/ui/containers/play_control_container';
 import { openModalFormCompose } from '../../../mastodon/actions/compose';
 import Link from '../../components/link_wrapper';
@@ -187,8 +186,7 @@ export default class App extends PureComponent {
 
     return (
       mobile ? (
-        <div className={classNames('app', 'sp')}>
-
+        <ModalContextContainer className={classNames('app', 'sp')}>
           <div className='app-center'>{routes}</div>
 
           <div className='app-top'>
@@ -206,10 +204,9 @@ export default class App extends PureComponent {
 
           <NotificationsContainer />
           <LoadingBarContainer className='loading-bar' />
-          <ModalContainer />
-        </div>
+        </ModalContextContainer>
       ) : (
-        <div className='app'>
+        <ModalContextContainer className='app'>
           <div className='app-center'>
             {routes}
           </div>
@@ -219,9 +216,7 @@ export default class App extends PureComponent {
           <NotificationsContainer />
           <LoadingBarContainer className='loading-bar' />
           <StatusPostButtonContainer fixed />
-          <ModalContainer />
-          <TrackComposeModalContainer />
-        </div>
+        </ModalContextContainer>
       )
     );
   }
