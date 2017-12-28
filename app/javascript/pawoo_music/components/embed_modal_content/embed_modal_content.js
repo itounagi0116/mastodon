@@ -3,7 +3,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { FormattedMessage } from 'react-intl';
 import axios from 'axios';
-import Checkbox from '../../components/checkbox';
+import Checkbox from '../checkbox';
 import TweetButton from '../../../mastodon/components/tweet_button';
 
 export default class EmbedModalContent extends ImmutablePureComponent {
