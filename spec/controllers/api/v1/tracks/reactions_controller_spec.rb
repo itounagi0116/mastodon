@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe Api::V1::Tracks::ReactionsController do
+describe Api::V1::Tracks::ReactionsController, type: :controller do
   render_views
 
   let(:user)  { Fabricate(:user, account: Fabricate(:account, username: 'alice')) }
@@ -22,7 +22,7 @@ describe Api::V1::Tracks::ReactionsController do
       let(:status) { Fabricate(:status, account: user.account, music: Fabricate(:track)) }
 
       before do
-        post :create, params: { track_id: status, text: '😺' }
+        post :create, params: { id: status, text: '😺' }
       end
 
       it 'returns http success' do
@@ -30,7 +30,7 @@ describe Api::V1::Tracks::ReactionsController do
       end
 
       it 'updates accounts attribute' do
-        expect(status.reactions.find_by!(text: '😺').accounts).to include user.account
+        expect(status.track.reactions.find_by!(text: '😺').accounts).to include user.account
       end
 
       it 'return json with updated attributes' do
@@ -40,11 +40,12 @@ describe Api::V1::Tracks::ReactionsController do
     end
 
     describe 'POST #destroy' do
-      let(:status) { Fabricate(:status, account: user.account, music: Fabricate(:track)) }
-      let!(:reaction) { Fabricate(:reaction, accounts: [user.account], status: status, text: '😺') }
+      let(:track) { Fabricate(:track) }
+      let(:status) { Fabricate(:status, account: user.account, music: track) }
+      let!(:reaction) { Fabricate(:reaction, accounts: [user.account], track: track, text: '😺') }
 
       before do
-        post :destroy, params: { track_id: status, text: '😺' }
+        post :destroy, params: { id: status, text: '😺' }
       end
 
       it 'returns http success' do
@@ -67,7 +68,7 @@ describe Api::V1::Tracks::ReactionsController do
       let(:status) { Fabricate(:status, account: user.account, music: Fabricate(:track)) }
 
       before do
-        post :create, params: { track_id: status, text: '😺' }
+        post :create, params: { id: status, text: '😺' }
       end
 
       it 'returns http unauthorized' do

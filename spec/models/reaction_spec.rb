@@ -13,9 +13,9 @@ describe Reaction, type: :model do
     end
 
     it 'creates a new record if there is no existing one' do
-      status = Fabricate(:status)
-      Reaction.push_account account, status: status, text: '😺'
-      expect(Reaction.where(accounts_count: 1, status: status, text: '😺')).to exist
+      track = Fabricate(:track)
+      Reaction.push_account account, track: track, text: '😺'
+      expect(Reaction.where(accounts_count: 1, track: track, text: '😺')).to exist
     end
 
     it 'increments accounts_count of the existing record if any' do
