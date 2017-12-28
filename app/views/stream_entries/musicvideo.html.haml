@@ -1,5 +1,4 @@
 - content_for :header_tags do
-  = stylesheet_pack_tag 'musicvideo', integrity: true, crossorigin: 'anonymous'
   %script#initial-state{ type: 'application/json' }!= json_escape(@initial_state_json)
 
 #pawoo-music-default-props{ data: { props: Oj.dump(default_props) } }
