@@ -30,6 +30,7 @@ export default class FollowButton extends ImmutablePureComponent {
 
   static propTypes = {
     account: ImmutablePropTypes.map.isRequired,
+    dummy: PropTypes.string,
     me: PropTypes.number,
     onlyFollow: PropTypes.bool,
     embed: PropTypes.bool,
@@ -76,9 +77,21 @@ export default class FollowButton extends ImmutablePureComponent {
     );
   }
 
+  renderMessage (type) {
+    return type === 'follow' ? this.renderFollowMessage() : this.renderUnfollowMessage();
+  }
+
   render () {
-    const { account, me, onlyFollow } = this.props;
+    const { account, me, dummy, onlyFollow } = this.props;
     const { isChange } = this.state;
+
+    if (dummy) {
+      return (
+        <Button className={dummy}>
+          {this.renderMessage(dummy)}
+        </Button>
+      );
+    }
 
     if (!me) {
       return (
@@ -105,7 +118,7 @@ export default class FollowButton extends ImmutablePureComponent {
       } else {
         return (
           <Button className={type} onClick={this.handleFollow}>
-            {type === 'follow' ? this.renderFollowMessage() : this.renderUnfollowMessage()}
+            {this.renderMessage(type)}
           </Button>
         );
       }

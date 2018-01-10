@@ -3,7 +3,9 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { FormattedMessage } from 'react-intl';
 import axios from 'axios';
-import Checkbox from '../../components/checkbox';
+import Checkbox from '../checkbox';
+import Oembed from '../../components/oembed';
+import EmbedMusicvideo from '../../containers/embed_musicvideo';
 import TweetButton from '../../../mastodon/components/tweet_button';
 
 export default class EmbedModalContent extends ImmutablePureComponent {
@@ -13,24 +15,24 @@ export default class EmbedModalContent extends ImmutablePureComponent {
   }
 
   state = {
-    loading: false,
+    loading: true,
     oembed: null,
     showinfo: true,
   };
 
   componentDidMount () {
-    this.loadIframe();
+    this.loadOembed();
   }
 
   componentDidUpdate (prevProps, prevState) {
     const { showinfo } = this.state;
 
     if (prevState.showinfo !== showinfo) {
-      this.loadIframe();
+      this.loadOembed();
     }
   }
 
-  loadIframe () {
+  loadOembed () {
     const { status } = this.props;
     const { showinfo } = this.state;
 
@@ -38,21 +40,7 @@ export default class EmbedModalContent extends ImmutablePureComponent {
 
     axios.post('/api/web/embed', { url: status.get('url'), hideinfo: Number(!showinfo) }).then(res => {
       this.setState({ loading: false, oembed: res.data });
-
-      const iframeDocument = this.iframe.contentWindow.document;
-
-      iframeDocument.open();
-      iframeDocument.write(res.data.html);
-      iframeDocument.close();
-
-      iframeDocument.body.style.margin = 0;
-      this.iframe.width  = iframeDocument.body.scrollWidth;
-      this.iframe.height = status.has('track') ? this.iframe.width : iframeDocument.body.scrollHeight;
     });
-  }
-
-  setIframeRef = c =>  {
-    this.iframe = c;
   }
 
   handleTextareaClick = (e) => {
@@ -124,12 +112,9 @@ export default class EmbedModalContent extends ImmutablePureComponent {
             <FormattedMessage id='embed.preview' defaultMessage='Here is what it will look like:' />
           </p>
 
-          <iframe
-            className='embed-modal-iframe'
-            frameBorder='0'
-            ref={this.setIframeRef}
-            title='preview'
-          />
+          {status.has('track') ?
+            <EmbedMusicvideo infoHidden={!showinfo} preview statusId={status.get('id')} /> :
+            <Oembed oembed={oembed} />}
         </div>
       </div>
     );
