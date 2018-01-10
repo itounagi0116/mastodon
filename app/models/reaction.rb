@@ -53,7 +53,7 @@ class Reaction < ApplicationRecord
         end
       end
     rescue ActiveRecord::SerializationFailure
-      tires -= 1
+      tries -= 1
       retry if tries > 0
       raise
     end
