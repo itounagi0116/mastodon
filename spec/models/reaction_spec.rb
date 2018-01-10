@@ -51,6 +51,16 @@ describe Reaction, type: :model do
         reaction.reload
       end.to change { reaction.accounts_count }.by -1
     end
+
+    it 'does nothing if the record for the specified account is missing' do
+      accounts = 2.times.map { Fabricate(:account) }
+      reaction = Fabricate(:reaction, accounts: [accounts[0]], accounts_count: 1)
+
+      expect do
+        Reaction.destroy_account accounts[1], id: reaction
+        reaction.reload
+      end.not_to change { reaction.accounts_count }
+    end
   end
 
   describe 'self.destroy_account_all' do

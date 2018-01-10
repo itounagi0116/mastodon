@@ -43,6 +43,8 @@ class Reaction < ApplicationRecord
       ApplicationRecord.transaction isolation: :repeatable_read do
         reaction = find_by!(attributes)
 
+        next unless reaction.accounts.exists? account.id
+
         if reaction.accounts_count <= 1
           reaction.destroy!
         else
