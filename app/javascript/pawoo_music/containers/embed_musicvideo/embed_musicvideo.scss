@@ -59,7 +59,7 @@
       pointer-events: auto;
 
       > .status-reactions {
-        justify-content: end;
+        justify-content: flex-end;
 
         > li {
           background-color: rgba(0, 0, 0, 0.7);
