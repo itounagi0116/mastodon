@@ -80,6 +80,10 @@
     flex-direction: column;
     background-color: var(--color2);
 
+    .dropdown-content {
+      right: var(--padding30);
+    }
+
     .scrollable {
       .item-list {
         padding: var(--padding30);

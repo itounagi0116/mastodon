@@ -1,0 +1,37 @@
+.dropdown-menu {
+  margin: var(--padding10);
+  width:  var(--width-contextmenu);
+}
+
+.dropdown-menu li.menu-item > a {
+  display: block;
+}
+
+.modal .dropdown-menu {
+  display:    block;
+  padding:    var(--padding10);
+  width:      var(--width-gallery);
+
+  border-radius:      var(--radius);
+  background-color:   var(--color1);
+
+  font-size:      var(--text40-font);
+  line-height:    var(--text40-line);
+
+  box-shadow:     var(--shadow2);
+  font-weight:    normal;
+  text-align:     left;
+
+  li.menu-item {
+    padding: var(--padding20);
+
+    a {
+      display: block;
+    }
+  }
+
+  li.dropdown-sep {
+    height: 1px;
+    background-color: var(--color3);
+  }
+}

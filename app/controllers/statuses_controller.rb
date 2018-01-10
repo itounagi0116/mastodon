@@ -39,7 +39,6 @@ class StatusesController < ApplicationController
       initial_state_params = {
         current_account: current_account,
         token: current_session&.token,
-        reactions: Reaction::PERMITTED_TEXTS,
       }
       initial_state = ActiveModelSerializers::SerializableResource.new(InitialStatePresenter.new(initial_state_params), serializer: InitialStateSerializer)
       @initial_state_json = initial_state.to_json

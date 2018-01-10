@@ -8,6 +8,7 @@ import { defineMessages, injectIntl } from 'react-intl';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { length } from 'stringz';
+import EmojiPickerDropdown from '../../components/emoji_picker_dropdown';
 import Icon from '../../components/icon';
 import CharacterCounter from '../../../mastodon/features/compose/components/character_counter';
 import Button from '../../../mastodon/components/button';
@@ -19,7 +20,6 @@ import SpoilerButtonContainer from '../../../mastodon/features/compose/container
 import PrivacyDropdownContainer from '../../../mastodon/features/compose/containers/privacy_dropdown_container';
 import SensitiveButtonContainer from '../../../mastodon/features/compose/containers/sensitive_button_container';
 import SensitiveGuideContainer from '../../../mastodon/features/compose/containers/sensitive_guide_container';
-import EmojiPickerDropdown from '../../../mastodon/features/compose/components/emoji_picker_dropdown';
 import TimeLimitDropdown from '../../../mastodon/features/compose/components/time_limit_dropdown';
 import UploadFormContainer from '../../../mastodon/features/compose/containers/upload_form_container';
 import WarningContainer from '../../../mastodon/features/compose/containers/warning_container';
@@ -348,8 +348,8 @@ export default class StatusForm extends ImmutablePureComponent {
           />
 
           <div className='compose-form__pickers'>
-            <EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} />
-            <TimeLimitDropdown   onSelectTimeLimit={this.handleSelectTimeLimit} />
+            <EmojiPickerDropdown icon='fa-smile-o' onPickEmoji={this.handleEmojiPick} />
+            <TimeLimitDropdown onSelectTimeLimit={this.handleSelectTimeLimit} />
           </div>
         </div>
 

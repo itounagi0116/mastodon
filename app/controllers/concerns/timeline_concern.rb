@@ -23,7 +23,6 @@ module TimelineConcern
       token: current_session&.token,
       admin: Account.find_local(Setting.site_contact_username),
       target_account: @account,
-      reactions: Reaction::PERMITTED_TEXTS,
     }
   end
 

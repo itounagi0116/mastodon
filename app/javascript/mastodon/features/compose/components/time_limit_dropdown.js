@@ -45,7 +45,7 @@ export default class TimeLimitDropdown extends React.PureComponent {
     return (
       <Dropdown className='time-limit-dropdown' ref={this.setRef}>
         <DropdownTrigger className='icon-button inverted' title={intl.formatMessage(messages.select_time_limit)}>
-          <Icon icon='clock' className='clickable' strong />
+          <Icon icon='fa-clock-o' className='clickable' strong />
         </DropdownTrigger>
 
         <DropdownContent className='dropdown__left'>

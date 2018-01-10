@@ -61,18 +61,17 @@
       > .status-reactions {
         justify-content: flex-end;
 
-        > li {
+        > li:not(.add), > li.add .icon {
           background-color: rgba(0, 0, 0, 0.7);
           border: none;
+        }
+
+        > li:not(.add) {
           color: #ffffff;
+        }
 
-          &.add .dropdown-content {
-            bottom: var(--padding40);
-          }
-
-          &.add .icon svg {
-            stroke: #ffffff;
-          }
+        > li.add .icon svg {
+          stroke: #ffffff;
         }
       }
     }

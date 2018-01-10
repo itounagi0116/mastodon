@@ -10,11 +10,9 @@
 #
 
 class Reaction < ApplicationRecord
-  PERMITTED_TEXTS = %w(👍 ♥ 😺 🤔)
-
   belongs_to :track, inverse_of: :reactions
   has_and_belongs_to_many :accounts
-  validates :text, inclusion: { in: PERMITTED_TEXTS }
+  validates :text, inclusion: { in: Emoji.instance.unicodes }
 
   def self.push_account(account, attributes)
     tries = 2

@@ -14,13 +14,8 @@ export default class IconButton extends PureComponent {
     strong: PropTypes.bool,
     onClick: PropTypes.func,
     title: PropTypes.string,
-    strokeWidth: PropTypes.number,
     disabled: PropTypes.bool,
   }
-
-  static defaultProps = {
-    strokeWidth: 1,
-  };
 
   isClickable = () => {
     const { onClick, disabled } = this.props;
@@ -28,14 +23,22 @@ export default class IconButton extends PureComponent {
   }
 
   render () {
-    const { icon, title, active, className, onClick, strokeWidth, scale, strong, ...other } = this.props;
-    const svg = feather.toSvg(icon, { 'stroke-width': strokeWidth });
+    const { icon, title, active, className, onClick, scale, strong, ...other } = this.props;
     const clickable = this.isClickable();
+    const iconClassNames = [className];
+    let innerHTML;
+
+    if (icon.startsWith('fa-')) {
+      iconClassNames.push('fa', icon);
+    } else {
+      const svg = feather.toSvg(icon);
+      innerHTML = { __html: svg };
+    }
 
     return (
       <span
-        dangerouslySetInnerHTML={{ __html: svg }}
-        className={classNames('icon', `icon-${icon}`, { clickable, active, scale, strong }, className)}
+        dangerouslySetInnerHTML={innerHTML}
+        className={classNames('icon', `icon-${icon}`, { clickable, active, scale, strong }, iconClassNames)}
         onClick={clickable ? onClick : noop}
         title={title}
         role={clickable ? 'button' : 'presentation'}
