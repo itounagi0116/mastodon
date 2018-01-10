@@ -70,8 +70,16 @@
           color: #ffffff;
         }
 
-        > li.add .icon svg {
-          stroke: #ffffff;
+        > li.add {
+          position: relative;
+
+          .dropdown-trigger svg {
+            stroke: #ffffff;
+          }
+
+          .dropdown-content {
+            right: 0;
+          }
         }
       }
     }
