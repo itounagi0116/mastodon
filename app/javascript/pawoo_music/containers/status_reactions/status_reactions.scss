@@ -21,6 +21,9 @@ ul.status-reactions {
     }
 
     &:not(.add) {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       margin: var(--rightspace15);
     }
   }

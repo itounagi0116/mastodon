@@ -47,7 +47,7 @@ class EmojiItem extends ImmutablePureComponent {
         className={classNames({ reacted })}
         onClick={this.handleClick}
         role='button'
-      ><Emoji text={text} />{count}</li>
+      ><span><Emoji text={text} />{count}</span></li>
     );
   }
 
