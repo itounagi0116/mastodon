@@ -22,6 +22,7 @@ class Track extends ImmutablePureComponent {
   static propTypes = {
     beingQueued: PropTypes.bool,
     fitContain: PropTypes.bool,
+    overriddenControlVisibility: PropTypes.bool,
     track: ImmutablePropTypes.map.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
@@ -43,7 +44,7 @@ class Track extends ImmutablePureComponent {
   }
 
   render() {
-    const { fitContain, track, beingQueued } = this.props;
+    const { beingQueued, fitContain, track, overriddenControlVisibility } = this.props;
     if (!track) {
       return null;
     }
@@ -55,7 +56,7 @@ class Track extends ImmutablePureComponent {
     return (
       <div className={classNames('track', { 'fit-contain': fitContain })} style={thumbnailStyle}>
         {beingQueued ? (
-          <Musicvideo bannerHidden />
+          <Musicvideo bannerHidden overriddenControlVisibility={overriddenControlVisibility} />
         ) : (
           <div className='thumbnail'>
             <img className='thumbnail-image' src={track.getIn(['video', 'image'], defaultArtwork)} alt='thumbnail' />

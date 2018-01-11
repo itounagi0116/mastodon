@@ -122,7 +122,7 @@ Rails.application.routes.draw do
 
   # Remote follow
   resource :authorize_follow, only: [:show, :create]
-  resource :share, only: [:show, :create]
+  get '/share', to: 'timelines#index'
 
   namespace :admin do
     resources :subscriptions, only: [:index]

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import querystring from 'querystring';
 import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import store from '../../mastodon/store';
@@ -12,6 +13,9 @@ import { setNavigate } from '../util/navigator';
 
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
+
+const params = location.search.length > 1 ? querystring.parse(location.search.substr(1)) : {};
+const hideInfo = params.hideinfo && Number(params.hideinfo) === 1;
 
 const initialState = JSON.parse(document.getElementById('initial-state').textContent);
 store.dispatch(hydrateStore(initialState));
@@ -37,7 +41,7 @@ export default class MusicvideoEntry extends React.PureComponent {
     return (
       <IntlProvider locale={locale} messages={messages}>
         <Provider store={store}>
-          <EmbedMusicvideo statusId={status.id} />
+          <EmbedMusicvideo infoHidden={hideInfo} statusId={status.id} />
         </Provider>
       </IntlProvider>
     );

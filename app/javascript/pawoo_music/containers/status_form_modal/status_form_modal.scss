@@ -1,6 +1,10 @@
 .status-form-modal {
   width: var(--width-gallery);
-  
+
+  > .account .account-link .display-name {
+    color: var(--color2);
+  }
+
   .reply-indicator {
     display:      block;
     text-align:   left;

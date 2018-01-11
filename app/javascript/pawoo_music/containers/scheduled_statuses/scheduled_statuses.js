@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import LoadingIndicator from '../../../mastodon/components/loading_indicator';
 import { fetchScheduledStatuses, expandScheduledStatuses } from '../../actions/schedules';
-import StatusList from '../../../mastodon/components/status_list';
+import StatusList from '../../components/status_list';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 
 const mapStateToProps = state => ({
