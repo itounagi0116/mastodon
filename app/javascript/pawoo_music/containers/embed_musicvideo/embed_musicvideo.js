@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import querystring from 'querystring';
 import { debounce } from 'lodash';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
@@ -14,8 +13,6 @@ import { isMobile } from '../../util/is_mobile';
 
 import '../app/app.scss';
 
-const params = location.search.length > 1 ? querystring.parse(location.search.substr(1)) : {};
-const hideInfo = params.hideinfo && Number(params.hideinfo) === 1;
 const mobile = isMobile();
 
 const mapStateToProps = (state, { statusId }) => {
@@ -34,13 +31,15 @@ export default class EmbedMusicvideo extends React.PureComponent {
 
   static propTypes = {
     acct: PropTypes.string,
+    infoHidden: PropTypes.bool,
+    preview: PropTypes.bool,
     status: ImmutablePropTypes.map.isRequired,
     trackIsMounted: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
   }
 
   state = {
-    visibleInfo: false,
+    visibleControls: false,
   };
 
   componentDidMount () {
@@ -57,40 +56,40 @@ export default class EmbedMusicvideo extends React.PureComponent {
       // クリックした瞬間に、非表示だった要素もクリックしないように少し遅らせる
       // stopPropagationはTrackまでイベントが伝搬されなくなるので使わない
       setTimeout(() => {
-        this.changeVisibleInfo();
+        this.changeVisibleControls();
       }, 10);
     }
   }
 
   handleMouseEnter = () => {
-    this.changeVisibleInfo();
+    this.changeVisibleControls();
   }
 
   handleMouseMove = () => {
-    this.changeVisibleInfo();
+    this.changeVisibleControls();
   }
 
   handleMouseLeave = () => {
-    this.setState({ visibleInfo: false });
+    this.setState({ visibleControls: false });
   }
 
   hideLogoDebounce = debounce(() => {
-    this.setState({ visibleInfo: false });
+    this.setState({ visibleControls: false });
   }, 3000);
 
-  changeVisibleInfo () {
-    this.setState({ visibleInfo: true });
+  changeVisibleControls () {
+    this.setState({ visibleControls: true });
     this.hideLogoDebounce();
   }
 
   renderInfo () {
-    const { acct, status, trackIsMounted } = this.props;
-    const { visibleInfo } = this.state;
+    const { acct, infoHidden, preview, status, trackIsMounted } = this.props;
+    const { visibleControls } = this.state;
     const id = status.get('id');
     const track = status.get('track');
-    const visible = !trackIsMounted || visibleInfo;
+    const visible = !trackIsMounted || visibleControls;
 
-    if (!trackIsMounted && hideInfo) {
+    if (!trackIsMounted && infoHidden) {
       return (
         <div className='embed-ui' />
       );
@@ -105,7 +104,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
               <a className='title' href={`/@${acct}/${id}`} target='_blank'>{track.get('title')}</a>
             </div>
             <div className='actions'>
-              <FollowButton id={status.get('account')} onlyFollow embed />
+              <FollowButton id={status.get('account')} dummy={preview && 'follow'} onlyFollow embed />
             </div>
           </div>
         )}
@@ -115,6 +114,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
 
   render () {
     const { status } = this.props;
+    const { visibleControls } = this.state;
 
     return (
       <div
@@ -126,7 +126,7 @@ export default class EmbedMusicvideo extends React.PureComponent {
         onMouseMove={mobile ? noop : this.handleMouseMove}
         onMouseLeave={mobile ? noop : this.handleMouseLeave}
       >
-        <Track track={status.get('track')} fitContain />
+        <Track overriddenControlVisibility={visibleControls} track={status.get('track')} fitContain />
         {this.renderInfo()}
       </div>
     );

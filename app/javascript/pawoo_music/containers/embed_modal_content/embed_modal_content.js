@@ -1,36 +1,50 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { FormattedMessage } from 'react-intl';
+import { connect } from 'react-redux';
 import axios from 'axios';
+import EmbedMusicvideo from '../embed_musicvideo';
+import { changePaused, changeTrackPath } from '../../actions/player';
 import Checkbox from '../../components/checkbox';
+import Oembed from '../../components/oembed';
 import TweetButton from '../../../mastodon/components/tweet_button';
 
+const mapDispatchToProps = dispatch => ({
+  onTrackUnmount () {
+    dispatch(changePaused(true));
+    dispatch(changeTrackPath(null));
+  },
+});
+
+@connect(null, mapDispatchToProps)
 export default class EmbedModalContent extends ImmutablePureComponent {
 
   static propTypes = {
+    onTrackUnmount: PropTypes.func.isRequired,
     status: ImmutablePropTypes.map.isRequired,
   }
 
   state = {
-    loading: false,
+    loading: true,
     oembed: null,
     showinfo: true,
   };
 
   componentDidMount () {
-    this.loadIframe();
+    this.loadOembed();
   }
 
   componentDidUpdate (prevProps, prevState) {
     const { showinfo } = this.state;
 
     if (prevState.showinfo !== showinfo) {
-      this.loadIframe();
+      this.loadOembed();
     }
   }
 
-  loadIframe () {
+  loadOembed () {
     const { status } = this.props;
     const { showinfo } = this.state;
 
@@ -38,21 +52,7 @@ export default class EmbedModalContent extends ImmutablePureComponent {
 
     axios.post('/api/web/embed', { url: status.get('url'), hideinfo: Number(!showinfo) }).then(res => {
       this.setState({ loading: false, oembed: res.data });
-
-      const iframeDocument = this.iframe.contentWindow.document;
-
-      iframeDocument.open();
-      iframeDocument.write(res.data.html);
-      iframeDocument.close();
-
-      iframeDocument.body.style.margin = 0;
-      this.iframe.width  = iframeDocument.body.scrollWidth;
-      this.iframe.height = status.has('track') ? this.iframe.width : iframeDocument.body.scrollHeight;
     });
-  }
-
-  setIframeRef = c =>  {
-    this.iframe = c;
   }
 
   handleTextareaClick = (e) => {
@@ -60,8 +60,10 @@ export default class EmbedModalContent extends ImmutablePureComponent {
   }
 
   handleChangeShowInfo = () => {
+    const { onTrackUnmount } = this.props;
     const { showinfo } = this.state;
 
+    onTrackUnmount();
     this.setState({ showinfo: !showinfo });
   }
 
@@ -124,12 +126,9 @@ export default class EmbedModalContent extends ImmutablePureComponent {
             <FormattedMessage id='embed.preview' defaultMessage='Here is what it will look like:' />
           </p>
 
-          <iframe
-            className='embed-modal-iframe'
-            frameBorder='0'
-            ref={this.setIframeRef}
-            title='preview'
-          />
+          {status.has('track') ?
+            <EmbedMusicvideo infoHidden={!showinfo} preview statusId={status.get('id')} /> :
+            <Oembed oembed={oembed} />}
         </div>
       </div>
     );

@@ -10,6 +10,7 @@ import { fetchContext } from '../../../mastodon/actions/statuses';
 
 const mapStateToProps = (state) => ({
   hasBackup: !!state.getIn(['compose', 'backup']),
+  me: state.getIn(['meta', 'me']),
 });
 
 @connect(mapStateToProps)
@@ -17,6 +18,7 @@ export default class StatusFormModal extends React.PureComponent {
 
   static propTypes = {
     hasBackup: PropTypes.bool,
+    me: PropTypes.number,
     dispatch: PropTypes.func.isRequired,
   };
 
@@ -48,7 +50,7 @@ export default class StatusFormModal extends React.PureComponent {
   render () {
     return (
       <div className='modal-root__modal status-form-modal'>
-        <AccountContainer />
+        <AccountContainer id={this.props.me} />
         <StatusFormContainer useModal />
       </div>
     );

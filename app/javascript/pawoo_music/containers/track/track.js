@@ -20,6 +20,7 @@ class Track extends ImmutablePureComponent {
 
   static propTypes = {
     fitContain: PropTypes.bool,
+    overriddenControlVisibility: PropTypes.bool,
     pathToTrackBeingPlayed: ImmutablePropTypes.list,
     track: ImmutablePropTypes.map.isRequired,
     dispatch: PropTypes.func.isRequired,
@@ -42,7 +43,7 @@ class Track extends ImmutablePureComponent {
   }
 
   render() {
-    const { fitContain, track, pathToTrackBeingPlayed } = this.props;
+    const { fitContain, track, overriddenControlVisibility, pathToTrackBeingPlayed } = this.props;
     if (!track) {
       return null;
     }
@@ -54,7 +55,7 @@ class Track extends ImmutablePureComponent {
     return (
       <div className={classNames('track', { 'fit-contain': fitContain })} style={thumbnailStyle}>
         {Immutable.List(['statuses', track.get('id'), 'track']).equals(pathToTrackBeingPlayed) ? (
-          <Musicvideo bannerHidden />
+          <Musicvideo bannerHidden overriddenControlVisibility={overriddenControlVisibility} />
         ) : (
           <div className='thumbnail'>
             <img className='thumbnail-image' src={track.getIn(['video', 'image'], defaultArtwork)} alt='thumbnail' />
