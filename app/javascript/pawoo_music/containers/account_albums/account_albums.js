@@ -10,7 +10,7 @@ import AccountTimelineContainer from '../account_timeline';
 import StatusList from '../../components/status_list';
 import Timeline from '../../components/timeline';
 import { makeGetAccount } from '../../../mastodon/selectors';
-import MediaPostContainer from '../media_post';
+import AlbumPostContainer from '../album_post';
 import {
   openAccountGallery,
   changeAccountGallery,
@@ -93,7 +93,7 @@ export default class AccountAlbums extends PureComponent {
         const prepend = account && (
           <div className='prepend'>
             <AccountHeaderContainer account={account} />
-            {me === accountId && <MediaPostContainer />}
+            {me === accountId && <AlbumPostContainer />}
           </div>
         );
 

@@ -458,12 +458,6 @@ export function hideTrackComposeModal() {
   };
 };
 
-export function resetTrackComposeData() {
-  return {
-    type: TRACK_COMPOSE_RESET_DATA,
-  };
-}
-
 export function setTrackComposeData(track) {
   return {
     type: TRACK_COMPOSE_SET_DATA,
