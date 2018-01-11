@@ -72,6 +72,8 @@ export default class StatusReactions extends ImmutablePureComponent {
 
   static propTypes = {
     loggedOut: PropTypes.bool.isRequired,
+    onActive: PropTypes.func,
+    onInactive: PropTypes.func,
     onReact: PropTypes.func.isRequired,
     onUnreact: PropTypes.func.isRequired,
     status: ImmutablePropTypes.map.isRequired,
@@ -109,7 +111,12 @@ export default class StatusReactions extends ImmutablePureComponent {
           />
         ))}
         <li className='add'>
-          <EmojiPickerDropdown icon='plus' onPickEmoji={this.handlePick} />
+          <EmojiPickerDropdown
+            icon='plus'
+            onOpen={this.props.onActive}
+            onClose={this.props.onInactive}
+            onPickEmoji={this.handlePick}
+          />
         </li>
       </ul>
     );

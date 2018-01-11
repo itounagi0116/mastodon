@@ -72,16 +72,25 @@ export default class EmbedMusicvideo extends React.PureComponent {
   }
 
   handleMouseLeave = () => {
+    this.active = false;
     this.setState({ visibleControls: false });
   }
 
   hideLogoDebounce = debounce(() => {
-    this.setState({ visibleControls: false });
+    this.setState({ visibleControls: this.active });
   }, 3000);
 
   changeVisibleControls () {
     this.setState({ visibleControls: true });
     this.hideLogoDebounce();
+  }
+
+  handleActive = () => {
+    this.active = true;
+  }
+
+  handleInactive = () => {
+    this.active = false;
   }
 
   renderInfo () {
@@ -107,7 +116,11 @@ export default class EmbedMusicvideo extends React.PureComponent {
             </div>
             <div className='actions'>
               <FollowButton id={status.get('account')} dummy={preview && 'follow'} onlyFollow embed />
-              <StatusReactions status={status} />
+              <StatusReactions
+                onActive={this.handleActive}
+                onInactive={this.handleInactive}
+                status={status}
+              />
             </div>
           </div>
         )}

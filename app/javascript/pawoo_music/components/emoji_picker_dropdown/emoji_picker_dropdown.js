@@ -28,6 +28,8 @@ export default class EmojiPickerDropdown extends React.PureComponent {
   static propTypes = {
     icon: PropTypes.string,
     intl: PropTypes.object.isRequired,
+    onOpen: PropTypes.func,
+    onClose: PropTypes.func,
     onPickEmoji: PropTypes.func.isRequired,
   };
 
@@ -51,7 +53,7 @@ export default class EmojiPickerDropdown extends React.PureComponent {
   }
 
   render () {
-    const { icon, intl } = this.props;
+    const { icon, intl, onOpen, onClose } = this.props;
 
     const categories = {
       people: {
@@ -92,7 +94,7 @@ export default class EmojiPickerDropdown extends React.PureComponent {
 
     return (
       <div className='emoji-picker-dropdown'>
-        <Dropdown icon={icon} ref={this.setRef} title={intl.formatMessage(messages.emoji)}>
+        <Dropdown icon={icon} onOpen={onOpen} onClose={onClose} ref={this.setRef} title={intl.formatMessage(messages.emoji)}>
           {EmojiPicker &&
             (<EmojiPicker emojione={settings} onChange={this.handleChange} searchPlaceholder={intl.formatMessage(messages.emoji_search)} categories={categories} search />)
           }

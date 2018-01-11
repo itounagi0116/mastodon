@@ -62,12 +62,28 @@ export default class Dropdown extends React.PureComponent {
     icon: PropTypes.string.isRequired,
     title: PropTypes.string,
     isLogin: PropTypes.bool,
+    onOpen: PropTypes.func,
+    onClose: PropTypes.func,
     dispatch: PropTypes.func.isRequired,
   };
 
   state = {
     expanded: false,
   };
+
+  componentWillUpdate (props, { expanded }) {
+    if (expanded !== this.state.expanded) {
+      if (expanded) {
+        if (this.props.onOpen) {
+          this.props.onOpen();
+        }
+      } else {
+        if (this.props.onClose) {
+          this.props.onClose();
+        }
+      }
+    }
+  }
 
   handleClose = () => {
     const { dispatch } = this.props;
