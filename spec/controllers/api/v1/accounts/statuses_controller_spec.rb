@@ -75,4 +75,38 @@ describe Api::V1::Accounts::StatusesController do
       expect(response).to have_http_status(:success)
     end
   end
+
+  describe 'GET #index with excluded album' do
+    context 'without only tracks' do
+      it 'returns http unprocessable entity' do
+        status = Fabricate(:status, music: Fabricate(:album))
+        get :index, params: { account_id: status.account_id, excluded_album: status }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context 'with invisible album' do
+      it 'returns http forbidden' do
+        account = Fabricate(:account)
+        status = Fabricate(:status, music: Fabricate(:album), visibility: :direct)
+
+        get :index, params: { account_id: account.id, excluded_album: status, only_tracks: true }
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    it 'returns statuses not included in the specified album' do
+      account = Fabricate(:account)
+      album = Fabricate(:album)
+      album_status = Fabricate(:status, music: album)
+      tracks = 2.times.map { Fabricate(:track) }
+      track_statuses = tracks.map { |track| Fabricate(:status, account: account, music: track) }
+      AlbumTrack.create!(album: album, track: tracks[0], position: 0.5)
+
+      get :index, params: { account_id: account.id, excluded_album: album_status, only_tracks: true }
+
+      expect(body_as_json.pluck(:id)).not_to include track_statuses[0].id
+    end
+  end
 end

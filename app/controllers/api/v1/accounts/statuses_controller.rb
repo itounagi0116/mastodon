@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 class Api::V1::Accounts::StatusesController < Api::BaseController
+  include Authorization
+
   before_action :set_account
+  before_action :validate_params
   after_action :insert_pagination_headers
 
   respond_to :json
@@ -15,6 +18,16 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
 
   def set_account
     @account = Account.find(params[:account_id])
+  end
+
+  def validate_params
+    if params[:excluded_album]
+      if params[:only_tracks].blank?
+        raise Mastodon::ValidationError, 'excluded_album parameter is allowed only if only_tracks is set'
+      end
+
+      authorize excluded_album_status, :show?
+    end
   end
 
   def load_statuses
@@ -33,6 +46,7 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
       statuses.merge!(only_albums_scope) if params[:only_albums]
       statuses.merge!(pinned_scope) if params[:pinned]
       statuses.merge!(no_replies_scope) if params[:exclude_replies]
+      statuses.merge!(no_album_scope) if params[:excluded_album]
     end
   end
 
@@ -76,8 +90,18 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
     Status.without_replies
   end
 
+  def excluded_album_status
+    @excluded_album_status ||= Status.find_by!(id: params[:excluded_album], music_type: 'Album')
+  end
+
+  def no_album_scope
+    Status.joins('LEFT OUTER JOIN album_tracks ON album_tracks.track_id=statuses.music_id')
+          .having('coalesce(every(album_tracks.album_id!=?),TRUE)', excluded_album_status.music_id)
+          .group(:id)
+  end
+
   def pagination_params(core_params)
-    params.permit(:limit, :only_media, :only_musics, :only_tracks, :only_albums, :exclude_replies).merge(core_params)
+    params.permit(:limit, :only_media, :only_musics, :only_tracks, :only_albums, :excluded_album, :exclude_replies).merge(core_params)
   end
 
   def insert_pagination_headers

@@ -4,6 +4,7 @@ import { changeAlbumId, changeAlbumTrackIndex } from './player';
 export const ALBUMS_TRACKS_FETCH_REQUEST = 'ALBUMS_TRACKS_FETCH_REQUEST';
 export const ALBUMS_TRACKS_FETCH_SUCCESS = 'ALBUMS_TRACKS_FETCH_SUCCESS';
 export const ALBUMS_TRACKS_FETCH_FAIL = 'ALBUMS_TRACKS_FETCH_FAIL';
+export const ALBUMS_TRACKS_SET = 'ALBUMS_TRACKS_SET';
 
 function fetchAlbumTracksPromise(dispatch, getState, id, { compose = false } = {}) {
   dispatch(fetchAlbumTracksRequest());
@@ -53,5 +54,12 @@ export function fetchAlbumTracksFail(error) {
   return {
     type: ALBUMS_TRACKS_FETCH_FAIL,
     error,
+  };
+}
+
+export function setAlbumTracks(id, tracks) {
+  return {
+    type: ALBUMS_TRACKS_SET,
+    tracks,
   };
 }

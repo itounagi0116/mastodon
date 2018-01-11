@@ -44,6 +44,10 @@ import {
   SCHEDULED_STATUSES_ADDITION,
 } from '../../pawoo_music/actions/schedules';
 import {
+  ALBUM_COMPOSE_UNREGISTERED_TRACKS_REFRESH_SUCCESS,
+  ALBUM_COMPOSE_UNREGISTERED_TRACKS_EXPAND_SUCCESS,
+} from '../../pawoo_music/actions/album_compose';
+import {
   ALBUMS_TRACKS_FETCH_SUCCESS,
 } from '../../pawoo_music/actions/albums_tracks';
 import {
@@ -155,6 +159,8 @@ export default function statuses(state = initialState, action) {
   case SCHEDULED_STATUSES_FETCH_SUCCESS:
   case SCHEDULED_STATUSES_EXPAND_SUCCESS:
   case SCHEDULED_STATUSES_ADDITION:
+  case ALBUM_COMPOSE_UNREGISTERED_TRACKS_REFRESH_SUCCESS:
+  case ALBUM_COMPOSE_UNREGISTERED_TRACKS_EXPAND_SUCCESS:
   case ALBUMS_TRACKS_FETCH_SUCCESS:
   case TRACKS_ALBUMS_FETCH_SUCCESS:
     return normalizeStatuses(state, action.statuses);

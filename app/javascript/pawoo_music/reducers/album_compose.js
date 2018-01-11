@@ -1,12 +1,11 @@
 import Immutable from 'immutable';
 import {
-  ALBUM_COMPOSE_TRACKS_REFRESH_REQUEST,
-  ALBUM_COMPOSE_TRACKS_REFRESH_SUCCESS,
-  ALBUM_COMPOSE_TRACKS_REFRESH_FAIL,
-  ALBUM_COMPOSE_REGISTER,
-  ALBUM_COMPOSE_REGISTERED_TRACKS_REARRANGE,
-  ALBUM_COMPOSE_UNREGISTER,
+  ALBUM_COMPOSE_TRACK_REGISTER,
+  ALBUM_COMPOSE_REGISTERED_TRACKS_SET,
+  ALBUM_COMPOSE_TRACK_UNREGISTER,
   ALBUM_COMPOSE_UNREGISTERED_TRACKS_REARRANGE,
+  ALBUM_COMPOSE_UNREGISTERED_TRACKS_REFRESH_SUCCESS,
+  ALBUM_COMPOSE_UNREGISTERED_TRACKS_EXPAND_SUCCESS,
   ALBUM_COMPOSE_ALBUM_TITLE_CHANGE,
   ALBUM_COMPOSE_ALBUM_TEXT_CHANGE,
   ALBUM_COMPOSE_ALBUM_IMAGE_CHANGE,
@@ -18,7 +17,9 @@ import {
   ALBUM_COMPOSE_HIDE_MODAL,
   ALBUM_COMPOSE_SET_DATA,
 } from '../actions/album_compose';
-import { ALBUMS_TRACKS_FETCH_SUCCESS } from '../actions/albums_tracks';
+import {
+  ALBUMS_TRACKS_FETCH_SUCCESS,
+} from '../actions/albums_tracks';
 
 const initialState = Immutable.fromJS({
   error: null,
@@ -26,21 +27,15 @@ const initialState = Immutable.fromJS({
   modal: false,
   registeredTracks: [],
   unregisteredTracks: [],
-  isTracksLoading: false,
-  tracks: Immutable.Map(),
+  unregisteredTracksNext: null,
   album: {
+    id: null,
     image: null,
     title: '',
     text: '',
     visibility: 'public',
   },
 });
-
-const maegeTracks = (state, tracks) => {
-  return state.get('tracks').withMutations(mutable => {
-    return tracks.reduce((map, track) => map.set(track.id, Immutable.fromJS(track)), mutable);
-  });
-};
 
 function setAlbumData(state, album) {
   return state.withMutations((map) => {
@@ -50,36 +45,33 @@ function setAlbumData(state, album) {
   });
 }
 
+function setAlbumRegisteredTracks(state, registeredTracks) {
+  return state.merge([
+    [
+      'registeredTracks',
+      registeredTracks,
+    ], [
+      'unregisteredTracks',
+      state.get('unregisteredTracks').filter(id => !registeredTracks.includes(id)),
+    ],
+  ]);
+}
+
+function setAlbumUnregisteredTracks(state, unregisteredTracks) {
+  return state.merge([
+    [
+      'registeredTracks',
+      state.get('registeredTracks').filter(id => !unregisteredTracks.includes(id)),
+    ], [
+      'unregisteredTracks',
+      unregisteredTracks,
+    ],
+  ]);
+}
+
 export default function album_compose(state = initialState, action) {
   switch (action.type) {
-  case ALBUM_COMPOSE_TRACKS_REFRESH_REQUEST:
-    return state.set('isTracksLoading', true);
-  case ALBUM_COMPOSE_TRACKS_REFRESH_FAIL:
-    return state.set('isTracksLoading', false);
-  case ALBUM_COMPOSE_TRACKS_REFRESH_SUCCESS:
-    return state.merge([
-      ['isTracksLoading', false],
-      ['tracks', maegeTracks(state, action.tracks)],
-      [
-        'registeredTracks',
-        state.get('registeredTracks').filter(
-          id => action.tracks.find(
-            track => track.id === id
-          )
-        ),
-      ], [
-        'unregisteredTracks',
-        state.get('unregisteredTracks').withMutations(
-          mutable => action.tracks.reduce((map, track) => {
-            if (!map.includes(track.id) && !state.get('registeredTracks').includes(track.id)) {
-              return map.push(track.id);
-            }
-            return map;
-          }, mutable)
-        ),
-      ],
-    ]);
-  case ALBUM_COMPOSE_REGISTER:
+  case ALBUM_COMPOSE_TRACK_REGISTER:
     return state.merge([
       [
         'registeredTracks',
@@ -90,12 +82,9 @@ export default function album_compose(state = initialState, action) {
         state.get('unregisteredTracks').delete(action.source),
       ],
     ]);
-  case ALBUM_COMPOSE_REGISTERED_TRACKS_REARRANGE:
-    return state.update('registeredTracks',
-      tracks => tracks.delete(action.source)
-                     .insert(action.destination, tracks.get(action.source))
-    );
-  case ALBUM_COMPOSE_UNREGISTER:
+  case ALBUM_COMPOSE_REGISTERED_TRACKS_SET:
+    return setAlbumRegisteredTracks(state, action.tracks);
+  case ALBUM_COMPOSE_TRACK_UNREGISTER:
     return state.merge([
       [
         'unregisteredTracks',
@@ -109,8 +98,20 @@ export default function album_compose(state = initialState, action) {
   case ALBUM_COMPOSE_UNREGISTERED_TRACKS_REARRANGE:
     return state.update('unregisteredTracks',
       tracks => tracks.delete(action.source)
-                     .insert(action.destination, tracks.get(action.source))
+                      .insert(action.destination, tracks.get(action.source))
     );
+  case ALBUM_COMPOSE_UNREGISTERED_TRACKS_REFRESH_SUCCESS:
+    return setAlbumUnregisteredTracks(
+      state.set('unregisteredTracksNext', action.next),
+      Immutable.List(action.statuses.map((status) => status.id))
+    );
+  case ALBUM_COMPOSE_UNREGISTERED_TRACKS_EXPAND_SUCCESS:
+    return state.merge({
+      unregisteredTracks: state.get('unregisteredTracks').concat(
+        Immutable.List(action.statuses.map((status) => status.id))
+      ),
+      unregisteredTracksNext: action.next,
+    });
   case ALBUM_COMPOSE_ALBUM_TITLE_CHANGE:
     return state.setIn(['album', 'title'], action.value);
   case ALBUM_COMPOSE_ALBUM_TEXT_CHANGE:
@@ -132,16 +133,10 @@ export default function album_compose(state = initialState, action) {
   case ALBUM_COMPOSE_SET_DATA:
     return setAlbumData(state, action.album);
   case ALBUMS_TRACKS_FETCH_SUCCESS:
-    const registeredTracks = Immutable.List(action.statuses.map((status) => status.id));
-    return state.merge([
-      [
-        'registeredTracks',
-        registeredTracks,
-      ], [
-        'unregisteredTracks',
-        state.get('unregisteredTracks').filter(id => !registeredTracks.includes(id)),
-      ],
-    ]);
+    return setAlbumRegisteredTracks(
+      state,
+      Immutable.List(action.statuses.map((status) => status.id))
+    );
   default:
     return state;
   }
