@@ -61,13 +61,15 @@
       > .status-reactions {
         justify-content: flex-end;
 
-        > li:not(.add), > li.add .icon {
+        > li:not(.add), > li.add .dropdown-trigger {
           background-color: rgba(0, 0, 0, 0.7);
           border: none;
-        }
-
-        > li:not(.add) {
           color: #ffffff;
+
+          &.reacted, &:hover {
+            background: rgba(208, 2, 27, 0.7);
+            border-color: var(--strong1);
+          }
         }
 
         > li.add {

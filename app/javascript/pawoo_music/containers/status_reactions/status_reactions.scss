@@ -18,6 +18,12 @@ ul.status-reactions {
       box-sizing: border-box;
 
       padding: var(--padding5);
+
+      &.reacted, &:hover {
+        background: #D0021B10;
+        border-color: var(--strong1);
+        color: var(--strong1);
+      }
     }
 
     &:not(.add) {
