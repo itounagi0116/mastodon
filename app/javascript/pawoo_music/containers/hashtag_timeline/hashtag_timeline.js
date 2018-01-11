@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { refreshHashtagTimeline, expandHashtagTimeline } from '../../../mastodon/actions/timelines';
-import StatusTimelineContainer from '../../containers/status_timeline';
 import { connectHashtagStream } from '../../actions/streaming';
 import { updateTimelineTitle } from '../../actions/timeline';
 import { changeFooterType } from '../../actions/footer';
+import StatusTimelineContainer from '../status_timeline';
 
 @connect()
 export default class HashtagTimeline extends PureComponent {

@@ -6,7 +6,7 @@ import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import DropdownMenu from '../../components/dropdown_menu';
 import Icon from '../../components/icon';
-import EmbedModalContent from '../../components/embed_modal_content';
+import EmbedModalContent from '../embed_modal_content';
 import { makeGetStatus } from '../../../mastodon/selectors';
 import {
   replyCompose,

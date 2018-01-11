@@ -1,16 +1,28 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { FormattedMessage } from 'react-intl';
+import { connect } from 'react-redux';
 import axios from 'axios';
-import Checkbox from '../checkbox';
+import EmbedMusicvideo from '../embed_musicvideo';
+import { changePaused, changeTrackPath } from '../../actions/player';
+import Checkbox from '../../components/checkbox';
 import Oembed from '../../components/oembed';
-import EmbedMusicvideo from '../../containers/embed_musicvideo';
 import TweetButton from '../../../mastodon/components/tweet_button';
 
+const mapDispatchToProps = dispatch => ({
+  onTrackUnmount () {
+    dispatch(changePaused(true));
+    dispatch(changeTrackPath(null));
+  },
+});
+
+@connect(null, mapDispatchToProps)
 export default class EmbedModalContent extends ImmutablePureComponent {
 
   static propTypes = {
+    onTrackUnmount: PropTypes.func.isRequired,
     status: ImmutablePropTypes.map.isRequired,
   }
 
@@ -48,8 +60,10 @@ export default class EmbedModalContent extends ImmutablePureComponent {
   }
 
   handleChangeShowInfo = () => {
+    const { onTrackUnmount } = this.props;
     const { showinfo } = this.state;
 
+    onTrackUnmount();
     this.setState({ showinfo: !showinfo });
   }
 

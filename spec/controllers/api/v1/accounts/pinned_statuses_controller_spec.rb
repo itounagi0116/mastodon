@@ -33,9 +33,9 @@ describe Api::V1::Accounts::PinnedStatusesController do
       it 'return only music statuses' do
         get :index, params: { account_id: user.account.id, only_musics: true }
 
-        expect(body_as_json.size).to eq 1 # TODO: アルバムも含めたときに2に変更する
-        # expect(body_as_json[0][:album]).to be_truthy
-        expect(body_as_json[0][:track]).to be_truthy
+        expect(body_as_json.size).to eq 2
+        expect(body_as_json[0][:album]).to be_truthy
+        expect(body_as_json[1][:track]).to be_truthy
       end
     end
 
