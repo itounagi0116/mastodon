@@ -10,7 +10,6 @@ import store from '../../mastodon/store';
 import { getLocale } from '../../mastodon/locales';
 import App from '../containers/app';
 import subscribeAsPlayer from '../player';
-import { setNavigate } from '../util/navigator';
 
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
@@ -18,8 +17,6 @@ addLocaleData(localeData);
 const initialState = JSON.parse(document.getElementById('initial-state').textContent);
 store.dispatch(hydrateStore(initialState));
 subscribeAsPlayer(store);
-
-setNavigate(url => location.href = url);
 
 export default class TimelineEntry extends React.PureComponent {
 
