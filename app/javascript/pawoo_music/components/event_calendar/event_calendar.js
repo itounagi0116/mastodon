@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import Immutable from 'immutable';
 import { connect }   from 'react-redux';
 import PropTypes from 'prop-types';
 import { defineMessages, injectIntl } from 'react-intl';
@@ -7,20 +6,11 @@ import { FormattedDate } from 'react-intl';
 import Link from '../../components/link_wrapper';
 import TagBox from '../tag_box';
 import { changeTargetColumn } from '../../actions/column';
+import events from '../../events';
 
 const messages = defineMessages({
   title: { id: 'event_calendar.title', defaultMessage: 'Event Tag' },
 });
-
-const events = Immutable.fromJS([
-  {
-    start_date: new Date('2018/04/29'),
-    end_date: new Date('2018/04/29'),
-    hashtag: '2018M3春',
-  },
-]);
-
-// TODO: サーバで設定可能にする
 
 const mapStateToProps = state => ({
   target: state.getIn(['pawoo_music', 'column', 'target']),
