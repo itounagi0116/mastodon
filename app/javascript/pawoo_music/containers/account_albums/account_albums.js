@@ -13,7 +13,7 @@ import { makeGetAccount } from '../../../mastodon/selectors';
 import MediaPostContainer from '../media_post';
 import {
   openAccountGallery,
-  changeAccountGalleryAccount,
+  changeAccountGallery,
   expandAccountGalleryTimeline,
 } from '../../actions/account_gallery';
 
@@ -67,14 +67,13 @@ export default class AccountAlbums extends PureComponent {
   componentWillMount () {
     const { dispatch, match } = this.props;
 
-    dispatch(changeAccountGalleryAccount(match.params.acct));
-    dispatch(expandAccountGalleryTimeline('album'));
+    dispatch(changeAccountGallery(match.params.acct, 'album'));
     dispatch(openAccountGallery());
   }
 
   componentWillReceiveProps ({ match }) {
     if (this.props.match.params.acct !== match.params.acct) {
-      this.props.dispatch(changeAccountGalleryAccount(match.params.acct));
+      this.props.dispatch(changeAccountGallery(match.params.acct, 'album'));
     }
   }
 

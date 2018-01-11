@@ -9,22 +9,22 @@ export const ACCOUNT_GALLERY_ACCOUNT_CHANGE = 'ACCOUNT_GALLERY_ACCOUNT_CHANGE';
 export const ACCOUNT_GALLERY_ACCOUNTS_FETCH_SUCCESS = 'ACCOUNT_GALLERY_ACCOUNTS_FETCH_SUCCESS';
 export const ACCOUNT_GALLERY_ACCOUNTS_FETCH_FAIL = 'ACCOUNT_GALLERY_ACCOUNTS_FETCH_FAIL';
 
-function changeAccountGalleryAccountIdentified(acct, id) {
+function changeAccountGalleryIdentified(acct, id, onlyMusics) {
   return (dispatch, getState) => {
     const displayName = displayNameEllipsis(makeGetAccount()(getState(), id));
 
-    dispatch(refreshPinnedStatusTimeline(id, { onlyMusics: true }));
-    dispatch(refreshAccountTimeline(id, { onlyMusics: true }));
+    dispatch(refreshPinnedStatusTimeline(id, { onlyMusics }));
+    dispatch(refreshAccountTimeline(id, { onlyMusics }));
     dispatch(updateTimelineTitle(`${displayName} のタイムライン`)); // TODO: intl
     dispatch({ type: ACCOUNT_GALLERY_ACCOUNT_CHANGE, acct, id });
   };
 }
 
-function changeAccountGalleryAccountNotFound(acct) {
+function changeAccountGalleryNotFound(acct) {
   return { type: ACCOUNT_GALLERY_ACCOUNT_CHANGE, acct, id: null };
 }
 
-export function changeAccountGalleryAccount(acct) {
+export function changeAccountGallery(acct, onlyMusics) {
   return (dispatch, getState) => {
     const state = getState();
     const id = state.getIn(['pawoo_music', 'acct_map', acct]);
@@ -32,7 +32,7 @@ export function changeAccountGalleryAccount(acct) {
     dispatch(updateTimelineTitle(`${acct} のタイムライン`)); // TODO: intl
 
     if (id) {
-      dispatch(changeAccountGalleryAccountIdentified(acct, id));
+      dispatch(changeAccountGalleryIdentified(acct, id, onlyMusics));
     } else {
       api(getState).get('/api/v1/accounts/search', {
         params: {
@@ -47,11 +47,11 @@ export function changeAccountGalleryAccount(acct) {
         });
 
         dispatch(data.length > 0 ?
-          changeAccountGalleryAccountIdentified(acct, data[0].id) :
-          changeAccountGalleryAccountNotFound(acct));
+          changeAccountGalleryIdentified(acct, data[0].id, onlyMusics) :
+          changeAccountGalleryNotFound(acct));
       }, () => {
         dispatch({ type: ACCOUNT_GALLERY_ACCOUNTS_FETCH_FAIL });
-        dispatch(changeAccountGalleryAccountNotFound(acct));
+        dispatch(changeAccountGalleryNotFound(acct));
       });
     }
   };
