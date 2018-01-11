@@ -11,6 +11,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import Icon from '../../components/icon';
 import PrivacyDropdown from '../../../mastodon/features/compose/components/privacy_dropdown';
 import GenreTagPicker from '../../components/genre_tag_picker';
+import MusicCompose from '../../components/music_compose';
 import {
   refreshTracks,
   register,
@@ -109,6 +110,8 @@ export default class AlbumCompose extends ImmutablePureComponent {
   static propTypes = {
     me: PropTypes.number.isRequired,
     album: ImmutablePropTypes.map.isRequired,
+    isActive: PropTypes.func,
+    onReplace: PropTypes.func,
     onMapId: PropTypes.func.isRequired,
     onFetchAlbumTracks: PropTypes.func.isRequired,
     tracks: ImmutablePropTypes.map.isRequired,
@@ -288,12 +291,12 @@ export default class AlbumCompose extends ImmutablePureComponent {
   }
 
   render () {
-    const { registeredTracks, unregisteredTracks, album, intl } = this.props;
+    const { isActive, onReplace, registeredTracks, unregisteredTracks, album, intl } = this.props;
     const { albumImageTitle } = this.state;
 
     return (
-      <div className='album-compose'>
-        <div className='content'>
+      <MusicCompose isActive={isActive} onReplace={onReplace}>
+        <div className='album-compose-content'>
           <div className='form-content'>
             <img className='thumbnail' src={this.image} alt='album thumbnail' />
             <form>
@@ -412,7 +415,7 @@ export default class AlbumCompose extends ImmutablePureComponent {
             </div>
           </DragDropContext>
         </div>
-      </div>
+      </MusicCompose>
     );
   }
 

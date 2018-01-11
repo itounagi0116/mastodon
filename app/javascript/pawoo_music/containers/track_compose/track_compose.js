@@ -67,6 +67,7 @@ import { navigate } from '../../util/navigator';
 import PrivacyDropdown from '../../../mastodon/features/compose/components/privacy_dropdown';
 import GenreTagPicker from '../../components/genre_tag_picker';
 import ColorTrigger from '../../components/color_trigger';
+import MusicCompose from '../../components/music_compose';
 import { isMobile } from '../../util/is_mobile';
 
 const messages = defineMessages({
@@ -274,6 +275,8 @@ const mapDispatchToProps = (dispatch) => ({
 export default class TrackCompose extends ImmutablePureComponent {
 
   static propTypes = {
+    isActive: PropTypes.func,
+    onReplace: PropTypes.func,
     onChangeTrackPath: PropTypes.func.isRequired,
     onChangeTrackTitle: PropTypes.func.isRequired,
     onChangeTrackArtist: PropTypes.func.isRequired,
@@ -626,12 +629,12 @@ export default class TrackCompose extends ImmutablePureComponent {
   }
 
   render () {
-    const { track, intl } = this.props;
+    const { isActive, onReplace, track, intl } = this.props;
     const { trackMusicTitle, trackVideoImageTitle } = this.state;
 
     return (
-      <div className={classNames('track-compose', { mobile })}>
-        <div className='content'>
+      <MusicCompose isActive={isActive} onReplace={onReplace}>
+        <div className='track-compose-content'>
           <div className='musicvideo-preview'>
             <Musicvideo label={intl.formatMessage(messages.preview)} />
           </div>
@@ -1272,7 +1275,7 @@ export default class TrackCompose extends ImmutablePureComponent {
             </Delay>
           </div>
         </div>
-      </div>
+      </MusicCompose>
     );
   }
 

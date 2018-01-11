@@ -1,0 +1,19 @@
+.music-compose {
+  --video-width: 600px;
+  --form-width: 400px;
+  --controls-height: 30px;
+  color: #C3C3C3;
+  background-color: #1F1F1F;
+  border-radius: var(--radius-big);
+  text-align: left;
+  box-shadow: var(--shadow-strong);
+
+  &.mobile {
+    padding: var(--padding40);
+  }
+
+  &:not(.mobile) {
+    --scrollbar-margin: var(--padding20);
+    padding: var(--padding40) calc(var(--padding40) - var(--scrollbar-margin)) var(--padding40) var(--padding40);
+  }
+}

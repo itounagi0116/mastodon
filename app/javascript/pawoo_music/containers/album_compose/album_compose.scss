@@ -1,13 +1,6 @@
-.album-compose {
-  --video-width: 600px;
-  --form-width: 400px;
-  --controls-height: 30px;
-  padding: var(--padding40);
-  color: #C3C3C3;
-  background-color: #1F1F1F;
-  border-radius: var(--radius-big);
-  text-align: left;
-  box-shadow: var(--shadow-strong);
+.album-compose-content {
+  align-items: top;
+  width: 100%;
 
   button {
     width: 100%;
@@ -36,109 +29,104 @@
     }
   }
 
-  .content {
-    align-items: top;
-    width: 100%;
+  > div {
+    max-width: var(--video-width);
+  }
 
-    > div {
-      max-width: var(--video-width);
-    }
+  .thumbnail {
+    width: var(--form-width);
+    height: var(--form-width);
+    max-width: 480px;
+    max-height: 480px;
+    object-fit: cover;
+  }
 
-    .thumbnail {
-      width: var(--form-width);
-      height: var(--form-width);
-      max-width: 480px;
-      max-height: 480px;
-      object-fit: cover;
-    }
-
-    @media screen and (max-width: 1000px) {
-      .form-content {
-        width: calc(100% - var(--padding10) * 2);
-        margin: var(--padding10);
-      }
-    }
-
-    @media screen and (min-width: 1001px) {
-      .form-content {
-        width: var(--form-width);
-        margin: 0 0 0 var(--padding40);
-      }
-    }
-
+  @media screen and (max-width: 1000px) {
     .form-content {
+      width: calc(100% - var(--padding10) * 2);
+      margin: var(--padding10);
+    }
+  }
 
-      .tablist {
-        display: flex;
+  @media screen and (min-width: 1001px) {
+    .form-content {
+      width: var(--form-width);
+      margin: 0 0 0 var(--padding40);
+    }
+  }
 
-        button {
-          box-sizing: content-box;
-          margin: var(--padding10);
-          background-color: var(--textcolor);
-          color: var(--color1);
+  .form-content {
+
+    .tablist {
+      display: flex;
+
+      button {
+        box-sizing: content-box;
+        margin: var(--padding10);
+        background-color: var(--textcolor);
+        color: var(--color1);
+      }
+    }
+
+    fieldset {
+      font-size: var(--text20-font);
+      line-height: var(--text20-line);
+
+      & + fieldset {
+        margin-top: 8px;
+      }
+
+      legend {
+        font-weight: bold;
+        width: 100%;
+
+        & + legend {
+          margin-top: var(--padding10);
         }
       }
 
-      fieldset {
-        font-size: var(--text20-font);
-        line-height: var(--text20-line);
+      label {
+        display: block;
+      }
 
-        & + fieldset {
-          margin-top: 8px;
-        }
-
-        legend {
-          font-weight: bold;
-          width: 100%;
-
-          & + legend {
-            margin-top: var(--padding10);
-          }
-        }
+      .checkbox {
+        width: auto;
 
         label {
+          font-size: 14px;
+        }
+
+        .checkbox-label-head {
+          margin-right: 4px;
+        }
+      }
+
+      .checkbox-label {
+        font-size: 12px;
+      }
+
+      .horizontal {
+        display: flex;
+        align-items: center;
+
+        .text {
           display: block;
-        }
-
-        .checkbox {
-          width: auto;
-
-          label {
-            font-size: 14px;
-          }
-
-          .checkbox-label-head {
-            margin-right: 4px;
-          }
-        }
-
-        .checkbox-label {
+          width: 100%;
+          font-weight: normal;
           font-size: 12px;
+
+          flex-grow: 0;
+          flex-shrink: 0;
+          flex-basis: calc(var(--grid) * 20);
         }
 
-        .horizontal {
-          display: flex;
-          align-items: center;
-
-          .text {
-            display: block;
-            width: 100%;
-            font-weight: normal;
-            font-size: 12px;
-
-            flex-grow: 0;
-            flex-shrink: 0;
-            flex-basis: calc(var(--grid) * 20);
-          }
-
-          input[type="range"] {
-            width: calc(100% - var(--padding10) * 2);
-          }
+        input[type="range"] {
+          width: calc(100% - var(--padding10) * 2);
         }
+      }
 
-        .chrome-picker {
-          margin: var(--verticalspace20);
-        }
+      .chrome-picker {
+        margin: var(--verticalspace20);
       }
     }
   }
