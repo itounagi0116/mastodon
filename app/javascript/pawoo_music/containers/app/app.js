@@ -22,7 +22,6 @@ import AccountFollowingContainer from '../account_following';
 import StatusThreadContainer from '../status_thread';
 import { isMobile } from '../../util/is_mobile';
 import { navigate } from '../../util/navigator';
-import StatusPostButtonContainer from '../status_post_button';
 import ModalContextContainer from '../modal_context';
 import PlayControlContainer from '../../../mastodon/features/ui/containers/play_control_container';
 import { openModalFormCompose } from '../../../mastodon/actions/compose';
@@ -215,7 +214,6 @@ export default class App extends PureComponent {
           </div>
           <NotificationsContainer />
           <LoadingBarContainer className='loading-bar' />
-          <StatusPostButtonContainer fixed />
         </ModalContextContainer>
       )
     );
