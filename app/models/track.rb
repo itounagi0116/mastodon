@@ -69,6 +69,7 @@ class Track < ApplicationRecord
   has_one :original_status, -> { where(reblog: nil) }, class_name: 'Status', as: :music
   has_many :video_preparation_errors, inverse_of: :track, dependent: :destroy
   has_many :notifications, as: :activity, dependent: :destroy
+  has_many :reactions, inverse_of: :track, dependent: :destroy
 
   has_attached_file :music
   has_attached_file :video

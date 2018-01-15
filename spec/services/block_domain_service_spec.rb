@@ -9,6 +9,11 @@ RSpec.describe BlockDomainService do
   subject { BlockDomainService.new }
 
   before do
+    DatabaseCleaner.clean
+    DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.clean_with :truncation
+    DatabaseCleaner.start
+
     bad_account
     bad_status1
     bad_status2

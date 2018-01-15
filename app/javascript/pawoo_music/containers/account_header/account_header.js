@@ -9,8 +9,8 @@ import { NavLink } from 'react-router-dom';
 import emojify from '../../../mastodon/emoji';
 import Avatar from '../../components/avatar';
 import DisplayName from '../../components/display_name';
+import DropdownMenu from '../../components/dropdown_menu';
 import FollowButton from '../follow_button';
-import DropdownMenuContainer from '../dropdown_menu';
 import {
   followAccount,
   unfollowAccount,
@@ -249,7 +249,7 @@ export default class AccountHeader extends ImmutablePureComponent {
             <strong><FormattedNumber value={account.get('following_count')} />{extraInfo} </strong>
             <span><FormattedMessage id='account.follows' defaultMessage='Follows' /></span>
           </NavLink>
-          {menu.length > 0 && <DropdownMenuContainer title={intl.formatMessage(messages.more)} items={menu} icon='more-horizontal' />}
+          {menu.length > 0 && <DropdownMenu title={intl.formatMessage(messages.more)} items={menu} icon='more-horizontal' />}
         </div>
 
       </div>

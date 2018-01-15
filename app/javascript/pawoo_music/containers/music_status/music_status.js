@@ -10,6 +10,7 @@ import StatusActionBar from '../status_action_bar';
 import AccountContainer from '../account';
 import StatusMeta from '../../components/status_meta';
 import StatusPrepend from '../../components/status_prepend';
+import StatusReactions from '../status_reactions';
 import TrackContainer from '../track';
 // import AlbumContainer from '../album';
 import FollowButton from '../follow_button';
@@ -108,7 +109,7 @@ export default class MusicStatus extends ImmutablePureComponent {
 
         <div className='credit'>{credit}</div>
         <StatusContent status={status.set('contentHtml', contentHtml)} />
-
+        <StatusReactions status={status} />
         <StatusActionBar status={status} />
 
         <StatusMeta status={status} />

@@ -8,6 +8,7 @@ import account_tracks from './account_tracks';
 import column from './column';
 import timeline from './timeline';
 import footer from './footer';
+import reactions from './reactions';
 
 export default combineReducers({
   acct_map,
@@ -19,4 +20,5 @@ export default combineReducers({
   column,
   timeline,
   footer,
+  reactions,
 });

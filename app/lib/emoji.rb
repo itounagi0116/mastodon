@@ -28,6 +28,10 @@ class Emoji
     @map.keys
   end
 
+  def unicodes
+    @map.values
+  end
+
   private
 
   def codepoint_to_unicode(codepoint)

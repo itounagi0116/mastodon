@@ -1,0 +1,23 @@
+.dropdown.active .dropdown-content {
+  display:    block;
+  position:   absolute;
+  cursor:     auto;
+
+  z-index:    var(--z-index-dropdown);
+
+  border-radius:      var(--radius);
+  background-color:   var(--color1);
+
+  font-size:      var(--text20-font);
+  line-height:    var(--text20-line);
+
+  box-shadow:     var(--shadow2);
+  font-weight:    normal;
+  text-align:     left;
+
+  li.dropdown-sep {
+    height: 1px;
+    background-color: var(--color3);
+    margin: var(--verticalspace20-both);
+  }
+}

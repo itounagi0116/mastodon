@@ -2,11 +2,21 @@
   display: inline-flex;
   align-items: center;
 
+  &.fa, svg {
+    transition: all 0.2s var(--hover-timing);
+  }
+
   svg {
     width: var(--iconsize13);
     height: var(--iconsize13);
     stroke: var(--linkcolor);
-    transition: all 0.2s var(--hover-timing);
+    stroke-width: var(--linkcolor);
+  }
+
+  &.fa {
+    color: var(--linkcolor);
+    font-size: var(--iconsize13);
+    font-weight: normal;
   }
 
   &.clickable {
@@ -17,6 +27,11 @@
         stroke-width: 2px;
         stroke: var(--strong1);
       }
+
+      &.fa {
+        color: var(--strong1);
+        font-weight: bold;
+      }
     }
   }
 
@@ -25,6 +40,10 @@
       svg {
         transform: scale(1.4);
       }
+
+      &.fa {
+        font-size: calc(var(--iconsize13) * 1.4);
+      }
     }
   }
 
@@ -32,12 +51,21 @@
     svg {
       stroke-width: 2px;
     }
+
+    &.fa {
+      font-weight: bold;
+    }
   }
 
   &.active {
     svg {
       stroke: var(--strong1);
       stroke-width: 2px;
+    }
+
+    &.fa {
+      color: var(--strong1);
+      font-weight: bold;
     }
   }
 }
