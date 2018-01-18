@@ -95,9 +95,7 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
   end
 
   def no_album_scope
-    Status.joins('LEFT OUTER JOIN album_tracks ON album_tracks.track_id=statuses.music_id')
-          .having('coalesce(every(album_tracks.album_id!=?),TRUE)', excluded_album_status.music_id)
-          .group(:id)
+    Status.where.not(music_id: AlbumTrack.where(album_id: excluded_album_status.music_id).select(:track_id))
   end
 
   def pagination_params(core_params)
