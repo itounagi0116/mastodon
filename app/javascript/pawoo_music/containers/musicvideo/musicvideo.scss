@@ -6,7 +6,6 @@
 
 .musicvideo {
   position: relative;
-  --controls-container-height: 40px;
 
   .loading {
     position: absolute;
@@ -31,7 +30,6 @@
 
   .canvas-container {
     canvas {
-      pointer-events: none;
       object-fit: contain;
       width: 100%;
       height: 100%;
@@ -44,67 +42,67 @@
   }
 
   .controls-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    pointer-events: none;
     position: absolute;
     bottom: 0;
-    right: 0;
-    left: 0;
     opacity: 0;
-    overflow: hidden;
-    height: 0;
+    height: 100%;
+    width: 100%;
     transition: opacity 240ms ease-in-out;
     background: linear-gradient(transparent, rgba(0, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0.7));
-    pointer-events: none;
 
     &.visible {
-      height: calc(var(--controls-container-height) * 3);
+      opacity: 1;
+
+      > * > * {
+        pointer-events: auto;
+      }
+    }
+
+    > .misc-controls {
+      flex: 1;
+    }
+
+    > .player-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       opacity: 0.7;
+      padding: var(--padding15);
 
-      .controls {
-        display: flex;
+      .toggle {
+        display:      block;
+        margin-right: 10px;
+        flex-shrink:  0;
+        flex-grow:    0;
+        flex-basis:   var(--iconsize10);
+        color:        var(--strong2);
+
+        width:  var(--iconsize10);
+        height: var(--iconsize10);
+        cursor: pointer;
       }
-    }
-  }
 
-  .controls {
-    display: none;
-    justify-content: center;
-    align-items: center;
-    padding: var(--padding15);
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    pointer-events: auto;
-
-    .toggle {
-      display:      block;
-      margin-right: 10px;
-      flex-shrink:  0;
-      flex-grow:    0;
-      flex-basis:   var(--iconsize10);
-      color:        var(--strong2);
-
-      width:  var(--iconsize10);
-      height: var(--iconsize10);
-      cursor: pointer;
-    }
-
-    .icon {
-      svg {
-        stroke: #ffffff;
+      .icon {
+        svg {
+          stroke: #ffffff;
+        }
       }
-    }
 
-    .rc-slider {
-      .rc-slider-track {
-        background-color: #e00000;
-      }
-      .rc-slider-rail {
-        background-color: #ffffff;
-      }
-      .rc-slider-handle {
-        background-color: #e00000;
-        border: solid 2px #e00000;
+      .rc-slider {
+        .rc-slider-track {
+          background-color: #e00000;
+        }
+        .rc-slider-rail {
+          background-color: #ffffff;
+        }
+        .rc-slider-handle {
+          background-color: #e00000;
+          border: solid 2px #e00000;
+        }
       }
     }
   }

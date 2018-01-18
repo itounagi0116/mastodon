@@ -18,6 +18,51 @@ import { isMobile } from '../../util/is_mobile';
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 import lightLeaks from '../../../light_leaks.mp4';
 
+const messages = defineMessages({
+  play: { id: 'pawoo_music.musicvideo.play', defaultMessage: 'Play' },
+  pause: { id: 'pawoo_music.musicvideo.pause', defaultMessage: 'Pause' },
+});
+
+@injectIntl
+class PlayerControls extends ImmutablePureComponent {
+
+  static propTypes = {
+    getCurrentTime: PropTypes.func.isRequired,
+    paused: PropTypes.bool,
+    onSeekDestinationChange: PropTypes.func,
+    onTogglePaused: PropTypes.func.isRequired,
+  }
+
+  componentDidMount () {
+    this.timer = setInterval(() => this.forceUpdate(), 500);
+  }
+
+  componentWillUnmount () {
+    clearInterval(this.timer);
+  }
+
+  render () {
+    const { duration, getCurrentTime, intl, onSeekDestinationChange, onTogglePaused, paused } = this.props;
+
+    return (
+      <div className='player-controls'>
+        <div className='toggle' onClick={onTogglePaused} role='button' tabIndex='0' aria-pressed='false'>
+          {paused ? <Icon icon='play' title={intl.formatMessage(messages.play)} strong /> : <Icon icon='pause' title={intl.formatMessage(messages.pause)} strong />}
+        </div>
+        <Slider
+          min={0}
+          max={duration}
+          step={0.1}
+          value={getCurrentTime()}
+          onChange={onSeekDestinationChange}
+          disabled={[Infinity, NaN].includes(duration)}
+        />
+      </div>
+    );
+  }
+
+}
+
 const mapStateToProps = (state) => ({
   audio: state.getIn(['pawoo_music', 'player', 'audio']),
   duration: state.getIn(['pawoo_music', 'player', 'duration']),
@@ -39,21 +84,15 @@ const mapDispatchToProps = (dispatch) => ({
   },
 });
 
-const messages = defineMessages({
-  play: { id: 'pawoo_music.musicvideo.play', defaultMessage: 'Play' },
-  pause: { id: 'pawoo_music.musicvideo.pause', defaultMessage: 'Pause' },
-});
-
 const mobile = isMobile();
 
 @connect(mapStateToProps, mapDispatchToProps)
-@injectIntl
 class Musicvideo extends ImmutablePureComponent {
 
   static propTypes = {
     bannerHidden: PropTypes.bool,
-    overriddenControlVisibility: PropTypes.bool,
-    intl: PropTypes.object.isRequired,
+    children: PropTypes.node,
+    controlsActive: PropTypes.bool,
     label: PropTypes.string,
     lastSeekDestination: PropTypes.number.isRequired,
     onPausedChange: PropTypes.func.isRequired,
@@ -119,8 +158,6 @@ class Musicvideo extends ImmutablePureComponent {
     if (parent) parent.removeChild(view);
 
     this.canvasContainer.appendChild(view);
-
-    this.timer = setInterval(() => this.forceUpdate(), 500);
   }
 
   componentDidUpdate ({ audio, bannerHidden, lastSeekDestination, paused, track }) {
@@ -181,8 +218,6 @@ class Musicvideo extends ImmutablePureComponent {
 
     this.hideControlsDebounce.cancel();
 
-    clearInterval(this.timer);
-
     this.image.source.removeEventListener('load', this.handleLoadImage);
 
     this.generator.stop();
@@ -215,15 +250,6 @@ class Musicvideo extends ImmutablePureComponent {
     this.showControls();
   }
 
-  handleClick = (e) => {
-    const { showControls } = this.state;
-
-    if (!showControls) {
-      e.stopPropagation();
-      this.showControls();
-    }
-  }
-
   handleMouseEnter = () => {
     this.showControls();
   }
@@ -233,20 +259,16 @@ class Musicvideo extends ImmutablePureComponent {
   }
 
   handleMouseLeave = () => {
-    if (typeof this.props.overriddenControlVisibility !== 'boolean') {
-      this.setState({ showControls: false });
-    }
+    this.setState({ showControls: false });
   }
 
   hideControlsDebounce = debounce(() => {
-    this.setState({ showControls: false });
+    this.setState({ showControls: this.props.controlsActive });
   }, 3000);
 
   showControls () {
-    if (typeof this.props.overriddenControlVisibility !== 'boolean') {
-      this.setState({ showControls: true });
-      this.hideControlsDebounce();
-    }
+    this.setState({ showControls: true });
+    this.hideControlsDebounce();
   }
 
   setCanvasContainerRef = (ref) => {
@@ -272,18 +294,14 @@ class Musicvideo extends ImmutablePureComponent {
   }
 
   render() {
-    const { overriddenControlVisibility, duration, getCurrentTime, intl, label, loading, onSeekDestinationChange, paused } = this.props;
+    const { children, duration, getCurrentTime, label, loading, onSeekDestinationChange, paused } = this.props;
     const { initialized } = this.state;
     const canPlay = ![Infinity, NaN].includes(duration);
-    const showControls = typeof overriddenControlVisibility === 'boolean' ?
-      overriddenControlVisibility : this.state.showControls;
+    const showControls = this.state.showControls;
 
     return (
       <div
         className='musicvideo'
-        onClickCapture={mobile ? this.handleClick : noop}
-        role='button'
-        aria-pressed='false'
         onMouseEnter={mobile ? noop : this.handleMouseEnter}
         onMouseMove={mobile ? noop : this.handleMouseMove}
         onMouseLeave={mobile ? noop : this.handleMouseLeave}
@@ -301,19 +319,13 @@ class Musicvideo extends ImmutablePureComponent {
           <div ref={this.setCanvasContainerRef} />
         </div>
         <div className={classNames('controls-container', { visible: initialized && showControls })}>
-          <div className='controls'>
-            <div className='toggle' onClick={this.handleTogglePaused} role='button' tabIndex='0' aria-pressed='false'>
-              {paused ? <Icon icon='play' title={intl.formatMessage(messages.play)} strong /> : <Icon icon='pause' title={intl.formatMessage(messages.pause)} strong />}
-            </div>
-            <Slider
-              min={0}
-              max={duration}
-              step={0.1}
-              value={getCurrentTime()}
-              onChange={onSeekDestinationChange}
-              disabled={!canPlay}
-            />
-          </div>
+          <div className='misc-controls'>{children}</div>
+          <PlayerControls
+            getCurrentTime={getCurrentTime}
+            paused={paused}
+            onTogglePaused={this.handleTogglePaused}
+            onSeekDestinationChange={onSeekDestinationChange}
+          />
         </div>
       </div>
     );
