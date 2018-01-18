@@ -116,36 +116,6 @@
   @import "../../../styles/variables.scss";
 
 
-  // ---------------------------------------------------------------
-  // emoji-button
-  .emoji-button {
-    display:      block;
-    width:        var(--iconsize15);
-    height:       var(--iconsize15);
-    font-size:    var(--iconsize15);
-
-    img {
-      filter:   grayscale(100%);
-      display:  block;
-      margin:   0;
-      width:    var(--iconsize15);
-      height:   var(--iconsize15);
-    }
-
-    &:hover,
-    &:active,
-    &:focus {
-      img {
-        filter: none;
-      }
-    }
-  }
-
-  .dropdown--active .emoji-button img {
-    filter: none;
-  }
-
-
   // ----------------------------------------------
   // autosuggest block below textarea
   .autosuggest-textarea {
@@ -229,51 +199,16 @@
     top:      0;
     width:    var(--iconsize15);
 
-    .emoji-picker__dropdown {
-      margin:   var(--verticalspace25);
+    .icon.fa {
+      font-size: var(--iconsize15);
+      font-weight: normal;
+    }
 
-      &.dropdown--active::after {
-        bottom: 0;
-        right:  var(--iconsize10);
-      }
+    .emoji-picker-dropdown {
+      margin: var(--verticalspace25);
 
-      &.dropdown--active .dropdown__content {
-        position:     absolute;
-        display:      block;
-        line-height:  18px;
-        max-width:    311px;
-        right:        0;
-        text-align:   left;
-        z-index:      var(--z-index-dropdown);
-
-        & > ul {
-          list-style:     none;
-          background:     $ui-secondary-color;
-          padding:        4px 0;
-          border-radius:  4px;
-          min-width:      140px;
-          position:       relative;
-        }
-
-        &.dropdown__right {
-          right: 0;
-        }
-
-        &.dropdown__left {
-          & > ul {
-            left: -98px;
-          }
-        }
-
-        & > ul > li > a {
-          font-size:    13px;
-          line-height:  18px;
-          display:      block;
-          padding:      4px 14px;
-          box-sizing:   border-box;
-          width:        150px;
-          overflow:     hidden;
-        }
+      .dropdown-content {
+        right: 0;
       }
     }
 
@@ -282,11 +217,6 @@
 
       .dropdown__content {
         position: relative;
-      }
-
-      .icon svg {
-        width: var(--iconsize15);
-        height: var(--iconsize15);
       }
 
       .time-limit-dropdown__dropdown {
@@ -579,205 +509,6 @@
         height: 6px;
         background: $ui-highlight-color;
         border-radius: 6px;
-      }
-    }
-  }
-
-
-  // ---------------------------------------------------------------------------------------------------
-  // Emoji Dialog
-  // ---------------------------------------------------------------------------------------------------
-
-  .emoji-dialog {
-    width:          245px;
-    height:         270px;
-    background:     var(--color1);
-    box-sizing:     border-box;
-    border-radius:  var(--radius);
-    overflow:       hidden;
-    position:       relative;
-    box-shadow:     var(--shadow2);
-
-    .emojione {
-      margin: 0;
-      width: 100%;
-      height: auto;
-    }
-
-    .emoji-dialog-header {
-      padding: 0 10px;
-
-      ul {
-        padding: 0;
-        margin: 0;
-        list-style: none;
-      }
-
-      li {
-        display: inline-block;
-        box-sizing: border-box;
-        padding: 10px 5px;
-        cursor: pointer;
-        border-bottom: 2px solid transparent;
-
-        .emoji {
-          width: 18px;
-          height: 18px;
-        }
-
-        img,
-        svg {
-          width: 18px;
-          height: 18px;
-          filter: grayscale(100%);
-        }
-
-        &:hover {
-          img,
-          svg {
-            filter: grayscale(0);
-          }
-        }
-
-        &.active {
-          border-bottom-color: $ui-highlight-color;
-
-          img,
-          svg {
-            filter: grayscale(0);
-          }
-        }
-      }
-    }
-
-    .emoji-row {
-      box-sizing: border-box;
-      overflow-y: hidden;
-      padding-left: 10px;
-
-      .emoji {
-        display: inline-block;
-        padding: 2.5px;
-        border-radius: 4px;
-      }
-    }
-
-    .emoji-category-header {
-      box-sizing: border-box;
-      overflow-y: hidden;
-      padding: 10px 8px 10px 16px;
-      display: table;
-
-      > * {
-        display: table-cell;
-        vertical-align: middle;
-      }
-    }
-
-    .emoji-category-title {
-      font-size: 12px;
-      text-transform: uppercase;
-      font-weight: 500;
-      color: darken($ui-secondary-color, 18%);
-      cursor: default;
-    }
-
-    .emoji-category-heading-decoration {
-      text-align: right;
-    }
-
-    .modifiers {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      vertical-align: middle;
-      white-space: nowrap;
-      margin-top: 4px;
-
-      li {
-        display: inline-block;
-        padding: 0 2px;
-
-        &:last-of-type {
-          padding-right: 0;
-        }
-      }
-
-      .modifier {
-        display: inline-block;
-        border-radius: 10px;
-        width: 15px;
-        height: 15px;
-        position: relative;
-        cursor: pointer;
-
-        &.active::after {
-          content: "";
-          display: block;
-          position: absolute;
-          width: 7px;
-          height: 7px;
-          border-radius: 10px;
-          border: 2px solid $base-border-color;
-          top: 2px;
-          left: 2px;
-        }
-      }
-    }
-
-    .emoji-search-wrapper {
-      padding: 10px;
-      border-bottom: 1px solid lighten($ui-secondary-color, 4%);
-    }
-
-    .emoji-search {
-      font-size: 14px;
-      font-weight: 400;
-      padding: 7px 9px;
-      font-family: inherit;
-      display: block;
-      width: 100%;
-      background: rgba($ui-secondary-color, 0.3);
-      color: darken($ui-secondary-color, 18%);
-      border: 1px solid $ui-secondary-color;
-      border-radius: 4px;
-    }
-
-    .emoji-categories-wrapper {
-      position: absolute;
-      top: 42px;
-      bottom: 0;
-      left: 0;
-      right: 0;
-    }
-
-    .emoji-search-wrapper + .emoji-categories-wrapper {
-      top: 93px;
-    }
-
-    .emoji-row .emoji {
-      img,
-      svg {
-        transition: transform 60ms ease-in-out;
-      }
-
-      &:hover {
-        background: lighten($ui-secondary-color, 3%);
-
-        img,
-        svg {
-          transform: translateZ(0) scale(1.2);
-        }
-      }
-    }
-
-    .emoji {
-      width: 22px;
-      height: 22px;
-      cursor: pointer;
-
-      &:focus {
-        outline: 0;
       }
     }
   }

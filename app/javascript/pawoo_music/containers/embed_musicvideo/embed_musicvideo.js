@@ -6,7 +6,9 @@ import { debounce } from 'lodash';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
+import StatusReactions from '../status_reactions';
 import Track from '../track';
+import Icon from '../../components/icon';
 import FollowButton from '../follow_button';
 import { fetchRelationships } from '../../../mastodon/actions/accounts';
 import { isMobile } from '../../util/is_mobile';
@@ -70,16 +72,25 @@ export default class EmbedMusicvideo extends React.PureComponent {
   }
 
   handleMouseLeave = () => {
+    this.active = false;
     this.setState({ visibleControls: false });
   }
 
   hideLogoDebounce = debounce(() => {
-    this.setState({ visibleControls: false });
+    this.setState({ visibleControls: this.active });
   }, 3000);
 
   changeVisibleControls () {
     this.setState({ visibleControls: true });
     this.hideLogoDebounce();
+  }
+
+  handleActive = () => {
+    this.active = true;
+  }
+
+  handleInactive = () => {
+    this.active = false;
   }
 
   renderInfo () {
@@ -105,12 +116,36 @@ export default class EmbedMusicvideo extends React.PureComponent {
             </div>
             <div className='actions'>
               <FollowButton id={status.get('account')} dummy={preview && 'follow'} onlyFollow embed />
+              <StatusReactions
+                onActive={this.handleActive}
+                onInactive={this.handleInactive}
+                status={status}
+              />
             </div>
           </div>
         )}
+        {null &&
+        <ul className='album_playlist'>
+          <li><Icon icon='pause' /> 01. hogehogesong</li>
+          <li className='playing'><Icon icon='play' /> 02. hogehogesong</li>
+          <li><Icon icon='pause' /> 03. hogehogesongasdfasdfasdfasdfasdfasdfasdfasdfasdf</li>
+          <li><Icon icon='pause' /> 04. hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge hoge</li>
+          <li><Icon icon='pause' /> 05. hogehogesong</li>
+          <li><Icon icon='pause' /> 06. hogehogesongasdfasdfasdfasdfasdfasdfngasdfasdfasdfasdfasdfasdfngasdfasdfasdfasdfasdfasdfasdfasdfasdf</li>
+          <li><Icon icon='pause' /> 07. あああああああああああああああああああああああああああああああああああああああ</li>
+          <li><Icon icon='pause' /> 08. 負け犬の歌</li>
+          <li><Icon icon='pause' /> 09. hogehogesongasdfasdfasdfasdfasdfasdfasdfasdfasdf</li>
+          <li><Icon icon='pause' /> 10. hoge hoge hoge hoge hoge hoge hoge hoge</li>
+          <li><Icon icon='pause' /> 11. hogehogesong</li>
+          <li><Icon icon='pause' /> 12. hogehogesongasdfasdfasdfasdfasdfasdfasdfasdfasdf</li>
+          <li><Icon icon='pause' /> 13. hoge hoge hoge hoge hoge hoge hoge hoge</li>
+          <li><Icon icon='pause' /> 14. hogehogesong</li>
+        </ul>
+        }
       </div>
     );
   }
+
 
   render () {
     const { status } = this.props;

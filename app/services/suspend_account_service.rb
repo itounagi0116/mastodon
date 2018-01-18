@@ -7,6 +7,7 @@ class SuspendAccountService < BaseService
     purge_user if remove_user
     purge_profile
     purge_content
+    purge_reactions
     unsubscribe_push_subscribers
   end
 
@@ -40,6 +41,10 @@ class SuspendAccountService < BaseService
     @account.avatar.destroy
     @account.header.destroy
     @account.save!
+  end
+
+  def purge_reactions
+    Reaction.destroy_account_all @account
   end
 
   def unsubscribe_push_subscribers

@@ -282,8 +282,13 @@ Rails.application.routes.draw do
       end
 
       resources :tracks, only: [:create, :update] do
-        post :prepare_video, on: :member
-        get :albums, on: :member
+        member do
+          get :albums
+          post :prepare_video
+
+          post :react, to: 'tracks/reactions#create'
+          post :unreact, to: 'tracks/reactions#destroy'
+        end
       end
     end
 

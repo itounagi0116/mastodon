@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import Icon from '../../components/icon';
-import Link from '../../components/link_wrapper';
 import { isMobile } from '../../util/is_mobile';
 import { navigate } from '../../util/navigator';
 import { openModal, closeModal } from '../../../mastodon/actions/modal';
@@ -53,22 +52,38 @@ const mapStateToProps = (state) => ({
   isLogin: !!state.getIn(['meta', 'me']),
 });
 
-@connect(mapStateToProps)
-export default class DropdownMenu extends React.PureComponent {
+@connect(mapStateToProps, null, null, { withRef: true })
+export default class Dropdown extends React.PureComponent {
 
   static propTypes = {
+    children: PropTypes.node,
     strong: PropTypes.bool,
     scale: PropTypes.bool,
     icon: PropTypes.string.isRequired,
-    items: PropTypes.array.isRequired,
     title: PropTypes.string,
     isLogin: PropTypes.bool,
+    onOpen: PropTypes.func,
+    onClose: PropTypes.func,
     dispatch: PropTypes.func.isRequired,
   };
 
   state = {
     expanded: false,
   };
+
+  componentWillUpdate (props, { expanded }) {
+    if (expanded !== this.state.expanded) {
+      if (expanded) {
+        if (this.props.onOpen) {
+          this.props.onOpen();
+        }
+      } else {
+        if (this.props.onClose) {
+          this.props.onClose();
+        }
+      }
+    }
+  }
 
   handleClose = () => {
     const { dispatch } = this.props;
@@ -77,18 +92,12 @@ export default class DropdownMenu extends React.PureComponent {
       dispatch(closeModal());
     }
 
-    this.setState({ expanded: false });
+    this.hide();
   }
 
   handleClick = () => {
     if (mobile && !this.state.expanded) {
-      const { dispatch } = this.props;
-
-      const children = (
-        <div className='modal-menu'>
-          {this.renderMenuItems()}
-        </div>
-      );
+      const { children, dispatch } = this.props;
 
       dispatch(openModal('UNIVERSAL', { children }));
 
@@ -98,63 +107,24 @@ export default class DropdownMenu extends React.PureComponent {
     this.setState({ expanded: !this.state.expanded });
   }
 
-  handleItemClick = (e) => {
-    const i = Number(e.currentTarget.getAttribute('data-index'));
-    const { action } = this.props.items[i];
-
-    this.handleClose();
-
-    // Don't call e.preventDefault() when the item uses 'href' property.
-    // ex. "Edit profile" on the account action bar
-
-    if (typeof action === 'function') {
-      e.preventDefault();
-      action();
-    }
-  }
-
   handleRedirectLoginPage = () => {
     navigate('/auth/sign_in');
   }
 
-  renderItem = (item, i) => {
-    if (item === null) {
-      return <li key={`sep-${i}`} className='dropdown-sep' />;
-    }
-
-    const { text, to, href, ...other } = item;
-
-    return (
-      <li className='menu-item' key={`${text}-${i}`}>
-        {to ? (
-          <Link to={to} onClick={this.handleItemClick} data-index={i} {...other}>{text}</Link>
-        ) : (
-          <a href={href} target='_blank' rel='noopener' onClick={this.handleItemClick} data-index={i} {...other}>{text}</a>
-        )}
-      </li>
-    );
-  }
-
-  renderMenuItems = () => {
-    const { items } = this.props;
-
-    return (
-      <ul className='menu-items'>
-        {items.map(this.renderItem)}
-      </ul>
-    );
+  hide () {
+    this.setState({ expanded: false });
   }
 
   render () {
-    const { strong, scale, icon, title, isLogin } = this.props;
+    const { children, strong, scale, icon, title, isLogin } = this.props;
     const { expanded } = this.state;
 
     return (
-      <div className={classNames('dropdown-menu', { active: expanded })}>
+      <div className={classNames('dropdown', { active: expanded })}>
         <Icon className='dropdown-trigger' icon={icon} title={title} onClick={isLogin ? this.handleClick : this.handleRedirectLoginPage} strong={strong} scale={scale} />
         {!mobile && expanded && (
           <DropdownContent onClose={this.handleClose}>
-            {expanded && this.renderMenuItems()}
+            {expanded && children}
           </DropdownContent>
         )}
       </div>

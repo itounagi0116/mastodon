@@ -102,6 +102,7 @@ end
 group :test do
   gem 'capybara', '~> 2.14'
   gem 'climate_control', '~> 0.2'
+  gem 'database_cleaner', '~> 1.6'
   gem 'faker', '~> 1.7'
   gem 'microformats', '~> 4.0'
   gem 'rails-controller-testing', '~> 1.0'

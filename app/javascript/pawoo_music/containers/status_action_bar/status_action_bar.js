@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import DropdownMenu from '../../components/dropdown_menu';
 import Icon from '../../components/icon';
-import DropdownMenuContainer from '../dropdown_menu';
 import EmbedModalContent from '../embed_modal_content';
 import { makeGetStatus } from '../../../mastodon/selectors';
 import {
@@ -310,7 +310,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
           }
         }
 
-        downloadButton = <li><DropdownMenuContainer items={videoMenu} icon='download' strong scale title={intl.formatMessage(messages.download_mv_title)} /></li>;
+        downloadButton = <li><DropdownMenu items={videoMenu} icon='download' strong scale title={intl.formatMessage(messages.download_mv_title)} /></li>;
 
         if (status.getIn(['account', 'id']) === me) {
           editButton = <li><Icon strong scale icon='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} /></li>;
@@ -385,7 +385,7 @@ export default class StatusActionBar extends ImmutablePureComponent {
         <li><Icon title={reblogTitle} icon={reblogIcon} scale onClick={me ? this.handleReblogClick : this.handleRedirectLoginPage} disabled={reblogDisabled} active={reblogged} /></li>
         <li><Icon title={favouriteTitle} icon='heart' scale onClick={me ? this.handleFavouriteClick : this.handleRedirectLoginPage} disabled={favouriteDisabled} active={favourited} /></li>
         {status.has('track') && publicStatus && <li><Icon title={embedTitle} icon='share-2' scale onClick={this.handleEmbed} /></li>}
-        <li><DropdownMenuContainer items={moreMenu} scale icon='more-horizontal' title={moreTitle} /></li>
+        <li><DropdownMenu items={moreMenu} scale icon='more-horizontal' title={moreTitle} /></li>
         {editButton}
         {downloadButton}
       </ul>

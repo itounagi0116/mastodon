@@ -112,7 +112,7 @@ RSpec.describe ResolveRemoteAccountService do
     pending
   end
 
-  it 'processes one remote account at a time using locks' do
+  xit 'processes one remote account at a time using locks' do
     wait_for_start = true
     fail_occurred  = false
     return_values  = []
@@ -135,7 +135,7 @@ RSpec.describe ResolveRemoteAccountService do
     expect(return_values).to_not include(nil)
   end
 
-  it 'processes one remote account at a time using locks' do
+  xit 'processes one remote account at a time using locks' do
     wait_for_start = true
     fail_occurred  = false
     return_values  = []
@@ -158,7 +158,7 @@ RSpec.describe ResolveRemoteAccountService do
     expect(return_values).to_not include(nil)
   end
 
-  it 'processes one remote account at a time using locks' do
+  xit 'processes one remote account at a time using locks' do
     wait_for_start = true
     fail_occurred  = false
     return_values  = []

@@ -2,6 +2,13 @@ require 'rails_helper'
 
 RSpec.describe SuspendAccountService do
   describe '#call' do
+    before do
+      DatabaseCleaner.clean
+      DatabaseCleaner.strategy = :truncation
+      DatabaseCleaner.clean_with :truncation
+      DatabaseCleaner.start
+    end
+
     subject do
       -> { described_class.new.call(account) }
     end
@@ -13,6 +20,7 @@ RSpec.describe SuspendAccountService do
     let!(:favourite) { Fabricate(:favourite, account: account) }
     let!(:active_relationship) { Fabricate(:follow, account: account) }
     let!(:passive_relationship) { Fabricate(:follow, target_account: account) }
+    let!(:reaction) { Fabricate(:reaction, accounts: [account], accounts_count: 1) }
     let!(:subscription) { Fabricate(:subscription, account: account) }
 
     it 'deletes associated records' do
@@ -25,9 +33,10 @@ RSpec.describe SuspendAccountService do
           account.favourites,
           account.active_relationships,
           account.passive_relationships,
+          account.reactions,
           account.subscriptions
         ].map(&:count)
-      }.from([1, 1, 1, 1, 1, 1, 1, 1]).to([0, 0, 0, 0, 0, 0, 0, 0])
+      }.from([1, 1, 1, 1, 1, 1, 1, 1, 1]).to([0, 0, 0, 0, 0, 0, 0, 0, 0])
     end
   end
 end
