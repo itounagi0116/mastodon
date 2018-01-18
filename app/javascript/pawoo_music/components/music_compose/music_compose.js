@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
@@ -18,7 +17,7 @@ class Item extends React.PureComponent {
   }
 
   handleIsActive = (match, location) => {
-    this.props.isActive(match, location, this.props.to);
+    return this.props.isActive(match, location, this.props.to);
   }
 
   render () {
@@ -50,14 +49,16 @@ export default class MusicCompose extends React.PureComponent {
 
   render () {
     return (
-      <div className={classNames('music-compose', { mobile: isMobile() })}>
-        <nav>
-          <ul>
-            <Item isActive={this.props.isActive} onClick={this.props.onReplace} to='/albums/new'>Album</Item>
-            <Item isActive={this.props.isActive} onClick={this.props.onReplace} to='/tracks/new'>Track</Item>
-          </ul>
-        </nav>
-        {this.props.children}
+      <div className='music-compose'>
+        <div className={isMobile() ? 'mobile' : null}>
+          <nav>
+            <ul>
+              <Item isActive={this.props.isActive} onClick={this.props.onReplace} to='/albums/new'>Album</Item>
+              <Item isActive={this.props.isActive} onClick={this.props.onReplace} to='/tracks/new'>Track</Item>
+            </ul>
+          </nav>
+          {this.props.children}
+        </div>
       </div>
     );
   }

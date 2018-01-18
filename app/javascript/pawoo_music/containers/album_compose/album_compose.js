@@ -6,7 +6,7 @@ import React from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
-import Icon from '../../components/icon';
+import ImageInput from '../../components/image_input';
 import ScrollableList from '../../components/scrollable_list';
 import PrivacyDropdown from '../../../mastodon/features/compose/components/privacy_dropdown';
 import GenreTagPicker from '../../components/genre_tag_picker';
@@ -24,7 +24,6 @@ import {
   changeAlbumComposePrivacy,
   submitAlbumCompose,
 } from '../../actions/album_compose';
-import { validateIsFileImage } from '../../util/musicvideo';
 import { makeGetAccount } from '../../../mastodon/selectors';
 import { constructRgbCode } from '../../util/musicvideo';
 
@@ -134,7 +133,6 @@ export default class AlbumCompose extends ImmutablePureComponent {
     albumImageTitle: '',
   };
 
-  albumImageRef = null;
   image = null;
 
   componentDidMount () {
@@ -145,12 +143,6 @@ export default class AlbumCompose extends ImmutablePureComponent {
   }
 
   componentWillReceiveProps ({ error, isSubmitting, album }) {
-    if (album.get('image') === null &&
-        this.props.album.get('image') !== null &&
-        this.albumImageRef !== null) {
-      this.albumImageRef.value = '';
-    }
-
     if (album.get('image') !== this.props.album.get('image')) {
       if (this.props.album.get('image') instanceof Blob) {
         URL.revokeObjectURL(this.image);
@@ -203,17 +195,10 @@ export default class AlbumCompose extends ImmutablePureComponent {
     }
   }
 
-  handleChangeAlbumImage = ({ target }) => {
-    const file = target.files[0];
-    if (file) {
-      validateIsFileImage(file).then((isImage) => {
-        if (isImage) {
-          this.setState({ albumImageTitle: file.name }, () => {
-            this.props.onChangeAlbumImage(file);
-          });
-        }
-      });
-    }
+  handleChangeAlbumImage = (file) => {
+    this.setState({ albumImageTitle: file.name }, () => {
+      this.props.onChangeAlbumImage(file);
+    });
   }
 
   handleChangeAlbumTitle = ({ target }) => {
@@ -239,10 +224,6 @@ export default class AlbumCompose extends ImmutablePureComponent {
 
   handleUnregisteredTracksScrollToBottom = () => {
     this.props.onExpandUnregisteredTracks();
-  }
-
-  setAlbumImageRef = (ref) => {
-    this.albumImageRef = ref;
   }
 
   updateImage = (album) => {
@@ -303,25 +284,10 @@ export default class AlbumCompose extends ImmutablePureComponent {
               {/* 画像選択、タイトル、説明 */}
               <fieldset>
                 <legend>
-                  <div className={classNames('album-compose-file-upload', { settled: album.get('image') instanceof File })}>
-                    <div className='album-compose-file-upload-body'>
-                      <Icon icon='image' />
-                      <span className='text'>
-                        {albumImageTitle ? albumImageTitle : (
-                          <FormattedMessage
-                            id='pawoo_music.album_compose.image'
-                            defaultMessage='Image'
-                          />
-                        )}
-                      </span>
-                      <input
-                        accept='image/jpeg,image/png'
-                        onChange={this.handleChangeAlbumImage}
-                        ref={this.setAlbumImageRef}
-                        type='file'
-                      />
-                    </div>
-                  </div>
+                  <ImageInput
+                    onChange={this.handleChangeAlbumImage}
+                    title={albumImageTitle}
+                  />
                 </legend>
 
                 <legend>

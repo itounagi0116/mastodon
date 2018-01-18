@@ -8,4 +8,37 @@
   justify-content: center;
 
   min-height: 100%;
+
+  > * {
+    padding: 0 var(--padding40) var(--padding40) var(--padding40);
+
+    color: #C3C3C3;
+    background-color: #1F1F1F;
+    border-radius: var(--radius-big);
+    text-align: left;
+    box-shadow: var(--shadow-strong);
+
+    > nav > ul > li {
+      display: inline-block;
+
+      > a {
+        display: block;
+        padding: var(--padding10);
+
+        &.active {
+          border-top: 4px var(--strong1) solid;
+          color: var(--color2);
+          font-weight: bold;
+        }
+
+        &:hover {
+          color: var(--strong1);
+        }
+      }
+    }
+  }
+
+  > .mobile {
+    padding: var(--padding40);
+  }
 }

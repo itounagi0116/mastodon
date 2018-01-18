@@ -146,69 +146,6 @@
     }
   }
 
-  .album-compose-file-upload {
-    display: inline-block;
-    position: relative;
-    margin-top: 4px;
-    padding: 0 20px;
-    height: 40px;
-    border-radius: 20px;
-    color: var(--tootcolor);
-    background-color: var(--color1);
-    overflow: hidden;
-    max-width: calc(var(--form-width) - var(--padding40) - var(--grid) * 2);
-    transition: all 0.2s var(--hover-timing);
-
-    &:hover {
-      transform: scale(1.1);
-    }
-
-    &.settled {
-      color: white;
-      background-color: var(--tootcolor);
-
-      svg {
-        stroke: white;
-      }
-    }
-
-    .album-compose-file-upload-body {
-      display: flex;
-      align-items: center;
-      height: 40px;
-    }
-
-    .icon-button {
-      display: block;
-      padding-top: 4px;
-    }
-
-    .text {
-      margin-left: 4px;
-      white-space: pre;
-
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    input {
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      opacity: 0.01;
-      cursor: pointer;
-    }
-
-    svg {
-      stroke-width: 2px;
-      stroke: var(--tootcolor);
-    }
-  }
-
   .album-compose-text-input, .album-compose-text-textarea {
     position: relative;
 
@@ -342,7 +279,7 @@
       font-weight: bold;
 
       border-radius: 20px;
-      background-color: var(--tootcolor);
+      background-color: var(--linkcolor2);
       color: var(--color1);
 
       &.cancel {
@@ -352,31 +289,17 @@
 
       &.privacy-toggle {
         display: flex;
-        color: var(--tootcolor);
+        color: var(--linkcolor2);
         background-color: var(--color1);
 
         svg {
           stroke-width: 2px;
-          stroke: var(--tootcolor);
+          stroke: var(--linkcolor2);
         }
 
         .privacy-dropdown__value-button-text {
           margin-left: 4px;
         }
-      }
-
-      &.disabled {
-        background-color: #585858;
-        cursor: default;
-      }
-
-      & + button {
-        margin-left: 10px;
-      }
-
-      &:first-child {
-        margin-right: auto;
-        margin-left: 0;
       }
     }
 
