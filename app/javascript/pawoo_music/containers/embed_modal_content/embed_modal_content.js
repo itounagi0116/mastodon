@@ -4,7 +4,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
-import axios from 'axios';
+import api from '../../../mastodon/api';
 import EmbedMusicvideo from '../embed_musicvideo';
 import { changePaused, changeTrackPath } from '../../actions/player';
 import Checkbox from '../../components/checkbox';
@@ -50,7 +50,7 @@ export default class EmbedModalContent extends ImmutablePureComponent {
 
     this.setState({ loading: true });
 
-    axios.post('/api/web/embed', { url: status.get('url'), hideinfo: Number(!showinfo) }).then(res => {
+    api().post('/api/web/embed', { url: status.get('url'), hideinfo: Number(!showinfo) }).then(res => {
       this.setState({ loading: false, oembed: res.data });
     });
   }
