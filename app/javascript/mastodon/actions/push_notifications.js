@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../api';
 import { pushNotificationsSetting } from '../settings';
 
 export const SET_BROWSER_SUPPORT = 'PUSH_NOTIFICATIONS_SET_BROWSER_SUPPORT';
@@ -45,7 +45,7 @@ export function saveSettings() {
     const alerts = state.get('alerts');
     const data = { alerts };
 
-    axios.put(`/api/web/push_subscriptions/${subscription.get('id')}`, {
+    api().put(`/api/web/push_subscriptions/${subscription.get('id')}`, {
       data,
     }).then(() => {
       const me = getState().getIn(['meta', 'me']);
