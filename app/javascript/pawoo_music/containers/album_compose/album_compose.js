@@ -42,9 +42,11 @@ const makeMapStateToProps = () => {
     return {
       registeredTracks: state.getIn(['pawoo_music', 'album_compose', 'registeredTracks'])
                              .map(id => state.getIn(['statuses', id, 'track'])),
+      isLoadingRegisteredTracks: state.getIn(['pawoo_music', 'album_compose', 'isLoadingRegisteredTracks']),
       unregisteredTracks: state.getIn(['pawoo_music', 'album_compose', 'unregisteredTracks'])
                                .map(id => state.getIn(['statuses', id, 'track'])),
       hasMoreUnregisteredTracks: state.getIn(['pawoo_music', 'album_compose', 'unregisteredTracksNext']) !== null,
+      isLoadingUnregisteredTracks: state.getIn(['pawoo_music', 'album_compose', 'isLoadingUnregisteredTracks']),
       album: state.getIn(['pawoo_music', 'album_compose', 'album']),
       error: state.getIn(['pawoo_music', 'album_compose', 'error']),
       isSubmitting: state.getIn(['pawoo_music', 'album_compose', 'is_submitting']),
@@ -116,7 +118,9 @@ export default class AlbumCompose extends ImmutablePureComponent {
     isSubmitting: PropTypes.bool.isRequired,
     hasMoreUnregisteredTracks: PropTypes.bool,
     registeredTracks: ImmutablePropTypes.list.isRequired,
+    isLoadingRegisteredTracks: PropTypes.bool,
     unregisteredTracks: ImmutablePropTypes.list.isRequired,
+    isLoadingUnregisteredTracks: PropTypes.bool,
     onChangeAlbumTitle: PropTypes.func.isRequired,
     onChangeAlbumText: PropTypes.func.isRequired,
     onChangeAlbumImage: PropTypes.func.isRequired,
@@ -269,7 +273,9 @@ export default class AlbumCompose extends ImmutablePureComponent {
       onReplace,
       hasMoreUnregisteredTracks,
       registeredTracks,
+      isLoadingRegisteredTracks,
       unregisteredTracks,
+      isLoadingUnregisteredTracks,
       album,
       intl,
     } = this.props;
@@ -358,8 +364,10 @@ export default class AlbumCompose extends ImmutablePureComponent {
                   <Droppable droppableId='album_compose_registered'>
                     {(provided) => (
                       <div className='draggable-items' ref={provided.innerRef}>
-                        {/* TODO: provide isLoading */}
-                        <ScrollableList scrollKey='album_compose_registered'>
+                        <ScrollableList
+                          isLoading={isLoadingRegisteredTracks}
+                          scrollKey='album_compose_registered'
+                        >
                           {registeredTracks.map(this.renderDraggable)}
                         </ScrollableList>
                       </div>
@@ -371,9 +379,9 @@ export default class AlbumCompose extends ImmutablePureComponent {
                   <Droppable droppableId='album_compose_unregistered'>
                     {(provided) => (
                       <div className='draggable-items' ref={provided.innerRef}>
-                        {/* TODO: provide isLoading */}
                         <ScrollableList
                           hasMore={hasMoreUnregisteredTracks}
+                          isLoading={isLoadingUnregisteredTracks}
                           onScrollToBottom={this.handleUnregisteredTracksScrollToBottom}
                           scrollKey='album_compose_unregistered'
                         >
