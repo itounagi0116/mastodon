@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from './api';
 import React from 'react';
 import store from './store';
 import { setBrowserSupport, setSubscription, clearSubscription } from './actions/push_notifications';
@@ -40,7 +40,7 @@ const unsubscribe = ({ registration, subscription }) =>
   subscription ? subscription.unsubscribe().then(() => registration) : registration;
 
 const sendSubscriptionToBackend = (params) => {
-  return axios.post('/api/web/push_subscriptions', params).then(response => response.data);
+  return api().post('/api/web/push_subscriptions', params).then(response => response.data);
 };
 
 const renewSubscription = (registration) => {

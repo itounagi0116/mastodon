@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../api';
 
 export const SETTING_CHANGE = 'SETTING_CHANGE';
 
@@ -24,7 +24,7 @@ export function changeSetting(key, value) {
 
 export function saveSettings() {
   return (_, getState) => {
-    axios.put('/api/web/settings', {
+    api().put('/api/web/settings', {
       data: getState().get('settings').toJS(),
     });
   };
