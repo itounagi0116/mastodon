@@ -132,8 +132,8 @@ class AlbumTrack extends ImmutablePureComponent {
       <Musicvideo controlsActive={scrollbarsActive || reactionActive}>
         <div className='album-playlist'>
           <Scrollbars
-            onScrollStart={mobile || this.handleScrollbarsActive}
-            onScrollStop={mobile || this.handleScrollbarsInactive}
+            onScrollStart={mobile ? null : this.handleScrollbarsActive}
+            onScrollStop={mobile ? null : this.handleScrollbarsInactive}
           >
             <ol>
               {statuses.map((status, index) => indexBeingQueued === index ? (
