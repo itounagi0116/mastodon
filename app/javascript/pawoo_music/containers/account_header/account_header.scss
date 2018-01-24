@@ -101,6 +101,7 @@
 
   .tabs {
     display: flex;
+    flex-wrap: wrap;
     margin: var(--verticalspace25);
     font-weight: bold;
     justify-content: center;
