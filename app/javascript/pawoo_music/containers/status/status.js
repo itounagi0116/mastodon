@@ -12,7 +12,7 @@ import StatusContent from '../../../mastodon/components/status_content';
 import StatusActionBar from '../status_action_bar';
 import AccountContainer from '../account';
 import StatusMedia from '../status_media';
-import StatusMeta from '../../components/status_meta';
+import StatusMeta from '../status_meta';
 import StatusPrepend from '../../components/status_prepend';
 
 const makeMapStateToProps = () => {

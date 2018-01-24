@@ -8,14 +8,12 @@ import { makeGetStatus } from '../../../mastodon/selectors';
 import StatusContent from '../../../mastodon/components/status_content';
 import StatusActionBar from '../status_action_bar';
 import AccountContainer from '../account';
-import StatusMeta from '../../components/status_meta';
+import StatusMeta from '../status_meta';
 import StatusPrepend from '../../components/status_prepend';
 import StatusReactions from '../status_reactions';
 import TrackContainer from '../track';
 import AlbumContainer from '../album';
 import FollowButton from '../follow_button';
-import { openModal } from '../../../mastodon/actions/modal';
-import ContainedAlbumsModalContentContainer from '../contained_albums_modal_content';
 
 const makeMapStateToProps = () => {
   const getStatus = makeGetStatus();
@@ -43,17 +41,7 @@ export default class MusicStatus extends ImmutablePureComponent {
     hidden: PropTypes.bool,
     trackId: PropTypes.number,
     albumId: PropTypes.number,
-    dispatch: PropTypes.func.isRequired,
   };
-
-  handleClickContainedAlbums = () => {
-    const { status, dispatch } = this.props;
-    const id = status.getIn(['track', 'id']);
-
-    if (id) {
-      dispatch(openModal('UNIVERSAL', { children: <ContainedAlbumsModalContentContainer id={id} /> }));
-    }
-  }
 
   render () {
     const { muted, hidden, prepend, status: originalStatus, trackId, albumId } = this.props;
@@ -96,21 +84,10 @@ export default class MusicStatus extends ImmutablePureComponent {
 
     let credit = null;
     let contentHtml = null;
-    let albumsButton = null;
 
     if (status.has('track')) {
       credit = `${status.getIn(['track', 'artist'])} - ${status.getIn(['track', 'title'])}`;
       contentHtml = status.getIn(['track', 'contentHtml']);
-
-      const albumsCount = status.getIn(['track', 'albums_count']);
-      if (albumsCount > 0) {
-        albumsButton = (
-          <div className='contained-albums-button' role='button' tabIndex='0' aria-pressed='false' onClick={this.handleClickContainedAlbums}>
-            収録アルバム
-            {albumsCount > 1 && <span className='albums-count'>{albumsCount}</span>}
-          </div>
-        );
-      }
     }
 
     if (status.has('album')) {
@@ -133,7 +110,6 @@ export default class MusicStatus extends ImmutablePureComponent {
         <StatusContent status={status.set('contentHtml', contentHtml)} />
         <StatusReactions status={status} />
         <StatusActionBar status={status} />
-        {albumsButton}
         <StatusMeta status={status} />
       </div>
     );

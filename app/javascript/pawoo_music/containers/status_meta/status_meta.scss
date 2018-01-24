@@ -6,6 +6,14 @@
   display: flex;
   align-items: center;
 
+  .albums {
+    cursor: pointer;
+
+    &:hover {
+      color: var(--linkcolor2);
+    }
+  }
+
   .engagement {
     display: inline-flex;
     align-items: center;
