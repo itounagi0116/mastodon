@@ -33,7 +33,6 @@ class Album < ApplicationRecord
 
   validates :title, presence: true
   validates_attachment :image,
-                       presence: true,
                        content_type: { content_type: ['image/jpeg', 'image/png'] },
                        size: { less_than: 7.megabytes }
 
