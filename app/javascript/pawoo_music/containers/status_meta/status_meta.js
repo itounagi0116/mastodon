@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import { FormattedNumber } from 'react-intl';
+import { FormattedMessage, FormattedNumber } from 'react-intl';
 import ContainedAlbumsModalContentContainer from '../contained_albums_modal_content';
 import { openModal } from '../../../mastodon/actions/modal';
 import Timestamp from '../../../mastodon/components/timestamp';
@@ -53,8 +53,10 @@ export default class StatusMeta extends ImmutablePureComponent {
     if (status.has('track')) {
       albumsLink = (
         <div className='albums' role='button' tabIndex='0' aria-pressed='false' onClick={this.handleClickAlbums}>
-          収録アルバム
-          <FormattedNumber value={status.getIn(['track', 'albums_count'])} />
+          <FormattedMessage
+            id='pawoo_music.status_meta.albums'
+            values={{ number: <FormattedNumber value={status.getIn(['track', 'albums_count'])} /> }}
+          />
         </div>
       );
     }
