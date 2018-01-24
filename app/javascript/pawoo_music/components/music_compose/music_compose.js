@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { isMobile } from '../../util/is_mobile';
 
 class Item extends React.PureComponent {
 
@@ -50,7 +49,7 @@ export default class MusicCompose extends React.PureComponent {
   render () {
     return (
       <div className='music-compose'>
-        <div className={isMobile() ? 'mobile' : null}>
+        <div>
           <nav>
             <ul>
               <Item isActive={this.props.isActive} onClick={this.props.onReplace} to='/albums/new'>Album</Item>

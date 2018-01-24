@@ -49,6 +49,12 @@
       .color-picker {
         position: absolute;
       }
+
+      > .scrollable-wrapper > * {
+        position: absolute;
+        width: calc(100% + var(--scrollbar-margin));
+        height: 100%;
+      }
     }
   }
 
@@ -65,12 +71,6 @@
     > .scrollable-wrapper {
       flex: 1;
       position: relative;
-
-      > * {
-        position: absolute;
-        width: calc(100% + var(--scrollbar-margin));
-        height: 100%;
-      }
     }
 
     .actions, form > * {

@@ -26,6 +26,7 @@ import {
 } from '../../actions/album_compose';
 import { makeGetAccount } from '../../../mastodon/selectors';
 import { constructRgbCode } from '../../util/musicvideo';
+import { isMobile } from '../../util/is_mobile';
 
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 
@@ -283,7 +284,7 @@ export default class AlbumCompose extends ImmutablePureComponent {
 
     return (
       <MusicCompose isActive={isActive} onReplace={onReplace}>
-        <div className='album-compose-content'>
+        <div className={classNames('album-compose-content', { mobile: isMobile() })}>
           <div className='form-content'>
             <img className='thumbnail' src={this.image} alt='album thumbnail' />
             <form>

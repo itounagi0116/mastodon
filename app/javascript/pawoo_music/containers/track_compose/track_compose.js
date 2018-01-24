@@ -596,7 +596,7 @@ export default class TrackCompose extends ImmutablePureComponent {
 
     return (
       <MusicCompose isActive={isActive} onReplace={onReplace}>
-        <div className='track-compose-content'>
+        <div className={classNames('track-compose-content', { mobile })}>
           <div className='musicvideo-preview'>
             <Musicvideo label={intl.formatMessage(messages.preview)} />
           </div>

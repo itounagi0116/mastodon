@@ -224,18 +224,16 @@
 
   .album-items-wrapper {
     position: relative;
-    height: 320px;
-    width: var(--form-width);
 
     .album-items {
       display: flex;
-      position: absolute;
-      height: 100%;
+      flex-wrap: wrap;
 
       > section {
         display: flex;
         flex-direction: column;
         position: relative;
+        height: 320px;
         width: calc(var(--form-width) / 2 - var(--grid) * 4);
         margin: 0 calc(var(--grid) * 2);
 
@@ -268,6 +266,7 @@
   .actions {
     display: flex;
     align-items: flex-end;
+    flex-wrap: wrap;
 
     button {
       display: inline-block;
@@ -306,5 +305,13 @@
     .privacy-dropdown > .privacy-dropdown__dropdown{
       bottom: 40px;
     }
+  }
+
+  &.mobile .thumbnail {
+    max-width: 100%;
+  }
+
+  &:not(.mobile) .album-items-wrapper {
+    width: var(--form-width);
   }
 }
