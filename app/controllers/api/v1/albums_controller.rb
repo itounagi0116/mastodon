@@ -12,26 +12,14 @@ class Api::V1::AlbumsController < Api::BaseController
 
   def create
     album = Album.new(album_params)
+    track_ids = params[:track_ids]
 
-    if params[:track_ids]
-      track_statuses = Status.where(
-        id: params[:track_ids],
-        music_type: 'Track',
-        account: current_account,
-        reblog: nil
-      ).group_by(&:id)
-      lower_position = AlbumTrack::MIN_POSITION
-      upper_position = AlbumTrack::MAX_POSITION
-
-      params[:track_ids].each do |track_id|
-        track_status = track_statuses[track_id.to_i]&.first
-        raise ActiveRecord::RecordNotFound unless track_status
-
-        position = AlbumTrack.position_between(lower_position, upper_position)
-        album.album_tracks << AlbumTrack.new(track: track_status.music, position: position)
-        lower_position = position
-      end
+    if track_ids.blank?
+      render json: { error: I18n.t('albums.tracks.empty') }, status: 422
+      return
     end
+
+    populate_tracks album
     album.save!
 
     begin
@@ -76,5 +64,33 @@ class Api::V1::AlbumsController < Api::BaseController
 
   def album_params
     params.permit :title, :text, :image
+  end
+
+  def populate_tracks(album)
+    lower_position = AlbumTrack::MIN_POSITION
+    upper_position = AlbumTrack::MAX_POSITION
+
+    track_statuses.each do |track_status|
+      position = AlbumTrack.position_between(lower_position, upper_position)
+      album.album_tracks << AlbumTrack.new(track: track_status.music, position: position)
+      lower_position = position
+    end
+  end
+
+  def track_statuses
+    track_ids = params.require(:track_ids)
+
+    track_statuses = Status.where(
+      id: track_ids,
+      music_type: 'Track',
+      account: current_account,
+      reblog: nil
+    ).group_by(&:id)
+
+    track_ids.lazy.map do |track_id|
+      track_status = track_statuses[track_id.to_i]&.first
+      raise ActiveRecord::RecordNotFound unless track_status
+      track_status
+    end
   end
 end

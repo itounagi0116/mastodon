@@ -253,6 +253,7 @@ ja:
       subject: "%{instance} の新しい通報 (#%{id})"
   albums:
     tracks:
+      empty: トラックリストは空にできません
       positioning_not_found: 位置を特定するトラックが見つかりません
     over_character_limit: 上限は %{max}文字までです
   application_mailer:

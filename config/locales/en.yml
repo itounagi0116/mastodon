@@ -249,6 +249,7 @@ en:
       subject: New report for %{instance} (#%{id})
   albums:
     tracks:
+      empty: Track list cannot be empty
       positioning_not_found: Positioning tracks not found
     over_character_limit: character limit of %{max} exceeded
   application_mailer:
