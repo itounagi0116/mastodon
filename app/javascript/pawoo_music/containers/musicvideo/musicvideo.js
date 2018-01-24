@@ -27,6 +27,7 @@ const messages = defineMessages({
 class PlayerControls extends ImmutablePureComponent {
 
   static propTypes = {
+    duration: PropTypes.number,
     getCurrentTime: PropTypes.func.isRequired,
     paused: PropTypes.bool,
     onSeekDestinationChange: PropTypes.func,
@@ -321,6 +322,7 @@ class Musicvideo extends ImmutablePureComponent {
         <div className={classNames('controls-container', { visible: initialized && showControls })}>
           <div className='misc-controls'>{children}</div>
           <PlayerControls
+            duration={duration}
             getCurrentTime={getCurrentTime}
             paused={paused}
             onTogglePaused={this.handleTogglePaused}
