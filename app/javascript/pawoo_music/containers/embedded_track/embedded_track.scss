@@ -1,43 +1,14 @@
-.embed-musicvideo {
+.embedded-track {
   position: relative;
   height: auto;
 
   .info {
     pointer-events: none;
 
-    .meta, .actions {
+    .actions {
       position: absolute;
       top: 0;
       padding: var(--padding10);
-    }
-
-    .meta {
-      left: 0;
-
-      .artist, .title {
-        display: inline-flex;
-        align-items: center;
-        font-weight: 100;
-        padding: var(--padding5);
-        pointer-events: auto;
-      }
-
-      .artist {
-        color: #cccccc;
-        background-color: rgba(0, 0, 0, 0.7);
-        font-size: var(--text10-font);
-        line-height: var(--text10-line);
-        text-decoration: underline;
-        margin: var(--verticalspace20);
-      }
-
-      .title {
-        color: #ffffff;
-        background-color: rgba(0, 0, 0, 0.7);
-        font-size: var(--text20-font);
-        line-height: var(--text20-line);
-        margin: var(--verticalspace10);
-      }
     }
 
     .actions {

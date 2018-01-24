@@ -36,14 +36,7 @@ export default class Oembed extends ImmutablePureComponent {
   }
 
   render () {
-    return (
-      <iframe
-        className='embedded-frame'
-        frameBorder='0'
-        ref={this.setIframeRef}
-        title='preview'
-      />
-    );
+    return <iframe frameBorder='0' ref={this.setIframeRef} title='preview' />;
   }
 
 }

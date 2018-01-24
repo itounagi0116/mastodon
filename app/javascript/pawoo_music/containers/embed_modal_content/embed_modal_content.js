@@ -5,7 +5,8 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import EmbedMusicvideo from '../embed_musicvideo';
+import EmbeddedTrack from '../embedded_track';
+import EmbeddedAlbum from '../embedded_album';
 import { changePaused, changeTrackPath } from '../../actions/player';
 import Checkbox from '../../components/checkbox';
 import Oembed from '../../components/oembed';
@@ -70,6 +71,15 @@ export default class EmbedModalContent extends ImmutablePureComponent {
   render () {
     const { status } = this.props;
     const { oembed, showinfo } = this.state;
+    let content;
+
+    if (status.has('album')) {
+      content = <EmbeddedAlbum infoHidden={!showinfo} preview statusId={status.get('id')} />;
+    } else if (status.has('track')) {
+      content = <EmbeddedTrack infoHidden={!showinfo} preview statusId={status.get('id')} />;
+    } else {
+      content = <Oembed oembed={oembed} />;
+    }
 
     return (
       <div className='embed-modal-content'>
@@ -107,7 +117,7 @@ export default class EmbedModalContent extends ImmutablePureComponent {
             onClick={this.handleTextareaClick}
           />
 
-          {status.has('track') && (
+          {(status.has('album') || status.has('track')) && (
             <div className='options'>
               <p className='hint'>
                 <FormattedMessage id='embed.options' defaultMessage='Options' />
@@ -126,9 +136,7 @@ export default class EmbedModalContent extends ImmutablePureComponent {
             <FormattedMessage id='embed.preview' defaultMessage='Here is what it will look like:' />
           </p>
 
-          {status.has('track') ?
-            <EmbedMusicvideo infoHidden={!showinfo} preview statusId={status.get('id')} /> :
-            <Oembed oembed={oembed} />}
+          <div className='content'>{content}</div>
         </div>
       </div>
     );

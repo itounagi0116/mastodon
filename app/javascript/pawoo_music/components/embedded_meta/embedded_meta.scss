@@ -1,0 +1,29 @@
+.embedded-meta {
+  padding: var(--padding10);
+
+  > .artist, > .title {
+    a {
+      background-color: rgba(0, 0, 0, 0.7);
+      display: inline-flex;
+      align-items: center;
+      font-weight: 100;
+      padding: var(--padding5);
+      pointer-events: auto;
+    }
+  }
+
+  > .artist {
+    color: #cccccc;
+    font-size: var(--text10-font);
+    line-height: var(--text10-line);
+    text-decoration: underline;
+    margin: var(--verticalspace20);
+  }
+
+  > .title {
+    color: #ffffff;
+    font-size: var(--text20-font);
+    line-height: var(--text20-line);
+    margin: var(--verticalspace10);
+  }
+}

@@ -1,13 +1,13 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
+import React from 'react';
 import { connect } from 'react-redux';
-import StatusReactions from '../status_reactions';
-import Track from '../track';
-import FollowButton from '../follow_button';
+import ImmutablePropTypes from 'react-immutable-proptypes';
+import ImmutablePureComponent from 'react-immutable-pure-component';
 import { fetchRelationships } from '../../../mastodon/actions/accounts';
-
-import '../app/app.scss';
+import Album from '../album';
+import FollowButton from '../follow_button';
+import AlbumTracksCount from '../../components/album_tracks_count';
+import EmbeddedMeta from '../../components/embedded_meta';
 
 const mapStateToProps = (state, { statusId }) => {
   const status = state.getIn(['statuses', statusId]);
@@ -19,7 +19,7 @@ const mapStateToProps = (state, { statusId }) => {
 };
 
 @connect(mapStateToProps)
-export default class EmbedMusicvideo extends React.PureComponent {
+export default class EmbeddedAlbum extends ImmutablePureComponent {
 
   static propTypes = {
     acct: PropTypes.string,
@@ -29,10 +29,6 @@ export default class EmbedMusicvideo extends React.PureComponent {
     dispatch: PropTypes.func.isRequired,
   }
 
-  state = {
-    controlsActive: false,
-  };
-
   componentDidMount () {
     const { status } = this.props;
     const accountId = status.get('account');
@@ -40,40 +36,26 @@ export default class EmbedMusicvideo extends React.PureComponent {
     this.props.dispatch(fetchRelationships([accountId]));
   }
 
-  handleActive = () => {
-    this.setState({ controlsActive: true });
-  }
-
-  handleInactive = () => {
-    this.setState({ controlsActive: false });
-  }
-
   render () {
     const { acct, infoHidden, preview, status } = this.props;
-    const { controlsActive } = this.state;
     const id = status.get('id');
-    const track = status.get('track');
+    const album = status.get('album');
 
     return (
-      <div className='app embed-musicvideo'>
-        <Track controlsActive={controlsActive} track={track} fitContain>
+      <div className='app embedded-album'>
+        <Album album={album} fitContain>
           {infoHidden || (
-            <div className='info'>
+            <div className='embedded-album-info'>
               <div className='meta'>
-                <a className='artist' href={`/@${acct}`} target='_blank'>{track.get('artist')}</a><br />
-                <a className='title' href={`/@${acct}/${id}`} target='_blank'>{track.get('title')}</a>
+                <EmbeddedMeta acct={acct} statusId={id} artist={album.get('artist')} title={album.get('title')} />
               </div>
               <div className='actions'>
                 <FollowButton id={status.get('account')} dummy={preview && 'follow'} onlyFollow embed />
-                <StatusReactions
-                  onActive={this.handleActive}
-                  onInactive={this.handleInactive}
-                  status={status}
-                />
+                <AlbumTracksCount value={album.get('tracks_count')} />
               </div>
             </div>
           )}
-        </Track>
+        </Album>
       </div>
     );
   }

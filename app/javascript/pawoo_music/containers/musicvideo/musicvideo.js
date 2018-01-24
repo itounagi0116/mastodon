@@ -94,6 +94,7 @@ class Musicvideo extends ImmutablePureComponent {
     bannerHidden: PropTypes.bool,
     children: PropTypes.node,
     controlsActive: PropTypes.bool,
+    fitContain: PropTypes.bool,
     label: PropTypes.string,
     lastSeekDestination: PropTypes.number.isRequired,
     onPausedChange: PropTypes.func.isRequired,
@@ -295,14 +296,14 @@ class Musicvideo extends ImmutablePureComponent {
   }
 
   render() {
-    const { children, duration, getCurrentTime, label, loading, onSeekDestinationChange, paused } = this.props;
+    const { children, duration, fitContain, getCurrentTime, label, loading, onSeekDestinationChange, paused } = this.props;
     const { initialized } = this.state;
     const canPlay = ![Infinity, NaN].includes(duration);
     const showControls = this.state.showControls;
 
     return (
       <div
-        className='musicvideo'
+        className={classNames('musicvideo', { 'fit-contain': fitContain })}
         onMouseEnter={mobile ? noop : this.handleMouseEnter}
         onMouseMove={mobile ? noop : this.handleMouseMove}
         onMouseLeave={mobile ? noop : this.handleMouseLeave}

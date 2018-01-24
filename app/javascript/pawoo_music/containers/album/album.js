@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import Immutable from 'immutable';
 import React from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -5,11 +6,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 import Musicvideo from '../musicvideo';
 import StatusActionBar from '../status_action_bar';
 import StatusMeta from '../status_meta';
 import StatusReactions from '../status_reactions';
+import AlbumTracksCount from '../../components/album_tracks_count';
 import Icon from '../../components/icon';
 import { fetchAndQueueAlbumTracks } from '../../actions/albums_tracks';
 import { changePaused, changeAlbumTrackIndex } from '../../actions/player';
@@ -19,28 +21,39 @@ import { makeGetStatus } from '../../../mastodon/selectors';
 import playIcon from '../../../images/pawoo_music/play.png';
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 
+const messages = defineMessages({
+  playbutton: { id: 'pawoo_music.album.playbutton', defaultMessage: 'Play button' },
+  thumbnail: { id: 'pawoo_music.album.thumbnail', defaultMessage: 'Thumbnail' },
+});
+
+@injectIntl
 class AlbumThumbnail extends ImmutablePureComponent {
 
   static propTypes = {
     album: ImmutablePropTypes.map.isRequired,
+    children: PropTypes.node,
+    fitContain: PropTypes.bool,
+    intl: PropTypes.object.isRequired,
     onClick: PropTypes.func,
   }
 
   render () {
     return (
-      <div
-        className='album-thumbnail'
-        style={{ backgroundImage: `url('${this.props.album.get('image', defaultArtwork)}')` }}
-        role='button'
-        tabIndex='0'
-        aria-pressed='false'
-        onClick={this.props.onClick}
-      >
-        <img className='playbutton' src={playIcon} alt='playbutton' />
-        <span className='tracks-count'>
-          {this.props.album.get('tracks_count') + ' '}
-          <FormattedMessage id='album.tracks' defaultMessage='Tracks' />
-        </span>
+      <div className={classNames('album-thumbnail', { 'fit-contain': this.props.fitContain })}>
+        <img
+          src={this.props.album.get('image', defaultArtwork)}
+          alt={this.props.intl.formatMessage(messages.thumbnail)}
+        />
+        <div className='playbutton' role='button' tabIndex='0' onClick={this.props.onClick}>
+          <img src={playIcon} alt={this.props.intl.formatMessage(messages.playbutton)} />
+        </div>
+        <div className='info'>
+          {this.props.children || (
+            <div className='album-tracks-count-wrapper'>
+              <AlbumTracksCount value={this.props.album.get('tracks_count')} />
+            </div>
+          )}
+        </div>
       </div>
     );
   }
@@ -97,6 +110,8 @@ class AlbumPausedTrackItem extends ImmutablePureComponent {
 class AlbumTrack extends ImmutablePureComponent {
 
   static propTypes = {
+    children: PropTypes.node,
+    fitContain: PropTypes.bool,
     indexBeingQueued: PropTypes.number,
     statuses: ImmutablePropTypes.list,
     onChangeIndex: PropTypes.func.isRequired,
@@ -124,35 +139,38 @@ class AlbumTrack extends ImmutablePureComponent {
   }
 
   render () {
-    const { indexBeingQueued, statuses, onChangeIndex } = this.props;
+    const { children, fitContain, indexBeingQueued, statuses, onChangeIndex } = this.props;
     const { scrollbarsActive, reactionActive } = this.state;
     const mobile = isMobile();
 
     return (
-      <Musicvideo controlsActive={scrollbarsActive || reactionActive}>
-        <div className='album-playlist'>
-          <Scrollbars
-            onScrollStart={mobile ? null : this.handleScrollbarsActive}
-            onScrollStop={mobile ? null : this.handleScrollbarsInactive}
-          >
-            <ol>
-              {statuses.map((status, index) => indexBeingQueued === index ? (
-                <AlbumTrackBeingPlayedItem
-                  key={status.get('id')}
-                  onReactionActive={this.handleReactionActive}
-                  onReactionInactive={this.handleReactionInactive}
-                  status={status}
-                />
-              ) : (
-                <AlbumPausedTrackItem
-                  key={status.get('id')}
-                  index={index}
-                  status={status}
-                  onClick={onChangeIndex}
-                />
-              ))}
-            </ol>
-          </Scrollbars>
+      <Musicvideo controlsActive={scrollbarsActive || reactionActive} fitContain={fitContain}>
+        <div className='album-full-info'>
+          <div>{children}</div>
+          <div className='playlist'>
+            <Scrollbars
+              onScrollStart={mobile ? null : this.handleScrollbarsActive}
+              onScrollStop={mobile ? null : this.handleScrollbarsInactive}
+            >
+              <ol>
+                {statuses.map((status, index) => indexBeingQueued === index ? (
+                  <AlbumTrackBeingPlayedItem
+                    key={status.get('id')}
+                    onReactionActive={this.handleReactionActive}
+                    onReactionInactive={this.handleReactionInactive}
+                    status={status}
+                  />
+                ) : (
+                  <AlbumPausedTrackItem
+                    key={status.get('id')}
+                    index={index}
+                    status={status}
+                    onClick={onChangeIndex}
+                  />
+                ))}
+              </ol>
+            </Scrollbars>
+          </div>
         </div>
       </Musicvideo>
     );
@@ -200,6 +218,8 @@ class Album extends ImmutablePureComponent {
 
   static propTypes = {
     album: ImmutablePropTypes.map.isRequired,
+    children: PropTypes.node,
+    fitContain: PropTypes.bool,
     trackIndexBeingQueued: PropTypes.number,
     trackStatuses: ImmutablePropTypes.list,
     onQueueAlbum: PropTypes.func.isRequired,
@@ -215,19 +235,24 @@ class Album extends ImmutablePureComponent {
   render() {
     const {
       album,
+      children,
+      fitContain,
       trackIndexBeingQueued,
       trackStatuses,
       onChangeAlbumTrackIndex,
     } = this.props;
 
     return trackIndexBeingQueued === null || !trackStatuses ? (
-      <AlbumThumbnail album={album} onClick={this.handleQueueClick} />
+      <AlbumThumbnail album={album} fitContain={fitContain} onClick={this.handleQueueClick}>
+        {children}
+      </AlbumThumbnail>
     ) : (
       <AlbumTrack
+        fitContain={fitContain}
         indexBeingQueued={trackIndexBeingQueued}
         statuses={trackStatuses}
         onChangeIndex={onChangeAlbumTrackIndex}
-      />
+      >{children}</AlbumTrack>
     );
   }
 

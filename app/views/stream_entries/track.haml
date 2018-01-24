@@ -1,0 +1,10 @@
+- content_for :header_tags do
+  %script#initial-state{ type: 'application/json' }!= json_escape(@initial_state_json)
+
+#pawoo-music-default-props{ data: { props: Oj.dump(default_props) } }
+#pawoo-music-track{ data: { props: json_escape(@status_json) } }
+  -# These loads fonts required for music videos.
+  %div{ style: 'font-family: Roboto; font-weight: 500' } Loading…
+  %div{ style: 'font-family: Roboto; font-weight: normal' } Please wait for a moment.
+
+  = javascript_pack_tag 'track', integrity: true, crossorigin: 'anonymous'

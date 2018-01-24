@@ -7,7 +7,7 @@ import store from '../../mastodon/store';
 import { fetchStatusSuccess } from '../../mastodon/actions/statuses';
 import { hydrateStore } from '../../mastodon/actions/store';
 import { getLocale } from '../../mastodon/locales';
-import EmbedMusicvideo from '../containers/embed_musicvideo';
+import EmbeddedTrack from '../containers/embedded_track';
 import subscribeAsPlayer from '../player';
 import { setNavigate } from '../util/navigator';
 
@@ -23,7 +23,7 @@ subscribeAsPlayer(store);
 
 setNavigate(open);
 
-export default class MusicvideoEntry extends React.PureComponent {
+export default class TrackEntry extends React.PureComponent {
 
   static propTypes = {
     status: PropTypes.object.isRequired,
@@ -41,7 +41,7 @@ export default class MusicvideoEntry extends React.PureComponent {
     return (
       <IntlProvider locale={locale} messages={messages}>
         <Provider store={store}>
-          <EmbedMusicvideo infoHidden={hideInfo} statusId={status.id} />
+          <EmbeddedTrack infoHidden={hideInfo} statusId={status.id} />
         </Provider>
       </IntlProvider>
     );

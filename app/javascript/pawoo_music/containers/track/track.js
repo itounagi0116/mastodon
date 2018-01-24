@@ -57,13 +57,18 @@ class Track extends ImmutablePureComponent {
     return (
       <div className={classNames('track', { 'fit-contain': fitContain })} style={thumbnailStyle}>
         {beingQueued ? (
-          <Musicvideo bannerHidden controlsActive={controlsActive}>{children}</Musicvideo>
+          <Musicvideo
+            bannerHidden
+            controlsActive={controlsActive}
+            fitContain={fitContain}
+          >{children}</Musicvideo>
         ) : (
           <div className='thumbnail'>
             <img className='thumbnail-image' src={track.getIn(['video', 'image'], defaultArtwork)} alt='thumbnail' />
             <div className='playbutton' role='button' tabIndex='0' aria-pressed='false' onClick={this.handlePlayClick}>
               <span className='playbutton-icon' />
             </div>
+            <div className='controls-container'>{children}</div>
           </div>
         )}
       </div>
