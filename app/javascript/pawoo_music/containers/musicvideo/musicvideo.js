@@ -252,6 +252,15 @@ class Musicvideo extends ImmutablePureComponent {
     this.showControls();
   }
 
+  handleClick = (e) => {
+    const { showControls } = this.state;
+
+    if (!showControls) {
+      e.stopPropagation();
+      this.showControls();
+    }
+  }
+
   handleMouseEnter = () => {
     this.showControls();
   }
@@ -304,6 +313,7 @@ class Musicvideo extends ImmutablePureComponent {
     return (
       <div
         className={classNames('musicvideo', { 'fit-contain': fitContain })}
+        onClickCapture={mobile ? this.handleClick : noop}
         onMouseEnter={mobile ? noop : this.handleMouseEnter}
         onMouseMove={mobile ? noop : this.handleMouseMove}
         onMouseLeave={mobile ? noop : this.handleMouseLeave}
