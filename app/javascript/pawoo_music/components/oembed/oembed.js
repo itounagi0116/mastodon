@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 
+let id = 0;
+
 export default class Oembed extends ImmutablePureComponent {
 
   static propTypes = {
@@ -9,39 +11,55 @@ export default class Oembed extends ImmutablePureComponent {
   }
 
   componentDidMount () {
-    this.loadIframe(this.props.oembed);
+    addEventListener('message', this.handleMessage);
+    this.post();
   }
 
-  shouldComponentUpdate ({ oembed }) {
-    this.loadIframe(oembed);
-    return false;
+  componentWillUnmount () {
+    removeEventListener('message', this.handleMessage);
   }
 
-  loadIframe (oembed) {
-    if (oembed) {
-      const iframeDocument = this.iframe.contentWindow.document;
+  componentDidUpdate () {
+    this.post();
+  }
 
-      iframeDocument.open();
-      iframeDocument.write(oembed.html);
-      iframeDocument.close();
+  post () {
+    this.id = id;
+    this.iframes = [];
 
-      iframeDocument.body.style.margin = 0;
-      this.iframe.width  = iframeDocument.body.scrollWidth;
-      this.iframe.height = iframeDocument.body.scrollHeight;
+    [].forEach.call(this.ref.querySelectorAll('iframe.mastodon-embed'), iframe => {
+      const message = { type: 'setHeight', id };
+
+      this.iframes.push(iframe);
+
+      iframe.scrolling      = 'no';
+      iframe.style.overflow = 'hidden';
+      iframe.onload = () => iframe.contentWindow.postMessage(message, '*');
+
+      id++;
+      iframe.onload();
+    });
+  }
+
+  handleMessage = ({ data = {} }) => {
+    const index = data.id - this.id;
+
+    if (data.type !== 'setHeight' || !this.iframes[index]) {
+      return;
     }
+
+    this.iframes[index].height = data.height;
   }
 
-  setIframeRef = c =>  {
-    this.iframe = c;
+  setRef = ref => {
+    this.ref = ref;
   }
 
   render () {
     return (
-      <iframe
-        className='embedded-frame'
-        frameBorder='0'
-        ref={this.setIframeRef}
-        title='preview'
+      <div
+        ref={this.setRef}
+        dangerouslySetInnerHTML={this.props.oembed && { __html: this.props.oembed.html }}
       />
     );
   }
