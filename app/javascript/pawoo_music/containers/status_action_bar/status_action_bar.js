@@ -263,7 +263,6 @@ export default class StatusActionBar extends ImmutablePureComponent {
     }
   }
 
-
   handleRedirectLoginPage = () => {
     navigate('/auth/sign_in');
   }

@@ -110,6 +110,7 @@ export default class MusicStatus extends ImmutablePureComponent {
         <StatusContent status={status.set('contentHtml', contentHtml)} />
         <StatusReactions status={status} />
         <StatusActionBar status={status} />
+
         <StatusMeta status={status} />
       </div>
     );
