@@ -1,5 +1,6 @@
 import loadPolyfills from '../mastodon/load_polyfills';
 import ready from '../mastodon/ready';
+import { trackPage } from '../mastodon/actions/ga';
 import { createCustomColorStyle } from '../pawoo_music/util/custom_color';
 
 window.addEventListener('message', e => {
@@ -192,6 +193,8 @@ function main() {
     const displayName = document.querySelector('.card.compact .display-name');
     displayName.innerText = target.value;
   });
+
+  trackPage(window.location.pathname);
 }
 
 loadPolyfills().then(main).catch(error => {
