@@ -37,6 +37,50 @@ const messages = defineMessages({
 });
 const allowedPrivacy = ['public', 'unlisted'];
 
+class TrackList extends ImmutablePureComponent {
+
+  static propTypes = {
+    tracks: ImmutablePropTypes.list.isRequired,
+  }
+
+  renderDraggable = (track) => {
+    const artworkStyle = {
+      backgroundColor: constructRgbCode(track.getIn(['video', 'backgroundcolor']), 1),
+    };
+
+    return (
+      <Draggable key={track.get('id')} draggableId={track.get('id')}>
+        {({ draggableStyle, dragHandleProps, innerRef, placeholder }, { isDragging }) => (
+          <div className='draggable-item'>
+            <div
+              className='album-compose-track'
+              ref={innerRef}
+              style={draggableStyle}
+              {...dragHandleProps}
+            >
+              <img className='album-compose-track-artwork' src={track.getIn(['video', 'image'], defaultArtwork)} alt={track.get('title')} style={artworkStyle} />
+              <div className='album-compose-track-info'>{`${track.get('artist')} - ${track.get('title')}`}</div>
+              {isDragging ? <div className='tint' /> : null}
+            </div>
+            {placeholder}
+          </div>
+        )}
+      </Draggable>
+    );
+  }
+
+  render () {
+    const { tracks, ...props } = this.props;
+
+    return (
+      <ScrollableList {...props}>
+        {tracks.map(this.renderDraggable)}
+      </ScrollableList>
+    );
+  }
+
+}
+
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
 
@@ -209,7 +253,7 @@ export default class AlbumCompose extends ImmutablePureComponent {
       if (destination.droppableId === 'album_compose_unregistered') {
         const sourceId = this.props.registeredTracks.getIn(['source.index', 'id']);
         const foundIndex = this.props.unregisteredTracks.findIndex(track => track.get('id') < sourceId);
-        const destinationIndex = foundIndex || this.props.unregisterTracks.count() - 1;
+        const destinationIndex = foundIndex || this.props.unregisteredTracks.count() - 1;
 
         this.props.onUnregisterTrack(source.index, destinationIndex);
       } else if (destination.droppableId === 'album_compose_registered') {
@@ -264,32 +308,6 @@ export default class AlbumCompose extends ImmutablePureComponent {
   setRegisteredRef = ref => {
     this.registeredRef = ref;
     this.registeredInnerRef(ref);
-  }
-
-  renderDraggable = (track) => {
-    const artworkStyle = {
-      backgroundColor: constructRgbCode(track.getIn(['video', 'backgroundcolor']), 1),
-    };
-
-    return (
-      <Draggable key={track.get('id')} draggableId={track.get('id')}>
-        {({ draggableStyle, dragHandleProps, innerRef, placeholder }, { isDragging }) => (
-          <div className='draggable-item'>
-            <div
-              className='album-compose-track'
-              ref={innerRef}
-              style={draggableStyle}
-              {...dragHandleProps}
-            >
-              <img className='album-compose-track-artwork' src={track.getIn(['video', 'image'], defaultArtwork)} alt={track.get('title')} style={artworkStyle} />
-              <div className='album-compose-track-info'>{`${track.get('artist')} - ${track.get('title')}`}</div>
-              {isDragging ? <div className='tint' /> : null}
-            </div>
-            {placeholder}
-          </div>
-        )}
-      </Draggable>
-    );
   }
 
   render () {
@@ -395,12 +413,11 @@ export default class AlbumCompose extends ImmutablePureComponent {
                           className={classNames('draggable-items', { 'is-dragging-over-unregistered': this.isDraggingOverUnregistered })}
                           ref={this.setRegisteredRef}
                         >
-                          <ScrollableList
+                          <TrackList
                             isLoading={isLoadingRegisteredTracks}
                             scrollKey='album_compose_registered'
-                          >
-                            {registeredTracks.map(this.renderDraggable)}
-                          </ScrollableList>
+                            tracks={registeredTracks}
+                          />
                         </div>
                       );
                     }}
@@ -422,14 +439,13 @@ export default class AlbumCompose extends ImmutablePureComponent {
 
                       return (
                         <div className='draggable-items' ref={innerRef}>
-                          <ScrollableList
+                          <TrackList
                             hasMore={hasMoreUnregisteredTracks}
                             isLoading={isLoadingUnregisteredTracks}
                             onScrollToBottom={this.handleUnregisteredTracksScrollToBottom}
                             scrollKey='album_compose_unregistered'
-                          >
-                            {unregisteredTracks.map(this.renderDraggable)}
-                          </ScrollableList>
+                            tracks={unregisteredTracks}
+                          />
                           <p className={classNames('remove', { visible: isDraggingOver && registeredsBeingDragged > 0 })}>
                             <Icon icon='trash' />
                             <FormattedMessage
