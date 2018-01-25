@@ -1,6 +1,6 @@
 import loadPolyfills from '../mastodon/load_polyfills';
 import ready from '../mastodon/ready';
-import { trackPage } from '../mastodon/actions/ga';
+import { trackPage, startHeartbeat } from '../mastodon/actions/ga';
 import { createCustomColorStyle } from '../pawoo_music/util/custom_color';
 
 window.addEventListener('message', e => {
@@ -194,7 +194,9 @@ function main() {
     displayName.innerText = target.value;
   });
 
+  // GA
   trackPage(window.location.pathname);
+  startHeartbeat();
 }
 
 loadPolyfills().then(main).catch(error => {
