@@ -7,13 +7,21 @@ class Api::OEmbedController < Api::BaseController
     @status = status_finder.status
     extra_params = params.permit(:hideinfo)
 
-    render json: @status, serializer: OEmbedSerializer, width: maxwidth_or_default, height: maxheight_or_default, extra_params: extra_params
+    render json: @status, serializer: OEmbedSerializer, extra_params: extra_params, **size
   end
 
   private
 
   def status_finder
     StatusFinder.new(params[:url])
+  end
+
+  def size
+    @status.music.is_a?(Track) ? track_size : status_size
+  end
+
+  def status_size
+    { width: maxwidth_or_default, height: maxheight_or_default }
   end
 
   def maxwidth_or_default
@@ -25,10 +33,20 @@ class Api::OEmbedController < Api::BaseController
   end
 
   def default_width
-    @status.music.is_a?(Track) ? 480 : 400
+    400
   end
 
   def default_height
-    @status.music.is_a?(Track) ? maxwidth_or_default : nil
+    nil
+  end
+
+  def track_size
+    sizes = [params[:maxwidth], params[:maxheight]].compact!
+    if sizes.empty?
+      { width: 480, height: 480 }
+    else
+      min = sizes.min
+      { width: min, height: min }
+    end
   end
 end

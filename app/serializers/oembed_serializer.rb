@@ -41,6 +41,8 @@ class OEmbedSerializer < ActiveModel::Serializer
   end
 
   def html
+    return track_html if object.music.is_a?(Track)
+
     attributes = {
       src: embed_short_account_status_url(object.account, object, extra_params),
       class: 'mastodon-embed',
@@ -62,5 +64,16 @@ class OEmbedSerializer < ActiveModel::Serializer
 
   def extra_params
     instance_options[:extra_params] || {}
+  end
+
+  private
+
+  def track_html
+    content_tag(:iframe, nil, {
+      src: embed_short_account_status_url(object.account, object, extra_params),
+      style: 'border: 0',
+      width: width,
+      height: height,
+    })
   end
 end
