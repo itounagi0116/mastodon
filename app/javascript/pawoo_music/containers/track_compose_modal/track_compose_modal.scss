@@ -10,6 +10,11 @@
 
   .track-compose-modal-body {
     box-sizing: border-box;
+    display: flex;
     height: 100%;
+
+    > * {
+      margin: auto;
+    }
   }
 }

@@ -17,6 +17,10 @@ export default class TrackComposeModal extends PureComponent {
     dispatch: PropTypes.func.isRequired,
   };
 
+  handleClickContent = event => {
+    event.stopPropagation();
+  }
+
   handleStopCompose = () => {
     this.props.dispatch(hideTrackComposeModal());
   };
@@ -27,8 +31,10 @@ export default class TrackComposeModal extends PureComponent {
     return (
       <Delay className='track-compose-modal'>
         {modal && (
-          <div className='track-compose-modal-body'>
-            <TrackComposeContainer onClose={this.handleStopCompose} />
+          <div className='track-compose-modal-body' onClick={this.handleStopCompose}>
+            <div onClick={this.handleClickContent}>
+              <TrackComposeContainer onClose={this.handleStopCompose} />
+            </div>
           </div>
         )}
       </Delay>
