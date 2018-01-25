@@ -4,6 +4,7 @@ import querystring from 'querystring';
 import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import store from '../../mastodon/store';
+import { trackPage } from '../../mastodon/actions/ga';
 import { fetchStatusSuccess } from '../../mastodon/actions/statuses';
 import { hydrateStore } from '../../mastodon/actions/store';
 import { getLocale } from '../../mastodon/locales';
@@ -22,6 +23,8 @@ store.dispatch(hydrateStore(initialState));
 subscribeAsPlayer(store);
 
 setNavigate(open);
+
+trackPage(window.location.pathname);
 
 export default class MusicvideoEntry extends React.PureComponent {
 

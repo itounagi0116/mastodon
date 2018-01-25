@@ -6,6 +6,7 @@ import { IntlProvider, addLocaleData } from 'react-intl';
 import { ScrollContext } from 'react-router-scroll';
 
 import { hydrateStore } from '../../mastodon/actions/store';
+import gaTracker from '../../mastodon/components/ga_tracker';
 import store from '../../mastodon/store';
 import { getLocale } from '../../mastodon/locales';
 import App from '../containers/app';
@@ -32,7 +33,7 @@ export default class TimelineEntry extends React.PureComponent {
         <Provider store={store}>
           <BrowserRouter basename='/'>
             <ScrollContext>
-              <Route path='/' component={App} />
+              <Route path='/' component={gaTracker(App)} />
             </ScrollContext>
           </BrowserRouter>
         </Provider>
