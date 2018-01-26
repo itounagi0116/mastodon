@@ -1,5 +1,6 @@
 import { start } from 'rails-ujs';
-import { startHeartbeat } from '../mastodon/actions/ga';
+import ready from '../mastodon/ready';
+import PawooGA from '../pawoo/actions/ga';
 
 // import default stylesheet with variables
 require('font-awesome/css/font-awesome.css');
@@ -8,4 +9,7 @@ require('mastodon-application-style'); // eslint-disable-line import/no-unresolv
 require.context('../images/', true);
 
 start();
-startHeartbeat();
+ready(() => {
+  PawooGA.trackPage(window.location.pathname);
+  PawooGA.startHeartbeat();
+});

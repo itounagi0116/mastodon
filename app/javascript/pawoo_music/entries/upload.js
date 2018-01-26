@@ -6,7 +6,6 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import { ScrollContext } from 'react-router-scroll';
 
-import { trackPage } from '../../mastodon/actions/ga';
 import { hydrateStore } from '../../mastodon/actions/store';
 import store from '../../mastodon/store';
 import { getLocale } from '../../mastodon/locales';
@@ -28,8 +27,6 @@ if (editNode) {
   const track = Immutable.fromJS(editProps.track);
   store.dispatch(setTrackComposeData(track.set('id', editProps.id)));
 }
-
-trackPage(window.location.pathname);
 
 export default class UploadEntry extends React.PureComponent {
 

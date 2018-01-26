@@ -10,11 +10,6 @@ const gaTracker = (WrappedComponent, prefix = '') => {
       location: PropTypes.object,
     };
 
-    componentDidMount() {
-      const page = this.props.location.pathname;
-      trackPage(`${prefix}${page}`);
-    }
-
     componentWillReceiveProps(nextProps) {
       const currentPage = this.props.location.pathname;
       const nextPage = nextProps.location.pathname;

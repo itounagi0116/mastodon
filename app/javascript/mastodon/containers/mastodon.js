@@ -14,7 +14,7 @@ import { hydrateStore } from '../actions/store';
 import { connectUserStream } from '../actions/streaming';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import { getLocale } from '../locales';
-import gaTracker from '../components/ga_tracker';
+import pawooGaTracker from '../../pawoo/components/ga_tracker';
 const { localeData, messages } = getLocale();
 addLocaleData(localeData);
 
@@ -102,7 +102,7 @@ export default class Mastodon extends React.PureComponent {
           <Provider store={store}>
             <BrowserRouter basename='/web'>
               <ScrollContext>
-                <Route path='/' component={gaTracker(UI, '/web')} />
+                <Route path='/' component={pawooGaTracker(UI, '/web')} />
               </ScrollContext>
             </BrowserRouter>
           </Provider>
