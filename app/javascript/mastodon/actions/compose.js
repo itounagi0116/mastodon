@@ -1,4 +1,5 @@
 import api from '../api';
+import PawooGA from '../../pawoo/actions/ga';
 
 import { openModal } from './modal';
 import { addScheduledStatuses } from '../../pawoo_music/actions/schedules';
@@ -8,6 +9,8 @@ import {
   refreshCommunityTimeline,
   refreshPublicTimeline,
 } from './timelines';
+
+const pawooGaCategory = 'Compose';
 
 export const COMPOSE_CHANGE          = 'COMPOSE_CHANGE';
 export const COMPOSE_SUBMIT_REQUEST  = 'COMPOSE_SUBMIT_REQUEST';
@@ -62,6 +65,8 @@ export function changeCompose(text) {
 
 export function replyCompose(status) {
   return (dispatch) => {
+    PawooGA.event({ category: pawooGaCategory, action: 'OpenReply' });
+
     dispatch({
       type: COMPOSE_REPLY,
       status: status,
@@ -78,6 +83,8 @@ export function cancelReplyCompose() {
 
 export function mentionCompose(account) {
   return (dispatch) => {
+    PawooGA.event({ category: pawooGaCategory, action: 'OpenMention' });
+
     dispatch({
       type: COMPOSE_MENTION,
       account: account,
@@ -88,6 +95,8 @@ export function mentionCompose(account) {
 
 export function openModalFormCompose() {
   return (dispatch) => {
+    PawooGA.event({ category: pawooGaCategory, action: 'OpenStatusFormModal' });
+
     dispatch(saveAndClearBackupData());
     dispatch(openModal('STATUS_FORM', {}));
   };
@@ -103,6 +112,8 @@ export function submitCompose() {
     }
 
     dispatch(submitComposeRequest());
+
+    PawooGA.event({ category: pawooGaCategory, action: 'Submit' });
 
     api(getState).post('/api/v1/statuses', {
       status,
@@ -210,6 +221,8 @@ export function uploadCompose(files) {
     }
 
     dispatch(uploadComposeRequest());
+
+    PawooGA.event({ category: pawooGaCategory, action: 'Upload' });
 
     let data = new FormData();
     data.append('file', files[0]);

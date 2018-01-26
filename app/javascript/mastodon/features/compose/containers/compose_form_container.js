@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import ComposeForm from '../components/compose_form';
 import { uploadCompose } from '../../../actions/compose';
+import PawooGA from '../../../../pawoo/actions/ga';
 import {
   changeCompose,
   submitCompose,
@@ -16,6 +17,8 @@ import {
   fetchComposeHashTagSuggestions,
   selectComposeHashTagSuggestion,
 } from '../../../actions/compose';
+
+const pawooGaCategory = 'Compose';
 
 const mapStateToProps = state => ({
   text: state.getIn(['compose', 'text']),
@@ -88,14 +91,17 @@ const mapDispatchToProps = (dispatch) => ({
   },
 
   onPickEmoji (position, data) {
+    PawooGA.event({ category: pawooGaCategory, action: 'PickEmoji' });
     dispatch(insertEmojiCompose(position, data));
   },
 
   onSelectTimeLimit (tag) {
+    PawooGA.event({ category: pawooGaCategory, action: 'SelectTimeLimit' });
     dispatch(insertTagCompose(tag));
   },
 
   onInsertHashtag (tag) {
+    PawooGA.event({ category: pawooGaCategory, action: 'InsertHashtag' });
     dispatch(insertTagCompose(tag));
   },
 
