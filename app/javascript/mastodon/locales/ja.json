@@ -313,6 +313,7 @@
   "pawoo_music.push_settings.preferences.toggle.reblog": "ブースト",
   "pawoo_music.push_settings.success.title": "通知が設定されました",
   "pawoo_music.media_post.tips_balloon": "楽曲投稿はこちらから",
+  "pawoo_music.status_thread.deleted": "このトゥートは削除されました。",
   "pawoo_music.track_compose.basic": "基本",
   "pawoo_music.track_compose.basic.artist": "アーティスト表記",
   "pawoo_music.track_compose.basic.details": "詳細（楽曲紹介、#ジャンルタグなど）",

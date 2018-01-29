@@ -310,6 +310,7 @@
   "pawoo_music.push_settings.preferences.toggle.reblog": "Boosts",
   "pawoo_music.push_settings.success.title": "Notifications Have Been Configured",
   "pawoo_music.media_post.tips_balloon": "Click here and submit your track!",
+  "pawoo_music.status_thread.deleted": "This toot was deleted.",
   "pawoo_music.track_compose.basic": "Basic",
   "pawoo_music.track_compose.basic.artist": "Artist",
   "pawoo_music.track_compose.basic.details": "Details (description, genre #tags, etc...)",
