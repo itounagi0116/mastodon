@@ -58,7 +58,7 @@ export default class EmbeddedTrack extends React.PureComponent {
     return (
       <div className='app embedded-track'>
         <Track controlsActive={controlsActive} track={track} fitContain>
-          {infoHidden || (
+          {infoHidden ? null : (
             <div className='info'>
               <EmbeddedMeta acct={acct} statusId={id} artist={track.get('artist')} title={track.get('title')} />
               <div className='actions'>

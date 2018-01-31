@@ -44,7 +44,7 @@ export default class EmbeddedAlbum extends ImmutablePureComponent {
     return (
       <div className='app embedded-album'>
         <Album album={album} fitContain>
-          {infoHidden || (
+          {infoHidden ? null : (
             <div className='embedded-album-info'>
               <div className='meta'>
                 <EmbeddedMeta acct={acct} statusId={id} artist={album.get('artist')} title={album.get('title')} />
