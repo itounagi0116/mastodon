@@ -27,7 +27,6 @@ import {
 } from '../../actions/album_compose';
 import { makeGetAccount } from '../../../mastodon/selectors';
 import { constructRgbCode } from '../../util/musicvideo';
-import { isMobile } from '../../util/is_mobile';
 
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 
@@ -51,16 +50,16 @@ class TrackList extends ImmutablePureComponent {
     return (
       <Draggable key={track.get('id')} draggableId={track.get('id')} index={index}>
         {({ dragHandleProps, draggableProps, innerRef, placeholder }, { isDragging }) => (
-          <div className='draggable-item'>
+          <div>
             <div
-              className='album-compose-track'
+              className={classNames('album-compose-track', { 'is-dragging': isDragging })}
               ref={innerRef}
               {...dragHandleProps}
               {...draggableProps}
             >
               <img className='album-compose-track-artwork' src={track.getIn(['video', 'image'], defaultArtwork)} alt={track.get('title')} style={artworkStyle} />
               <div className='album-compose-track-info'>{`${track.get('artist')} - ${track.get('title')}`}</div>
-              {isDragging ? <div className='tint' /> : null}
+              <div className='tint' />
             </div>
             {placeholder}
           </div>
@@ -237,27 +236,31 @@ export default class AlbumCompose extends ImmutablePureComponent {
   }
 
   handleDragEnd = ({ source, destination }) => {
-    if (!source || !destination) {
+    if (!source) {
       return;
     }
 
     if (source.droppableId === 'album_compose_unregistered') {
-      if (destination.droppableId === 'album_compose_unregistered') {
-        this.props.onUnregisteredTracksRearrange(source.index, destination.index);
-      } else if (destination.droppableId === 'album_compose_registered') {
-        this.props.onRegisterTrack(source.index, destination.index);
+      if (destination) {
+        if (destination.droppableId === 'album_compose_unregistered') {
+          this.props.onUnregisteredTracksRearrange(source.index, destination.index);
+        } else if (destination.droppableId === 'album_compose_registered') {
+          this.props.onRegisterTrack(source.index, destination.index);
+        }
       }
     } else if (source.droppableId === 'album_compose_registered') {
       this.setState({ registeredsBeingDragged: this.state.registeredsBeingDragged - 1 });
 
-      if (destination.droppableId === 'album_compose_unregistered') {
-        const sourceId = this.props.registeredTracks.getIn(['source.index', 'id']);
-        const foundIndex = this.props.unregisteredTracks.findIndex(track => track.get('id') < sourceId);
-        const destinationIndex = foundIndex || this.props.unregisteredTracks.count() - 1;
+      if (destination) {
+        if (destination.droppableId === 'album_compose_unregistered') {
+          const sourceId = this.props.registeredTracks.getIn(['source.index', 'id']);
+          const foundIndex = this.props.unregisteredTracks.findIndex(track => track.get('id') < sourceId);
+          const destinationIndex = foundIndex || this.props.unregisteredTracks.count() - 1;
 
-        this.props.onUnregisterTrack(source.index, destinationIndex);
-      } else if (destination.droppableId === 'album_compose_registered') {
-        this.props.onRegisteredTracksRearrange(source.index, destination.index);
+          this.props.onUnregisterTrack(source.index, destinationIndex);
+        } else if (destination.droppableId === 'album_compose_registered') {
+          this.props.onRegisteredTracksRearrange(source.index, destination.index);
+        }
       }
     }
   }
@@ -310,6 +313,11 @@ export default class AlbumCompose extends ImmutablePureComponent {
     this.registeredInnerRef(ref);
   }
 
+  setUnregisteredRef = ref => {
+    this.unregisteredRef = ref;
+    this.unregisteredInnerRef(ref);
+  }
+
   render () {
     const {
       isActive,
@@ -326,11 +334,11 @@ export default class AlbumCompose extends ImmutablePureComponent {
 
     return (
       <MusicCompose isActive={isActive} onReplace={onReplace}>
-        <div className={classNames('album-compose-content', { mobile: isMobile() })}>
-          <div className='form-content'>
+        <div className='album-compose-content'>
+          <form className='column'>
             <img className='thumbnail' src={this.image} alt='album thumbnail' />
-            <form>
-              {/* 画像選択、タイトル、説明 */}
+            {/* 画像選択、タイトル、説明 */}
+            <div className='form-content'>
               <fieldset>
                 <legend>
                   <ImageInput
@@ -383,80 +391,110 @@ export default class AlbumCompose extends ImmutablePureComponent {
                   <GenreTagPicker onSelectGenre={this.handleSelectGenre} />
                 </legend>
               </fieldset>
-            </form>
-          </div>
+            </div>
+          </form>
 
           <DragDropContext onDragStart={this.handleDragStart} onDragEnd={this.handleDragEnd}>
-            <div className='album-items-wrapper'>
-              <div className='dnd-description'>ドラッグアンドドロップでいけるよ的一文！</div>
-              <div className='album-items'>
-                <section>
-                  <div className='dnd-field-name'>
-                    <FormattedMessage
-                      id='pawoo_music.album_compose.tracks.registered'
-                      defaultMessage='Registered'
-                    />
-                  </div>
-                  <Droppable droppableId='album_compose_registered'>
-                    {({ innerRef }) => {
-                      this.registeredInnerRef = innerRef;
+            <div className='album-items'>
+              <Droppable droppableId='album_compose_registered'>
+                {({ innerRef }, { isDraggingOver }) => {
+                  this.isDraggingOverRegistered = isDraggingOver;
+                  this.registeredInnerRef = innerRef;
 
-                      return (
-                        <div
-                          className={classNames('draggable-items', { 'is-dragging-over-unregistered': this.isDraggingOverUnregistered })}
-                          ref={this.setRegisteredRef}
-                        >
-                          <TrackList
-                            isLoading={isLoadingRegisteredTracks}
-                            scrollKey='album_compose_registered'
-                            tracks={registeredTracks}
+                  if (this.registeredRef) {
+                    if (isDraggingOver) {
+                      this.unregisteredRef.classList.add('is-dragging-over-registered');
+                    } else {
+                      this.unregisteredRef.classList.remove('is-dragging-over-registered');
+                    }
+                  }
+
+                  return (
+                    <section
+                      className={classNames('droppable-section registered', { 'is-dragging-over-unregistered': this.isDraggingOverUnregistered })}
+                      ref={this.setRegisteredRef}
+                    >
+                      <Draggable draggableId='registered-title' isDragDisabled>
+                        {draggable => (
+                          <h1 ref={draggable.innerRef}>
+                            <div className='heading'>
+                              <FormattedMessage
+                                id='pawoo_music.album_compose.tracks.registered'
+                                defaultMessage='Tracks in the album'
+                              />
+                            </div>
+                          </h1>
+                        )}
+                      </Draggable>
+                      <div className='droppable'>
+                        <TrackList
+                          isLoading={isLoadingRegisteredTracks}
+                          scrollKey='album_compose_registered'
+                          tracks={registeredTracks}
+                        />
+                        <p className={classNames('add', { visible: !isDraggingOver && registeredTracks.isEmpty() })}>
+                          <Icon icon='plus' />
+                          <FormattedMessage
+                            id='pawoo_music.album_compose.add'
+                            defaultMessage='Drag a track here'
                           />
-                        </div>
-                      );
-                    }}
-                  </Droppable>
-                </section>
-                <section>
-                  <p className='dnd-field-name'>
-                    <FormattedMessage
-                      id='pawoo_music.album_compose.tracks.unregistered'
-                      defaultMessage='Unregistered'
-                    />
-                  </p>
-                  <Droppable droppableId='album_compose_unregistered'>
-                    {({ innerRef }, { isDraggingOver }) => {
-                      this.isDraggingOverUnregistered = isDraggingOver;
+                        </p>
+                      </div>
+                    </section>
+                  );
+                }}
+              </Droppable>
+              <Droppable droppableId='album_compose_unregistered'>
+                {({ innerRef }, { isDraggingOver }) => {
+                  this.isDraggingOverUnregistered = isDraggingOver;
+                  this.unregisteredInnerRef = innerRef;
 
-                      if (this.registeredRef) {
-                        if (isDraggingOver) {
-                          this.registeredRef.classList.add('is-dragging-over-unregistered');
-                        } else {
-                          this.registeredRef.classList.remove('is-dragging-over-unregistered');
-                        }
-                      }
+                  if (this.registeredRef) {
+                    if (isDraggingOver) {
+                      this.registeredRef.classList.add('is-dragging-over-unregistered');
+                    } else {
+                      this.registeredRef.classList.remove('is-dragging-over-unregistered');
+                    }
+                  }
 
-                      return (
-                        <div className='draggable-items' ref={innerRef}>
-                          <TrackList
-                            hasMore={hasMoreUnregisteredTracks}
-                            isLoading={isLoadingUnregisteredTracks}
-                            onScrollToBottom={this.handleUnregisteredTracksScrollToBottom}
-                            scrollKey='album_compose_unregistered'
-                            tracks={unregisteredTracks}
-                          />
-                          <p className={classNames('remove', { visible: isDraggingOver && registeredsBeingDragged > 0 })}>
-                            <Icon icon='trash' />
-                            <FormattedMessage
-                              id='pawoo_music.album_compose.remove'
-                              defaultMessage='Remove from the album'
-                            />
-                          </p>
-                        </div>
-                      );
-                    }}
-                  </Droppable>
-                </section>
-              </div>
+                  return (
+                    <section
+                      className={classNames('droppable-section unregistered', { 'is-dragging-over-registered': this.isDraggingOverRegistered })}
+                      ref={this.setUnregisteredRef}
+                    >
+                      <Draggable draggableId='unregistered-title' isDragDisabled>
+                        {draggable => (
+                          <h1 ref={draggable.innerRef}>
+                            <div className='heading'>
+                              <FormattedMessage
+                                id='pawoo_music.album_compose.tracks.unregistered'
+                                defaultMessage='Tracks to add'
+                              />
+                            </div>
+                          </h1>
+                        )}
+                      </Draggable>
+                      <TrackList
+                        hasMore={hasMoreUnregisteredTracks}
+                        isLoading={isLoadingUnregisteredTracks}
+                        onScrollToBottom={this.handleUnregisteredTracksScrollToBottom}
+                        scrollKey='album_compose_unregistered'
+                        tracks={unregisteredTracks}
+                      />
+                      <p
+                        aria-hidden={registeredsBeingDragged <= 0}
+                        className={classNames('remove', { active: isDraggingOver, visible: registeredsBeingDragged > 0 })}
+                      >
+                        <Icon icon='trash' />
+                        <FormattedMessage
+                          id='pawoo_music.album_compose.remove'
+                          defaultMessage='Remove from the album'
+                        />
+                      </p>
+                    </section>
+                  );
+                }}
+              </Droppable>
             </div>
           </DragDropContext>
 
@@ -464,14 +502,16 @@ export default class AlbumCompose extends ImmutablePureComponent {
             <button className='cancel' onClick={this.handleCancel}>
               <FormattedMessage id='pawoo_music.music_compose.cancel' defaultMessage='Cancel' />
             </button>
-            {!album.get('id') && <PrivacyDropdown buttonClassName='privacy-toggle' value={album.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} />}
-            <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
-              {album.get('id') ? (
-                <FormattedMessage id='pawoo_music.music_compose.save' defaultMessage='Save' />
-              ) : (
-                <FormattedMessage id='pawoo_music.music_compose.submit' defaultMessage='Submit' />
-              )}
-            </button>
+            <div className='submit'>
+              {!album.get('id') && <PrivacyDropdown buttonClassName='privacy-toggle' value={album.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} />}
+              <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
+                {album.get('id') ? (
+                  <FormattedMessage id='pawoo_music.music_compose.save' defaultMessage='Save' />
+                ) : (
+                  <FormattedMessage id='pawoo_music.music_compose.submit' defaultMessage='Submit' />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </MusicCompose>
