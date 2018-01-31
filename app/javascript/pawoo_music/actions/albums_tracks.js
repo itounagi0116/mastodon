@@ -60,6 +60,7 @@ export function fetchAlbumTracksFail(error) {
 export function setAlbumTracks(id, tracks) {
   return {
     type: ALBUMS_TRACKS_SET,
+    id,
     tracks,
   };
 }

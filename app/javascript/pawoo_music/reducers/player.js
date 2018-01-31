@@ -1,4 +1,7 @@
 import {
+  ALBUMS_TRACKS_SET,
+} from '../actions/albums_tracks';
+import {
   PLAYER_AUDIO_CONTEXT_CHANGE,
   PLAYER_AUDIO_DESTINATION_NODE_CHANGE,
   PLAYER_AUDIO_SOURCE_NODE_CHANGE,
@@ -32,6 +35,9 @@ const initialState = Immutable.fromJS({
 
 export default function player(state = initialState, action) {
   switch(action.type) {
+  case ALBUMS_TRACKS_SET:
+    return Immutable.List(['pawoo_music', 'albums_tracks', action.id]).equals(state.getIn(['album', 'path'])) ?
+      initialState : state;
   case PLAYER_AUDIO_CONTEXT_CHANGE:
     return state.setIn(['audio', 'context'], action.audioContext);
   case PLAYER_AUDIO_DESTINATION_NODE_CHANGE:
