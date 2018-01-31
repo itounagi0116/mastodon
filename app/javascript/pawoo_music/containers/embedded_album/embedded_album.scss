@@ -15,3 +15,11 @@
     }
   }
 }
+
+.musicvideo {
+  .embedded-album-info .embedded-meta .title a {
+    color: var(--strong2);
+    font-weight: bold;
+    background-color: transparent;
+  }
+}

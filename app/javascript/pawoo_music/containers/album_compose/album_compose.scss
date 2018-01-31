@@ -51,7 +51,7 @@
   @media screen and (min-width: 1001px) {
     .form-content {
       width: var(--form-width);
-      margin: 0 0 0 var(--padding40);
+      margin: 0;
     }
   }
 
@@ -223,19 +223,36 @@
   }
 
   .album-items-wrapper {
+    margin: var(--verticalspace30);
     position: relative;
+
+    .dnd-description {
+      margin: var(--verticalspace30-both);
+      font-size: var(--text30-font);
+      line-height: var(--text30-line);
+      color: var(--color1);
+    }
 
     .album-items {
       display: flex;
       flex-wrap: wrap;
+
+      > section:first-child {
+        margin: 0 calc(0 - var(--grid * 2));
+      }
 
       > section {
         display: flex;
         flex-direction: column;
         position: relative;
         height: 320px;
-        width: calc(var(--form-width) / 2 - var(--grid) * 4);
-        margin: 0 calc(var(--grid) * 2);
+        width: calc(var(--form-width) / 2 - var(--grid) * 2);
+
+        .dnd-field-name {
+          margin: var(--verticalspace20-both);
+          font-size: var(--text20-font);
+          line-height: var(--text20-line);
+        }
 
         .draggable-items {
           flex: 1;

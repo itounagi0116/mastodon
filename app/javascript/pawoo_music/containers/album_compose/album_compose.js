@@ -384,31 +384,19 @@ export default class AlbumCompose extends ImmutablePureComponent {
                 </legend>
               </fieldset>
             </form>
-            <div className='actions'>
-              <button className='cancel' onClick={this.handleCancel}>
-                <FormattedMessage id='pawoo_music.music_compose.cancel' defaultMessage='Cancel' />
-              </button>
-              {!album.get('id') && <PrivacyDropdown buttonClassName='privacy-toggle' value={album.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} />}
-              <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
-                {album.get('id') ? (
-                  <FormattedMessage id='pawoo_music.music_compose.save' defaultMessage='Save' />
-                ) : (
-                  <FormattedMessage id='pawoo_music.music_compose.submit' defaultMessage='Submit' />
-                )}
-              </button>
-            </div>
           </div>
 
           <DragDropContext onDragStart={this.handleDragStart} onDragEnd={this.handleDragEnd}>
             <div className='album-items-wrapper'>
+              <div className='dnd-description'>ドラッグアンドドロップでいけるよ的一文！</div>
               <div className='album-items'>
                 <section>
-                  <h1>
+                  <div className='dnd-field-name'>
                     <FormattedMessage
                       id='pawoo_music.album_compose.tracks.registered'
                       defaultMessage='Registered'
                     />
-                  </h1>
+                  </div>
                   <Droppable droppableId='album_compose_registered'>
                     {({ innerRef }) => {
                       this.registeredInnerRef = innerRef;
@@ -429,12 +417,12 @@ export default class AlbumCompose extends ImmutablePureComponent {
                   </Droppable>
                 </section>
                 <section>
-                  <h1>
+                  <p className='dnd-field-name'>
                     <FormattedMessage
                       id='pawoo_music.album_compose.tracks.unregistered'
                       defaultMessage='Unregistered'
                     />
-                  </h1>
+                  </p>
                   <Droppable droppableId='album_compose_unregistered'>
                     {({ innerRef }, { isDraggingOver }) => {
                       this.isDraggingOverUnregistered = isDraggingOver;
@@ -471,6 +459,20 @@ export default class AlbumCompose extends ImmutablePureComponent {
               </div>
             </div>
           </DragDropContext>
+
+          <div className='actions'>
+            <button className='cancel' onClick={this.handleCancel}>
+              <FormattedMessage id='pawoo_music.music_compose.cancel' defaultMessage='Cancel' />
+            </button>
+            {!album.get('id') && <PrivacyDropdown buttonClassName='privacy-toggle' value={album.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} />}
+            <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
+              {album.get('id') ? (
+                <FormattedMessage id='pawoo_music.music_compose.save' defaultMessage='Save' />
+              ) : (
+                <FormattedMessage id='pawoo_music.music_compose.submit' defaultMessage='Submit' />
+              )}
+            </button>
+          </div>
         </div>
       </MusicCompose>
     );

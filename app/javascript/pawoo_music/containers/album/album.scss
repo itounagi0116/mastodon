@@ -20,8 +20,8 @@
       white-space: nowrap;
 
       > li {
-        padding: var(--padding10);
-        padding-left: calc(var(--rightspace10-value) + 1em + var(--padding10));
+        padding: var(--padding20);
+        padding-left: calc(var(--rightspace15-value) + 1em + var(--padding20));
 
         text-overflow: ellipsis;
         overflow-x: hidden;
@@ -29,7 +29,7 @@
 
         > .icon {
           position: absolute;
-          left: var(--rightspace10-value);
+          left: var(--rightspace15-value);
 
           height: var(--text20-line);
         }
