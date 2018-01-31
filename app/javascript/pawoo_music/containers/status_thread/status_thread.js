@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
@@ -55,6 +56,10 @@ export default class StatusThread extends ImmutablePureComponent {
     descendantsIds: ImmutablePropTypes.list,
   };
 
+  state = {
+    deleted: false,
+  };
+
   componentDidMount () {
     const { dispatch, statusId, account } = this.props;
     const displayName = displayNameEllipsis(account);
@@ -72,6 +77,9 @@ export default class StatusThread extends ImmutablePureComponent {
       const statusId = nextProps.statusId;
 
       dispatch(fetchStatus(statusId));
+      this.setState({ deleted: false });
+    } else if (!nextProps.status && this.props.status) {
+      this.setState({ deleted: true });
     }
   }
 
@@ -81,18 +89,27 @@ export default class StatusThread extends ImmutablePureComponent {
 
   render () {
     const { status, accountId, account, ancestorsIds, descendantsIds } = this.props;
+    const { deleted } = this.state;
+    let content = null;
 
-    if (!status) {
-      return null;
+    if (status) {
+      const ancestors = this.renderChildren(ancestorsIds);
+      const descendants = this.renderChildren(descendantsIds);
+      const Component = (status.has('track') || status.has('album')) ? MusicStatusContainer : StatusContainer;
+
+      content = ancestors.push(
+        <Component detail key={`detail-${status.get('id')}`} id={status.get('id')} />
+      ).concat(descendants);
+    } else if (deleted) {
+      content = (
+        <p className='status-thread-deleted'>
+          <FormattedMessage
+            id='pawoo_music.status_thread.deleted'
+            defaultMessage='This toot was deleted.'
+          />
+        </p>
+      );
     }
-
-    const ancestors = this.renderChildren(ancestorsIds);
-    const descendants = this.renderChildren(descendantsIds);
-    const Component = (status.has('track') || status.has('album')) ? MusicStatusContainer : StatusContainer;
-
-    const content = ancestors.push(
-      <Component detail key={`detail-${status.get('id')}`} id={status.get('id')} />
-    ).concat(descendants);
 
     const gallery = (
       <ScrollableList scrollKey='thread' prepend={<div className='prepend'><AccountHeaderContainer account={account} /></div>} >
