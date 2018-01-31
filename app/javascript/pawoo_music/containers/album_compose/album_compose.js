@@ -43,20 +43,20 @@ class TrackList extends ImmutablePureComponent {
     tracks: ImmutablePropTypes.list.isRequired,
   }
 
-  renderDraggable = (track) => {
+  renderDraggable = (track, index) => {
     const artworkStyle = {
       backgroundColor: constructRgbCode(track.getIn(['video', 'backgroundcolor']), 1),
     };
 
     return (
-      <Draggable key={track.get('id')} draggableId={track.get('id')}>
-        {({ draggableStyle, dragHandleProps, innerRef, placeholder }, { isDragging }) => (
+      <Draggable key={track.get('id')} draggableId={track.get('id')} index={index}>
+        {({ dragHandleProps, draggableProps, innerRef, placeholder }, { isDragging }) => (
           <div className='draggable-item'>
             <div
               className='album-compose-track'
               ref={innerRef}
-              style={draggableStyle}
               {...dragHandleProps}
+              {...draggableProps}
             >
               <img className='album-compose-track-artwork' src={track.getIn(['video', 'image'], defaultArtwork)} alt={track.get('title')} style={artworkStyle} />
               <div className='album-compose-track-info'>{`${track.get('artist')} - ${track.get('title')}`}</div>
