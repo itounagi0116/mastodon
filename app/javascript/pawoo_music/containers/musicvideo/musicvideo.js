@@ -12,6 +12,7 @@ import { debounce } from 'lodash';
 import { changePaused, changeSeekDestination } from '../../actions/player';
 import Icon from '../../components/icon';
 import Slider from '../../components/slider';
+import { context, getCurrentTime } from '../../player/audio';
 import { constructGeneratorOptions } from '../../util/musicvideo';
 import { isMobile } from '../../util/is_mobile';
 
@@ -28,7 +29,6 @@ class PlayerControls extends ImmutablePureComponent {
 
   static propTypes = {
     duration: PropTypes.number,
-    getCurrentTime: PropTypes.func.isRequired,
     paused: PropTypes.bool,
     onSeekDestinationChange: PropTypes.func,
     onTogglePaused: PropTypes.func.isRequired,
@@ -43,7 +43,7 @@ class PlayerControls extends ImmutablePureComponent {
   }
 
   render () {
-    const { duration, getCurrentTime, intl, onSeekDestinationChange, onTogglePaused, paused } = this.props;
+    const { duration, intl, onSeekDestinationChange, onTogglePaused, paused } = this.props;
 
     return (
       <div className='player-controls'>
@@ -67,7 +67,6 @@ class PlayerControls extends ImmutablePureComponent {
 const mapStateToProps = (state) => ({
   audio: state.getIn(['pawoo_music', 'player', 'audio']),
   duration: state.getIn(['pawoo_music', 'player', 'duration']),
-  getCurrentTime: state.getIn(['pawoo_music', 'player', 'getCurrentTime']),
   lastSeekDestination: state.getIn(['pawoo_music', 'player', 'lastSeekDestination']),
   loading: state.getIn(['pawoo_music', 'player', 'loading']),
   paused: state.getIn(['pawoo_music', 'player', 'paused']),
@@ -100,7 +99,6 @@ class Musicvideo extends ImmutablePureComponent {
     onPausedChange: PropTypes.func.isRequired,
     onSeekDestinationChange: PropTypes.func,
     audio: ImmutablePropTypes.map.isRequired,
-    getCurrentTime: PropTypes.func.isRequired,
     loading: PropTypes.bool.isRequired,
     paused: PropTypes.bool.isRequired,
     track: ImmutablePropTypes.map.isRequired,
@@ -114,14 +112,14 @@ class Musicvideo extends ImmutablePureComponent {
   image = new BaseTexture(new Image());
 
   generator = new Canvas(
-    this.props.audio.get('context'),
+    context,
     constructGeneratorOptions(
       this.props.bannerHidden ?
         this.props.track.deleteIn(['video', 'banner']) : this.props.track,
         this.image
     ),
     lightLeaks,
-    () => this.props.getCurrentTime()
+    getCurrentTime
   );
 
   componentDidMount () {
@@ -305,7 +303,7 @@ class Musicvideo extends ImmutablePureComponent {
   }
 
   render() {
-    const { children, duration, fitContain, getCurrentTime, label, loading, onSeekDestinationChange, paused } = this.props;
+    const { children, duration, fitContain, label, loading, onSeekDestinationChange, paused } = this.props;
     const { initialized } = this.state;
     const canPlay = ![Infinity, NaN].includes(duration);
     const showControls = this.state.showControls;
@@ -334,7 +332,6 @@ class Musicvideo extends ImmutablePureComponent {
           <div className='misc-controls'>{children}</div>
           <PlayerControls
             duration={duration}
-            getCurrentTime={getCurrentTime}
             paused={paused}
             onTogglePaused={this.handleTogglePaused}
             onSeekDestinationChange={onSeekDestinationChange}

@@ -2,10 +2,8 @@ import {
   ALBUMS_TRACKS_SET,
 } from '../actions/albums_tracks';
 import {
-  PLAYER_AUDIO_CONTEXT_CHANGE,
   PLAYER_AUDIO_DESTINATION_NODE_CHANGE,
   PLAYER_AUDIO_SOURCE_NODE_CHANGE,
-  PLAYER_CURRENT_TIME_GETTER_CHANGE,
   PLAYER_DURATION_CHANGE,
   PLAYER_LOADING_CHANGE,
   PLAYER_PAUSED_CHANGE,
@@ -18,14 +16,12 @@ import Immutable from 'immutable';
 
 const initialState = Immutable.fromJS({
   audio: {
-    context: null,
     node: {
       destination: null,
       source: null,
     },
   },
   album: null,
-  getCurrentTime: null,
   loading: false,
   paused: true,
   lastSeekDestination: 0,
@@ -38,14 +34,10 @@ export default function player(state = initialState, action) {
   case ALBUMS_TRACKS_SET:
     return Immutable.List(['pawoo_music', 'albums_tracks', action.id]).equals(state.getIn(['album', 'path'])) ?
       initialState : state;
-  case PLAYER_AUDIO_CONTEXT_CHANGE:
-    return state.setIn(['audio', 'context'], action.audioContext);
   case PLAYER_AUDIO_DESTINATION_NODE_CHANGE:
     return state.setIn(['audio', 'node', 'destination'], action.audioNode);
   case PLAYER_AUDIO_SOURCE_NODE_CHANGE:
     return state.setIn(['audio', 'node', 'source'], action.audioNode);
-  case PLAYER_CURRENT_TIME_GETTER_CHANGE:
-    return state.set('getCurrentTime', action.getCurrentTime);
   case PLAYER_DURATION_CHANGE:
     return state.set('duration', action.duration);
   case PLAYER_LOADING_CHANGE:

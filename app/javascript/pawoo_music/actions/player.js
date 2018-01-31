@@ -1,7 +1,7 @@
-export const PLAYER_AUDIO_CONTEXT_CHANGE = 'PLAYER_AUDIO_CONTEXT_CHANGE';
+import { getCurrentTime } from '../player/audio';
+
 export const PLAYER_AUDIO_DESTINATION_NODE_CHANGE = 'PLAYER_AUDIO_DESTINATION_NODE_CHANGE';
 export const PLAYER_AUDIO_SOURCE_NODE_CHANGE = 'PLAYER_AUDIO_SOURCE_NODE_CHANGE';
-export const PLAYER_CURRENT_TIME_GETTER_CHANGE = 'PLAYER_CURRENT_TIME_GETTER_CHANGE';
 export const PLAYER_DURATION_CHANGE = 'PLAYER_DURATION_CHANGE';
 export const PLAYER_INITIALIZED_CHANGE = 'PLAYER_INITIALIZED_CHANGE';
 export const PLAYER_LOADING_CHANGE = 'PLAYER_LOADING_CHANGE';
@@ -10,10 +10,6 @@ export const PLAYER_SEEK_DESTINATION_CHANGE = 'PLAYER_SEEK_DESTINATION_CHANGE';
 export const PLAYER_TRACK_PATH_CHANGE = 'PLAYER_TRACK_PATH_CHANGE';
 export const PLAYER_ALBUM_PATH_CHANGE = 'PLAYER_ALBUM_PATH_CHANGE';
 export const PLAYER_ALBUM_TRACK_INDEX_CHANGE = 'PLAYER_ALBUM_TRACK_INDEX_CHANGE';
-
-export function changeAudioContext(audioContext) {
-  return { type: PLAYER_AUDIO_CONTEXT_CHANGE, audioContext };
-}
 
 export function changeAudioDestinationNode(audioNode) {
   return { type: PLAYER_AUDIO_DESTINATION_NODE_CHANGE, audioNode };
@@ -25,10 +21,6 @@ export function changeAudioSourceNode(audioNode) {
 
 export function changeDuration(duration) {
   return { type: PLAYER_DURATION_CHANGE, duration };
-}
-
-export function changeCurrentTimeGetter(getCurrentTime) {
-  return { type: PLAYER_CURRENT_TIME_GETTER_CHANGE, getCurrentTime };
 }
 
 export function changeInitialized(initialized) {
@@ -44,7 +36,7 @@ export function changePaused(paused) {
     if (!paused) {
       const player = getState().getIn(['pawoo_music', 'player']);
 
-      if (player.get('getCurrentTime')() >= player.get('duration')) {
+      if (getCurrentTime() >= player.get('duration')) {
         dispatch(changeSeekDestination(0));
       }
     }

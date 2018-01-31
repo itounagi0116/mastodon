@@ -1,8 +1,6 @@
 import {
-  changeAudioContext,
   changeAudioDestinationNode,
   changeAudioSourceNode,
-  changeCurrentTimeGetter,
   changeDuration,
   changeLoading,
   end,
@@ -16,7 +14,8 @@ const PlayerAudio = userAgentMatch && userAgentMatch[1] < 603 &&
                       !navigator.userAgent.includes('Chrome') ?
                         BufferAudio : HTMLAudio;
 
-const PlayerAudioContext = window.AudioContext || window.webkitAudioContext;
+export const context = new (window.AudioContext || window.webkitAudioContext);
+let playerAudio;
 
 export default store => {
   let lastId = null;
@@ -24,10 +23,8 @@ export default store => {
   let lastSeekDestination = null;
   let lastPaused = null;
 
-  const audioContext = new PlayerAudioContext;
-
-  const playerAudio = new PlayerAudio({
-    context: audioContext,
+  playerAudio = new PlayerAudio({
+    context,
 
     onLoadStart() {
       store.dispatch(changeLoading(true));
@@ -57,9 +54,6 @@ export default store => {
       store.dispatch(changeDuration(duration));
     },
   });
-
-  store.dispatch(changeAudioContext(audioContext));
-  store.dispatch(changeCurrentTimeGetter(() => playerAudio.getCurrentTime()));
 
   store.subscribe(() => {
     const state = store.getState();
@@ -118,3 +112,7 @@ export default store => {
 
   setInterval(playerAudio.update.bind(playerAudio), 32768);
 };
+
+export function getCurrentTime() {
+  return playerAudio.getCurrentTime();
+}

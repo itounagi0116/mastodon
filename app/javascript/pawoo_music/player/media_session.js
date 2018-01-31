@@ -1,4 +1,5 @@
 import { noop } from 'lodash';
+import { getCurrentTime } from './audio';
 import {
   changeAlbumTrackIndex,
   changePaused,
@@ -16,19 +17,11 @@ export default 'mediaSession' in navigator ? store => {
   }
 
   function handleSeekBakward() {
-    store.dispatch(
-      changeSeekDestination(
-        store.getState().getIn(['pawoo_music', 'player', 'getCurrentTime'])() - 1
-      )
-    );
+    store.dispatch(changeSeekDestination(getCurrentTime() - 1));
   }
 
   function handleSeekForward() {
-    store.dispatch(
-      changeSeekDestination(
-        store.getState().getIn(['pawoo_music', 'player', 'getCurrentTime'])() - 1
-      )
-    );
+    store.dispatch(changeSeekDestination(getCurrentTime() - 1));
   }
 
   function handlePreviousTrack() {
