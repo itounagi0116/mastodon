@@ -71,8 +71,8 @@ import { isMobile } from '../../util/is_mobile';
 
 const messages = defineMessages({
   preview: { id: 'pawoo_music.track_compose.preview', defaultMessage: 'Video preview' },
-  privacy: { id: 'pawoo_music.track_compose.privacy', defaultMessage: 'Privacy' },
-  select_genre: { id: 'pawoo_music.track_compose.select_genre', defaultMessage: 'Select genre tag' },
+  privacy: { id: 'pawoo_music.music_compose.privacy', defaultMessage: 'Privacy' },
+  select_genre: { id: 'pawoo_music.music_compose.select_genre', defaultMessage: 'Select genre tag' },
 });
 const allowedPrivacy = ['public', 'unlisted'];
 const isUserTouching = () => false;
@@ -1187,14 +1187,14 @@ export default class TrackCompose extends ImmutablePureComponent {
 
             <div className='actions'>
               <button className='cancel' onClick={this.handleCancel}>
-                <FormattedMessage id='pawoo_music.track_compose.cancel' defaultMessage='Cancel' />
+                <FormattedMessage id='pawoo_music.music_compose.cancel' defaultMessage='Cancel' />
               </button>
               {!track.get('id') && <PrivacyDropdown buttonClassName='privacy-toggle' value={track.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} isUserTouching={isUserTouching} />}
               <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
                 {track.get('id') ? (
-                  <FormattedMessage id='pawoo_music.track_compose.save' defaultMessage='Save' />
+                  <FormattedMessage id='pawoo_music.music_compose.save' defaultMessage='Save' />
                 ) : (
-                  <FormattedMessage id='pawoo_music.track_compose.submit' defaultMessage='Submit' />
+                  <FormattedMessage id='pawoo_music.music_compose.submit' defaultMessage='Submit' />
                 )}
               </button>
             </div>

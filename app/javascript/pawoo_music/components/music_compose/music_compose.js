@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import { NavLink } from 'react-router-dom';
 
 class Item extends React.PureComponent {
@@ -52,8 +53,18 @@ export default class MusicCompose extends React.PureComponent {
         <div>
           <nav>
             <ul>
-              <Item isActive={this.props.isActive} onClick={this.props.onReplace} to='/albums/new'>Album</Item>
-              <Item isActive={this.props.isActive} onClick={this.props.onReplace} to='/tracks/new'>Track</Item>
+              <Item isActive={this.props.isActive} onClick={this.props.onReplace} to='/albums/new'>
+                <FormattedMessage
+                  id='pawoo_music.album_compose.title'
+                  defaultMessage='Album'
+                />
+              </Item>
+              <Item isActive={this.props.isActive} onClick={this.props.onReplace} to='/tracks/new'>
+                <FormattedMessage
+                  id='pawoo_music.track_compose.title'
+                  defaultMessage='Track'
+                />
+              </Item>
             </ul>
           </nav>
           {this.props.children}

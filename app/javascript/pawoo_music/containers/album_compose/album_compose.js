@@ -32,8 +32,8 @@ import { isMobile } from '../../util/is_mobile';
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 
 const messages = defineMessages({
-  privacy: { id: 'pawoo_music.track_compose.privacy', defaultMessage: 'Privacy' },
-  select_genre: { id: 'pawoo_music.track_compose.select_genre', defaultMessage: 'Select genre tag' },
+  privacy: { id: 'pawoo_music.music_compose.privacy', defaultMessage: 'Privacy' },
+  select_genre: { id: 'pawoo_music.music_compose.select_genre', defaultMessage: 'Select genre tag' },
 });
 const allowedPrivacy = ['public', 'unlisted'];
 
@@ -386,14 +386,14 @@ export default class AlbumCompose extends ImmutablePureComponent {
             </form>
             <div className='actions'>
               <button className='cancel' onClick={this.handleCancel}>
-                <FormattedMessage id='pawoo_music.track_compose.cancel' defaultMessage='Cancel' />
+                <FormattedMessage id='pawoo_music.music_compose.cancel' defaultMessage='Cancel' />
               </button>
               {!album.get('id') && <PrivacyDropdown buttonClassName='privacy-toggle' value={album.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} />}
               <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
                 {album.get('id') ? (
-                  <FormattedMessage id='pawoo_music.track_compose.save' defaultMessage='Save' />
+                  <FormattedMessage id='pawoo_music.music_compose.save' defaultMessage='Save' />
                 ) : (
-                  <FormattedMessage id='pawoo_music.track_compose.submit' defaultMessage='Submit' />
+                  <FormattedMessage id='pawoo_music.music_compose.submit' defaultMessage='Submit' />
                 )}
               </button>
             </div>
@@ -403,7 +403,12 @@ export default class AlbumCompose extends ImmutablePureComponent {
             <div className='album-items-wrapper'>
               <div className='album-items'>
                 <section>
-                  <h1>Registered</h1>
+                  <h1>
+                    <FormattedMessage
+                      id='pawoo_music.album_compose.tracks.registered'
+                      defaultMessage='Registered'
+                    />
+                  </h1>
                   <Droppable droppableId='album_compose_registered'>
                     {({ innerRef }) => {
                       this.registeredInnerRef = innerRef;
@@ -424,7 +429,12 @@ export default class AlbumCompose extends ImmutablePureComponent {
                   </Droppable>
                 </section>
                 <section>
-                  <h1>Unregistered</h1>
+                  <h1>
+                    <FormattedMessage
+                      id='pawoo_music.album_compose.tracks.unregistered'
+                      defaultMessage='Unregistered'
+                    />
+                  </h1>
                   <Droppable droppableId='album_compose_unregistered'>
                     {({ innerRef }, { isDraggingOver }) => {
                       this.isDraggingOverUnregistered = isDraggingOver;
