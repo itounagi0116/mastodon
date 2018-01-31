@@ -51,11 +51,21 @@ export default class StatusMeta extends ImmutablePureComponent {
     }
 
     if (status.has('track')) {
+      const count = status.getIn(['track', 'albums_count']);
+      const disabled = count <= 0;
+
       albumsLink = (
-        <div className='albums' role='button' tabIndex='0' aria-pressed='false' onClick={this.handleClickAlbums}>
+        <div
+          className={disabled ? null : 'albums'}
+          role='button'
+          tabIndex='0'
+          aria-disabled={disabled}
+          aria-pressed='false'
+          onClick={disabled ? null : this.handleClickAlbums}
+        >
           <FormattedMessage
             id='pawoo_music.status_meta.albums'
-            values={{ number: <FormattedNumber value={status.getIn(['track', 'albums_count'])} /> }}
+            values={{ number: <FormattedNumber value={count} /> }}
           />
         </div>
       );

@@ -3,6 +3,9 @@
   %head
     %meta{ charset: 'utf-8' }/
     %meta{ name: 'robots', content: 'noindex' }/
+    - if current_account
+      %meta{ name: 'pawoo-ga-uid', content: current_account.id }/
+
     = stylesheet_pack_tag 'application', media: 'all'
 
     = stylesheet_pack_tag 'common', media: 'all'

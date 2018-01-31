@@ -87,6 +87,7 @@ const normalizeStatus = (state, status) => {
 
   if (status.album) {
     normalStatus.album.id = status.id;
+    normalStatus.album.contentHtml = emojify(normalStatus.album.content);
   }
 
   const searchContent = [status.spoiler_text, status.content].join(' ').replace(/<br \/>/g, '\n').replace(/<\/p><p>/g, '\n\n');

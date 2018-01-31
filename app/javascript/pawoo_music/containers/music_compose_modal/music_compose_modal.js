@@ -27,6 +27,10 @@ export default class MusicComposeModal extends PureComponent {
     dispatch: PropTypes.func.isRequired,
   };
 
+  handleClickContent = event => {
+    event.stopPropagation();
+  }
+
   handleIsActive = (match, location, to) => {
     switch (to) {
     case '/albums/new':
@@ -74,8 +78,10 @@ export default class MusicComposeModal extends PureComponent {
     return (
       <Delay className='music-compose-modal'>
         {Body && (
-          <div className='music-compose-modal-body'>
-            <Body isActive={this.handleIsActive} onClose={this.handleStopCompose} onReplace={this.handleReplace} />
+          <div className='music-compose-modal-body' onClick={this.handleStopCompose}>
+            <div onClick={this.handleClickContent}>
+              <Body isActive={this.handleIsActive} onClose={this.handleStopCompose} onReplace={this.handleReplace} />
+            </div>
           </div>
         )}
       </Delay>
