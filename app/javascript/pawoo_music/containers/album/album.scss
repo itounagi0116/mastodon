@@ -56,6 +56,7 @@
 }
 
 .album-thumbnail {
+  background: var(--backgroundcolor);
   position: relative;
   height: var(--width-gallery-canvas); // aspect ratio 1:1
 

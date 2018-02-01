@@ -38,10 +38,12 @@ class AlbumThumbnail extends ImmutablePureComponent {
   }
 
   render () {
+    const image = this.props.album.get('image');
+
     return (
       <div className={classNames('album-thumbnail', { 'fit-contain': this.props.fitContain })}>
         <img
-          src={this.props.album.get('image', defaultArtwork)}
+          src={image === null ? defaultArtwork : image}
           alt={this.props.intl.formatMessage(messages.thumbnail)}
         />
         <div className='playbutton' role='button' tabIndex='0' onClick={this.props.onClick}>
