@@ -388,7 +388,7 @@ export default class AlbumCompose extends ImmutablePureComponent {
         if (destination.droppableId === 'album_compose_unregistered') {
           this.props.onUnregisteredTracksRearrange(source.index, destination.index);
         } else if (destination.droppableId === 'album_compose_registered') {
-          this.props.onRegisterTrack(source.index, destination.index);
+          this.props.onRegisterTrack(source.index, destination.index - 1);
         }
       }
     } else if (source.droppableId === 'album_compose_registered') {
