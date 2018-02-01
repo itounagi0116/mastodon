@@ -115,6 +115,8 @@ class TrackLists extends ImmutablePureComponent {
       <div className='track-lists'>
         <Droppable droppableId='album_compose_registered'>
           {({ innerRef }, { isDraggingOver }) => {
+            const plusVisible = !isDraggingOver && registereds.isEmpty();
+
             this.isDraggingOverRegistered = isDraggingOver;
             this.registeredInnerRef = innerRef;
 
@@ -149,7 +151,10 @@ class TrackLists extends ImmutablePureComponent {
                     scrollKey='album_compose_registered'
                     tracks={registereds}
                   />
-                  <p className={classNames('add', { visible: !isDraggingOver && registereds.isEmpty() })}>
+                  <p
+                    aria-hidden={!plusVisible}
+                    className={classNames('add', { visible: plusVisible })}
+                  >
                     <Icon icon='plus' />
                     <FormattedMessage
                       id='pawoo_music.album_compose.add'
