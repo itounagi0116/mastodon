@@ -218,25 +218,21 @@
     position: relative;
 
     .droppable-section {
+      border-radius: var(--radius);
       color: var(--textcolor);
       display: flex;
       flex: 1;
       flex-direction: column;
       height: 320px;
       margin: var(--padding5);
+      overflow: hidden;
       position: relative;
 
-      .heading {
-        border-top-left-radius: var(--radius);
-        border-top-right-radius: var(--radius);
+      > h1 {
         font-size: var(--text20-font);
         font-weight: bold;
         line-height: var(--text20-line);
         padding: var(--radius);
-      }
-
-      &, .add, .remove {
-        border-radius: var(--radius);
       }
 
       .add, .remove {
@@ -305,34 +301,38 @@
       }
 
       &.registered {
-        background: var(--color2);
+        .droppable {
+          background: var(--color2);
 
-        .heading {
-          background-color: var(--linkcolor2);
-          color: var(--color2);
+          &.is-dragging-over-unregistered .is-dragging {
+            color: var(--strong1);
+
+            .tint {
+              position: absolute;
+              left: 0;
+              top: 0;
+
+              width: 100%;
+              height: 100%;
+
+              background: #ff000040;
+              transition: var(--hover-transition);
+            }
+          }
         }
 
-        &.is-dragging-over-unregistered .is-dragging {
-          color: var(--strong1);
-
-          .tint {
-            position: absolute;
-            left: 0;
-            top: 0;
-
-            width: 100%;
-            height: 100%;
-
-            background: #ff000040;
-            transition: var(--hover-transition);
-          }
+        > h1 {
+          background-color: var(--linkcolor2);
+          color: var(--color2);
         }
       }
 
       &.unregistered {
-        background: var(--color3);
+        .droppable {
+          background: var(--color3);
+        }
 
-        .heading {
+        > h1 {
           background: var(--linkcolor);
           color: var(--strong2);
         }
