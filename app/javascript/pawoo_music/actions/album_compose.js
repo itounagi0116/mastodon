@@ -28,6 +28,7 @@ export const ALBUM_COMPOSE_SUBMIT_SUCCESS = 'ALBUM_COMPOSE_SUBMIT_SUCCESS';
 export const ALBUM_COMPOSE_SUBMIT_FAIL = 'ALBUM_COMPOSE_SUBMIT_FAIL';
 export const ALBUM_COMPOSE_SHOW_MODAL = 'ALBUM_COMPOSE_SHOW_MODAL';
 export const ALBUM_COMPOSE_HIDE_MODAL = 'ALBUM_COMPOSE_HIDE_MODAL';
+export const ALBUM_COMPOSE_RESET_DATA = 'ALBUM_COMPOSE_RESET_DATA';
 export const ALBUM_COMPOSE_SET_DATA = 'ALBUM_COMPOSE_SET_DATA';
 
 export function submitAlbumCompose() {
@@ -122,6 +123,12 @@ export function hideAlbumComposeModal() {
     type: ALBUM_COMPOSE_HIDE_MODAL,
   };
 };
+
+export function resetAlbumComposeData() {
+  return {
+    type: ALBUM_COMPOSE_RESET_DATA,
+  };
+}
 
 export function setAlbumComposeData(album) {
   return {

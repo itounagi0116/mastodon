@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import MediaPost from '../media_post';
-import { showAlbumComposeModal } from '../../actions/album_compose';
+import { showAlbumComposeModal, resetAlbumComposeData } from '../../actions/album_compose';
 
 @connect()
 export default class AlbumPost extends React.PureComponent {
@@ -12,6 +12,7 @@ export default class AlbumPost extends React.PureComponent {
   }
 
   handlePost = () => {
+    this.props.dispatch(resetAlbumComposeData());
     this.props.dispatch(showAlbumComposeModal());
   }
 
