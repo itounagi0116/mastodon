@@ -383,7 +383,9 @@ export default class StatusActionBar extends ImmutablePureComponent {
         <li><Icon title={replyTitle} icon='message-square' scale onClick={me ? this.handleReplyClick : this.handleRedirectLoginPage} /></li>
         <li><Icon title={reblogTitle} icon={reblogIcon} scale onClick={me ? this.handleReblogClick : this.handleRedirectLoginPage} disabled={reblogDisabled} active={reblogged} /></li>
         <li><Icon title={favouriteTitle} icon='heart' scale onClick={me ? this.handleFavouriteClick : this.handleRedirectLoginPage} disabled={favouriteDisabled} active={favourited} /></li>
-        {status.has('track') && publicStatus && <li><Icon title={embedTitle} icon='share-2' scale onClick={this.handleEmbed} /></li>}
+        {(status.has('album') || status.has('track')) && publicStatus && (
+          <li><Icon title={embedTitle} icon='share-2' scale onClick={this.handleEmbed} /></li>
+        )}
         <li><DropdownMenu items={moreMenu} scale icon='more-horizontal' title={moreTitle} /></li>
         {editButton}
         {downloadButton}
