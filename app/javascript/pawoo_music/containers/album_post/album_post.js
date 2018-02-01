@@ -16,7 +16,7 @@ export default class AlbumPost extends React.PureComponent {
   }
 
   render () {
-    return <MediaPost onPost={this.handlePost} to='/albums/new' />;
+    return <MediaPost href='/albums/new' onPost={this.handlePost} />;
   }
 
 }

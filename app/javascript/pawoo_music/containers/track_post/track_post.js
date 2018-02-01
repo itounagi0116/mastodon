@@ -16,7 +16,7 @@ export default class TrackPost extends React.PureComponent {
   }
 
   render () {
-    return <MediaPost onPost={this.handlePost} to='/tracks/new' />;
+    return <MediaPost href='/tracks/new' onPost={this.handlePost} />;
   }
 
 }

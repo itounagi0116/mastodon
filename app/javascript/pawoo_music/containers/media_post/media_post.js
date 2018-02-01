@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import Icon from '../../components/icon';
 import { isMobile } from '../../util/is_mobile';
@@ -16,9 +15,9 @@ const mapStateToProps = (state) => ({
 export default class MediaPost extends PureComponent {
 
   static propTypes = {
+    href: PropTypes.string,
     isLogin: PropTypes.bool.isRequired,
     onPost: PropTypes.func.isRequired,
-    to: PropTypes.string,
   };
 
   constructor(props, context) {
@@ -41,9 +40,9 @@ export default class MediaPost extends PureComponent {
   render () {
     return (
       <div className='media-post'>
-        <Link className='media-post-body' role='button' tabIndex='-1' onClick={this.handleMediaPost} to={this.props.to}>
+        <a className='media-post-body' href={this.props.href} role='button' onClick={this.handleMediaPost}>
           <Icon icon='plus' title='Post Your Music!' strong />
-        </Link>
+        </a>
         <div className='media-post-tips-baloon'>
           <TipsBalloonContainer id={4} style={{ left: '35px', top: '5px' }} direction='top'>
             <FormattedMessage
