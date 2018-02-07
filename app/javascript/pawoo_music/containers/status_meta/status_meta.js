@@ -14,6 +14,8 @@ import Link from '../../components/link_wrapper';
 export default class StatusMeta extends ImmutablePureComponent {
 
   static propTypes = {
+    albumHidden: PropTypes.bool,
+    onClick: PropTypes.func,
     status: ImmutablePropTypes.map.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
@@ -28,7 +30,7 @@ export default class StatusMeta extends ImmutablePureComponent {
   }
 
   render () {
-    const { status } = this.props;
+    const { albumHidden, onClick, status } = this.props;
     let applicationLink = null;
     let albumsLink = null;
 
@@ -50,7 +52,7 @@ export default class StatusMeta extends ImmutablePureComponent {
       );
     }
 
-    if (status.has('track')) {
+    if (!albumHidden && status.has('track')) {
       const count = status.getIn(['track', 'albums_count']);
       const disabled = count <= 0;
 
@@ -76,11 +78,11 @@ export default class StatusMeta extends ImmutablePureComponent {
     return (
       <div className='status-meta'>
         {(status.getIn(['account', 'acct']).indexOf('@') === -1) ? (
-          <Link className='absolute-time' to={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}`}>
+          <Link className='absolute-time' onClick={onClick} to={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}`}>
             {timestamp}
           </Link>
         ) : (
-          <a className='absolute-time' href={status.get('url')} target='_blank' rel='noopener'>
+          <a className='absolute-time' href={status.get('url')} onClick={onClick} target='_blank' rel='noopener'>
             {timestamp}
           </a>
         )}

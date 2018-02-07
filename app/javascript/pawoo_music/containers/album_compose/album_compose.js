@@ -6,6 +6,7 @@ import React from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
+import StatusMeta from '../status_meta';
 import Icon from '../../components/icon';
 import ImageInput from '../../components/image_input';
 import ScrollableList from '../../components/scrollable_list';
@@ -25,7 +26,9 @@ import {
   changeAlbumComposePrivacy,
   submitAlbumCompose,
 } from '../../actions/album_compose';
-import { makeGetAccount } from '../../../mastodon/selectors';
+import { openStatusModal } from '../../../mastodon/actions/statuses';
+import { makeGetAccount, makeGetStatus } from '../../../mastodon/selectors';
+import { isMobile } from '../../util/is_mobile';
 import { constructRgbCode } from '../../util/musicvideo';
 
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
@@ -36,19 +39,49 @@ const messages = defineMessages({
 });
 const allowedPrivacy = ['public', 'unlisted'];
 
+class TrackInfo extends ImmutablePureComponent {
+
+  static propTypes = {
+    onClick: PropTypes.func.isRequired,
+    status: ImmutablePropTypes.map.isRequired,
+  }
+
+  handleClick = event => {
+    this.props.onClick(event, this.props.status);
+  }
+
+  render () {
+    const { status } = this.props;
+    const track = status.get('track');
+
+    return (
+      <div className='album-compose-track-info'>
+        {`${track.get('artist')} - ${track.get('title')}`}
+        <StatusMeta albumHidden onClick={this.handleClick} status={status} />
+      </div>
+    );
+  }
+
+}
+
 class TrackList extends ImmutablePureComponent {
 
   static propTypes = {
-    tracks: ImmutablePropTypes.list.isRequired,
+    onClick: PropTypes.func.isRequired,
+    statuses: ImmutablePropTypes.list.isRequired,
   }
 
-  renderDraggable = (track, index) => {
+  renderDraggable = (status, index) => {
+    const id = status.get('id');
+    const title = status.getIn(['track', 'title']);
+    const backgroundColor = status.getIn(['track', 'video', 'backgroundcolor']);
+    const image = status.getIn(['track', 'video', 'image'], defaultArtwork);
     const artworkStyle = {
-      backgroundColor: constructRgbCode(track.getIn(['video', 'backgroundcolor']), 1),
+      backgroundColor: constructRgbCode(backgroundColor, 1),
     };
 
     return (
-      <Draggable key={track.get('id')} draggableId={track.get('id')} index={index}>
+      <Draggable key={id} draggableId={id} index={index}>
         {({ dragHandleProps, draggableProps, innerRef, placeholder }, { isDragging }) => (
           <div>
             <div
@@ -57,8 +90,8 @@ class TrackList extends ImmutablePureComponent {
               {...dragHandleProps}
               {...draggableProps}
             >
-              <img className='album-compose-track-artwork' src={track.getIn(['video', 'image'], defaultArtwork)} alt={track.get('title')} style={artworkStyle} />
-              <div className='album-compose-track-info'>{`${track.get('artist')} - ${track.get('title')}`}</div>
+              <img className='album-compose-track-artwork' src={image} alt={title} style={artworkStyle} />
+              <TrackInfo onClick={this.props.onClick} status={status} />
               <div className='tint' />
             </div>
             {placeholder}
@@ -69,11 +102,11 @@ class TrackList extends ImmutablePureComponent {
   }
 
   render () {
-    const { tracks, ...props } = this.props;
+    const { statuses, onClick, ...props } = this.props;
 
     return (
       <ScrollableList {...props}>
-        {tracks.map(this.renderDraggable)}
+        {statuses.map(this.renderDraggable)}
       </ScrollableList>
     );
   }
@@ -86,10 +119,16 @@ class RegisteredTrackList extends ImmutablePureComponent {
     registereds: ImmutablePropTypes.list.isRequired,
     isLoading: PropTypes.bool,
     isDraggingOverUnregistereds: PropTypes.bool,
+    onClick: PropTypes.func,
   }
 
   render () {
-    const { registereds, isLoading, isDraggingOverUnregistereds } = this.props;
+    const {
+      registereds,
+      isLoading,
+      isDraggingOverUnregistereds,
+      onClick,
+    } = this.props;
 
     return (
       <Droppable droppableId='album_compose_registered'>
@@ -103,8 +142,9 @@ class RegisteredTrackList extends ImmutablePureComponent {
             >
               <TrackList
                 isLoading={isLoading}
+                onClick={onClick}
                 scrollKey='album_compose_registered'
-                tracks={registereds}
+                statuses={registereds}
               />
               <p
                 aria-hidden={!plusVisible}
@@ -135,6 +175,7 @@ class TrackLists extends ImmutablePureComponent {
     isLoadingUnregistereds: PropTypes.bool,
     onUnregisteredsScrollToBottom: PropTypes.func,
     registeredIsBeingDragged: PropTypes.bool,
+    onClick: PropTypes.func,
   }
 
   render () {
@@ -146,6 +187,7 @@ class TrackLists extends ImmutablePureComponent {
       isLoadingUnregistereds,
       onUnregisteredsScrollToBottom,
       registeredIsBeingDragged,
+      onClick,
     } = this.props;
 
     return (
@@ -163,6 +205,7 @@ class TrackLists extends ImmutablePureComponent {
                 registereds={registereds}
                 isLoading={isLoadingRegistereds}
                 isDraggingOverUnregistereds={isDraggingOver}
+                onClick={onClick}
               />
             </section>
             <section className='droppable-section unregistered'>
@@ -176,9 +219,10 @@ class TrackLists extends ImmutablePureComponent {
                 <TrackList
                   hasMore={hasMoreUnregistered}
                   isLoading={isLoadingUnregistereds}
+                  onClick={onClick}
                   onScrollToBottom={onUnregisteredsScrollToBottom}
                   scrollKey='album_compose_unregistered'
-                  tracks={unregistereds}
+                  statuses={unregistereds}
                 />
               </div>
               <p
@@ -202,48 +246,47 @@ class TrackLists extends ImmutablePureComponent {
 
 const makeMapStateToProps = () => {
   const getAccount = makeGetAccount();
+  const getStatus = makeGetStatus();
 
-  const mapStateToProps = (state) => {
-    return {
-      registeredTracks: state.getIn(['pawoo_music', 'album_compose', 'registeredTracks'])
-                             .map(id => state.getIn(['statuses', id, 'track'])),
-      isLoadingRegisteredTracks: state.getIn(['pawoo_music', 'album_compose', 'isLoadingRegisteredTracks']),
-      unregisteredTracks: state.getIn(['pawoo_music', 'album_compose', 'unregisteredTracks'])
-                               .map(id => state.getIn(['statuses', id, 'track'])),
-      hasMoreUnregisteredTracks: state.getIn(['pawoo_music', 'album_compose', 'unregisteredTracksNext']) !== null,
-      isLoadingUnregisteredTracks: state.getIn(['pawoo_music', 'album_compose', 'isLoadingUnregisteredTracks']),
-      album: state.getIn(['pawoo_music', 'album_compose', 'album']),
-      error: state.getIn(['pawoo_music', 'album_compose', 'error']),
-      isSubmitting: state.getIn(['pawoo_music', 'album_compose', 'is_submitting']),
-      account: getAccount(state, state.getIn(['meta', 'me'])).get('acct'),
-    };
-  };
+  const mapStateToProps = (state) => ({
+    registeredStatuses: state.getIn(['pawoo_music', 'album_compose', 'registeredTracks'])
+                             .map(id => getStatus(state, id)),
+    isLoadingRegisteredStatuses: state.getIn(['pawoo_music', 'album_compose', 'isLoadingRegisteredTracks']),
+    unregisteredStatuses: state.getIn(['pawoo_music', 'album_compose', 'unregisteredTracks'])
+                               .map(id => getStatus(state, id)),
+    hasMoreUnregisteredStatuses: state.getIn(['pawoo_music', 'album_compose', 'unregisteredTracksNext']) !== null,
+    isLoadingUnregisteredStatuses: state.getIn(['pawoo_music', 'album_compose', 'isLoadingUnregisteredTracks']),
+    album: state.getIn(['pawoo_music', 'album_compose', 'album']),
+    error: state.getIn(['pawoo_music', 'album_compose', 'error']),
+    isSubmitting: state.getIn(['pawoo_music', 'album_compose', 'is_submitting']),
+    account: getAccount(state, state.getIn(['meta', 'me'])).get('acct'),
+  });
 
   return mapStateToProps;
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  onRefreshTracks () {
+  onRefreshStatuses () {
     dispatch(refreshTracks());
   },
 
-  onExpandUnregisteredTracks () {
+  onExpandUnregisteredStatuses () {
     dispatch(expandUnregisteredTracks());
   },
 
-  onRegisterTrack (source, destination) {
+  onRegisterStatus (source, destination) {
     dispatch(registerTrack(source, destination));
   },
 
-  onRegisteredTracksRearrange (source, destination) {
+  onRegisteredStatusesRearrange (source, destination) {
     dispatch(rearrangeRegisteredTracks(source, destination));
   },
 
-  onUnregisterTrack (source, destination) {
+  onUnregisterStatus (source, destination) {
     dispatch(unregisterTrack(source, destination));
   },
 
-  onUnregisteredTracksRearrange (source, destination) {
+  onUnregisteredStatusesRearrange (source, destination) {
     dispatch(rearrangeUnregisteredTracks(source, destination));
   },
 
@@ -266,6 +309,10 @@ const mapDispatchToProps = (dispatch) => ({
   onSubmit () {
     dispatch(submitAlbumCompose());
   },
+
+  onOpenStatus (status) {
+    dispatch(openStatusModal({ id: status.get('id'), status }));
+  },
 });
 
 @injectIntl
@@ -277,19 +324,20 @@ export default class AlbumCompose extends ImmutablePureComponent {
     album: ImmutablePropTypes.map.isRequired,
     isActive: PropTypes.func,
     onReplace: PropTypes.func,
-    onRefreshTracks: PropTypes.func.isRequired,
-    onExpandUnregisteredTracks: PropTypes.func.isRequired,
+    onRefreshStatuses: PropTypes.func.isRequired,
+    onExpandUnregisteredStatuses: PropTypes.func.isRequired,
     error: PropTypes.any,
     isSubmitting: PropTypes.bool.isRequired,
-    hasMoreUnregisteredTracks: PropTypes.bool,
-    registeredTracks: ImmutablePropTypes.list.isRequired,
-    isLoadingRegisteredTracks: PropTypes.bool,
-    unregisteredTracks: ImmutablePropTypes.list.isRequired,
-    isLoadingUnregisteredTracks: PropTypes.bool,
+    hasMoreUnregisteredStatuses: PropTypes.bool,
+    registeredStatuses: ImmutablePropTypes.list.isRequired,
+    isLoadingRegisteredStatuses: PropTypes.bool,
+    unregisteredStatuses: ImmutablePropTypes.list.isRequired,
+    isLoadingUnregisteredStatuses: PropTypes.bool,
     onChangeAlbumTitle: PropTypes.func.isRequired,
     onChangeAlbumText: PropTypes.func.isRequired,
     onChangeAlbumImage: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired,
+    onOpenStatus: PropTypes.func.isRequired,
     intl: PropTypes.object.isRequired,
     onClose: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
   }
@@ -308,7 +356,7 @@ export default class AlbumCompose extends ImmutablePureComponent {
   componentDidMount () {
     const { album } = this.props;
 
-    this.props.onRefreshTracks();
+    this.props.onRefreshStatuses();
     this.updateImage(album);
   }
 
@@ -363,9 +411,9 @@ export default class AlbumCompose extends ImmutablePureComponent {
     if (source.droppableId === 'album_compose_unregistered') {
       if (destination) {
         if (destination.droppableId === 'album_compose_unregistered') {
-          this.props.onUnregisteredTracksRearrange(source.index, destination.index);
+          this.props.onUnregisteredStatusesRearrange(source.index, destination.index);
         } else if (destination.droppableId === 'album_compose_registered') {
-          this.props.onRegisterTrack(source.index, destination.index);
+          this.props.onRegisterStatus(source.index, destination.index);
         }
       }
     } else if (source.droppableId === 'album_compose_registered') {
@@ -373,13 +421,13 @@ export default class AlbumCompose extends ImmutablePureComponent {
 
       if (destination) {
         if (destination.droppableId === 'album_compose_unregistered') {
-          const sourceId = this.props.registeredTracks.getIn(['source.index', 'id']);
-          const foundIndex = this.props.unregisteredTracks.findIndex(track => track.get('id') < sourceId);
-          const destinationIndex = foundIndex || this.props.unregisteredTracks.count() - 1;
+          const sourceId = this.props.registeredStatuses.getIn([source.index, 'id']);
+          const foundIndex = this.props.unregisteredStatuses.findIndex(status => status.get('id') < sourceId);
+          const destinationIndex = foundIndex || this.props.unregisteredStatuses.count() - 1;
 
-          this.props.onUnregisterTrack(source.index, destinationIndex);
+          this.props.onUnregisterStatus(source.index, destinationIndex);
         } else if (destination.droppableId === 'album_compose_registered') {
-          this.props.onRegisteredTracksRearrange(source.index, destination.index);
+          this.props.onRegisteredStatusesRearrange(source.index, destination.index);
         }
       }
     }
@@ -412,6 +460,13 @@ export default class AlbumCompose extends ImmutablePureComponent {
     this.props.onSubmit();
   }
 
+  handleClickStatus = (e, status) => {
+    if (!isMobile()) {
+      this.props.onOpenStatus(status);
+      e.preventDefault();
+    }
+  }
+
   updateImage = (album) => {
     const image = album.get('image');
 
@@ -428,12 +483,12 @@ export default class AlbumCompose extends ImmutablePureComponent {
     const {
       isActive,
       onReplace,
-      hasMoreUnregisteredTracks,
-      registeredTracks,
-      isLoadingRegisteredTracks,
-      unregisteredTracks,
-      isLoadingUnregisteredTracks,
-      onExpandUnregisteredTracks,
+      hasMoreUnregisteredStatuses,
+      registeredStatuses,
+      isLoadingRegisteredStatuses,
+      unregisteredStatuses,
+      isLoadingUnregisteredStatuses,
+      onExpandUnregisteredStatuses,
       album,
       intl,
     } = this.props;
@@ -503,13 +558,14 @@ export default class AlbumCompose extends ImmutablePureComponent {
 
           <DragDropContext onDragStart={this.handleDragStart} onDragEnd={this.handleDragEnd}>
             <TrackLists
-              hasMoreUnregistered={hasMoreUnregisteredTracks}
-              registereds={registeredTracks}
-              isLoadingRegistereds={isLoadingRegisteredTracks}
-              unregistereds={unregisteredTracks}
-              isLoadingUnregistereds={isLoadingUnregisteredTracks}
-              onUnregisteredsScrollToBottom={onExpandUnregisteredTracks}
+              hasMoreUnregistered={hasMoreUnregisteredStatuses}
+              registereds={registeredStatuses}
+              isLoadingRegistereds={isLoadingRegisteredStatuses}
+              unregistereds={unregisteredStatuses}
+              isLoadingUnregistereds={isLoadingUnregisteredStatuses}
+              onUnregisteredsScrollToBottom={onExpandUnregisteredStatuses}
               registeredIsBeingDragged={registeredsBeingDragged > 0}
+              onClick={this.handleClickStatus}
             />
           </DragDropContext>
 

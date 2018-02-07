@@ -32,8 +32,8 @@ export default class ModalContextContainer extends ImmutablePureComponent {
     return (
       <div className={this.props.className} >
         {this.props.children}
-        <ModalContainer />
         {isMobile() || <MusicComposeModalContainer />}
+        <ModalContainer />
       </div>
     );
   }
