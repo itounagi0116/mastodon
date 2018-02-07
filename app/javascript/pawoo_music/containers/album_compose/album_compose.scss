@@ -363,8 +363,23 @@
       margin-left: var(--grid);
     }
 
+    // Notes on "hover":
+    // * The devices with touch screens matches @media (hover: none). But
+    //   Some of them activates &:hover when their views are being scrolled by
+    //   sliding an object on screens. The track is not focused in such a case,
+    //   so do not change the color.
+    // * The hover feature of media queries does not work for Mozilla Firefox
+    //   58. For such a browser, always change the color when &:hover is
+    //   activated, and revert it only when the media query is activated.
+
     &.is-dragging, &:hover {
       color: var(--linkcolor2);
+    }
+
+    &:hover {
+      @media (hover: none) {
+        color: var(--textcolor);
+      }
     }
   }
 
