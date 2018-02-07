@@ -19,6 +19,7 @@ import {
   ALBUM_COMPOSE_SUBMIT_FAIL,
   ALBUM_COMPOSE_SHOW_MODAL,
   ALBUM_COMPOSE_HIDE_MODAL,
+  ALBUM_COMPOSE_RESET_DATA,
   ALBUM_COMPOSE_SET_DATA,
 } from '../actions/album_compose';
 import {
@@ -148,6 +149,8 @@ export default function album_compose(state = initialState, action) {
     return state.set('modal', true);
   case ALBUM_COMPOSE_HIDE_MODAL:
     return state.set('modal', false);
+  case ALBUM_COMPOSE_RESET_DATA:
+    return state.set('album', initialState.get('album'));
   case ALBUM_COMPOSE_SET_DATA:
     return setAlbumData(state, action.album);
   case ALBUMS_TRACKS_FETCH_REQUEST:

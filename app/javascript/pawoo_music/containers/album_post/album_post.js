@@ -3,6 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import MediaPost from '../media_post';
 import { showAlbumComposeModal, resetAlbumComposeData } from '../../actions/album_compose';
+import { resetTrackComposeData } from '../../actions/track_compose';
 
 @connect()
 export default class AlbumPost extends React.PureComponent {
@@ -13,6 +14,7 @@ export default class AlbumPost extends React.PureComponent {
 
   handlePost = () => {
     this.props.dispatch(resetAlbumComposeData());
+    this.props.dispatch(resetTrackComposeData());
     this.props.dispatch(showAlbumComposeModal());
   }
 
