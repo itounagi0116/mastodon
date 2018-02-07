@@ -22,6 +22,8 @@ import playIcon from '../../../images/pawoo_music/play.png';
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 
 const messages = defineMessages({
+  paused: { id: 'pawoo_music.album.paused', defaultMessage: 'Paused' },
+  playing: { id: 'pawoo_music.album.playing', defaultMessage: 'Playing' },
   playbutton: { id: 'pawoo_music.album.playbutton', defaultMessage: 'Play button' },
   thumbnail: { id: 'pawoo_music.album.thumbnail', defaultMessage: 'Thumbnail' },
 });
@@ -62,32 +64,65 @@ class AlbumThumbnail extends ImmutablePureComponent {
 
 }
 
-class AlbumTrackBeingPlayedItem extends ImmutablePureComponent {
+@injectIntl
+class AlbumQueuedTrackItem extends ImmutablePureComponent {
 
   static propTypes = {
+    intl: PropTypes.object,
+    paused: PropTypes.bool,
     status: ImmutablePropTypes.map.isRequired,
     onReactionActive: PropTypes.func,
     onReactionInactive: PropTypes.func,
   }
 
+  handleInfoClick = event => {
+    event.stopPropagation();
+  }
+
   render () {
+    const {
+      intl,
+      paused,
+      status,
+      onReactionActive,
+      onReactionInactive,
+      ...props
+    } = this.props;
+
     return (
-      <li className='playing' key={this.props.status.get('id')}>
-        <Icon icon='play' /> {this.props.status.getIn(['track', 'title'])}
-        <StatusReactions
-          status={this.props.status}
-          onActive={this.props.onReactionActive}
-          onInactive={this.props.onReactionInactive}
-        />
-        <StatusActionBar status={this.props.status} />
-        <StatusMeta status={this.props.status} />
+      <li
+        className='queued'
+        key={status.get('id')}
+        role='switch'
+        aria-checked={!paused}
+        {...props}
+      >
+        {
+          // This behavior matches the icon in the musicvideo controller.
+          paused ?
+            <Icon icon='pause' aria-label={intl.formatMessage(messages.paused)} /> :
+            <Icon icon='play' aria-label={intl.formatMessage(messages.playing)} />
+        }
+        {status.getIn(['track', 'title'])}
+        <div
+          // eslint-disable-next-line jsx-a11y/onclick-has-role
+          onClick={this.handleInfoClick}
+        >
+          <StatusReactions
+            status={status}
+            onActive={onReactionActive}
+            onInactive={onReactionInactive}
+          />
+          <StatusActionBar status={status} />
+          <StatusMeta status={status} />
+        </div>
       </li>
     );
   }
 
 }
 
-class AlbumPausedTrackItem extends ImmutablePureComponent {
+class AlbumUnqueuedTrackItem extends ImmutablePureComponent {
 
   static propTypes = {
     onClick: PropTypes.func.isRequired,
@@ -101,9 +136,12 @@ class AlbumPausedTrackItem extends ImmutablePureComponent {
 
   render () {
     return (
-      <li role='button' onClick={this.handleClick} tabIndex='0'>
-        <Icon icon='pause' /> {this.props.status.getIn(['track', 'title'])}
-      </li>
+      <li
+        role='switch'
+        aria-checked='false'
+        onClick={this.handleClick}
+        tabIndex='0'
+      ><Icon icon='music' /> {this.props.status.getIn(['track', 'title'])}</li>
     );
   }
 
@@ -115,8 +153,10 @@ class AlbumTrack extends ImmutablePureComponent {
     children: PropTypes.node,
     fitContain: PropTypes.bool,
     indexBeingQueued: PropTypes.number,
+    paused: PropTypes.bool,
     statuses: ImmutablePropTypes.list,
     onChangeIndex: PropTypes.func.isRequired,
+    onTogglePaused: PropTypes.func,
   };
 
   state = {
@@ -141,7 +181,15 @@ class AlbumTrack extends ImmutablePureComponent {
   }
 
   render () {
-    const { children, fitContain, indexBeingQueued, statuses, onChangeIndex } = this.props;
+    const {
+      children,
+      fitContain,
+      indexBeingQueued,
+      paused,
+      statuses,
+      onChangeIndex,
+      onTogglePaused,
+    } = this.props;
     const { scrollbarsActive, reactionActive } = this.state;
     const mobile = isMobile();
 
@@ -156,14 +204,16 @@ class AlbumTrack extends ImmutablePureComponent {
             >
               <ol>
                 {statuses.map((status, index) => indexBeingQueued === index ? (
-                  <AlbumTrackBeingPlayedItem
+                  <AlbumQueuedTrackItem
                     key={status.get('id')}
+                    onClick={onTogglePaused}
                     onReactionActive={this.handleReactionActive}
                     onReactionInactive={this.handleReactionInactive}
+                    paused={paused}
                     status={status}
                   />
                 ) : (
-                  <AlbumPausedTrackItem
+                  <AlbumUnqueuedTrackItem
                     key={status.get('id')}
                     index={index}
                     status={status}
@@ -191,8 +241,10 @@ const makeMapStateToProps = () => {
     const trackIndexBeingQueued = albumPath.equals(albumPathBeingQueued) ?
         state.getIn(['pawoo_music', 'player', 'album', 'trackIndex']) : null;
     const trackStatuses = album ? album.map((trackId) => getStatus(state, trackId)) : null;
+    const paused = state.getIn(['pawoo_music', 'player', 'paused']);
 
     return {
+      paused,
       trackIndexBeingQueued,
       trackStatuses,
     };
@@ -213,6 +265,16 @@ const mapDispatchToProps = (dispatch, { album }) => ({
   onPlay () {
     dispatch(changePaused(false));
   },
+
+  onTogglePaused () {
+    dispatch(
+      (newDispatch, getState) => newDispatch(
+        changePaused(
+          !getState().getIn(['pawoo_music', 'player', 'paused'])
+        )
+      )
+    );
+  },
 });
 
 @connect(makeMapStateToProps, mapDispatchToProps)
@@ -222,11 +284,13 @@ class Album extends ImmutablePureComponent {
     album: ImmutablePropTypes.map.isRequired,
     children: PropTypes.node,
     fitContain: PropTypes.bool,
+    paused: PropTypes.bool,
     trackIndexBeingQueued: PropTypes.number,
     trackStatuses: ImmutablePropTypes.list,
     onQueueAlbum: PropTypes.func.isRequired,
     onChangeAlbumTrackIndex: PropTypes.func.isRequired,
     onPlay: PropTypes.func.isRequired,
+    onTogglePaused: PropTypes.func,
   };
 
   handleQueueClick = () => {
@@ -240,8 +304,10 @@ class Album extends ImmutablePureComponent {
       children,
       fitContain,
       trackIndexBeingQueued,
+      paused,
       trackStatuses,
       onChangeAlbumTrackIndex,
+      onTogglePaused,
     } = this.props;
 
     return trackIndexBeingQueued === null || !trackStatuses ? (
@@ -252,8 +318,10 @@ class Album extends ImmutablePureComponent {
       <AlbumTrack
         fitContain={fitContain}
         indexBeingQueued={trackIndexBeingQueued}
+        paused={paused}
         statuses={trackStatuses}
         onChangeIndex={onChangeAlbumTrackIndex}
+        onTogglePaused={onTogglePaused}
       >{children}</AlbumTrack>
     );
   }

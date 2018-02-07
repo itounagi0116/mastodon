@@ -20,6 +20,7 @@
       white-space: nowrap;
 
       > li {
+        cursor: pointer;
         padding: var(--padding20);
         padding-left: calc(var(--rightspace15-value) + 1em + var(--padding20));
 
@@ -34,7 +35,7 @@
           height: var(--text20-line);
         }
 
-        &:hover, &.playing {
+        &:hover, &.queued {
           color: var(--linkcolor2);
           background-color: var(--color2);
 
@@ -43,12 +44,14 @@
           }
         }
 
-        &.playing > .icon svg {
-          stroke-width: 2px;
-        }
+        &.queued {
+          > div {
+            cursor: auto;
+          }
 
-        &:not(.playing) {
-          cursor: pointer;
+          > .icon svg {
+            stroke-width: 2px;
+          }
         }
       }
     }
