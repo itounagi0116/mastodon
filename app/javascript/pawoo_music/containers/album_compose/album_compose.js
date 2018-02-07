@@ -80,6 +80,51 @@ class TrackList extends ImmutablePureComponent {
 
 }
 
+class RegisteredTrackList extends ImmutablePureComponent {
+
+  static propTypes = {
+    registereds: ImmutablePropTypes.list.isRequired,
+    isLoading: PropTypes.bool,
+    isDraggingOverUnregistereds: PropTypes.bool,
+  }
+
+  render () {
+    const { registereds, isLoading, isDraggingOverUnregistereds } = this.props;
+
+    return (
+      <Droppable droppableId='album_compose_registered'>
+        {(registeredsProvided, registeredsSnapshot) => {
+          const plusVisible = !registeredsSnapshot.isDraggingOver && registereds.isEmpty();
+
+          return (
+            <div
+              className={classNames('droppable', { 'is-dragging-over-unregistereds': isDraggingOverUnregistereds })}
+              ref={registeredsProvided.innerRef}
+            >
+              <TrackList
+                isLoading={isLoading}
+                scrollKey='album_compose_registered'
+                tracks={registereds}
+              />
+              <p
+                aria-hidden={!plusVisible}
+                className={classNames('add', { visible: plusVisible })}
+              >
+                <Icon icon='plus' />
+                <FormattedMessage
+                  id='pawoo_music.album_compose.add'
+                  defaultMessage='Drag a track here'
+                />
+              </p>
+            </div>
+          );
+        }}
+      </Droppable>
+    );
+  }
+
+}
+
 class TrackLists extends ImmutablePureComponent {
 
   static propTypes = {
@@ -88,12 +133,8 @@ class TrackLists extends ImmutablePureComponent {
     isLoadingRegistereds: PropTypes.bool,
     unregistereds: ImmutablePropTypes.list.isRequired,
     isLoadingUnregistereds: PropTypes.bool,
+    onUnregisteredsScrollToBottom: PropTypes.func,
     registeredIsBeingDragged: PropTypes.bool,
-  }
-
-  setRegisteredRef = ref => {
-    this.registeredRef = ref;
-    this.registeredInnerRef(ref);
   }
 
   render () {
@@ -103,93 +144,57 @@ class TrackLists extends ImmutablePureComponent {
       isLoadingRegistereds,
       unregistereds,
       isLoadingUnregistereds,
+      onUnregisteredsScrollToBottom,
       registeredIsBeingDragged,
     } = this.props;
 
     return (
-      <div className='track-lists'>
-        <section className='droppable-section registered'>
-          <h1>
-            <FormattedMessage
-              id='pawoo_music.album_compose.tracks.registered'
-              defaultMessage='Tracks in the album'
-            />
-          </h1>
-          <Droppable droppableId='album_compose_registered'>
-            {({ innerRef }, { isDraggingOver }) => {
-              const plusVisible = !isDraggingOver && registereds.isEmpty();
-
-              this.registeredInnerRef = innerRef;
-
-              return (
-                <div
-                  className={classNames('droppable', { 'is-dragging-over-unregistered': this.isDraggingOverUnregistered })}
-                  ref={this.setRegisteredRef}
-                >
-                  <TrackList
-                    isLoading={isLoadingRegistereds}
-                    scrollKey='album_compose_registered'
-                    tracks={registereds}
-                  />
-                  <p
-                    aria-hidden={!plusVisible}
-                    className={classNames('add', { visible: plusVisible })}
-                  >
-                    <Icon icon='plus' />
-                    <FormattedMessage
-                      id='pawoo_music.album_compose.add'
-                      defaultMessage='Drag a track here'
-                    />
-                  </p>
-                </div>
-              );
-            }}
-          </Droppable>
-        </section>
-        <Droppable droppableId='album_compose_unregistered'>
-          {({ innerRef }, { isDraggingOver }) => {
-            this.isDraggingOverUnregistered = isDraggingOver;
-
-            if (this.registeredRef) {
-              if (isDraggingOver) {
-                this.registeredRef.classList.add('is-dragging-over-unregistered');
-              } else {
-                this.registeredRef.classList.remove('is-dragging-over-unregistered');
-              }
-            }
-
-            return (
-              <section className='droppable-section unregistered'>
-                <h1>
-                  <FormattedMessage
-                    id='pawoo_music.album_compose.tracks.unregistered'
-                    defaultMessage='Tracks to add'
-                  />
-                </h1>
-                <div className='droppable' ref={innerRef}>
-                  <TrackList
-                    hasMore={hasMoreUnregistered}
-                    isLoading={isLoadingUnregistereds}
-                    onScrollToBottom={this.handleUnregisteredsScrollToBottom}
-                    scrollKey='album_compose_unregistered'
-                    tracks={unregistereds}
-                  />
-                </div>
-                <p
-                  aria-hidden={!registeredIsBeingDragged}
-                  className={classNames('remove', { active: isDraggingOver, visible: registeredIsBeingDragged })}
-                >
-                  <Icon icon='trash' />
-                  <FormattedMessage
-                    id='pawoo_music.album_compose.remove'
-                    defaultMessage='Remove from the album'
-                  />
-                </p>
-              </section>
-            );
-          }}
-        </Droppable>
-      </div>
+      <Droppable droppableId='album_compose_unregistered'>
+        {({ innerRef }, { isDraggingOver }) => (
+          <div className='track-lists'>
+            <section className='droppable-section registered'>
+              <h1>
+                <FormattedMessage
+                  id='pawoo_music.album_compose.tracks.registered'
+                  defaultMessage='Tracks in the album'
+                />
+              </h1>
+              <RegisteredTrackList
+                registereds={registereds}
+                isLoading={isLoadingRegistereds}
+                isDraggingOverUnregistereds={isDraggingOver}
+              />
+            </section>
+            <section className='droppable-section unregistered'>
+              <h1>
+                <FormattedMessage
+                  id='pawoo_music.album_compose.tracks.unregistered'
+                  defaultMessage='Tracks to add'
+                />
+              </h1>
+              <div className='droppable' ref={innerRef}>
+                <TrackList
+                  hasMore={hasMoreUnregistered}
+                  isLoading={isLoadingUnregistereds}
+                  onScrollToBottom={onUnregisteredsScrollToBottom}
+                  scrollKey='album_compose_unregistered'
+                  tracks={unregistereds}
+                />
+              </div>
+              <p
+                aria-hidden={!registeredIsBeingDragged}
+                className={classNames('remove', { active: isDraggingOver, visible: registeredIsBeingDragged })}
+              >
+                <Icon icon='trash' />
+                <FormattedMessage
+                  id='pawoo_music.album_compose.remove'
+                  defaultMessage='Remove from the album'
+                />
+              </p>
+            </section>
+          </div>
+        )}
+      </Droppable>
     );
   }
 
@@ -407,10 +412,6 @@ export default class AlbumCompose extends ImmutablePureComponent {
     this.props.onSubmit();
   }
 
-  handleUnregisteredTracksScrollToBottom = () => {
-    this.props.onExpandUnregisteredTracks();
-  }
-
   updateImage = (album) => {
     const image = album.get('image');
 
@@ -432,6 +433,7 @@ export default class AlbumCompose extends ImmutablePureComponent {
       isLoadingRegisteredTracks,
       unregisteredTracks,
       isLoadingUnregisteredTracks,
+      onExpandUnregisteredTracks,
       album,
       intl,
     } = this.props;
@@ -506,6 +508,7 @@ export default class AlbumCompose extends ImmutablePureComponent {
               isLoadingRegistereds={isLoadingRegisteredTracks}
               unregistereds={unregisteredTracks}
               isLoadingUnregistereds={isLoadingUnregisteredTracks}
+              onUnregisteredsScrollToBottom={onExpandUnregisteredTracks}
               registeredIsBeingDragged={registeredsBeingDragged > 0}
             />
           </DragDropContext>

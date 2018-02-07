@@ -304,7 +304,7 @@
         .droppable {
           background: var(--color2);
 
-          &.is-dragging-over-unregistered .is-dragging {
+          &.is-dragging-over-unregistereds .is-dragging {
             color: var(--strong1);
 
             .tint {
