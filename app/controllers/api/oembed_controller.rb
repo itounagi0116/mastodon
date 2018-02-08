@@ -17,7 +17,7 @@ class Api::OEmbedController < Api::BaseController
   end
 
   def size
-    @status.music.is_a?(Track) ? track_size : status_size
+    @status.music.present? ? music_size : status_size
   end
 
   def status_size
@@ -40,7 +40,7 @@ class Api::OEmbedController < Api::BaseController
     nil
   end
 
-  def track_size
+  def music_size
     sizes = [params[:maxwidth], params[:maxheight]].compact!
     if sizes.empty?
       { width: 480, height: 480 }

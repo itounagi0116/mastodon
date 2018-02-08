@@ -9,7 +9,7 @@ class OEmbedSerializer < ActiveModel::Serializer
              :cache_age, :html, :width, :height
 
   def type
-    if object.music.is_a?(Track)
+    if object.music.present?
       'video'
     else
       'rich'
@@ -41,7 +41,7 @@ class OEmbedSerializer < ActiveModel::Serializer
   end
 
   def html
-    return track_html if object.music.is_a?(Track)
+    return music_html if object.music.present?
 
     attributes = {
       src: embed_short_account_status_url(object.account, object, extra_params),
@@ -68,7 +68,7 @@ class OEmbedSerializer < ActiveModel::Serializer
 
   private
 
-  def track_html
+  def music_html
     content_tag(:iframe, nil, {
       src: embed_short_account_status_url(object.account, object, extra_params),
       style: 'border: 0',
