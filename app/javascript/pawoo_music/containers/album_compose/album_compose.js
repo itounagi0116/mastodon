@@ -38,6 +38,7 @@ const messages = defineMessages({
   select_genre: { id: 'pawoo_music.music_compose.select_genre', defaultMessage: 'Select genre tag' },
 });
 const allowedPrivacy = ['public', 'unlisted'];
+const isUserTouching = () => false;
 
 class TrackInfo extends ImmutablePureComponent {
 
@@ -568,7 +569,7 @@ export default class AlbumCompose extends ImmutablePureComponent {
               <FormattedMessage id='pawoo_music.music_compose.cancel' defaultMessage='Cancel' />
             </button>
             <div className='submit'>
-              {!album.get('id') && <PrivacyDropdown buttonClassName='privacy-toggle' value={album.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} />}
+              {!album.get('id') && <PrivacyDropdown buttonClassName='privacy-toggle' value={album.get('visibility')} onChange={this.handleChangePrivacy} text={intl.formatMessage(messages.privacy)} allowedPrivacy={allowedPrivacy} isUserTouching={isUserTouching} />}
               <button className={classNames('submit', { disabled: this.props.isSubmitting })} disabled={this.props.isSubmitting} onClick={this.handleSubmit}>
                 {album.get('id') ? (
                   <FormattedMessage id='pawoo_music.music_compose.save' defaultMessage='Save' />
