@@ -36,6 +36,24 @@ class Announcements extends React.PureComponent {
 
     announcements.push(
       {
+        id: 13,
+        body: this.props.intl.formatMessage({
+          id: 'pawoo_music.announcements.13',
+          defaultMessage: '投稿した楽曲をまとめられる「アルバム機能」をリリースしました。',
+        }),
+        link: [
+          {
+            reactRouter: true,
+            inline: false,
+            href: '/@pixiv/12695919',
+            body: this.props.intl.formatMessage({
+              id: 'pawoo_music.announcements.13.link.1',
+              defaultMessage: '詳細はこちら',
+            }),
+          },
+        ],
+      },
+      {
         id: 12,
         body: this.props.intl.formatMessage({
           id: 'pawoo_music.announcements.12',
@@ -80,7 +98,7 @@ class Announcements extends React.PureComponent {
           },
         ],
       },
-      // NOTE: id: 12 まで使用した
+      // NOTE: id: 13 まで使用した
     );
 
     this.announcements = Immutable.fromJS(announcements);
@@ -111,7 +129,7 @@ class Announcements extends React.PureComponent {
                 {announcement.get('link').map((link, index) => {
                   const classNames = ['announcements__link'];
                   const handleClick = () => {
-                    PawooGA.event({ category: pawooGaCategory, action: 'Click', value: `${announcement.get('id')}-${index}` });
+                    PawooGA.event({ category: pawooGaCategory, action: 'Click', label: `${announcement.get('id')}-${index}` });
 
                     const action = link.get('action');
                     if (action) {
