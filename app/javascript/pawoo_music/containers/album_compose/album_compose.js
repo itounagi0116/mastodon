@@ -498,61 +498,55 @@ export default class AlbumCompose extends ImmutablePureComponent {
       <MusicCompose isActive={isActive} onReplace={onReplace}>
         <div className='album-compose-content'>
           <form className='column'>
-            <img className='thumbnail' src={this.image} alt='album thumbnail' />
+            <div className='thumbnail'>
+              <img src={this.image} alt='album thumbnail' />
+            </div>
             {/* 画像選択、タイトル、説明 */}
             <div className='form-content'>
-              <fieldset>
-                <legend>
-                  <ImageInput
-                    onChange={this.handleChangeAlbumImage}
-                    title={albumImageTitle}
+              <ImageInput
+                onChange={this.handleChangeAlbumImage}
+                title={albumImageTitle}
+              />
+
+              <div className='album-compose-text-input'>
+                <label className=''>
+                  {this.props.album.get('title').length === 0 && (
+                    <span className='text'>
+                      <FormattedMessage
+                        id='pawoo_music.album_compose.basic.title'
+                        defaultMessage='Title'
+                      />
+                    </span>
+                  )}
+                  <input
+                    maxLength='128'
+                    onChange={this.handleChangeAlbumTitle}
+                    required
+                    size='32'
+                    type='text'
+                    value={this.props.album.get('title')}
                   />
-                </legend>
+                </label>
+              </div>
 
-                <legend>
-                  <div className='album-compose-text-input'>
-                    <label className=''>
-                      {this.props.album.get('title').length === 0 && (
-                        <span className='text'>
-                          <FormattedMessage
-                            id='pawoo_music.album_compose.basic.title'
-                            defaultMessage='Title'
-                          />
-                        </span>
-                      )}
-                      <input
-                        maxLength='128'
-                        onChange={this.handleChangeAlbumTitle}
-                        required
-                        size='32'
-                        type='text'
-                        value={this.props.album.get('title')}
+              <div className='album-compose-text-textarea'>
+                <label className=''>
+                  {this.props.album.get('text').length === 0 && (
+                    <span className='text'>
+                      <FormattedMessage
+                        id='pawoo_music.album_compose.basic.details'
+                        defaultMessage='Details'
                       />
-                    </label>
-                  </div>
-                </legend>
-
-                <legend>
-                  <div className='album-compose-text-textarea'>
-                    <label className=''>
-                      {this.props.album.get('text').length === 0 && (
-                        <span className='text'>
-                          <FormattedMessage
-                            id='pawoo_music.album_compose.basic.details'
-                            defaultMessage='Details'
-                          />
-                        </span>
-                      )}
-                      <textarea
-                        maxLength='500'
-                        onChange={this.handleChangeAlbumText}
-                        value={this.props.album.get('text')}
-                      />
-                    </label>
-                  </div>
-                  <GenreTagPicker onSelectGenre={this.handleSelectGenre} />
-                </legend>
-              </fieldset>
+                    </span>
+                  )}
+                  <textarea
+                    maxLength='500'
+                    onChange={this.handleChangeAlbumText}
+                    value={this.props.album.get('text')}
+                  />
+                </label>
+                <GenreTagPicker onSelectGenre={this.handleSelectGenre} />
+              </div>
             </div>
           </form>
 

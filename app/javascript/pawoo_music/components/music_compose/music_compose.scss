@@ -10,6 +10,7 @@
   min-height: 100%;
 
   > * {
+    flex-basis: 1000px;
     padding: 0 var(--padding40) var(--padding40) var(--padding40);
 
     color: #C3C3C3;

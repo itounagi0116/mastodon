@@ -606,89 +606,86 @@ export default class TrackCompose extends ImmutablePureComponent {
                 <Scrollable>
                   <form>
 
-                    {/* 音楽選択から画像選択まで */}
-                    <fieldset>
-                      <legend>
-                        <AudioInput
-                          onChange={this.handleChangeTrackMusic}
-                          title={trackMusicTitle}
-                        />
-                      </legend>
+                    <legend>
+                      <AudioInput
+                        onChange={this.handleChangeTrackMusic}
+                        title={trackMusicTitle}
+                      />
+                    </legend>
 
-                      <legend>
-                        <div className='track-compose-text-input'>
-                          <label className=''>
-                            {this.props.track.get('title').length === 0 && (
-                              <span className='text'>
-                                <FormattedMessage
-                                  id='pawoo_music.track_compose.basic.title'
-                                  defaultMessage='Title'
-                                />
-                              </span>
-                            )}
-                            <input
-                              maxLength='128'
-                              onChange={this.handleChangeTrackTitle}
-                              required
-                              size='32'
-                              type='text'
-                              value={this.props.track.get('title')}
-                            />
-                          </label>
-                        </div>
-                      </legend>
+                    <legend>
+                      <div className='track-compose-text-input'>
+                        <label className=''>
+                          {this.props.track.get('title').length === 0 && (
+                            <span className='text'>
+                              <FormattedMessage
+                                id='pawoo_music.track_compose.basic.title'
+                                defaultMessage='Title'
+                              />
+                            </span>
+                          )}
+                          <input
+                            maxLength='128'
+                            onChange={this.handleChangeTrackTitle}
+                            required
+                            size='32'
+                            type='text'
+                            value={this.props.track.get('title')}
+                          />
+                        </label>
+                      </div>
+                    </legend>
 
-                      <legend>
-                        <div className='track-compose-text-input'>
-                          <label className=''>
-                            {this.props.track.get('artist').length === 0 && (
-                              <span className='text'>
-                                <FormattedMessage
-                                  id='pawoo_music.track_compose.basic.artist'
-                                  defaultMessage='Artist'
-                                />
-                              </span>
-                            )}
-                            <input
-                              maxLength='128'
-                              onChange={this.handleChangeTrackArtist}
-                              required
-                              size='32'
-                              type='text'
-                              value={this.props.track.get('artist')}
-                            />
-                          </label>
-                        </div>
-                      </legend>
+                    <legend>
+                      <div className='track-compose-text-input'>
+                        <label className=''>
+                          {this.props.track.get('artist').length === 0 && (
+                            <span className='text'>
+                              <FormattedMessage
+                                id='pawoo_music.track_compose.basic.artist'
+                                defaultMessage='Artist'
+                              />
+                            </span>
+                          )}
+                          <input
+                            maxLength='128'
+                            onChange={this.handleChangeTrackArtist}
+                            required
+                            size='32'
+                            type='text'
+                            value={this.props.track.get('artist')}
+                          />
+                        </label>
+                      </div>
+                    </legend>
 
-                      <legend>
-                        <div className='track-compose-text-textarea'>
-                          <label className=''>
-                            {this.props.track.get('text').length === 0 && (
-                              <span className='text'>
-                                <FormattedMessage
-                                  id='pawoo_music.track_compose.basic.details'
-                                  defaultMessage='Details'
-                                />
-                              </span>
-                            )}
-                            <textarea
-                              maxLength='500'
-                              onChange={this.handleChangeTrackText}
-                              value={this.props.track.get('text')}
-                            />
-                          </label>
-                        </div>
-                        <GenreTagPicker onSelectGenre={this.handleSelectGenre} />
-                      </legend>
+                    <legend>
+                      <div className='track-compose-text-textarea'>
+                        <label className=''>
+                          {this.props.track.get('text').length === 0 && (
+                            <span className='text'>
+                              <FormattedMessage
+                                id='pawoo_music.track_compose.basic.details'
+                                defaultMessage='Details'
+                              />
+                            </span>
+                          )}
+                          <textarea
+                            maxLength='500'
+                            onChange={this.handleChangeTrackText}
+                            value={this.props.track.get('text')}
+                          />
+                        </label>
+                      </div>
+                      <GenreTagPicker onSelectGenre={this.handleSelectGenre} />
+                    </legend>
 
-                      <legend>
-                        <ImageInput
-                          onChange={this.handleChangeTrackVideoImage}
-                          title={trackVideoImageTitle}
-                        />
-                      </legend>
-                    </fieldset>
+                    <legend>
+                      <ImageInput
+                        onChange={this.handleChangeTrackVideoImage}
+                        title={trackVideoImageTitle}
+                      />
+                    </legend>
 
                     <div className='horizontal'>
                       <span className='text'>

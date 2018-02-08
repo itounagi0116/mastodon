@@ -40,7 +40,7 @@
     display: flex;
 
     .form-content {
-      width: var(--form-width);
+      flex: 1 var(--form-width);
 
       .actions, form {
         margin: 0 var(--scrollbar-margin) 0 var(--padding40);
@@ -66,6 +66,8 @@
   .form-content {
     display: flex;
     flex-direction: column;
+    font-size: var(--text20-font);
+    line-height: var(--text20-line);
     position: relative;
 
     > .scrollable-wrapper {
@@ -114,46 +116,41 @@
       }
     }
 
-    fieldset {
-      font-size: var(--text20-font);
-      line-height: var(--text20-line);
+    legend {
+      font-weight: bold;
+      width: 100%;
 
-      legend {
-        font-weight: bold;
-        width: 100%;
-
-        & + legend {
-          margin-top: var(--padding10);
-        }
+      & + legend {
+        margin-top: var(--padding10);
       }
+    }
+
+    label {
+      display: block;
+    }
+
+    .checkbox {
+      width: auto;
 
       label {
-        display: block;
+        font-size: 14px;
       }
 
-      .checkbox {
-        width: auto;
-
-        label {
-          font-size: 14px;
-        }
-
-        .checkbox-label-head {
-          margin-right: 4px;
-        }
+      .checkbox-label-head {
+        margin-right: 4px;
       }
+    }
 
-      .checkbox-label {
-        font-size: 12px;
-      }
+    .checkbox-label {
+      font-size: 12px;
+    }
 
-      .horizontal {
-        flex-basis: calc(var(--grid) * 20);
-      }
+    .horizontal {
+      flex-basis: calc(var(--grid) * 20);
+    }
 
-      .chrome-picker {
-        margin: var(--verticalspace20);
-      }
+    .chrome-picker {
+      margin: var(--verticalspace20);
     }
 
     .color-picker {
