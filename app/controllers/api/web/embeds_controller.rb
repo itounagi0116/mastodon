@@ -9,7 +9,7 @@ class Api::Web::EmbedsController < Api::Web::BaseController
     height = nil
     extra_params = params.permit(:hideinfo)
 
-    if status.music.is_a? Track
+    if status.music.present?
       width = 480
       height = 480
     else
