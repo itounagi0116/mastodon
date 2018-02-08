@@ -1,0 +1,49 @@
+.embedded-track {
+  position: relative;
+  height: auto;
+
+  .info {
+    pointer-events: none;
+
+    .actions {
+      position: absolute;
+      top: 0;
+      padding: var(--padding10);
+    }
+
+    .actions {
+      position: absolute;
+      top: 0;
+      right: 0;
+
+      pointer-events: auto;
+
+      > .status-reactions {
+        justify-content: flex-end;
+
+        > li:not(.add), > li.add .dropdown-trigger {
+          background-color: rgba(0, 0, 0, 0.7);
+          border: none;
+          color: #ffffff;
+
+          &.reacted, &:hover {
+            background: rgba(208, 2, 27, 0.7);
+            border-color: var(--strong1);
+          }
+        }
+
+        > li.add {
+          position: relative;
+
+          .dropdown-trigger svg {
+            stroke: #ffffff;
+          }
+
+          .dropdown-content {
+            right: 0;
+          }
+        }
+      }
+    }
+  }
+}

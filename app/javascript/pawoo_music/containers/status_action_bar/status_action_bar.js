@@ -29,6 +29,7 @@ import { initReport } from '../../../mastodon/actions/reports';
 import { openModal } from '../../../mastodon/actions/modal';
 import { generateMusicvideo } from '../../actions/musicvideo';
 import { showTrackComposeModal, setTrackComposeData } from '../../actions/track_compose';
+import { showAlbumComposeModal, setAlbumComposeData } from '../../actions/album_compose';
 import { isMobile } from '../../util/is_mobile';
 import { navigate } from '../../util/navigator';
 
@@ -60,6 +61,7 @@ const messages = defineMessages({
   download_mv: { id: 'status.download_mv', defaultMessage: 'Download {resolution}' },
   download_mv_title: { id: 'status.download_mv_title', defaultMessage: 'Download video' },
   editTrack: { id: 'status.edit_track', defaultMessage: 'Edit track' },
+  editAlbum: { id: 'status.edit_album', defaultMessage: 'Edit album' },
 
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
   deleteMessage: { id: 'confirmations.delete.message', defaultMessage: 'Are you sure you want to delete this status?' },
@@ -250,6 +252,17 @@ export default class StatusActionBar extends ImmutablePureComponent {
     }
   }
 
+  handleEditAlbum = () => {
+    const { dispatch, status } = this.props;
+
+    if (mobile) {
+      location.href = `/albums/${status.get('id')}/edit`;
+    } else {
+      dispatch(setAlbumComposeData(status.get('album')));
+      dispatch(showAlbumComposeModal());
+    }
+  }
+
   handleRedirectLoginPage = () => {
     navigate('/auth/sign_in');
   }
@@ -271,8 +284,8 @@ export default class StatusActionBar extends ImmutablePureComponent {
     let editButton     = null;
     let downloadButton = null;
 
-    if (status.get('track')) {
-      if (status.getIn(['account', 'id']) === me || isUserAdmin) {
+    if (status.getIn(['account', 'id']) === me || isUserAdmin) {
+      if (status.has('track')) {
         const videoMenu = [];
 
         for (const resolution of ['720x720', '1920x1080']) {
@@ -297,10 +310,12 @@ export default class StatusActionBar extends ImmutablePureComponent {
         }
 
         downloadButton = <li><DropdownMenu items={videoMenu} icon='download' strong scale title={intl.formatMessage(messages.download_mv_title)} /></li>;
-      }
 
-      if (status.getIn(['account', 'id']) === me) {
-        editButton = <li><Icon strong scale icon='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} /></li>;
+        if (status.getIn(['account', 'id']) === me) {
+          editButton = <li><Icon strong scale icon='edit' title={intl.formatMessage(messages.editTrack)} onClick={this.handleEditTrack} /></li>;
+        }
+      } else if(status.has('album')) {
+        editButton = <li><Icon strong scale icon='edit' title={intl.formatMessage(messages.editAlbum)} onClick={this.handleEditAlbum} /></li>;
       }
     }
 
@@ -368,7 +383,9 @@ export default class StatusActionBar extends ImmutablePureComponent {
         <li><Icon title={replyTitle} icon='message-square' scale onClick={me ? this.handleReplyClick : this.handleRedirectLoginPage} /></li>
         <li><Icon title={reblogTitle} icon={reblogIcon} scale onClick={me ? this.handleReblogClick : this.handleRedirectLoginPage} disabled={reblogDisabled} active={reblogged} /></li>
         <li><Icon title={favouriteTitle} icon='heart' scale onClick={me ? this.handleFavouriteClick : this.handleRedirectLoginPage} disabled={favouriteDisabled} active={favourited} /></li>
-        {status.has('track') && publicStatus && <li><Icon title={embedTitle} icon='share-2' scale onClick={this.handleEmbed} /></li>}
+        {(status.has('album') || status.has('track')) && publicStatus && (
+          <li><Icon title={embedTitle} icon='share-2' scale onClick={this.handleEmbed} /></li>
+        )}
         <li><DropdownMenu items={moreMenu} scale icon='more-horizontal' title={moreTitle} /></li>
         {editButton}
         {downloadButton}

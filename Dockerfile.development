@@ -1,0 +1,10 @@
+FROM gargron/mastodon-base
+
+LABEL maintainer="https://github.com/tootsuite/mastodon" \
+      description="Mastodon for development"
+
+EXPOSE 3000 4000 8080
+
+RUN bundle config --local path /mastodon/vendor/bundle
+
+VOLUME /mastodon

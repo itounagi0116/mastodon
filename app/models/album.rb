@@ -31,8 +31,8 @@ class Album < ApplicationRecord
       small: ->(instance) { crop_option(instance.min_size(:image), '600') },
     }
 
+  validates :title, presence: true
   validates_attachment :image,
-                       presence: true,
                        content_type: { content_type: ['image/jpeg', 'image/png'] },
                        size: { less_than: 7.megabytes }
 

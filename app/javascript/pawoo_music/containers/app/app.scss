@@ -14,6 +14,7 @@
 //  CSS Vars
 body {
   // Color Scheme
+  --backgroundcolor:  #171717;
   --textcolor:        #313131;
   --linkcolor:        #9B9B9B;
 
@@ -24,12 +25,12 @@ body {
   --color2:           #F3F3F3;
   --color3:           #d0d0d0;
 
-  --linkcolor2:        #2495DB;
+  --linkcolor2:       #2495DB;
 
 
   // Basic Grid
   --grid:             4px;
-  --minus-grid:       -4px;
+  --minus-grid:      -4px;
 
   // Values for vertical spaces
   --verticalspace10-value: calc(var(--grid) * 1);

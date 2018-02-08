@@ -20,22 +20,6 @@ describe Api::V1::AlbumsController, type: :controller do
       end
 
       it 'creates and renders albums and status' do
-        post :create,
-             params: { title: 'title', text: 'text', image: image }
-
-        status = Status.find_by!(
-          id: body_as_json[:id],
-          account: user.account,
-          music_type: 'Album'
-        )
-
-        expect(status.music.title).to eq 'title'
-        expect(status.music.text).to eq 'text'
-        expect(body_as_json[:album][:title]).to eq 'title'
-        expect(body_as_json[:album][:text]).to eq 'text'
-      end
-
-      it 'creates and renders with tracks' do
         account = Fabricate(:account, user: user)
         track1 = Fabricate(:track, title: 'title1', artist: 'artist1')
         track_status1 = Fabricate(:status, account: account, music: track1)
@@ -58,11 +42,19 @@ describe Api::V1::AlbumsController, type: :controller do
         expect(body_as_json[:album][:tracks_count]).to eq 2
       end
 
+      it 'returns error if track list is blank' do
+        post :create, params: { title: 'title', text: 'text' }
+        expect(body_as_json[:error]).to eq I18n.t('albums.tracks.empty')
+      end
+
       it 'joins given text and URL to create status text'
       it 'uses URL as status text if the given text is blank'
 
       it 'returns http success' do
-        post :create, params: { title: 'title', text: 'text', image: image }
+        track = Fabricate(:track)
+        status = Fabricate(:status, account: user.account, music: track)
+
+        post :create, params: { title: 'title', text: 'text', track_ids: [status] }
 
         expect(response).to have_http_status :success
       end
@@ -70,7 +62,10 @@ describe Api::V1::AlbumsController, type: :controller do
 
     context 'without write scope' do
       it 'returns http unauthorized' do
-        post :create, params: { title: 'title', text: 'text', image: image }
+        track = Fabricate(:track)
+        status = Fabricate(:status, music: track)
+
+        post :create, params: { title: 'title', text: 'text', track_ids: [status] }
 
         expect(response).to have_http_status :unauthorized
       end

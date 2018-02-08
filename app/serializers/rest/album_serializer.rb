@@ -10,11 +10,11 @@ class REST::AlbumSerializer < ActiveModel::Serializer
   end
 
   def image
-    full_asset_url(object.image.url(:original))
+    object.image? ? full_asset_url(object.image.url(:original)) : nil
   end
 
   def preview_url
-    full_asset_url(object.image.url(:small))
+    object.image? ? full_asset_url(object.image.url(:small)) : nil
   end
 
   def tracks_count

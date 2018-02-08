@@ -16,7 +16,7 @@ const genreLists = Immutable.fromJS([
 ]);
 
 const messages = defineMessages({
-  select_genre: { id: 'pawoo_music.track_compose.select_genre', defaultMessage: 'Select genre tag' },
+  select_genre: { id: 'pawoo_music.music_compose.select_genre', defaultMessage: 'Select genre tag' },
 });
 
 @injectIntl

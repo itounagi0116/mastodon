@@ -68,6 +68,7 @@ Rails.application.routes.draw do
   resource :inbox, only: [:create], module: :activitypub
 
   get '/@:username', to: 'accounts#show', as: :short_account, constraints: { username: /((?!(\.atom|\.json)$)[^\/])+/ }
+  get '/@:username/albums', to: 'accounts#show', as: :short_account_albums, constraints: { account_username: /[^\/]+/ }
   # get '/@:username/with_replies', to: 'accounts#show', as: :short_account_with_replies
   # get '/@:username/media', to: 'accounts#show', as: :short_account_media
   get '/@:account_username/:id', to: 'statuses#show', as: :short_account_status, constraints: { account_username: /[^\/]+/ }
@@ -282,6 +283,7 @@ Rails.application.routes.draw do
 
       resources :tracks, only: [:create, :update] do
         member do
+          get :albums
           post :prepare_video
 
           post :react, to: 'tracks/reactions#create'
@@ -316,7 +318,7 @@ Rails.application.routes.draw do
   get '/notifications', to: 'home#index'
   get '/favourites',    to: 'home#index'
 
-  resources :albums, only: :new
+  resources :albums, only: [:new, :edit]
   resources :tracks, only: [:new, :edit]
 
   match '*unmatched_route',

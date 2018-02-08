@@ -59,12 +59,15 @@ class Api::V1::Albums::TracksController < Api::BaseController
       index_scope = index_scope.where('position < ?', index_range[1])
     end
 
-    @statuses = Status.reorder(nil).where(
-      reblog: nil,
-      music: Track.joins(:album_tracks)
-                  .merge(index_scope)
-                  .limit(limit_param(DEFAULT_TRACKS_LIMIT))
-    )
+    statuses = Status
+      .reorder(nil)
+      .joins("JOIN tracks ON statuses.music_id = tracks.id AND statuses.music_type = 'Track'")
+      .joins('JOIN album_tracks ON tracks.id = album_tracks.track_id')
+      .where(reblog: nil)
+      .merge(index_scope)
+      .limit(limit_param(DEFAULT_TRACKS_LIMIT))
+    @statuses = cache_collection(statuses, Status)
+    set_maps(@statuses)
 
     insert_pagination_headers
     render json: @statuses, each_serializer: REST::StatusSerializer, relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id)
@@ -199,9 +202,5 @@ class Api::V1::Albums::TracksController < Api::BaseController
 
   def pagination_since_id
     @statuses.first.id
-  end
-
-  def insert_pagination_headers
-    set_pagination_headers(next_path, prev_path)
   end
 end

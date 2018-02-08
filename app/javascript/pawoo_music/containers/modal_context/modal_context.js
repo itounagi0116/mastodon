@@ -4,7 +4,7 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import ModalContainer from '../modal_container';
-import TrackComposeModalContainer from '../track_compose_modal';
+import MusicComposeModalContainer from '../music_compose_modal';
 import { isMobile } from '../../util/is_mobile';
 import { closeModal } from '../../../mastodon/actions/modal';
 
@@ -32,8 +32,8 @@ export default class ModalContextContainer extends ImmutablePureComponent {
     return (
       <div className={this.props.className} >
         {this.props.children}
+        {isMobile() || <MusicComposeModalContainer />}
         <ModalContainer />
-        {isMobile() || <TrackComposeModalContainer />}
       </div>
     );
   }

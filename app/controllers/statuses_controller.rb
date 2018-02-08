@@ -35,7 +35,7 @@ class StatusesController < ApplicationController
     response.headers['X-Frame-Options'] = 'ALLOWALL'
     raise ActiveRecord::RecordNotFound unless @account.local?
 
-    if @status.music.is_a?(Track)
+    if @status.music.present?
       initial_state_params = {
         current_account: current_account,
         token: current_session&.token,
@@ -44,7 +44,12 @@ class StatusesController < ApplicationController
       @initial_state_json = initial_state.to_json
       @status_json = ActiveModelSerializers::SerializableResource.new(@status, serializer: REST::StatusSerializer, scope: current_user, scope_name: :current_user).to_json
 
-      render 'stream_entries/musicvideo', layout: 'embedded'
+      case @status.music
+      when Album
+        render 'stream_entries/album', layout: 'embedded'
+      when Track
+        render 'stream_entries/track', layout: 'embedded'
+      end
     else
       render 'stream_entries/embed', layout: 'embedded'
     end

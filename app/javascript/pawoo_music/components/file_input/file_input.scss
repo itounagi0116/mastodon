@@ -1,0 +1,62 @@
+.file-input {
+  display: inline-block;
+  position: relative;
+  margin-top: 4px;
+  padding: 0 20px;
+  height: 40px;
+  border-radius: 20px;
+  color: var(--linkcolor2);
+  background-color: var(--color1);
+  box-sizing: border-box;
+  max-width: 100%;
+  transition: all 0.2s var(--hover-timing);
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &.settled {
+    color: white;
+    background-color: var(--linkcolor2);
+
+    svg {
+      stroke: white;
+    }
+  }
+
+  .file-input-body {
+    display: flex;
+    align-items: center;
+    height: 40px;
+  }
+
+  .icon {
+    display: block;
+    padding-top: 4px;
+  }
+
+  .text {
+    margin-left: 4px;
+    white-space: pre;
+
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  input {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.01;
+    cursor: pointer;
+  }
+
+  svg {
+    stroke-width: 2px;
+    stroke: var(--linkcolor2);
+  }
+}

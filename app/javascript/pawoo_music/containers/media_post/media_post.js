@@ -5,7 +5,6 @@ import { FormattedMessage } from 'react-intl';
 import Icon from '../../components/icon';
 import { isMobile } from '../../util/is_mobile';
 import { navigate } from '../../util/navigator';
-import { showTrackComposeModal, resetTrackComposeData } from '../../actions/track_compose';
 import TipsBalloonContainer from '../../../mastodon/containers/tips_balloon_container';
 
 const mapStateToProps = (state) => ({
@@ -16,8 +15,9 @@ const mapStateToProps = (state) => ({
 export default class MediaPost extends PureComponent {
 
   static propTypes = {
+    href: PropTypes.string,
     isLogin: PropTypes.bool.isRequired,
-    dispatch: PropTypes.func.isRequired,
+    onPost: PropTypes.func.isRequired,
   };
 
   constructor(props, context) {
@@ -25,27 +25,24 @@ export default class MediaPost extends PureComponent {
     this.mobile = isMobile();
   }
 
-  handleMediaPost = () => {
-    const { isLogin, dispatch } = this.props;
+  handleMediaPost = event => {
+    const { isLogin } = this.props;
+
     if (!isLogin) {
       navigate('/auth/sign_in');
-      return;
-    }
-
-    if (this.mobile) {
-      navigate('/tracks/new');
-    } else {
-      dispatch(resetTrackComposeData());
-      dispatch(showTrackComposeModal());
+      event.preventDefault();
+    } else if (!this.mobile) {
+      this.props.onPost();
+      event.preventDefault();
     }
   };
 
   render () {
     return (
       <div className='media-post'>
-        <div className='media-post-body' role='button' tabIndex='-1' onClick={this.handleMediaPost}>
+        <a className='media-post-body' href={this.props.href} role='button' onClick={this.handleMediaPost}>
           <Icon icon='plus' title='Post Your Music!' strong />
-        </div>
+        </a>
         <div className='media-post-tips-baloon'>
           <TipsBalloonContainer id={4} style={{ left: '35px', top: '5px' }} direction='top'>
             <FormattedMessage

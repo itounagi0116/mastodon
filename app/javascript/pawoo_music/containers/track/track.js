@@ -11,25 +11,27 @@ import { constructRgbCode } from '../../util/musicvideo';
 
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 
-const mapStateToProps = (state) => ({
-  pathToTrackBeingPlayed: state.getIn(['pawoo_music', 'player', 'trackPath']),
+const mapStateToProps = (state, { track }) => ({
+  beingQueued: state.getIn(['pawoo_music', 'player', 'album']) === null &&
+    Immutable.List(['statuses', track.get('id'), 'track']).equals(state.getIn(['pawoo_music', 'player', 'trackPath'])),
 });
 
 @connect(mapStateToProps)
 class Track extends ImmutablePureComponent {
 
   static propTypes = {
+    beingQueued: PropTypes.bool,
+    children: PropTypes.node,
+    controlsActive: PropTypes.bool,
     fitContain: PropTypes.bool,
-    overriddenControlVisibility: PropTypes.bool,
-    pathToTrackBeingPlayed: ImmutablePropTypes.list,
     track: ImmutablePropTypes.map.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
 
   componentWillUnmount () {
-    const { dispatch, track, pathToTrackBeingPlayed } = this.props;
+    const { dispatch, beingQueued } = this.props;
 
-    if (Immutable.List(['statuses', track.id, 'track']).equals(pathToTrackBeingPlayed)) {
+    if (beingQueued) {
       dispatch(changePaused(true));
       dispatch(changeTrackPath(null));
     }
@@ -43,7 +45,7 @@ class Track extends ImmutablePureComponent {
   }
 
   render() {
-    const { fitContain, track, overriddenControlVisibility, pathToTrackBeingPlayed } = this.props;
+    const { beingQueued, children, controlsActive, fitContain, track } = this.props;
     if (!track) {
       return null;
     }
@@ -54,14 +56,19 @@ class Track extends ImmutablePureComponent {
 
     return (
       <div className={classNames('track', { 'fit-contain': fitContain })} style={thumbnailStyle}>
-        {Immutable.List(['statuses', track.get('id'), 'track']).equals(pathToTrackBeingPlayed) ? (
-          <Musicvideo bannerHidden overriddenControlVisibility={overriddenControlVisibility} />
+        {beingQueued ? (
+          <Musicvideo
+            bannerHidden
+            controlsActive={controlsActive}
+            fitContain={fitContain}
+          >{children}</Musicvideo>
         ) : (
           <div className='thumbnail'>
             <img className='thumbnail-image' src={track.getIn(['video', 'image'], defaultArtwork)} alt='thumbnail' />
             <div className='playbutton' role='button' tabIndex='0' aria-pressed='false' onClick={this.handlePlayClick}>
               <span className='playbutton-icon' />
             </div>
+            <div className='controls-container'>{children}</div>
           </div>
         )}
       </div>

@@ -1,0 +1,25 @@
+.embedded-album {
+  height: auto;
+
+  .embedded-album-info {
+    display: flex;
+    justify-content: space-between;
+
+    > .actions {
+      text-align: end;
+
+      > .follow {
+        display: inline-block;
+        pointer-events: auto;
+      }
+    }
+  }
+}
+
+.musicvideo {
+  .embedded-album-info .embedded-meta .title a {
+    color: var(--strong2);
+    font-weight: bold;
+    background-color: transparent;
+  }
+}

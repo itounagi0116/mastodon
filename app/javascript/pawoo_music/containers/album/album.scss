@@ -1,0 +1,112 @@
+.album-full-info {
+  background-color: var(--color1);
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+
+  > .playlist {
+    flex: 1;
+
+    ol {
+      font-size: var(--text20-font);
+      line-height: var(--text20-line);
+      box-sizing: border-box;
+
+      list-style: decimal-leading-zero inside;
+
+      overflow-x: hidden;
+      white-space: nowrap;
+
+      > li {
+        cursor: pointer;
+        padding: var(--padding20);
+        padding-left: calc(var(--rightspace15-value) + 1em + var(--padding20));
+
+        text-overflow: ellipsis;
+        overflow-x: hidden;
+        white-space: nowrap;
+
+        > .icon {
+          position: absolute;
+          left: var(--rightspace15-value);
+
+          height: var(--text20-line);
+        }
+
+        &:hover, &.queued {
+          color: var(--linkcolor2);
+          background-color: var(--color2);
+
+          > .icon svg {
+            stroke: var(--linkcolor2);
+          }
+        }
+
+        &.queued {
+          > div {
+            cursor: auto;
+          }
+
+          > .icon svg {
+            stroke-width: 2px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.album-thumbnail {
+  background: var(--backgroundcolor);
+  position: relative;
+  height: var(--width-gallery-canvas); // aspect ratio 1:1
+
+  > img {
+    display: block;
+    width: 100%;
+  }
+
+  > .info, > .playbutton {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+  }
+
+  > .info {
+   pointer-events: none;
+
+    > .album-tracks-count-wrapper {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  }
+
+  > .playbutton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    > img {
+      display: block;
+      height:     var(--iconsize40);
+      width:      var(--iconsize40);
+    }
+  }
+
+  &:hover > .playbutton {
+    opacity:    var(--hover-opacity);
+    transition: var(--hover-transition);
+  }
+
+  &.fit-contain {
+    width: 100%;
+    height: 100%;
+  }
+}

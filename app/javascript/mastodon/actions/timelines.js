@@ -32,7 +32,7 @@ export function updateTimeline(timeline, status) {
   return (dispatch, getState) => {
     const references = status.reblog ? getState().get('statuses').filter((item, itemId) => (itemId === status.reblog.id || item.get('reblog') === status.reblog.id)).map((_, itemId) => itemId) : [];
 
-    if (/.+:music$/.test(timeline)) {
+    if (/.+:(music|track|album)$/.test(timeline)) {
       const accountId = status.reblog ? status.reblog.account.id : status.account.id;
 
       if (!getState().getIn(['relationships', accountId])) {
@@ -75,7 +75,19 @@ export function refreshTimelineRequest(timeline, skipLoading) {
 
 export function refreshTimeline(timelineId, path, onlyMusics, params = {}) {
   return function (dispatch, getState) {
-    timelineId = onlyMusics ? `${timelineId}:music` : timelineId;
+    if (onlyMusics) {
+      if (onlyMusics === 'track') {
+        params.only_tracks = true;
+        timelineId = `${timelineId}:track`;
+      } else if (onlyMusics === 'album') {
+        params.only_albums = true;
+        timelineId = `${timelineId}:album`;
+      } else {
+        params.only_musics = true;
+        timelineId = `${timelineId}:music`;
+      }
+    }
+
     const timeline = getState().getIn(['timelines', timelineId], ImmutableMap());
 
     if (timeline.get('isLoading') || timeline.get('online')) {
@@ -89,10 +101,6 @@ export function refreshTimeline(timelineId, path, onlyMusics, params = {}) {
 
     if (newestId !== null) {
       params.since_id = newestId;
-    }
-
-    if (onlyMusics) {
-      params.only_musics = true;
     }
 
     dispatch(refreshTimelineRequest(timelineId, skipLoading));
@@ -135,9 +143,21 @@ export function refreshTimelineFail(timeline, error, skipLoading) {
 
 export function expandTimeline(timelineId, path, onlyMusics, params = {}) {
   return (dispatch, getState) => {
-    timelineId = onlyMusics ? `${timelineId}:music` : timelineId;
+    if (onlyMusics) {
+      if (onlyMusics === 'track') {
+        params.only_tracks = true;
+        timelineId = `${timelineId}:track`;
+      } else if (onlyMusics === 'album') {
+        params.only_albums = true;
+        timelineId = `${timelineId}:album`;
+      } else {
+        params.only_musics = true;
+        timelineId = `${timelineId}:music`;
+      }
+    }
+
     const timeline = getState().getIn(['timelines', timelineId], ImmutableMap());
-    const ids      = timeline.get('items', ImmutableList());
+    const ids      = timeline.get('items', Immutable.List());
 
     if (timeline.get('isLoading') || ids.size === 0) {
       return;
@@ -153,10 +173,6 @@ export function expandTimeline(timelineId, path, onlyMusics, params = {}) {
     } else {
       params.max_id = ids.last();
       params.limit  = 10;
-    }
-
-    if (onlyMusics) {
-      params.only_musics = true;
     }
 
     dispatch(expandTimelineRequest(timelineId));

@@ -1,0 +1,34 @@
+.status-meta {
+  margin: var(--verticalspace10);
+  font-size: var(--text10-font);
+  line-height: var(--text10-line);
+  color: var(--linkcolor);
+  display: flex;
+  align-items: center;
+
+  .albums {
+    cursor: pointer;
+
+    &:hover {
+      color: var(--linkcolor2);
+    }
+  }
+
+  .engagement {
+    display: inline-flex;
+    align-items: center;
+
+    .icon {
+      display: block;
+      margin-right: var(--grid);
+      width: var(--text10-font);
+      height: var(--text10-font);
+
+      svg {
+        stroke: var(--linkcolor);
+        width: var(--text10-font);
+        height: var(--text10-font);
+      }
+    }
+  }
+}

@@ -3,7 +3,7 @@
 class REST::TrackSerializer < ActiveModel::Serializer
   include RoutingHelper
 
-  attributes :title, :artist, :text, :content, :video
+  attributes :title, :artist, :text, :content, :video, :albums_count
   has_many :reactions, serializer: REST::ReactionSerializer
 
   def content

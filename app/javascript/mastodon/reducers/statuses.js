@@ -51,6 +51,16 @@ import {
   SCHEDULED_STATUSES_EXPAND_SUCCESS,
   SCHEDULED_STATUSES_ADDITION,
 } from '../../pawoo_music/actions/schedules';
+import {
+  ALBUM_COMPOSE_UNREGISTERED_TRACKS_REFRESH_SUCCESS,
+  ALBUM_COMPOSE_UNREGISTERED_TRACKS_EXPAND_SUCCESS,
+} from '../../pawoo_music/actions/album_compose';
+import {
+  ALBUMS_TRACKS_FETCH_SUCCESS,
+} from '../../pawoo_music/actions/albums_tracks';
+import {
+  TRACKS_ALBUMS_FETCH_SUCCESS,
+} from '../../pawoo_music/actions/tracks_albums';
 import emojify from '../emoji';
 import { Map as ImmutableMap, fromJS } from 'immutable';
 import escapeTextContentForBrowser from 'escape-html';
@@ -73,6 +83,11 @@ const normalizeStatus = (state, status) => {
   if (status.track) {
     normalStatus.track.id = status.id;
     normalStatus.track.contentHtml = emojify(normalStatus.track.content);
+  }
+
+  if (status.album) {
+    normalStatus.album.id = status.id;
+    normalStatus.album.contentHtml = emojify(normalStatus.album.content);
   }
 
   const searchContent = [status.spoiler_text, status.content].join(' ').replace(/<br \/>/g, '\n').replace(/<\/p><p>/g, '\n\n');
@@ -192,6 +207,10 @@ export default function statuses(state = initialState, action) {
   case SCHEDULED_STATUSES_FETCH_SUCCESS:
   case SCHEDULED_STATUSES_EXPAND_SUCCESS:
   case SCHEDULED_STATUSES_ADDITION:
+  case ALBUM_COMPOSE_UNREGISTERED_TRACKS_REFRESH_SUCCESS:
+  case ALBUM_COMPOSE_UNREGISTERED_TRACKS_EXPAND_SUCCESS:
+  case ALBUMS_TRACKS_FETCH_SUCCESS:
+  case TRACKS_ALBUMS_FETCH_SUCCESS:
     return normalizeStatuses(state, action.statuses);
   case TIMELINE_DELETE:
     return deleteStatus(state, action.id, action.references);

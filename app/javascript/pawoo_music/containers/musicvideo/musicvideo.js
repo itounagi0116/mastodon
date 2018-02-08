@@ -12,16 +12,67 @@ import { debounce } from 'lodash';
 import { changePaused, changeSeekDestination } from '../../actions/player';
 import Icon from '../../components/icon';
 import Slider from '../../components/slider';
+import { context, getCurrentTime } from '../../player/audio';
 import { constructGeneratorOptions } from '../../util/musicvideo';
 import { isMobile } from '../../util/is_mobile';
 
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 import lightLeaks from '../../../light_leaks.mp4';
 
+const messages = defineMessages({
+  play: { id: 'pawoo_music.musicvideo.play', defaultMessage: 'Play' },
+  pause: { id: 'pawoo_music.musicvideo.pause', defaultMessage: 'Pause' },
+});
+
+@injectIntl
+class PlayerControls extends ImmutablePureComponent {
+
+  static propTypes = {
+    duration: PropTypes.number,
+    paused: PropTypes.bool,
+    onSeekDestinationChange: PropTypes.func,
+    onTogglePaused: PropTypes.func.isRequired,
+  }
+
+  componentDidMount () {
+    this.timer = setInterval(() => this.forceUpdate(), 500);
+  }
+
+  componentWillUnmount () {
+    clearInterval(this.timer);
+  }
+
+  render () {
+    const { duration, intl, onSeekDestinationChange, onTogglePaused, paused } = this.props;
+
+    return (
+      <div className='player-controls'>
+        <div className='toggle' onClick={onTogglePaused} role='button' tabIndex='0' aria-pressed='false'>
+          {
+            // This behavior matches one of the icon of the queued track of
+            // album.
+            paused ?
+              <Icon icon='pause' aria-label={intl.formatMessage(messages.play)} strong /> :
+              <Icon icon='play' aria-label={intl.formatMessage(messages.pause)} strong />
+          }
+        </div>
+        <Slider
+          min={0}
+          max={duration}
+          step={0.1}
+          value={getCurrentTime()}
+          onChange={onSeekDestinationChange}
+          disabled={[Infinity, NaN].includes(duration)}
+        />
+      </div>
+    );
+  }
+
+}
+
 const mapStateToProps = (state) => ({
   audio: state.getIn(['pawoo_music', 'player', 'audio']),
   duration: state.getIn(['pawoo_music', 'player', 'duration']),
-  getCurrentTime: state.getIn(['pawoo_music', 'player', 'getCurrentTime']),
   lastSeekDestination: state.getIn(['pawoo_music', 'player', 'lastSeekDestination']),
   loading: state.getIn(['pawoo_music', 'player', 'loading']),
   paused: state.getIn(['pawoo_music', 'player', 'paused']),
@@ -39,27 +90,21 @@ const mapDispatchToProps = (dispatch) => ({
   },
 });
 
-const messages = defineMessages({
-  play: { id: 'pawoo_music.musicvideo.play', defaultMessage: 'Play' },
-  pause: { id: 'pawoo_music.musicvideo.pause', defaultMessage: 'Pause' },
-});
-
 const mobile = isMobile();
 
 @connect(mapStateToProps, mapDispatchToProps)
-@injectIntl
 class Musicvideo extends ImmutablePureComponent {
 
   static propTypes = {
     bannerHidden: PropTypes.bool,
-    overriddenControlVisibility: PropTypes.bool,
-    intl: PropTypes.object.isRequired,
+    children: PropTypes.node,
+    controlsActive: PropTypes.bool,
+    fitContain: PropTypes.bool,
     label: PropTypes.string,
     lastSeekDestination: PropTypes.number.isRequired,
     onPausedChange: PropTypes.func.isRequired,
     onSeekDestinationChange: PropTypes.func,
     audio: ImmutablePropTypes.map.isRequired,
-    getCurrentTime: PropTypes.func.isRequired,
     loading: PropTypes.bool.isRequired,
     paused: PropTypes.bool.isRequired,
     track: ImmutablePropTypes.map.isRequired,
@@ -73,14 +118,14 @@ class Musicvideo extends ImmutablePureComponent {
   image = new BaseTexture(new Image());
 
   generator = new Canvas(
-    this.props.audio.get('context'),
+    context,
     constructGeneratorOptions(
       this.props.bannerHidden ?
         this.props.track.deleteIn(['video', 'banner']) : this.props.track,
         this.image
     ),
     lightLeaks,
-    () => this.props.getCurrentTime()
+    getCurrentTime
   );
 
   componentDidMount () {
@@ -119,8 +164,6 @@ class Musicvideo extends ImmutablePureComponent {
     if (parent) parent.removeChild(view);
 
     this.canvasContainer.appendChild(view);
-
-    this.timer = setInterval(() => this.forceUpdate(), 500);
   }
 
   componentDidUpdate ({ audio, bannerHidden, lastSeekDestination, paused, track }) {
@@ -181,8 +224,6 @@ class Musicvideo extends ImmutablePureComponent {
 
     this.hideControlsDebounce.cancel();
 
-    clearInterval(this.timer);
-
     this.image.source.removeEventListener('load', this.handleLoadImage);
 
     this.generator.stop();
@@ -233,20 +274,16 @@ class Musicvideo extends ImmutablePureComponent {
   }
 
   handleMouseLeave = () => {
-    if (typeof this.props.overriddenControlVisibility !== 'boolean') {
-      this.setState({ showControls: false });
-    }
+    this.setState({ showControls: false });
   }
 
   hideControlsDebounce = debounce(() => {
-    this.setState({ showControls: false });
+    this.setState({ showControls: this.props.controlsActive });
   }, 3000);
 
   showControls () {
-    if (typeof this.props.overriddenControlVisibility !== 'boolean') {
-      this.setState({ showControls: true });
-      this.hideControlsDebounce();
-    }
+    this.setState({ showControls: true });
+    this.hideControlsDebounce();
   }
 
   setCanvasContainerRef = (ref) => {
@@ -272,18 +309,15 @@ class Musicvideo extends ImmutablePureComponent {
   }
 
   render() {
-    const { overriddenControlVisibility, duration, getCurrentTime, intl, label, loading, onSeekDestinationChange, paused } = this.props;
+    const { children, duration, fitContain, label, loading, onSeekDestinationChange, paused } = this.props;
     const { initialized } = this.state;
     const canPlay = ![Infinity, NaN].includes(duration);
-    const showControls = typeof overriddenControlVisibility === 'boolean' ?
-      overriddenControlVisibility : this.state.showControls;
+    const showControls = this.state.showControls;
 
     return (
       <div
-        className='musicvideo'
+        className={classNames('musicvideo', { 'fit-contain': fitContain })}
         onClickCapture={mobile ? this.handleClick : noop}
-        role='button'
-        aria-pressed='false'
         onMouseEnter={mobile ? noop : this.handleMouseEnter}
         onMouseMove={mobile ? noop : this.handleMouseMove}
         onMouseLeave={mobile ? noop : this.handleMouseLeave}
@@ -301,19 +335,13 @@ class Musicvideo extends ImmutablePureComponent {
           <div ref={this.setCanvasContainerRef} />
         </div>
         <div className={classNames('controls-container', { visible: initialized && showControls })}>
-          <div className='controls'>
-            <div className='toggle' onClick={this.handleTogglePaused} role='button' tabIndex='0' aria-pressed='false'>
-              {paused ? <Icon icon='play' title={intl.formatMessage(messages.play)} strong /> : <Icon icon='pause' title={intl.formatMessage(messages.pause)} strong />}
-            </div>
-            <Slider
-              min={0}
-              max={duration}
-              step={0.1}
-              value={getCurrentTime()}
-              onChange={onSeekDestinationChange}
-              disabled={!canPlay}
-            />
-          </div>
+          <div className='misc-controls'>{children}</div>
+          <PlayerControls
+            duration={duration}
+            paused={paused}
+            onTogglePaused={this.handleTogglePaused}
+            onSeekDestinationChange={onSeekDestinationChange}
+          />
         </div>
       </div>
     );

@@ -12,7 +12,8 @@ import NotificationTimelineContainer from '../notification_timeline';
 import CommunityTimelineContainer from '../community_timeline';
 import PublicTimelineContainer from '../public_timeline';
 import HashtagTimelineContainer from '../hashtag_timeline';
-import AccountGalleryContainer from '../account_gallery';
+import AccountTracksContainer from '../account_tracks';
+import AccountAlbumsContainer from '../account_albums';
 import FavouritedStatusesContainer from '../favourited_statuses';
 import IntentContainer from '../../containers/intent';
 import LoadingBarContainer from '../../../mastodon/features/ui/containers/loading_bar_container';
@@ -149,7 +150,8 @@ export default class App extends PureComponent {
         <Route path='/timelines/public' exact component={PublicTimelineContainer} />
         <Route path='/tags/:id' exact component={HashtagTimelineContainer} />
         <Route path='/favourites' component={FavouritedStatusesContainer} />
-        <Route path='/@:acct' exact component={AccountGalleryContainer} />
+        <Route path='/@:acct' exact component={AccountTracksContainer} />
+        <Route path='/@:acct/albums' exact component={AccountAlbumsContainer} />
         <Route path='/@:acct/:id' exact component={StatusThreadContainer} />
         <Route path='/users/:acct/followers' exact component={AccountFollowersContainer} />
         <Route path='/users/:acct/following' exact component={AccountFollowingContainer} />
