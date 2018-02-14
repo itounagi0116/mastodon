@@ -1,5 +1,6 @@
 - content_for :header_tags do
   %script#initial-state{ type: 'application/json' }!= json_escape(@initial_state_json)
+  = csrf_meta_tags
 
 #pawoo-music-default-props{ data: { props: Oj.dump(default_props) } }
 #pawoo-music-track{ data: { props: json_escape(@status_json) } }
