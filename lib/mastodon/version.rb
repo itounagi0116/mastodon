@@ -38,7 +38,7 @@ module Mastodon
 
     # specify git tag or commit hash here
     def source_tag
-      'pawoo'
+      'pawoo-music'
     end
 
     def source_url
