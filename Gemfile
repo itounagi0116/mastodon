@@ -5,8 +5,6 @@ gem 'omniauth-pixiv-public', require: 'omniauth-pixiv'
 source 'https://rubygems.org'
 ruby '>= 2.3.0', '< 2.5.0'
 
-gem 'pixiv_api', git: 'https://github.com/pixiv/pixiv-api-ruby-public.git'
-
 gem 'pkg-config', '~> 1.2'
 
 gem 'puma', '~> 3.10'
