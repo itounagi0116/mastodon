@@ -283,6 +283,7 @@ Devise.setup do |config|
       secret[:key],
       secret[:secret],
       scope: 'read-email',
+      user_agent: 'pawoo-music (omniauth-pixiv-public)',
     ]
 
     client_options = secret.slice(:site, :authorize_url, :token_url).symbolize_keys.compact
