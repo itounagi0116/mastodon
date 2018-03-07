@@ -8,24 +8,61 @@ ExceptionNotification.configure do |config|
     ActionController::UnknownFormat
     ActionController::ParameterMissing
     ActiveRecord::RecordNotUnique
-    HTTP::TimeoutError
-    HTTP::Redirector::TooManyRedirectsError
-    HTTP::Redirector::EndlessRedirectError
-    OpenSSL::SSL::SSLError
     Mastodon::UnexpectedResponseError
   )
 
-  ignore_workers = %w[
-    Pubsubhubbub::DeliveryWorker
-    Pubsubhubbub::ConfirmationWorker
-    Pubsubhubbub::DistributionWorker
-    Pubsubhubbub::SubscribeWorker
-    LinkCrawlWorker
+  network_exceptions = %w[
+    HTTP::StateError
+    HTTP::TimeoutError
+    HTTP::ConnectionError
+    HTTP::Redirector::TooManyRedirectsError
+    HTTP::Redirector::EndlessRedirectError
+    OpenSSL::SSL::SSLError
   ].freeze
 
-  config.ignore_if do |_exception, options|
+  network_workers = %w[
+    LinkCrawlWorker
+    ProcessingWorker
+    ThreadResolveWorker
+    NotificationWorker
+    Import::RelationshipWorker
+  ].freeze
+
+  ignore_workers = %w[
+  ].freeze
+
+  ignore_worker_errors = {
+    'ActivityPub::ProcessingWorker' => ['ActiveRecord::RecordInvalid'],
+    'LinkCrawlWorker' => ['ActiveRecord::RecordInvalid'],
+  }.freeze
+
+  ignore_job_errors = {
+    'ActionMailer::DeliveryJob' => ['ActiveJob::DeserializationError']
+  }.freeze
+
+  config.ignore_if do |exception, options|
+    exception_name = exception.class.name
+
+    # includes invalid characters
+    # ignore_worker ||= exception_name == 'ActiveRecord::RecordInvalid' && exception.message.end_with?('includes invalid characters')
+
     sidekiq = (options || {})&.dig(:data, :sidekiq)
-    ignore_worker = sidekiq && ignore_workers.include?(sidekiq.dig(:job, 'class'))
+    if sidekiq
+      worker_class = sidekiq.dig(:job, 'class')
+
+      ignore_worker ||= ignore_workers.include?(worker_class)
+      ignore_worker ||= ignore_worker_errors[worker_class]&.include?(exception_name)
+
+      # ActivityPub or Pubsubhubbub or 通信が頻繁に発生するWorkerではネットワーク系の例外を無視
+      if worker_class.start_with?(/(ActivityPub|Pubsubhubbub)::/) || network_workers.include?(worker_class)
+        ignore_worker ||= network_exceptions.include?(exception_name)
+      end
+
+      # ActiveJob
+      if worker_class == 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper'
+        ignore_worker ||= ignore_job_errors[sidekiq.dig(:job, 'wrapped')]&.include?(exception_name)
+      end
+    end
 
     !Rails.env.production? || ignore_worker
   end
