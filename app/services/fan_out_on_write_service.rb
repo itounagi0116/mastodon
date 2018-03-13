@@ -55,7 +55,7 @@ class FanOutOnWriteService < BaseService
     else
       followers.find_each do |follower|
         FeedInsertWorker.perform_async(status.id, follower.id)
-        NotifyService.new.call(follower, status.track, from_account: status.account) if status.track.present?
+        NotifyService.new.call(follower, status.track, from_account: status.account) if status.track.present? && status.public_visibility?
       end
     end
   end
