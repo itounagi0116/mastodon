@@ -23,7 +23,7 @@ export default class EmbeddedMeta extends ImmutablePureComponent {
         )}
         {this.props.title && (
           <div className='title'>
-            <a href={`/@${this.props.acct}/${this.props.id}`} target='_blank'>
+            <a href={`/@${this.props.acct}/${this.props.statusId}`} target='_blank'>
               {this.props.title}
             </a>
           </div>
