@@ -46,7 +46,7 @@ class FanOutOnWriteService < BaseService
           FeedInsertWorker.perform_async(status.id, followers.map(&:id))
         end
 
-        if status.track.present?
+        if status.track.present? && !status.reblog? && status.public_visibility?
           group.each do |follower|
             NotifyService.new.call(follower, status.track, from_account: status.account)
           end
@@ -55,7 +55,7 @@ class FanOutOnWriteService < BaseService
     else
       followers.find_each do |follower|
         FeedInsertWorker.perform_async(status.id, follower.id)
-        NotifyService.new.call(follower, status.track, from_account: status.account) if status.track.present? && status.public_visibility?
+        NotifyService.new.call(follower, status.track, from_account: status.account) if status.track.present? && !status.reblog? && status.public_visibility?
       end
     end
   end
