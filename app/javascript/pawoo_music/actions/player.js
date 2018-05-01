@@ -10,6 +10,7 @@ export const PLAYER_SEEK_DESTINATION_CHANGE = 'PLAYER_SEEK_DESTINATION_CHANGE';
 export const PLAYER_TRACK_PATH_CHANGE = 'PLAYER_TRACK_PATH_CHANGE';
 export const PLAYER_ALBUM_PATH_CHANGE = 'PLAYER_ALBUM_PATH_CHANGE';
 export const PLAYER_ALBUM_TRACK_INDEX_CHANGE = 'PLAYER_ALBUM_TRACK_INDEX_CHANGE';
+export const PLAYER_PLAY_DUMMY = 'PLAYER_PLAY_DUMMY';
 
 export function changeAudioDestinationNode(audioNode) {
   return { type: PLAYER_AUDIO_DESTINATION_NODE_CHANGE, audioNode };
@@ -84,4 +85,8 @@ export function end() {
       dispatch(changeAlbumTrackIndex((trackIndex + 1) % trackCount));
     }
   };
+}
+
+export function playDummy() {
+  return { type: PLAYER_PLAY_DUMMY };
 }

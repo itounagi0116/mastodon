@@ -5,6 +5,7 @@ export default class BufferAudio {
 
   _buffer = null;
   _bufferSource = null;
+  _dummyBufferSource = null;
   _lastSeekDestinationOffsetToMusicTime = 0;
 
   constructor ({ context, onEnded, onLoadStart, onLoadEnd, onDestinationNodeChange, onSourceNodeChange, onDurationChange }) {
@@ -125,6 +126,17 @@ export default class BufferAudio {
   }
 
   update () {
+  }
+
+  playDummy () {
+    this._dummyBufferSource = this._context.createBufferSource().start(0);
+  }
+
+  stopDummy() {
+    if (this._dummyBufferSource) {
+      this._dummyBufferSource.stop();
+      this._dummyBufferSource = null;
+    }
   }
 
 }

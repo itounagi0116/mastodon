@@ -14,7 +14,7 @@ import StatusReactions from '../status_reactions';
 import AlbumTracksCount from '../../components/album_tracks_count';
 import Icon from '../../components/icon';
 import { fetchAndQueueAlbumTracks } from '../../actions/albums_tracks';
-import { changePaused, changeAlbumTrackIndex } from '../../actions/player';
+import { changePaused, changeAlbumTrackIndex, playDummy } from '../../actions/player';
 import { isMobile } from '../../util/is_mobile';
 import { makeGetStatus } from '../../../mastodon/selectors';
 
@@ -266,6 +266,10 @@ const mapDispatchToProps = (dispatch, { album }) => ({
     dispatch(changePaused(false));
   },
 
+  onPlayDummy () {
+    dispatch(playDummy());
+  },
+
   onTogglePaused () {
     dispatch(
       (newDispatch, getState) => newDispatch(
@@ -287,6 +291,7 @@ class Album extends ImmutablePureComponent {
     paused: PropTypes.bool,
     trackIndexBeingQueued: PropTypes.number,
     trackStatuses: ImmutablePropTypes.list,
+    onPlayDummy: PropTypes.func.isRequired,
     onQueueAlbum: PropTypes.func.isRequired,
     onChangeAlbumTrackIndex: PropTypes.func.isRequired,
     onPlay: PropTypes.func.isRequired,
@@ -294,6 +299,7 @@ class Album extends ImmutablePureComponent {
   };
 
   handleQueueClick = () => {
+    this.props.onPlayDummy();
     this.props.onQueueAlbum();
     this.props.onPlay();
   }

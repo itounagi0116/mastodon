@@ -17,6 +17,7 @@ export default class HTMLAudio {
    */
   _forAnalysis = new Audio();
   _forOutput = new Audio();
+  _dummyAudio = null;
 
   constructor ({ context, onSourceNodeChange, onDurationChange, onEnded }) {
     this._forAnalysis.crossOrigin = 'anonymous';
@@ -97,6 +98,21 @@ export default class HTMLAudio {
      * it somehow resolves the issue.
      */
     this._forAnalysis.currentTime = this._forOutput.currentTime;
+  }
+
+  playDummy () {
+    this._dummyAudio = new Audio();
+    const promise = this._dummyAudio.play();
+    if (promise instanceof Promise) {
+      promise.catch(() => {});
+    }
+  }
+
+  stopDummy () {
+    if (this._dummyAudio) {
+      this._dummyAudio.pause();
+      this._dummyAudio = null;
+    }
   }
 
 }

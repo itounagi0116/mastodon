@@ -22,6 +22,7 @@ export default store => {
   let lastMusic = null;
   let lastSeekDestination = null;
   let lastPaused = null;
+  let lastDummy = null;
 
   playerAudio = new PlayerAudio({
     context,
@@ -59,6 +60,18 @@ export default store => {
     const state = store.getState();
     const newPlayer = state.getIn(['pawoo_music', 'player']);
     const newTrackPath = newPlayer.get('trackPath');
+    const newDummy = newPlayer.get('dummy');
+
+    if (newDummy !== lastDummy) {
+      lastDummy = newDummy;
+
+      if (newDummy) {
+        playerAudio.playDummy();
+        return;
+      } else {
+        playerAudio.stopDummy();
+      }
+    }
 
     if (newTrackPath === null) {
       if (lastId !== null || lastMusic !== null) {
