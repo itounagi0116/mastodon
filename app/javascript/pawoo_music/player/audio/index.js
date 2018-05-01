@@ -10,7 +10,7 @@ import HTMLAudio from './html';
 
 const userAgentMatch = navigator.userAgent.match(/AppleWebKit\/(\d+)/);
 
-const PlayerAudio = userAgentMatch && userAgentMatch[1] < 603 &&
+const PlayerAudio = userAgentMatch && userAgentMatch[1] < 604 &&
                       !navigator.userAgent.includes('Chrome') ?
                         BufferAudio : HTMLAudio;
 

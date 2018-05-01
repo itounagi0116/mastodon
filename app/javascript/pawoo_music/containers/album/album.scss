@@ -1,5 +1,6 @@
 .album-full-info {
   background-color: var(--color1);
+  flex: 1;
   display: flex;
   flex-direction: column;
 
@@ -8,6 +9,12 @@
 
   > .playlist {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    > div {
+      flex: 1;
+    }
 
     ol {
       font-size: var(--text20-font);
