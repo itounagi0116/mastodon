@@ -11,6 +11,7 @@ import {
   PLAYER_TRACK_PATH_CHANGE,
   PLAYER_ALBUM_PATH_CHANGE,
   PLAYER_ALBUM_TRACK_INDEX_CHANGE,
+  PLAYER_PLAY_DUMMY,
 } from '../actions/player';
 import Immutable from 'immutable';
 
@@ -27,6 +28,7 @@ const initialState = Immutable.fromJS({
   lastSeekDestination: 0,
   time: 0,
   trackPath: null,
+  dummy: false,
 });
 
 export default function player(state = initialState, action) {
@@ -50,6 +52,7 @@ export default function player(state = initialState, action) {
     return state.merge({
       trackPath: Immutable.fromJS(action.path),
       album: null,
+      dummy: false,
     });
   case PLAYER_ALBUM_PATH_CHANGE:
     return state.merge({
@@ -58,11 +61,19 @@ export default function player(state = initialState, action) {
         path: action.path,
         trackIndex: null,
       }),
+      dummy: false,
     });
   case PLAYER_ALBUM_TRACK_INDEX_CHANGE:
     return state.mergeDeep({
       trackPath: Immutable.fromJS(action.path),
       album: { trackIndex: action.index },
+      dummy: false,
+    });
+  case PLAYER_PLAY_DUMMY:
+    return state.merge({
+      trackPath: null,
+      album: null,
+      dummy: true,
     });
   default:
     return state;
