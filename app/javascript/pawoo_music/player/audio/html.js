@@ -17,7 +17,6 @@ export default class HTMLAudio {
    */
   _forAnalysis = new Audio();
   _forOutput = new Audio();
-  _dummyAudio = null;
 
   constructor ({ context, onSourceNodeChange, onDurationChange, onEnded }) {
     this._forAnalysis.crossOrigin = 'anonymous';
@@ -101,18 +100,26 @@ export default class HTMLAudio {
   }
 
   playDummy () {
-    this._dummyAudio = new Audio();
-    const promise = this._dummyAudio.play();
-    if (promise instanceof Promise) {
-      promise.catch(() => {});
+    if (this._forOutput.src.startsWith('blob:')) {
+      URL.revokeObjectURL(this._forOutput.src);
+    }
+
+    this._forAnalysis.src = '';
+    this._forOutput.src = this._forAnalysis.src;
+
+    const analysisPromise = this._forAnalysis.play();
+    const outputPromise = this._forOutput.play();
+
+    if (analysisPromise instanceof Promise) {
+      analysisPromise.catch(() => {});
+    }
+
+    if (outputPromise instanceof Promise) {
+      outputPromise.catch(() => {});
     }
   }
 
   stopDummy () {
-    if (this._dummyAudio) {
-      this._dummyAudio.pause();
-      this._dummyAudio = null;
-    }
   }
 
 }

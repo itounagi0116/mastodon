@@ -129,12 +129,12 @@ export default class BufferAudio {
   }
 
   playDummy () {
-    this._dummyBufferSource = this._context.createBufferSource().start(0);
+    this._dummyBufferSource = this._context.createBufferSource();
+    this._dummyBufferSource.start(0);
   }
 
   stopDummy() {
     if (this._dummyBufferSource) {
-      this._dummyBufferSource.stop();
       this._dummyBufferSource = null;
     }
   }
