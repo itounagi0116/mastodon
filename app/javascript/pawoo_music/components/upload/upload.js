@@ -18,6 +18,7 @@ export default class Upload extends PureComponent {
           <Route path='/tracks/new' exact component={TrackComposeContainer} />
           <Route path='/tracks/:id/edit' exact component={TrackComposeContainer} />
           <Route path='/albums/new' exact component={AlbumComposeContainer} />
+          <Route path='/albums/:id/edit' exact component={AlbumComposeContainer} />
         </Switch>
         <NotificationsContainer />
         <LoadingBarContainer className='loading-bar' />
