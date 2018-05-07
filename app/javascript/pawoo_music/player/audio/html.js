@@ -32,7 +32,7 @@ export default class HTMLAudio {
   }
 
   _handleLoadMetadata = () => {
-    if (this._forOutput._duration === Infinity) {
+    if (this._forOutput.duration === Infinity) {
       this._forOutput.currentTime = 9e9;
     } else {
       this._duration = this._forOutput.duration;
