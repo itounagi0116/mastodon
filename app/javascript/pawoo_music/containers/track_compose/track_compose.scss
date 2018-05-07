@@ -262,6 +262,8 @@
   .actions {
     display: flex;
     align-items: flex-end;
+    flex-wrap: wrap;
+    justify-content: space-around;
 
     button {
       display: inline-block;
