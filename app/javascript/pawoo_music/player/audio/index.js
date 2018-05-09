@@ -118,6 +118,15 @@ export default store => {
       if (newPaused) {
         playerAudio.pause();
       } else {
+        /*
+          Autoplay Policy Changes  |  Web  |  Google Developers
+          https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio
+          > If you create your AudioContext on page load, you’ll have to call
+          > resume() later when user interacts with the page (e.g., user clicked
+          > a button).
+        */
+        context.resume();
+
         playerAudio.play();
       }
     }
