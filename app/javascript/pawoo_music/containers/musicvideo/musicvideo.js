@@ -52,8 +52,8 @@ class PlayerControls extends ImmutablePureComponent {
             // This behavior matches one of the icon of the queued track of
             // album.
             paused ?
-              <Icon icon='pause' aria-label={intl.formatMessage(messages.play)} strong /> :
-              <Icon icon='play' aria-label={intl.formatMessage(messages.pause)} strong />
+              <Icon icon='play' aria-label={intl.formatMessage(messages.play)} strong /> :
+              <Icon icon='pause' aria-label={intl.formatMessage(messages.pause)} strong />
           }
         </div>
         <Slider

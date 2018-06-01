@@ -22,8 +22,8 @@ import playIcon from '../../../images/pawoo_music/play.png';
 import defaultArtwork from '../../../images/pawoo_music/default_artwork.png';
 
 const messages = defineMessages({
-  paused: { id: 'pawoo_music.album.paused', defaultMessage: 'Paused' },
-  playing: { id: 'pawoo_music.album.playing', defaultMessage: 'Playing' },
+  pause: { id: 'pawoo_music.album.pause', defaultMessage: 'Pause' },
+  play: { id: 'pawoo_music.album.play', defaultMessage: 'Play' },
   playbutton: { id: 'pawoo_music.album.playbutton', defaultMessage: 'Play button' },
   thumbnail: { id: 'pawoo_music.album.thumbnail', defaultMessage: 'Thumbnail' },
 });
@@ -100,8 +100,8 @@ class AlbumQueuedTrackItem extends ImmutablePureComponent {
         {
           // This behavior matches the icon in the musicvideo controller.
           paused ?
-            <Icon icon='pause' aria-label={intl.formatMessage(messages.paused)} /> :
-            <Icon icon='play' aria-label={intl.formatMessage(messages.playing)} />
+            <Icon icon='play' aria-label={intl.formatMessage(messages.play)} /> :
+            <Icon icon='pause' aria-label={intl.formatMessage(messages.pause)} />
         }
         {status.getIn(['track', 'title'])}
         <div
