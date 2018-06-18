@@ -4,6 +4,7 @@ pl:
     hints:
       defaults:
         avatar: PNG, GIF lub JPG. Maksymalnie 2MB. Zostanie zmniejszony do 120x120px
+        background_image: PNG lub JPG. Maksymalnie 2MB.
         display_name:
           few: Pozostały <span class="name-counter">%{count}</span> znaki.
           many: Pozostało <span class="name-counter">%{count}</span> znaków
@@ -26,6 +27,7 @@ pl:
     labels:
       defaults:
         avatar: Awatar
+        background_image: Obraz tła
         confirm_new_password: Potwierdź nowe hasło
         confirm_password: Potwierdź hasło
         current_password: Obecne hasło
@@ -60,7 +62,24 @@ pl:
         follow: Powiadamiaj mnie e-mailem, gdy ktoś zacznie mnie śledzić
         follow_request: Powiadamiaj mnie e-mailem, gdy ktoś poprosi o pozwolenie na śledzenie mnie
         mention: Powiadamiaj mnie e-mailem, gdy ktoś o mnie wspomni
+        new_track: Powiadamiaj mnie e-mailem, gdy ktoś kogo śledzę opublikuje nowy utwór
         reblog: Powiadamiaj mnie e-mailem, gdy ktoś podbije mój wpis
+        video_preparation_error: Powiadamiaj mnie e-mailem, gdy generowanie wideo dla utworu nie powiedzie się
+        video_preparation_success: Powiadamiaj mnie e-mailem, gdy wideo dla utworu zostanie wygenerowane
+      notification_firebase_cloud_messagings:
+        digest: Wysyłaj podsumowanie na telefon
+        favourite: Powiadamiaj mnie, gdy ktoś polubi mój wpis
+        follow: Powiadamiaj mnie, gdy ktoś zacznie mnie śledzić
+        follow_request: Powiadamiaj mnie, gdy ktoś poprosi o pozwolenie na śledzenie mnie
+        mention: Powiadamiaj mnie, gdy ktoś o mnie wspomni
+        reblog: Powiadamiaj mnie, gdy ktoś podbije mój wpis
+      omniauth:
+        or: lub
+      omniauth_pixiv:
+        register: Rozpocznij z kontem pixiv
+        signin: Zaloguj się kontem pixiv
+        signup: Zaloguj się kontem pixiv
+        synchronize_email_address: Zsynchronizuj adres e-mail
     'no': Nie
     required:
       mark: "*"
