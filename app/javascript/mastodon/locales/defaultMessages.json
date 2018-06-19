@@ -238,43 +238,6 @@
   {
     "descriptors": [
       {
-        "defaultMessage": "Follow",
-        "id": "account.follow"
-      },
-      {
-        "defaultMessage": "Unfollow",
-        "id": "account.unfollow"
-      },
-      {
-        "defaultMessage": "Awaiting approval",
-        "id": "account.requested"
-      },
-      {
-        "defaultMessage": "Unblock @{name}",
-        "id": "account.unblock"
-      },
-      {
-        "defaultMessage": "Unmute @{name}",
-        "id": "account.unmute"
-      }
-    ],
-    "path": "app/javascript/mastodon/components/suggested_account.json"
-  },
-  {
-    "descriptors": [
-      {
-        "defaultMessage": "Toggle sound",
-        "id": "video_player.toggle_sound"
-      },
-      {
-        "defaultMessage": "Toggle visibility",
-        "id": "video_player.toggle_visible"
-      },
-      {
-        "defaultMessage": "Expand video",
-        "id": "video_player.expand"
-      },
-      {
         "defaultMessage": "Sensitive content",
         "id": "status.sensitive_warning"
       },
@@ -595,6 +558,15 @@
   {
     "descriptors": [
       {
+        "defaultMessage": "Add Your Music",
+        "id": "music_button.label"
+      }
+    ],
+    "path": "app/javascript/mastodon/features/compose/components/music_button.json"
+  },
+  {
+    "descriptors": [
+      {
         "defaultMessage": "Edit profile",
         "id": "navigation_bar.edit_profile"
       }
@@ -654,8 +626,8 @@
   {
     "descriptors": [
       {
-        "defaultMessage": "Search toots with \"{keyword}\"",
-        "id": "search_results.search_toots"
+        "defaultMessage": "Search for toots with \"{keyword}\"",
+        "id": "search_results.search_for_toots"
       },
       {
         "defaultMessage": "{count, number} {count, plural, one {result} other {results}}",
@@ -988,8 +960,8 @@
         "id": "empty_column.home"
       },
       {
-        "defaultMessage": "the active accounts",
-        "id": "empty_column.home.suggested_accounts"
+        "defaultMessage": "the public timeline",
+        "id": "empty_column.home.public_timeline"
       }
     ],
     "path": "app/javascript/mastodon/features/home_timeline/index.json"
@@ -1062,6 +1034,10 @@
       {
         "defaultMessage": "Boosts:",
         "id": "notifications.column_settings.reblog"
+      },
+      {
+        "defaultMessage": "New tracks posted by those you follow:",
+        "id": "notifications.column_settings.new_track"
       }
     ],
     "path": "app/javascript/mastodon/features/notifications/components/column_settings.json"
@@ -1143,12 +1119,12 @@
   {
     "descriptors": [
       {
-        "defaultMessage": "Search: \"{keyword}\"",
-        "id": "column.search_toots"
+        "defaultMessage": "Search for: \"{keyword}\"",
+        "id": "column.search_for_toots"
       },
       {
         "defaultMessage": "No toots found.",
-        "id": "empty_column.search_toots"
+        "id": "empty_column.search_for_toots"
       }
     ],
     "path": "app/javascript/mastodon/features/status_search_results/index.json"
@@ -1218,19 +1194,6 @@
   {
     "descriptors": [
       {
-        "defaultMessage": "Active Users",
-        "id": "column.suggested_accounts"
-      },
-      {
-        "defaultMessage": "Go To Local Timeline",
-        "id": "suggested_accounts.go_to_local_timeline"
-      }
-    ],
-    "path": "app/javascript/mastodon/features/suggested_accounts/index.json"
-  },
-  {
-    "descriptors": [
-      {
         "defaultMessage": "Suggested tags",
         "id": "suggestion_tags.normal"
       },
@@ -1253,23 +1216,6 @@
       }
     ],
     "path": "app/javascript/mastodon/features/ui/components/boost_modal.json"
-  },
-  {
-    "descriptors": [
-      {
-        "defaultMessage": "Network error",
-        "id": "bundle_column_error.title"
-      },
-      {
-        "defaultMessage": "Something went wrong while loading this component.",
-        "id": "bundle_column_error.body"
-      },
-      {
-        "defaultMessage": "Try again",
-        "id": "bundle_column_error.retry"
-      }
-    ],
-    "path": "app/javascript/mastodon/features/ui/components/bundle_column_error.json"
   },
   {
     "descriptors": [
@@ -1435,6 +1381,23 @@
   {
     "descriptors": [
       {
+        "defaultMessage": "Songs that people are listening now",
+        "id": "pawoo_music.play_control.deck_queue_track"
+      },
+      {
+        "defaultMessage": "Put your favorite songs in the playlist!",
+        "id": "pawoo_music.play_control.deck_queue_item-meta"
+      },
+      {
+        "defaultMessage": "Playlist that people are listening now",
+        "id": "pawoo_music.play_control.deck_queue_playlist"
+      }
+    ],
+    "path": "app/javascript/mastodon/features/ui/components/play_control.json"
+  },
+  {
+    "descriptors": [
+      {
         "defaultMessage": "Additional comments",
         "id": "report.placeholder"
       },
@@ -1476,40 +1439,15 @@
   {
     "descriptors": [
       {
-        "defaultMessage": "Compose",
-        "id": "tabs_bar.compose"
+        "defaultMessage": "Are you sure you want to skip this music?\nThis action will affect ALL the other users listening!",
+        "id": "playlist.skip.message"
       },
       {
-        "defaultMessage": "Home",
-        "id": "tabs_bar.home"
-      },
-      {
-        "defaultMessage": "Notifications",
-        "id": "tabs_bar.notifications"
-      },
-      {
-        "defaultMessage": "Local",
-        "id": "tabs_bar.local_timeline"
-      },
-      {
-        "defaultMessage": "Federated",
-        "id": "tabs_bar.federated_timeline"
-      },
-      {
-        "defaultMessage": "Media",
-        "id": "tabs_bar.media_timeline"
+        "defaultMessage": "Skip",
+        "id": "playlist.skip.confirm"
       }
     ],
-    "path": "app/javascript/mastodon/features/ui/components/tabs_bar.json"
-  },
-  {
-    "descriptors": [
-      {
-        "defaultMessage": "Drag & drop to upload",
-        "id": "upload_area.title"
-      }
-    ],
-    "path": "app/javascript/mastodon/features/ui/components/upload_area.json"
+    "path": "app/javascript/mastodon/features/ui/containers/play_control_container.json"
   },
   {
     "descriptors": [
@@ -1559,5 +1497,1023 @@
       }
     ],
     "path": "app/javascript/mastodon/features/video/index.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Tracks",
+        "id": "album.tracks"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/components/album_tracks_count/album_tracks_count.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Select audio",
+        "id": "pawoo_music.audio_input.placeholder"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/components/audio_input/audio_input.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Insert emoji",
+        "id": "emoji_button.label"
+      },
+      {
+        "defaultMessage": "Search...",
+        "id": "emoji_button.search"
+      },
+      {
+        "defaultMessage": "People",
+        "id": "emoji_button.people"
+      },
+      {
+        "defaultMessage": "Nature",
+        "id": "emoji_button.nature"
+      },
+      {
+        "defaultMessage": "Food & Drink",
+        "id": "emoji_button.food"
+      },
+      {
+        "defaultMessage": "Activity",
+        "id": "emoji_button.activity"
+      },
+      {
+        "defaultMessage": "Travel & Places",
+        "id": "emoji_button.travel"
+      },
+      {
+        "defaultMessage": "Objects",
+        "id": "emoji_button.objects"
+      },
+      {
+        "defaultMessage": "Symbols",
+        "id": "emoji_button.symbols"
+      },
+      {
+        "defaultMessage": "Flags",
+        "id": "emoji_button.flags"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/components/emoji_picker_dropdown/emoji_picker_dropdown.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Event Tag",
+        "id": "event_calendar.title"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/components/event_calendar/event_calendar.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Select genre tag",
+        "id": "pawoo_music.music_compose.select_genre"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/components/genre_tag_picker/genre_tag_picker.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Select image file",
+        "id": "pawoo_music.image_input.placeholder"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/components/image_input/image_input.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Logo",
+        "id": "pawoo_music.logo"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/components/logo/logo.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Close",
+        "id": "lightbox.close"
+      },
+      {
+        "defaultMessage": "Previous",
+        "id": "lightbox.previous"
+      },
+      {
+        "defaultMessage": "Next",
+        "id": "lightbox.next"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/components/media_modal/media_modal.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Album",
+        "id": "pawoo_music.album_compose.title"
+      },
+      {
+        "defaultMessage": "Track",
+        "id": "pawoo_music.track_compose.title"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/components/music_compose/music_compose.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "{name} boosted",
+        "id": "status.reblogged_by"
+      },
+      {
+        "defaultMessage": "Pinned Toot",
+        "id": "status.pinned"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/components/status_prepend/status_prepend.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Notifications",
+        "id": "column.notifications"
+      },
+      {
+        "defaultMessage": "Home",
+        "id": "column.home"
+      },
+      {
+        "defaultMessage": "Local timeline",
+        "id": "column.community"
+      },
+      {
+        "defaultMessage": "Federated timeline",
+        "id": "column.public"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/components/timeline_settings/timeline_settings.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Mention @{name}",
+        "id": "account.mention"
+      },
+      {
+        "defaultMessage": "Edit profile",
+        "id": "account.edit_profile"
+      },
+      {
+        "defaultMessage": "Unblock @{name}",
+        "id": "account.unblock"
+      },
+      {
+        "defaultMessage": "Unfollow",
+        "id": "account.unfollow"
+      },
+      {
+        "defaultMessage": "Unmute @{name}",
+        "id": "account.unmute"
+      },
+      {
+        "defaultMessage": "Block @{name}",
+        "id": "account.block"
+      },
+      {
+        "defaultMessage": "Mute @{name}",
+        "id": "account.mute"
+      },
+      {
+        "defaultMessage": "Follow",
+        "id": "account.follow"
+      },
+      {
+        "defaultMessage": "Report @{name}",
+        "id": "account.report"
+      },
+      {
+        "defaultMessage": "Media",
+        "id": "account.media"
+      },
+      {
+        "defaultMessage": "More",
+        "id": "account.more"
+      },
+      {
+        "defaultMessage": "This user is from another instance. This number may be larger.",
+        "id": "account.disclaimer"
+      },
+      {
+        "defaultMessage": "Hide everything from {domain}",
+        "id": "account.block_domain"
+      },
+      {
+        "defaultMessage": "Unhide {domain}",
+        "id": "account.unblock_domain"
+      },
+      {
+        "defaultMessage": "Block",
+        "id": "confirmations.block.confirm"
+      },
+      {
+        "defaultMessage": "Mute",
+        "id": "confirmations.mute.confirm"
+      },
+      {
+        "defaultMessage": "Hide entire domain",
+        "id": "confirmations.domain_block.confirm"
+      },
+      {
+        "defaultMessage": "Are you sure you want to mute {name}?",
+        "id": "confirmations.mute.message"
+      },
+      {
+        "defaultMessage": "Are you sure you want to block {name}?",
+        "id": "confirmations.block.message"
+      },
+      {
+        "defaultMessage": "Are you really, really sure you want to block the entire {domain}? In most cases a few targeted blocks or mutes are sufficient and preferable.",
+        "id": "confirmations.domain_block.message"
+      },
+      {
+        "defaultMessage": "Follows you",
+        "id": "account.follows_you"
+      },
+      {
+        "defaultMessage": "Tracks",
+        "id": "account.tracks"
+      },
+      {
+        "defaultMessage": "Albums",
+        "id": "account.albums"
+      },
+      {
+        "defaultMessage": "Followers",
+        "id": "account.followers"
+      },
+      {
+        "defaultMessage": "Follows",
+        "id": "account.follows"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/account_header/account_header.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Privacy",
+        "id": "pawoo_music.music_compose.privacy"
+      },
+      {
+        "defaultMessage": "Select genre tag",
+        "id": "pawoo_music.music_compose.select_genre"
+      },
+      {
+        "defaultMessage": "Drag a track here",
+        "id": "pawoo_music.album_compose.add"
+      },
+      {
+        "defaultMessage": "Tracks in the album",
+        "id": "pawoo_music.album_compose.tracks.registered"
+      },
+      {
+        "defaultMessage": "Tracks to add",
+        "id": "pawoo_music.album_compose.tracks.unregistered"
+      },
+      {
+        "defaultMessage": "Remove from the album",
+        "id": "pawoo_music.album_compose.remove"
+      },
+      {
+        "defaultMessage": "Title",
+        "id": "pawoo_music.album_compose.basic.title"
+      },
+      {
+        "defaultMessage": "Details",
+        "id": "pawoo_music.album_compose.basic.details"
+      },
+      {
+        "defaultMessage": "Cancel",
+        "id": "pawoo_music.music_compose.cancel"
+      },
+      {
+        "defaultMessage": "Save",
+        "id": "pawoo_music.music_compose.save"
+      },
+      {
+        "defaultMessage": "Submit",
+        "id": "pawoo_music.music_compose.submit"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/album_compose/album_compose.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Paused",
+        "id": "pawoo_music.album.paused"
+      },
+      {
+        "defaultMessage": "Playing",
+        "id": "pawoo_music.album.playing"
+      },
+      {
+        "defaultMessage": "Play button",
+        "id": "pawoo_music.album.playbutton"
+      },
+      {
+        "defaultMessage": "Thumbnail",
+        "id": "pawoo_music.album.thumbnail"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/album/album.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "The local timeline is empty. Write something publicly to get the ball rolling!",
+        "id": "empty_column.community"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/community_timeline/community_timeline.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Text color",
+        "id": "custom_color.textcolor"
+      },
+      {
+        "defaultMessage": "Link color 1",
+        "id": "custom_color.linkcolor"
+      },
+      {
+        "defaultMessage": "Link color 2",
+        "id": "custom_color.linkcolor2"
+      },
+      {
+        "defaultMessage": "Strong color 1",
+        "id": "custom_color.strong1"
+      },
+      {
+        "defaultMessage": "Strong color 2",
+        "id": "custom_color.strong2"
+      },
+      {
+        "defaultMessage": "Background color 1",
+        "id": "custom_color.color1"
+      },
+      {
+        "defaultMessage": "Background color 2",
+        "id": "custom_color.color2"
+      },
+      {
+        "defaultMessage": "Background color 3",
+        "id": "custom_color.color3"
+      },
+      {
+        "defaultMessage": "Preview",
+        "id": "custom_color.preview"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/custom_color/custom_color.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Share",
+        "id": "status.share"
+      },
+      {
+        "defaultMessage": "Share the link below.",
+        "id": "embed.instructions.share"
+      },
+      {
+        "defaultMessage": "Embed",
+        "id": "status.embed"
+      },
+      {
+        "defaultMessage": "Embed this status on your website by copying the code below.",
+        "id": "embed.instructions"
+      },
+      {
+        "defaultMessage": "Options",
+        "id": "embed.options"
+      },
+      {
+        "defaultMessage": "Show artist and title.",
+        "id": "embed.showinfo"
+      },
+      {
+        "defaultMessage": "Here is what it will look like:",
+        "id": "embed.preview"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/embed_modal_content/embed_modal_content.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Notify New Release",
+        "id": "account.follow_for_embed"
+      },
+      {
+        "defaultMessage": "Follow",
+        "id": "account.follow"
+      },
+      {
+        "defaultMessage": "Stop notifying new releases",
+        "id": "account.unfollow_for_embed"
+      },
+      {
+        "defaultMessage": "Unfollow",
+        "id": "account.unfollow"
+      },
+      {
+        "defaultMessage": "Awaiting approval",
+        "id": "account.requested"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/follow_button/follow_button.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Home",
+        "id": "tabs_bar.home"
+      },
+      {
+        "defaultMessage": "Notifications",
+        "id": "tabs_bar.notifications"
+      },
+      {
+        "defaultMessage": "Local",
+        "id": "tabs_bar.local_timeline"
+      },
+      {
+        "defaultMessage": "Federated",
+        "id": "tabs_bar.federated_timeline"
+      },
+      {
+        "defaultMessage": "Favourites",
+        "id": "navigation_bar.favourites"
+      },
+      {
+        "defaultMessage": "Preferences",
+        "id": "navigation_bar.preferences"
+      },
+      {
+        "defaultMessage": "Help",
+        "id": "navigation_bar.help"
+      },
+      {
+        "defaultMessage": "Tag timeline",
+        "id": "pawoo_music.global_navi.tag_timeline"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/global_navi/global_navi.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "There is nothing in this hashtag yet.",
+        "id": "empty_column.hashtag"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/hashtag_timeline/hashtag_timeline.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Your home feed is empty. If you have been inactive for a while, it will be regenerated for you soon.",
+        "id": "empty_column.home.inactivity"
+      },
+      {
+        "defaultMessage": "You aren't following anyone yet. Visit {public} or use search to get started and meet other users.",
+        "id": "empty_column.home"
+      },
+      {
+        "defaultMessage": "the public timeline",
+        "id": "empty_column.home.public_timeline"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/home_timeline/home_timeline.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Let's submit your track!",
+        "id": "pawoo_music.media_post.tips_balloon"
+      },
+      {
+        "defaultMessage": "Enjoy tracks on the media gallery timeline!",
+        "id": "pawoo_music.gallery.tips_balloon"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/media_post/media_post.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Play",
+        "id": "pawoo_music.musicvideo.play"
+      },
+      {
+        "defaultMessage": "Pause",
+        "id": "pawoo_music.musicvideo.pause"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/musicvideo/musicvideo.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "You don't have any notifications yet. Interact with others to start the conversation.",
+        "id": "empty_column.notifications"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/notification_timeline/notification_timeline.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "{name} followed you",
+        "id": "notification.follow"
+      },
+      {
+        "defaultMessage": "{name} favourited your status",
+        "id": "notification.favourite"
+      },
+      {
+        "defaultMessage": "{name} boosted your status",
+        "id": "notification.reblog"
+      },
+      {
+        "defaultMessage": "{name} posted a new track",
+        "id": "notification.new_track"
+      },
+      {
+        "defaultMessage": "The video for your track was generated",
+        "id": "notification.video_preparation_success"
+      },
+      {
+        "defaultMessage": "The video generation for your track was failed",
+        "id": "notification.video_preparation_error"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/notification/notification.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Pinned tags",
+        "id": "pinned_tags.title"
+      },
+      {
+        "defaultMessage": "Pin",
+        "id": "pinned_tags.pin"
+      },
+      {
+        "defaultMessage": "Unpin",
+        "id": "pinned_tags.unpin"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/pinned_tags/pinned_tags.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "There is nothing here! Write something publicly, or manually follow users from other instances to fill it up",
+        "id": "empty_column.public"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/public_timeline/public_timeline.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Favourites",
+        "id": "pawoo_music.push_settings.preferences.toggle.favourite"
+      },
+      {
+        "defaultMessage": "New followers",
+        "id": "pawoo_music.push_settings.preferences.toggle.follow"
+      },
+      {
+        "defaultMessage": "Mentions",
+        "id": "pawoo_music.push_settings.preferences.toggle.mention"
+      },
+      {
+        "defaultMessage": "New tracks posted by those you follow",
+        "id": "pawoo_music.push_settings.preferences.toggle.new_track"
+      },
+      {
+        "defaultMessage": "Boosts",
+        "id": "pawoo_music.push_settings.preferences.toggle.reblog"
+      },
+      {
+        "defaultMessage": "Push Notification Settings",
+        "id": "pawoo_music.push_settings.preferences.title"
+      },
+      {
+        "defaultMessage": "You can receive the latest information about new tracks and other activties anytime.",
+        "id": "pawoo_music.push_settings.preferences.description.mobile"
+      },
+      {
+        "defaultMessage": "You can receive the latest information about new tracks and other activties while your browser is open.",
+        "id": "pawoo_music.push_settings.preferences.description.pc"
+      },
+      {
+        "defaultMessage": "Please choose activities you would like to be notified about:",
+        "id": "pawoo_music.push_settings.preferences.description.toggle"
+      },
+      {
+        "defaultMessage": "Save",
+        "id": "pawoo_music.push_settings.preferences.save"
+      },
+      {
+        "defaultMessage": "Notifications Have Been Configured",
+        "id": "pawoo_music.push_settings.success.title"
+      },
+      {
+        "defaultMessage": "Please check if there is a dialog window to confirm your notification preferences.",
+        "id": "pawoo_music.push_settings.generic_end.description1"
+      },
+      {
+        "defaultMessage": "You can change the notification configuration later by chosing \"Timeline\" in \"Preferences\" page.",
+        "id": "pawoo_music.push_settings.generic_end.description2"
+      },
+      {
+        "defaultMessage": "OK",
+        "id": "pawoo_music.push_settings.generic_end.button"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/push_settings_initializer_modal/push_settings_initializer_modal.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Search",
+        "id": "search.placeholder"
+      },
+      {
+        "defaultMessage": "{count, number} {count, plural, one {result} other {results}}",
+        "id": "search_results.total"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/search_box/search_box.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Delete",
+        "id": "status.delete"
+      },
+      {
+        "defaultMessage": "Mention @{name}",
+        "id": "status.mention"
+      },
+      {
+        "defaultMessage": "Mute @{name}",
+        "id": "account.mute"
+      },
+      {
+        "defaultMessage": "Block @{name}",
+        "id": "account.block"
+      },
+      {
+        "defaultMessage": "Reply",
+        "id": "status.reply"
+      },
+      {
+        "defaultMessage": "More",
+        "id": "status.more"
+      },
+      {
+        "defaultMessage": "Reply to thread",
+        "id": "status.replyAll"
+      },
+      {
+        "defaultMessage": "Boost",
+        "id": "status.reblog"
+      },
+      {
+        "defaultMessage": "This post cannot be boosted",
+        "id": "status.cannot_reblog"
+      },
+      {
+        "defaultMessage": "Favourite",
+        "id": "status.favourite"
+      },
+      {
+        "defaultMessage": "This post cannot be favourited",
+        "id": "status.cannot_favourite"
+      },
+      {
+        "defaultMessage": "Expand this status",
+        "id": "status.open"
+      },
+      {
+        "defaultMessage": "Report @{name}",
+        "id": "status.report"
+      },
+      {
+        "defaultMessage": "Mute conversation",
+        "id": "status.mute_conversation"
+      },
+      {
+        "defaultMessage": "Unmute conversation",
+        "id": "status.unmute_conversation"
+      },
+      {
+        "defaultMessage": "Pin to account page",
+        "id": "status.pin"
+      },
+      {
+        "defaultMessage": "Unpin from account page",
+        "id": "status.unpin"
+      },
+      {
+        "defaultMessage": "Embed",
+        "id": "status.embed"
+      },
+      {
+        "defaultMessage": "720x720 (for Twitter, etc.)",
+        "id": "status.resolution.720x720"
+      },
+      {
+        "defaultMessage": "1920x1080 (for YouTube, etc.)",
+        "id": "status.resolution.1920x1080"
+      },
+      {
+        "defaultMessage": "Generate {resolution}",
+        "id": "status.generate_mv"
+      },
+      {
+        "defaultMessage": "Regenerate {resolution}",
+        "id": "status.regenerate_mv"
+      },
+      {
+        "defaultMessage": "Download {resolution}",
+        "id": "status.download_mv"
+      },
+      {
+        "defaultMessage": "Download video",
+        "id": "status.download_mv_title"
+      },
+      {
+        "defaultMessage": "Edit track",
+        "id": "status.edit_track"
+      },
+      {
+        "defaultMessage": "Edit album",
+        "id": "status.edit_album"
+      },
+      {
+        "defaultMessage": "Delete",
+        "id": "confirmations.delete.confirm"
+      },
+      {
+        "defaultMessage": "Are you sure you want to delete this status?",
+        "id": "confirmations.delete.message"
+      },
+      {
+        "defaultMessage": "Block",
+        "id": "confirmations.block.confirm"
+      },
+      {
+        "defaultMessage": "Mute",
+        "id": "confirmations.mute.confirm"
+      },
+      {
+        "defaultMessage": "Unpin",
+        "id": "confirmations.unpin.confirm"
+      },
+      {
+        "defaultMessage": "Pin",
+        "id": "confirmations.pin.confirm"
+      },
+      {
+        "defaultMessage": "Generate",
+        "id": "confirmations.generate_mv.confirm"
+      },
+      {
+        "defaultMessage": "Unpin from your profile. Are you sure?",
+        "id": "confirmations.unpin.message"
+      },
+      {
+        "defaultMessage": "This will prepend any previously pinned Toot. Are you sure?",
+        "id": "confirmations.pin.message"
+      },
+      {
+        "defaultMessage": "Are you sure you want to mute {name}?",
+        "id": "confirmations.mute.message"
+      },
+      {
+        "defaultMessage": "Are you sure you want to block {name}?",
+        "id": "confirmations.block.message"
+      },
+      {
+        "defaultMessage": "Generating animation takes time. When generation is completed, a notification is sent by e-mail.",
+        "id": "confirmations.generate_mv.message"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/status_action_bar/status_action_bar.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "What is on your mind?",
+        "id": "compose_form.placeholder"
+      },
+      {
+        "defaultMessage": "Content warning",
+        "id": "compose_form.spoiler_placeholder"
+      },
+      {
+        "defaultMessage": "Time to post",
+        "id": "compose_form.schedule_placeholder"
+      },
+      {
+        "defaultMessage": "Toot",
+        "id": "compose_form.publish"
+      },
+      {
+        "defaultMessage": "{publish}!",
+        "id": "compose_form.publish_loud"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/status_form/status_form.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "This toot was deleted.",
+        "id": "pawoo_music.status_thread.deleted"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/status_thread/status_thread.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Video preview",
+        "id": "pawoo_music.track_compose.preview"
+      },
+      {
+        "defaultMessage": "Privacy",
+        "id": "pawoo_music.music_compose.privacy"
+      },
+      {
+        "defaultMessage": "Select genre tag",
+        "id": "pawoo_music.music_compose.select_genre"
+      },
+      {
+        "defaultMessage": "Title",
+        "id": "pawoo_music.track_compose.basic.title"
+      },
+      {
+        "defaultMessage": "Artist",
+        "id": "pawoo_music.track_compose.basic.artist"
+      },
+      {
+        "defaultMessage": "Details",
+        "id": "pawoo_music.track_compose.basic.details"
+      },
+      {
+        "defaultMessage": "Background color",
+        "id": "pawoo_music.track_compose.video.background_color"
+      },
+      {
+        "defaultMessage": "Horizontal animation",
+        "id": "pawoo_music.track_compose.video.sprite.movement.circle"
+      },
+      {
+        "defaultMessage": "Angle",
+        "id": "pawoo_music.track_compose.video.sprite.movement.rad"
+      },
+      {
+        "defaultMessage": "Scale",
+        "id": "pawoo_music.track_compose.video.sprite.movement.scale"
+      },
+      {
+        "defaultMessage": "Speed",
+        "id": "pawoo_music.track_compose.video.sprite.movement.speed"
+      },
+      {
+        "defaultMessage": "Random animation",
+        "id": "pawoo_music.track_compose.video.sprite.movement.random"
+      },
+      {
+        "defaultMessage": "Zoom animation",
+        "id": "pawoo_music.track_compose.video.sprite.movement.zoom"
+      },
+      {
+        "defaultMessage": "Spectrum",
+        "id": "pawoo_music.track_compose.video.spectrum"
+      },
+      {
+        "defaultMessage": "Form",
+        "id": "pawoo_music.track_compose.video.spectrum_form"
+      },
+      {
+        "defaultMessage": "Columns around circle",
+        "id": "pawoo_music.track_compose.video.circle_columns"
+      },
+      {
+        "defaultMessage": "Circle",
+        "id": "pawoo_music.track_compose.video.circle"
+      },
+      {
+        "defaultMessage": "Columns at the bottom",
+        "id": "pawoo_music.track_compose.video.bottom_columns"
+      },
+      {
+        "defaultMessage": "Filled graph at the bottom",
+        "id": "pawoo_music.track_compose.video.bottom_fill"
+      },
+      {
+        "defaultMessage": "Color",
+        "id": "pawoo_music.track_compose.video.color"
+      },
+      {
+        "defaultMessage": "Blur",
+        "id": "pawoo_music.track_compose.video.blur"
+      },
+      {
+        "defaultMessage": "Movement",
+        "id": "pawoo_music.track_compose.video.movement_threshold"
+      },
+      {
+        "defaultMessage": "Blink",
+        "id": "pawoo_music.track_compose.video.blink_threshold"
+      },
+      {
+        "defaultMessage": "Particle",
+        "id": "pawoo_music.track_compose.video.particle"
+      },
+      {
+        "defaultMessage": "Limit",
+        "id": "pawoo_music.track_compose.video.limit_threshold"
+      },
+      {
+        "defaultMessage": "Light leaks",
+        "id": "pawoo_music.track_compose.video.lightleaks"
+      },
+      {
+        "defaultMessage": "Opacity",
+        "id": "pawoo_music.track_compose.video.lightleaks_alpha"
+      },
+      {
+        "defaultMessage": "Interval",
+        "id": "pawoo_music.track_compose.video.interval"
+      },
+      {
+        "defaultMessage": "Text",
+        "id": "pawoo_music.track_compose.video.text"
+      },
+      {
+        "defaultMessage": "\"made with Pawoo Music\" banner (only for exported video)",
+        "id": "pawoo_music.track_compose.video.banner"
+      },
+      {
+        "defaultMessage": "The banner will be shown only at the beginning of the video.",
+        "id": "pawoo_music.track_compose.video.banner_note"
+      },
+      {
+        "defaultMessage": "Opacity",
+        "id": "pawoo_music.track_compose.video.banner_alpha"
+      },
+      {
+        "defaultMessage": "Cancel",
+        "id": "pawoo_music.music_compose.cancel"
+      },
+      {
+        "defaultMessage": "Save",
+        "id": "pawoo_music.music_compose.save"
+      },
+      {
+        "defaultMessage": "Submit",
+        "id": "pawoo_music.music_compose.submit"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/track_compose/track_compose.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Suggested tags",
+        "id": "trend_tags.title"
+      }
+    ],
+    "path": "app/javascript/pawoo_music/containers/trend_tags/trend_tags.json"
   }
 ]

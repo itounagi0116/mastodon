@@ -5,6 +5,8 @@ pl:
     about_this: O tej instancji
     closed_registrations: Rejestracja na tej instancji jest obecnie zamknięta. Możesz jednak zarejestrować się na innej instancji, uzyskując dostęp do tej samej sieci.
     contact: Kontakt
+    contact_body_mastodon: Przez Pawoo Music
+    contact_body_twitter: Przez Twittera
     contact_missing: Nie ustawiono
     contact_unavailable: Nie dotyczy
     description_headline: Czym jest %{domain}?
@@ -38,6 +40,7 @@ pl:
     followers: Śledzących
     following: Śledzi
     media: Zawartość multimedialna
+    medium: Zawartość multimedialna %{name}
     nothing_here: Niczego tu nie ma!
     people_followed_by: Konta śledzone przez %{name}
     people_who_follow: Osoby, które śledzą konto %{name}
@@ -62,6 +65,7 @@ pl:
       followers: Śledzący
       followers_url: Adres śledzących
       follows: Śledzeni
+      inbox_url: Adres URL skrzynki odbiorczej
       ip: Adres IP
       location:
         all: Wszystkie
@@ -77,12 +81,15 @@ pl:
       most_recent_activity: Najnowsza aktywność
       most_recent_ip: Ostatnie IP
       not_subscribed: Nie zasubskrybowano
+      oauth_authentications: Logowanie pixib
       order:
         alphabetic: Alfabetycznie
         most_recent: Najnowsze
         title: Kolejność
+      outbox_url: Adres URL skrzynki nadawczej
       perform_full_suspension: Całkowicie zawieś
       profile_url: Adres profilu
+      protocol: Protokół
       public: Publiczne
       push_subscription_expires: Subskrypcja PuSH wygasa
       redownload: Odśwież awatar
@@ -141,7 +148,15 @@ pl:
     instances:
       account_count: Znane konta
       domain_name: Domena
+      reset: Resetuj
+      search: Szukaj
       title: Znane instancje
+    oauth_authentications:
+      linked: Połączone
+      not_linked: Niepołączone
+      unlink_forcibly: Wymuś rozłączonie
+    playlists:
+      title: Lista odtwarzania
     reports:
       action_taken_by: Akcja podjęta przez
       are_you_sure: Czy na pewno?
@@ -166,6 +181,8 @@ pl:
       title: Zgłoszenia
       unresolved: Nierozwiązane
       view: Wyświetl
+    scheduled_statuses:
+      title: Zaplanowane wpisy
     settings:
       bootstrap_timeline_accounts:
         desc_html: Oddzielaj nazwy użytkowników przecinkami. Działa tylko dla niezablokowanych kont w obrębie instancji. Jeżeli puste, zostaną użyte konta administratorów instancji.
@@ -222,11 +239,18 @@ pl:
       last_delivery: Ostatnio doręczono
       title: WebSub
       topic: Temat
+    suggestion:
+      title: Sugerowane tagi
     title: Administracja
   admin_mailer:
     new_report:
       body: Użytkownik %{reporter} zgłosił %{target}
       subject: Nowe zgłoszenie na %{instance} (#%{id})
+  albums:
+    over_character_limit: przekroczono limit %{max} znaków
+    tracks:
+      empty: Lista utworów nie może być pusta
+      positioning_not_found: Nie znaleziono pozycjonowania utworów
   application_mailer:
     salutation: "%{name},"
     settings: 'Zmień ustawienia powiadamiania: %{link}'
@@ -243,6 +267,7 @@ pl:
   auth:
     agreement_html: Rejestrując się, oświadczasz, że zapoznałeś się z <a href="%{rules_path}">naszymi zasadami użytkowania</a> i <a href="%{terms_path}">polityką prywatności</a>.
     change_password: Bezpieczeństwo
+    confirmed_email: "(potwierdzony)"
     delete_account: Usunięcie konta
     delete_account_html: Jeżeli chcesz usunąć konto, <a href="%{path}">przejdź tutaj</a>. Otrzymasz prośbę o potwierdzenie.
     didnt_get_confirmation: Nie otrzymałeś instrukcji weryfikacji?
@@ -250,10 +275,13 @@ pl:
     invalid_reset_password_token: Token do resetowania hasła jest nieprawidłowy lub utracił ważność. Spróbuj uzyskać nowy.
     login: Zaloguj się
     logout: Wyloguj się
+    oauth_registration: Kontynuuj logowanie
     register: Rejestracja
     resend_confirmation: Ponownie prześlij instrukcje weryfikacji
     reset_password: Zresetuj hasło
+    send_password_setting_url: Wyślij odnośnik zmiany hasła na powiązany adres e-mail (%{email}).
     set_new_password: Ustaw nowe hasło
+    synchronize_email_address: Zsynchronizuj adres e-mail z kontem pixiv
   authorize_follow:
     error: Niestety, podczas sprawdzania zdalnego konta wystąpił błąd
     follow: Śledź
@@ -282,6 +310,8 @@ pl:
     bad_password_msg: Niezła próba, hakerze! Wprowadzono nieprawidłowe hasło
     confirm_password: Wprowadź aktualne hasło, aby potwierdzić tożsamość
     description_html: Ta opcja usunie <strong>bezpowrotnie i nieodwracalnie</strong> całą zawartość konta i zdezaktywuje je. Twoja nazwa użytkownika pozostanie zarezerwowana, aby zapobiec nadużyciom.
+    exists_initial_password_usage: Zmień hasło zanim usuniesz konto
+    exists_oauth_authentications_html: Odłącz <a href="%{path}">pixiv Login</a> zanim usuniesz konto
     proceed: Usuń konto
     success_msg: Twoje konto zostało pomyślnie usunięte
     warning_html: Możemy usunąć zawartość jedynie w obrębie tej instancji. Zawartość udostępniona publicznie pozostawia trwałe ślady. Serwery niepodłączone do sieci bądź nieśledzące Twoich aktualizacji mogą zachować Twoje dane.
@@ -294,7 +324,13 @@ pl:
       content: Sprawdzanie bezpieczeństwa nie powiodło się. Czy blokujesz pliki cookie?
       title: Sprawdzanie bezpieczeństwa nie powiodło się
     '429': Uduszono
+    '500': Wystąpił błąd
+    '503': Przepraszamy, trwa przerwa konserwacyjna
+    messages:
+      in_between: musi być pomiędzy %{min} a %{max}
+      spoofed_media_type: zawiera zawartość inną niż określona
     noscript_html: Aby korzystać z aplikacji Mastodon, włącz JavaScript. Możesz też skorzystać z jednej z <a href="https://github.com/tootsuite/documentation/blob/master/Using-Mastodon/Apps.md">natywnych aplikacji</a> obsługującej Twoje urządzenie.
+    top: Przejdź na górę
   exports:
     blocks: Zablokowani
     csv: CSV
@@ -315,6 +351,7 @@ pl:
     unlocked_warning_title: Twoje konto nie jest zablokowane
   generic:
     changes_saved_msg: Ustawienia zapisane!
+    initialize_settings: Przywróć do domyślnych
     powered_by: uruchomione na %{link}
     save_changes: Zapisz zmiany
     validation_errors:
@@ -328,6 +365,7 @@ pl:
       following: Lista śledzonych
       muting: Lista wyciszonych
     upload: Załaduj
+  landing_strip_Tag_html: Są oznaczone <strong>#%{name}</strong>. Możesz wchodzić w interakcję z nimi, jeżeli masz konto w Fediwersum. Jeżeli nie posiadasz, możesz <a href="%{sign_up_path}">zarejestrować się tutaj</a>.
   landing_strip_html: "<strong>%{name}</strong> ma konto na %{link_to_root_path}. Możesz je śledzić i wejść z nim w interakcję jeśli masz konto gdziekolwiek w Fediwersum."
   landing_strip_signup_html: Jeśli jeszcze go nie masz, możesz <a href="%{sign_up_path}">stworzyć konto</a>.
   media_attachments:
@@ -360,6 +398,8 @@ pl:
     mention:
       body: "%{name} wspomniał o Tobie w:"
       subject: "%{name} wspomniał o Tobie"
+    new_track:
+      subject: "%{name} umieścił nowy utwór"
     reblog:
       body: 'Twój wpis został podbity przez %{name}:'
       subject: Twój wpis został podbity przez %{name}
@@ -374,6 +414,14 @@ pl:
           thousand: K
           trillion: T
           unit: ''
+  oauth_authentications:
+    confirm: Czy jesteś pewien?
+    failed_linking: Łączenie nie powiodło się
+    link: Połącz
+    successfully_linked: Pomyślnie połączono
+    successfully_synchronization: Pomyślnie zsynchronizowano
+    successfully_unlinked: Pomyślnie odłączono
+    unlink: Odłącz
   pagination:
     next: Następna
     prev: Poprzednia
@@ -390,6 +438,8 @@ pl:
       action_expand: Pokaż więcej
       action_favourite: Dodaj do ulubionych
       title: "%{name} wspomniał o Tobie"
+    new_track:
+      title: "%{name} umieścił nowy utwór"
     reblog:
       title: "%{name} podbił Twój status"
   remote_follow:
@@ -439,14 +489,21 @@ pl:
   settings:
     authorized_apps: Uwierzytelnione aplikacje
     back: Powrót do Mastodona
+    blocked_users: Zablokowani użytkownicy
+    custom_color: Dostosuj kolory
     delete: Usuń konto
     development: Tworzenie aplikacji
     edit_profile: Edytuj profil
     export: Eksportowanie danych
+    follow_requests: Prośby o możliwość śledzenia
     followers: Autoryzowani śledzący
     import: Importowanie danych
+    muted_users: Wyciszeni użytkownicy
+    oauth_authentications: Logowanie pixiv
     preferences: Preferencje
+    push_notification_preferences: Ustawienia powiadomień
     settings: Ustawienia
+    timeline: Oś czasu
     two_factor_authentication: Uwierzytelnianie dwuetapowe
     your_apps: Twoje aplikacje
   statuses:
@@ -543,6 +600,9 @@ pl:
   time:
     formats:
       default: "%b %d, %Y, %H:%M"
+  tracks:
+    invalid_mp3: Plik muzyczny nie jest prawidłowym plikiem MP3
+    invalid_visibility: Akceptowane są tylko utwory widoczne publiczne lub niewypisane
   two_factor_authentication:
     code_hint: Aby kontynuować, wprowadź kod wyświetlany przez aplikację uwierzytelniającą
     description_html: Jeśli włączysz <strong>uwierzytelnianie dwuetapowe</strong>, logowanie się będzie wymagało podania tokenu wyświetlonego na Twoim telefonie.
