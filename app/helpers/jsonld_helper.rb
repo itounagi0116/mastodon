@@ -39,8 +39,10 @@ module JsonLdHelper
     body_to_json(response.to_s)
   end
 
-  def body_to_json(body)
-    body.is_a?(String) ? Oj.load(body, mode: :strict) : body
+  def body_to_json(body, compare_id: nil)
+    json = body.is_a?(String) ? Oj.load(body, mode: :strict) : body
+    return if compare_id.present? && json['id'] != compare_id
+    json
   rescue Oj::ParseError
     nil
   end
