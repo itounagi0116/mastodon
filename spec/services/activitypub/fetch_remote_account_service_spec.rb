@@ -16,7 +16,7 @@ RSpec.describe ActivityPub::FetchRemoteAccountService do
   end
 
   describe '#call' do
-    let(:account) { subject.call('https://example.com/alice') }
+    let(:account) { subject.call('https://example.com/alice', id: true) }
 
     shared_examples 'sets profile data' do
       it 'returns an account' do
@@ -59,7 +59,6 @@ RSpec.describe ActivityPub::FetchRemoteAccountService do
       it 'returns nil' do
         expect(account).to be_nil
       end
-
     end
 
     context 'when URI and WebFinger share the same host' do
@@ -118,6 +117,12 @@ RSpec.describe ActivityPub::FetchRemoteAccountService do
       end
 
       include_examples 'sets profile data'
+    end
+
+    context 'with wrong id' do
+      it 'does not create account' do
+        expect(subject.call('https://fake.address/@foo', prefetched_body: Oj.dump(actor))).to be_nil
+      end
     end
   end
 end

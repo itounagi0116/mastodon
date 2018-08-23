@@ -7,21 +7,24 @@ class OStatus::Activity::Creation < OStatus::Activity::Base
       return [nil, false]
     end
 
-    return [nil, false] if @account.suspended?
+    return [nil, false] if @account.suspended? || invalid_origin?
 
-    if activitypub_uri? && [:public, :unlisted].include?(visibility_scope)
-      result = perform_via_activitypub
-      return result if result.first.present?
+    RedisLock.acquire(lock_options) do |lock|
+      if lock.acquired?
+        # Return early if status already exists in db
+        @status = find_status(id)
+        return [@status, false] unless @status.nil?
+        @status = process_status
+      end
     end
 
+    [@status, true]
+  end
+
+  def process_status
     Rails.logger.debug "Creating remote status #{id}"
-
-    # Return early if status already exists in db
-    status = find_status(id)
-
-    return [status, false] unless status.nil?
-
     cached_reblog = reblog
+    status = nil
 
     # Skip if the reblogged status is not public
     return if cached_reblog && !(cached_reblog.public_visibility? || cached_reblog.unlisted_visibility?)
@@ -59,11 +62,7 @@ class OStatus::Activity::Creation < OStatus::Activity::Base
     LinkCrawlWorker.perform_async(status.id) unless status.spoiler_text?
     DistributionWorker.perform_async(status.id)
 
-    [status, true]
-  end
-
-  def perform_via_activitypub
-    [find_status(activitypub_uri) || ActivityPub::FetchRemoteStatusService.new.call(activitypub_uri), false]
+    status
   end
 
   def content
@@ -174,5 +173,18 @@ class OStatus::Activity::Creation < OStatus::Activity::Base
     else
       Account.where(uri: href).or(Account.where(url: href)).first || FetchRemoteAccountService.new.call(href)
     end
+  end
+
+  def invalid_origin?
+    return false unless id.start_with?('http') # Legacy IDs cannot be checked
+
+    needle = Addressable::URI.parse(id).normalized_host
+
+    !(needle.casecmp(@account.domain).zero? ||
+      needle.casecmp(Addressable::URI.parse(@account.remote_url.presence || @account.uri).normalized_host).zero?)
+  end
+
+  def lock_options
+    { redis: Redis.current, key: "create:#{id}" }
   end
 end
