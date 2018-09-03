@@ -111,7 +111,6 @@
     "react-swipeable-views": "^0.12.3",
     "react-textarea-autosize": "^5.0.7",
     "react-toggle": "^4.0.1",
-    "react-youtube": "^7.4.0",
     "redis": "^2.7.1",
     "redux": "^3.7.1",
     "redux-immutable": "^4.0.0",

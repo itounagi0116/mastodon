@@ -1439,19 +1439,6 @@
   {
     "descriptors": [
       {
-        "defaultMessage": "Are you sure you want to skip this music?\nThis action will affect ALL the other users listening!",
-        "id": "playlist.skip.message"
-      },
-      {
-        "defaultMessage": "Skip",
-        "id": "playlist.skip.confirm"
-      }
-    ],
-    "path": "app/javascript/mastodon/features/ui/containers/play_control_container.json"
-  },
-  {
-    "descriptors": [
-      {
         "defaultMessage": "Play",
         "id": "video.play"
       },

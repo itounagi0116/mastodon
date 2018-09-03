@@ -46,14 +46,6 @@ class PostStatusService < BaseService
       attach_pixiv_cards(status)
     end
 
-    if status&.music_type == 'Track' && status&.public_visibility?
-      begin
-        Playlist.find_by!(deck: Playlist::MEDIA_TL_DECK_ID).add(short_account_status_url(account, status), account, true)
-      rescue
-        #とりあえずPlaylistに突っ込んでみて、例外はいたら握りつぶす
-      end
-    end
-
     process_hashtags_service.call(status)
 
     PixivCardUpdateWorker.perform_async(status.id) if status.pixiv_cards.any?

@@ -187,8 +187,6 @@
   "onboarding.page_three.search": "検索バーで、{illustration}や{introductions}のように特定のハッシュタグの投稿を見たり、ユーザーを探したりできます。",
   "onboarding.page_two.compose": "フォームから投稿できます。イメージや、公開範囲の設定や、表示時の警告の設定は下部のアイコンから行なえます。",
   "onboarding.skip": "スキップ",
-  "playlist.skip.message": "この曲は、いまこのサイトにいるみんなで一緒に同時に聞いています。\nスキップをすると聞いている全員に影響がありますが、よろしいですか？",
-  "playlist.skip.confirm": "スキップする",
   "privacy.change": "投稿のプライバシーを変更",
   "privacy.direct.long": "特定のユーザだけが見られる",
   "privacy.direct.short": "ダイレクト",
