@@ -195,12 +195,7 @@ a:hover {
 
   .app-center {
     overflow: hidden;
-    height: calc(100% - var(--height-deck));
-  }
-
-  .app-bottom {
-    z-index: var(--z-index-navigation);
-    height: var(--height-deck);
+    height: 100%;
   }
 
   .scrollarea .scrollbar-container {

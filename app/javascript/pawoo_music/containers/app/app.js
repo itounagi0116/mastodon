@@ -24,7 +24,6 @@ import StatusThreadContainer from '../status_thread';
 import { isMobile } from '../../util/is_mobile';
 import { navigate } from '../../util/navigator';
 import ModalContextContainer from '../modal_context';
-import PlayControlContainer from '../../../mastodon/features/ui/containers/play_control_container';
 import { openModalFormCompose } from '../../../mastodon/actions/compose';
 import Link from '../../components/link_wrapper';
 import Logo from '../../components/logo';
@@ -210,9 +209,6 @@ export default class App extends PureComponent {
         <ModalContextContainer className='app'>
           <div className='app-center'>
             {routes}
-          </div>
-          <div className='app-bottom'>
-            <PlayControlContainer />
           </div>
           <NotificationsContainer />
           <LoadingBarContainer className='loading-bar' />

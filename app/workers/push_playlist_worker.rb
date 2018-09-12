@@ -4,7 +4,8 @@ class PushPlaylistWorker
   include Sidekiq::Worker
   sidekiq_options queue: 'playlist'
 
-  def perform(deck, event, payload)
-    Redis.current.publish("streaming:playlist:#{deck}", Oj.dump(event: event, payload: payload, queued_at: (Time.now.to_f * 1000.0).to_i))
+  # TODO: あとで消す
+  def perform(_deck, _event, _payload)
+    nil
   end
 end

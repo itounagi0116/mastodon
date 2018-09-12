@@ -4,10 +4,8 @@ class NextPlaylistWorker
   include Sidekiq::Worker
   sidekiq_options queue: 'playlist'
 
-  def perform(deck, item_id)
-    playlist = Playlist.find_by(deck: deck)
-    playlist&.next(item_id)
-  rescue Mastodon::PlaylistItemNotFoundError
+  # TODO: playlistキューを空にしてから消す
+  def perform(_deck, _item_id)
     nil
   end
 end

@@ -208,15 +208,10 @@ const startWorker = (workerId) => {
     });
   };
 
-  const accountFromRequest = (req, next, type) => {
+  const accountFromRequest = (req, next) => {
     const authorization = req.headers.authorization;
     const location = url.parse(req.url, true);
     const accessToken = location.query.access_token;
-
-    if ((type === 'sse' && req.path && req.path === '/api/v1/streaming/playlist') || (type === 'ws' && location.query.stream === 'playlist')) {
-      next();
-      return;
-    }
 
     if (!authorization && !accessToken) {
       const err = new Error('Missing access token');
@@ -239,7 +234,7 @@ const startWorker = (workerId) => {
         log.error(info.req.requestId, err.toString());
         cb(false, 401, 'Unauthorized');
       }
-    }, 'ws');
+    });
   };
 
   const authenticationMiddleware = (req, res, next) => {
@@ -248,7 +243,7 @@ const startWorker = (workerId) => {
       return;
     }
 
-    accountFromRequest(req, next, 'sse');
+    accountFromRequest(req, next);
   };
 
   const errorMiddleware = (err, req, res, {}) => {
@@ -415,11 +410,6 @@ const startWorker = (workerId) => {
     streamFrom(`timeline:hashtag:${req.query.tag.toLowerCase()}:local`, req, streamToHttp(req, res), streamHttpEnd(req), true);
   });
 
-  app.get('/api/v1/streaming/playlist', (req, res) => {
-    const deck = Number(req.query.deck);
-    streamFrom(`streaming:playlist:${deck}`, req, streamToHttp(req, res), streamHttpEnd(req));
-  });
-
   const wss    = new WebSocket.Server({ server, verifyClient: wsVerifyClient });
 
   wss.on('connection', ws => {
@@ -452,10 +442,6 @@ const startWorker = (workerId) => {
       break;
     case 'hashtag:local':
       streamFrom(`timeline:hashtag:${location.query.tag.toLowerCase()}:local`, req, streamToWs(req, ws), streamWsEnd(req, ws), true);
-      break;
-    case 'playlist':
-      const deck = Number(location.query.deck);
-      streamFrom(`streaming:playlist:${deck}`, req, streamToWs(req, ws), streamWsEnd(req, ws));
       break;
     default:
       ws.close();
