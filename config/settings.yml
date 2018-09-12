@@ -43,12 +43,6 @@ defaults: &defaults
   interactions:
     must_be_follower: false
     must_be_following: false
-  playlist:
-    max_queue_size: 10
-    max_add_count: 10
-    max_skip_count: 2
-    skip_limit_time: 90
-    replay_history_num: 30
   reserved_usernames:
     - admin
     - support

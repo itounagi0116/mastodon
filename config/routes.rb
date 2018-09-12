@@ -132,8 +132,6 @@ Rails.application.routes.draw do
     resources :scheduled_statuses, only: [:index]
     resources :trend_ng_words, only: [:index, :new, :create, :edit, :update, :destroy]
     resources :oauth_authentications, only: [:destroy]
-    resources :playlists, only: [:index, :new, :create, :edit, :update, :destroy]
-    resource :playlist_setting, only: [:update]
 
     resources :instances, only: [:index] do
       collection do
