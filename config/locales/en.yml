@@ -154,8 +154,6 @@ en:
       linked: Linked
       not_linked: Not linked
       unlink_forcibly: Unlink forcibly
-    playlists:
-      title: Playlist
     reports:
       action_taken_by: Action taken by
       are_you_sure: Are you sure?

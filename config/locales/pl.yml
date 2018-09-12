@@ -155,8 +155,6 @@ pl:
       linked: Połączone
       not_linked: Niepołączone
       unlink_forcibly: Wymuś rozłączonie
-    playlists:
-      title: Lista odtwarzania
     reports:
       action_taken_by: Akcja podjęta przez
       are_you_sure: Czy na pewno?

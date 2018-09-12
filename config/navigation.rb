@@ -29,7 +29,6 @@ SimpleNavigation::Configuration.run do |navigation|
       admin.item :suggestion_tags, safe_join([fa_icon('tags fw'), t('admin.suggestion.title')]), admin_suggestion_tags_url, highlights_on: %r{/admin/suggestion_tags}
       admin.item :scheduled_statuses, safe_join([fa_icon('clock-o fw'), t('admin.scheduled_statuses.title')]), admin_scheduled_statuses_url, highlights_on: %r{/admin/scheduled_statuses}
       admin.item :trend_ng_words, safe_join([fa_icon('ban fw'), t('admin.trend_ng_word.title')]), admin_trend_ng_words_url, highlights_on: %r{/admin/trend_ng_words}
-      admin.item :playlists, safe_join([fa_icon('music fw'), t('admin.playlists.title')]), admin_playlists_url, highlights_on: %r{/admin/playlists}
       admin.item :reports, safe_join([fa_icon('flag fw'), t('admin.reports.title')]), admin_reports_url, highlights_on: %r{/admin/reports}
       admin.item :accounts, safe_join([fa_icon('users fw'), t('admin.accounts.title')]), admin_accounts_url, highlights_on: %r{/admin/accounts}
       admin.item :instances, safe_join([fa_icon('cloud fw'), t('admin.instances.title')]), admin_instances_url, highlights_on: %r{/admin/instances}

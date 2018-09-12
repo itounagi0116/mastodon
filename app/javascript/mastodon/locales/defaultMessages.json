@@ -1381,23 +1381,6 @@
   {
     "descriptors": [
       {
-        "defaultMessage": "Songs that people are listening now",
-        "id": "pawoo_music.play_control.deck_queue_track"
-      },
-      {
-        "defaultMessage": "Put your favorite songs in the playlist!",
-        "id": "pawoo_music.play_control.deck_queue_item-meta"
-      },
-      {
-        "defaultMessage": "Playlist that people are listening now",
-        "id": "pawoo_music.play_control.deck_queue_playlist"
-      }
-    ],
-    "path": "app/javascript/mastodon/features/ui/components/play_control.json"
-  },
-  {
-    "descriptors": [
-      {
         "defaultMessage": "Additional comments",
         "id": "report.placeholder"
       },
