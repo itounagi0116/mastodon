@@ -70,8 +70,12 @@ class Formatter
 
   private
 
+  def html_entities
+    @html_entities ||= HTMLEntities.new
+  end
+
   def encode(html)
-    HTMLEntities.new.encode(html)
+    html_entities.encode(html)
   end
 
   def strip_urls(text)
@@ -133,7 +137,7 @@ class Formatter
     return link_to_account(acct) unless linkable_accounts
 
     account = linkable_accounts.find { |item| TagManager.instance.same_acct?(item.acct, acct) }
-    account ? mention_html(account) : "@#{acct}"
+    account ? mention_html(account) : "@#{encode(acct)}"
   end
 
   def link_to_account(acct)
@@ -142,7 +146,7 @@ class Formatter
     domain  = nil if TagManager.instance.local_domain?(domain)
     account = Account.find_remote(username, domain)
 
-    account ? mention_html(account) : "@#{acct}"
+    account ? mention_html(account) : "@#{encode(acct)}"
   end
 
   def link_to_hashtag(entity)
@@ -160,10 +164,10 @@ class Formatter
   end
 
   def hashtag_html(tag)
-    "<a href=\"#{tag_url(tag.downcase)}\" class=\"mention hashtag\" rel=\"tag\">#<span>#{tag}</span></a>"
+    "<a href=\"#{encode(tag_url(tag.downcase))}\" class=\"mention hashtag\" rel=\"tag\">#<span>#{encode(tag)}</span></a>"
   end
 
   def mention_html(account)
-    "<span class=\"h-card\"><a href=\"#{TagManager.instance.url_for(account)}\" class=\"u-url mention\">@<span>#{account.username}</span></a></span>"
+    "<span class=\"h-card\"><a href=\"#{encode(TagManager.instance.url_for(account))}\" class=\"u-url mention\">@<span>#{encode(account.username)}</span></a></span>"
   end
 end
