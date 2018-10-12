@@ -9,10 +9,21 @@ module SignatureVerification
     request.headers['Signature'].present?
   end
 
+  def signature_verification_failure_reason
+    return @signature_verification_failure_reason if defined?(@signature_verification_failure_reason)
+  end
+
   def signed_request_account
     return @signed_request_account if defined?(@signed_request_account)
 
     unless signed_request?
+      @signature_verification_failure_reason = 'Request not signed'
+      @signed_request_account = nil
+      return
+    end
+
+    if request.headers['Date'].present? && !matches_time_window?
+      @signature_verification_failure_reason = 'Signed request date outside acceptable time window'
       @signed_request_account = nil
       return
     end
@@ -27,6 +38,7 @@ module SignatureVerification
     end
 
     if incompatible_signature?(signature_params)
+      @signature_verification_failure_reason = 'Incompatible request signature'
       @signed_request_account = nil
       return
     end
@@ -34,6 +46,7 @@ module SignatureVerification
     account = account_from_key_id(signature_params['keyId'])
 
     if account.nil?
+      @signature_verification_failure_reason = "Public key not found for key #{signature_params['keyId']}"
       @signed_request_account = nil
       return
     end
@@ -44,7 +57,18 @@ module SignatureVerification
     if account.keypair.public_key.verify(OpenSSL::Digest::SHA256.new, signature, compare_signed_string)
       @signed_request_account = account
       @signed_request_account
+    elsif account.possibly_stale?
+      account = account.refresh!
+
+      if account.keypair.public_key.verify(OpenSSL::Digest::SHA256.new, signature, compare_signed_string)
+        @signed_request_account = account
+        @signed_request_account
+      else
+        @signature_verification_failure_reason = "Verification failed for #{account.username}@#{account.domain} #{account.uri}"
+        @signed_request_account = nil
+      end
     else
+      @signature_verification_failure_reason = "Verification failed for #{account.username}@#{account.domain} #{account.uri}"
       @signed_request_account = nil
     end
   end
@@ -58,7 +82,7 @@ module SignatureVerification
   def build_signed_string(signed_headers)
     signed_headers = 'date' if signed_headers.blank?
 
-    signed_headers.split(' ').map do |signed_header|
+    signed_headers.downcase.split(' ').map do |signed_header|
       if signed_header == Request::REQUEST_TARGET
         "#{Request::REQUEST_TARGET}: #{request.method.downcase} #{request.path}"
       elsif signed_header == 'digest'
@@ -71,12 +95,12 @@ module SignatureVerification
 
   def matches_time_window?
     begin
-      time_sent = DateTime.httpdate(request.headers['Date'])
+      time_sent = Time.httpdate(request.headers['Date'])
     rescue ArgumentError
       return false
     end
 
-    (Time.now.utc - time_sent).abs <= 30
+    (Time.now.utc - time_sent).abs <= 12.hours
   end
 
   def body_digest
@@ -89,9 +113,7 @@ module SignatureVerification
 
   def incompatible_signature?(signature_params)
     signature_params['keyId'].blank? ||
-      signature_params['signature'].blank? ||
-      signature_params['algorithm'].blank? ||
-      signature_params['algorithm'] != 'rsa-sha256'
+      signature_params['signature'].blank?
   end
 
   def account_from_key_id(key_id)
