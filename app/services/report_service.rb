@@ -12,6 +12,7 @@ class ReportService < BaseService
 
     # 管理者権限を持つ全てのアカウントにメールが送信されるため一旦無効化
     # notify_staff!
+    notify_to_slack!
 
     forward_to_origin! if !@target_account.local? && ActiveModel::Type::Boolean.new.cast(@options[:forward])
 
@@ -34,6 +35,92 @@ class ReportService < BaseService
   def notify_staff!
     User.staff.includes(:account).each do |u|
       AdminMailer.new_report(u.account, @report).deliver_later
+    end
+  end
+
+  def notify_to_slack!
+    webhook_url = Rails.application.secrets.slack[:webhook_url]
+    report_channel = Rails.application.secrets.slack[:report_channel]
+    return if webhook_url.blank? || report_channel.blank?
+    return unless @options[:pawoo_report_type].to_s == 'spam'
+
+    attachments = []
+    @report.pawoo_report_targets.each do |pawoo_report_target|
+      count = Pawoo::ReportTarget.where(state: :unresolved, target: pawoo_report_target.target).size
+      next if count < 2
+
+      case pawoo_report_target.target_type
+      when 'Status'
+        attachments << build_status_attachment(pawoo_report_target.target, count)
+      when 'Account'
+        attachments << build_account_attachment(pawoo_report_target.target, count)
+      end
+    end
+
+    return if attachments.blank?
+
+    client = Slack::Notifier.new(webhook_url, channel: report_channel)
+    client.post(username: 'Pawoo通報', icon_emoji: :warning, text: '', attachments: attachments)
+  end
+
+  def build_base_attachment(account, count)
+    {
+      color: '#ff9800',
+      author_name: "#{account.display_name} (@#{account.acct})",
+      author_icon: account.avatar.url(:original),
+      author_link: admin_account_url(account.id),
+      fields: build_fields(count),
+      actions: [
+        {
+          type: 'button',
+          text: '通報一覧を見る',
+          url: admin_pawoo_report_targets_url,
+        },
+        {
+          type: 'button',
+          text: 'アカウントを見る(管理画面)',
+          url: admin_account_url(account.id),
+        },
+      ],
+    }
+  end
+
+  def build_fields(count)
+    fields = [
+      {
+        title: '通報のカテゴリ',
+        value: I18n.t("pawoo.admin.report_targets.report_type.#{@options[:pawoo_report_type] || 'other'}"),
+        short: true,
+      },
+      {
+        title: '通報回数',
+        value: count,
+        short: true,
+      },
+    ]
+
+    fields.push(title: '理由', value: @comment) if @comment.present?
+
+    fields
+  end
+
+  def build_status_attachment(status, count)
+    account = status.account
+    build_base_attachment(account, count).tap do |base|
+      base[:fallback] = 'トゥートが通報されたよ'
+      base[:pretext] = 'トゥートが通報されたよ'
+      base[:actions] << {
+        type: 'button',
+        text: 'トゥートを見る(Web)',
+        url: short_account_status_url(account, status),
+      }
+    end
+  end
+
+  def build_account_attachment(account, count)
+    build_base_attachment(account, count).tap do |base|
+      base[:fallback] = 'アカウントが通報されたよ'
+      base[:pretext] = 'アカウントが通報されたよ'
     end
   end
 
