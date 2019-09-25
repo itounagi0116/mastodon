@@ -105,14 +105,13 @@ class ReportService < BaseService
   end
 
   def build_status_attachment(status, count)
-    account = status.account
-    build_base_attachment(account, count).tap do |base|
+    build_base_attachment(status.account, count).tap do |base|
       base[:fallback] = 'トゥートが通報されたよ'
       base[:pretext] = 'トゥートが通報されたよ'
       base[:actions] << {
         type: 'button',
         text: 'トゥートを見る(Web)',
-        url: short_account_status_url(account, status),
+        url: TagManager.instance.url_for(status),
       }
     end
   end
