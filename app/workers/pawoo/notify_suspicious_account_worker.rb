@@ -4,7 +4,7 @@ class Pawoo::NotifySuspiciousAccountWorker
   include Sidekiq::Worker
   include RoutingHelper
 
-  sidekiq_options queue: 'push'
+  sidekiq_options queue: 'push', unique: :until_executed
 
   def perform(account_id, reason = '')
     webhook_url = Rails.application.secrets.slack[:webhook_url]
