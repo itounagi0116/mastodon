@@ -98,9 +98,9 @@ ExceptionNotification.configure do |config|
 
   config.error_grouping = true
 
-  if Rails.application.secrets.slack[:error_webhook_url] && Rails.application.secrets.slack[:error_channel]
+  if Rails.application.secrets.slack[:webhook_url] && Rails.application.secrets.slack[:error_channel]
     config.add_notifier :slack,
-      webhook_url: Rails.application.secrets.slack[:error_webhook_url],
+      webhook_url: Rails.application.secrets.slack[:webhook_url],
       channel: Rails.application.secrets.slack[:error_channel]
   end
 end
