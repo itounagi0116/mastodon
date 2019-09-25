@@ -58,6 +58,7 @@ class Account < ApplicationRecord
   include AccountInteractions
   include Attachmentable
   include Paginable
+  include Pawoo::AccountExtension
 
   enum protocol: [:ostatus, :activitypub]
 

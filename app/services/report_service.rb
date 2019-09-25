@@ -60,12 +60,12 @@ class ReportService < BaseService
     return if attachments.blank?
 
     client = Slack::Notifier.new(webhook_url, channel: report_channel)
-    client.post(username: 'Pawoo通報', icon_emoji: :warning, text: '', attachments: attachments)
+    client.post(username: 'Pawoo通報', icon_emoji: :rotating_light, text: '', attachments: attachments)
   end
 
   def build_base_attachment(account, count)
     {
-      color: '#ff9800',
+      color: 'danger',
       author_name: "#{account.display_name} (@#{account.acct})",
       author_icon: account.avatar.url(:original),
       author_link: admin_account_url(account.id),
