@@ -47,7 +47,7 @@ class ReportService < BaseService
     attachments = []
     @report.pawoo_report_targets.each do |pawoo_report_target|
       count = Pawoo::ReportTarget.where(state: :unresolved, target: pawoo_report_target.target).size
-      next if count < 2
+      next if count < 2 || count > 5
 
       case pawoo_report_target.target_type
       when 'Status'
