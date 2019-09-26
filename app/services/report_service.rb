@@ -71,21 +71,25 @@ class ReportService < BaseService
   def pawoo_report_targets
     return [] if @options[:pawoo_report_type].to_s == 'donotlike'
 
-    if @status_ids.present?
-      status_ids = @status_ids
-      resolved_target_ids = Pawoo::ReportTarget.where(state: :resolved, target_type: 'Status', target_id: status_ids).distinct(:target_id).pluck(:target_id)
-      status_ids -= resolved_target_ids
-
-      if @options[:pawoo_report_type].to_s == 'nsfw'
-        nsfw_status_ids = Status.where(sensitive: true, id: status_ids).pluck(:id)
-        status_ids -= nsfw_status_ids
+    if @status_ids.blank?
+      if @target_account.suspended?
+        return []
+      else
+        return [Pawoo::ReportTarget.new(target: @target_account)]
       end
+    end
 
-      status_ids.map do |status_id|
-        Pawoo::ReportTarget.new(target_type: 'Status', target_id: status_id, state: :unresolved)
-      end
-    else
-      [Pawoo::ReportTarget.new(target: @target_account)]
+    status_ids = Status.joins(:account).where(id: @status_ids).merge(Account.where(suspended: false)).pluck(:id)
+    resolved_target_ids = Pawoo::ReportTarget.where(state: :resolved, target_type: 'Status', target_id: status_ids).distinct(:target_id).pluck(:target_id)
+    status_ids -= resolved_target_ids
+
+    if @options[:pawoo_report_type].to_s == 'nsfw'
+      nsfw_status_ids = Status.where(sensitive: true, id: status_ids).pluck(:id)
+      status_ids -= nsfw_status_ids
+    end
+
+    status_ids.map do |status_id|
+      Pawoo::ReportTarget.new(target_type: 'Status', target_id: status_id, state: :unresolved)
     end
   end
 end

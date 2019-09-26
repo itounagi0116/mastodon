@@ -61,6 +61,16 @@ RSpec.describe ReportService do
       end
     end
 
+    context 'when status account is suspended' do
+      let(:status1) { Fabricate(:status, account: Fabricate(:account, suspended: true)) }
+
+      it 'creates only pawoo_report_targets of not suspended account status' do
+        expect(subject.pawoo_report_targets.count).to eq 1
+        expect(subject.pawoo_report_targets.find_by(target: status1)).to be nil
+        expect(subject.pawoo_report_targets.find_by(target: status2).state).to eq 'unresolved'
+      end
+    end
+
     context 'when status_ids empty' do
       let(:status_ids) { [] }
 
@@ -76,6 +86,14 @@ RSpec.describe ReportService do
 
       context 'when pawoo_report_type is donotlike' do
         let(:pawoo_report_type) { 'donotlike' }
+
+        it 'does not create pawoo_report_targets' do
+          expect(subject.pawoo_report_targets.count).to eq 0
+        end
+      end
+
+      context 'when target_account is suspended' do
+        let(:target_account) { Fabricate(:account, suspended: true) }
 
         it 'does not create pawoo_report_targets' do
           expect(subject.pawoo_report_targets.count).to eq 0
