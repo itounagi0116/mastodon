@@ -93,6 +93,15 @@ class Rack::Attack
     req.remote_ip if req.post? && req.path =~ PROTECTED_PATHS_REGEX
   end
 
+  # Pawoo extension
+  throttle('pawoo_throttle_sign_up', limit: 5, period: 30.minutes) do |req|
+    req.remote_ip if req.post? && req.path == '/auth'
+  end
+
+  throttle('pawoo_throttle_api_follow', limit: 30, period: 1.hour) do |req|
+    req.authenticated_user_id if req.post? && %r{\A/api/v1/accounts/[\d]+/follow}.match?(req.path)
+  end
+
   self.throttled_response = lambda do |env|
     now        = Time.now.utc
     match_data = env['rack.attack.match_data']
