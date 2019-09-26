@@ -5,6 +5,7 @@ module Pawoo::Auth::RegistrationsControllerConcern
 
   included do
     before_action :store_current_location, only: [:edit]
+    before_action :check_captcha, only: [:create]
   end
 
   def update
@@ -16,6 +17,15 @@ module Pawoo::Auth::RegistrationsControllerConcern
   end
 
   private
+
+  def check_captcha
+    unless verify_recaptcha
+      build_resource(sign_up_params)
+      resource.validate # Look for any other validation errors besides Recaptcha
+      set_minimum_password_length
+      render :new
+    end
+  end
 
   def pawoo_send_reset_password_instructions
     resource = resource_class.send_reset_password_instructions(email: current_user.email)
