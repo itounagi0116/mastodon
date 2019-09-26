@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PixivUrl
   module PixivTwitterImage
     EXPIRES_IN = 12.hours

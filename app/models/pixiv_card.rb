@@ -10,14 +10,16 @@
 #
 
 class PixivCard < ApplicationRecord
-  belongs_to :status, required: true
-  validates :url, presence: true
+  belongs_to :status
 
   before_validation :replace_image_url_scheme, if: :image_url?
+
+  validates :url, presence: true
   validate :validate_image_url, if: :image_url?
 
   def fetch_image_url
     return unless url?
+
     self.image_url = PixivUrl::PixivTwitterImage.cache_or_fetch(url)
   end
 

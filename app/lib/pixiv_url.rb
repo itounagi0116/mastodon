@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PixivUrl
   PIXIV_URLS = {
     'www.pixiv.net' => %w(
@@ -10,7 +12,7 @@ module PixivUrl
       /member_illust.php
       /novel/member.php
       /novel/show.php
-    )
+    ),
   }.freeze
 
   PIXIV_IMAGE_HOSTS = %w(
@@ -19,7 +21,7 @@ module PixivUrl
   ).freeze
 
   def self.valid_pixiv_url?(url)
-    return false unless url.present?
+    return false if url.blank?
 
     uri = Addressable::URI.parse(url)
     (PIXIV_URLS[uri.host] || []).include?(uri.path)
@@ -28,7 +30,7 @@ module PixivUrl
   end
 
   def self.valid_twitter_image?(url)
-    return false unless url.present?
+    return false if url.blank?
 
     uri = Addressable::URI.parse(url)
     PIXIV_IMAGE_HOSTS.include?(uri.host)
