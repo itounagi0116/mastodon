@@ -37,7 +37,7 @@ class PixivCard < ApplicationRecord
   private
 
   def replace_image_url_scheme
-    return unless PixivUrl.valid_twitter_image?(image_url)
+    return unless PixivUrl.valid_pixiv_image_url?(image_url)
 
     uri = Addressable::URI.parse(image_url)
     uri.scheme = 'https'
@@ -45,6 +45,6 @@ class PixivCard < ApplicationRecord
   end
 
   def validate_image_url
-    errors.add(:image_url) unless PixivUrl.valid_twitter_image?(image_url)
+    errors.add(:image_url) unless PixivUrl.valid_pixiv_image_url?(image_url)
   end
 end

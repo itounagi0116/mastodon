@@ -24,16 +24,41 @@ module PixivUrl
       end
 
       def fetch_image_url(url)
-        request = Request.new(:get, url)
-        request.add_headers('Referer' => "https://#{Rails.configuration.x.local_domain}")
-
-        request.perform do |response|
-          next unless response.status == 200
-
-          html = Nokogiri::HTML.parse(response.body.to_s)
-          url = html.xpath('/html/head/meta[@property="twitter:image"]/@content').to_s
-          url if PixivUrl.valid_twitter_image?(url)
+        html = nil
+        html_charset = nil
+        Request.new(:get, url).perform do |res|
+          if res.code == 200 && res.mime_type == 'text/html'
+            html = res.body_with_limit
+            html_charset = res.charset
+          end
         end
+        return if html.nil?
+
+        image_url = fetch_from_oembed(html) || attempt_opengraph(html, html_charset)
+        return if image_url.blank? || !PixivUrl.valid_pixiv_image_url?(image_url)
+
+        image_url
+      end
+
+      def fetch_from_oembed(html)
+        embed = FetchOEmbedService.new.call(nil, html: html)
+        return if embed.nil? || embed[:type] != 'photo'
+
+        embed[:url]
+      end
+
+      def attempt_opengraph(html, html_charset)
+        detector = CharlockHolmes::EncodingDetector.new
+        detector.strip_tags = true
+
+        guess = detector.detect(html, html_charset)
+        page  = Nokogiri::HTML(html, nil, guess&.fetch(:encoding, nil))
+
+        meta_property(page, 'twitter:image') || meta_property(page, 'og:image')
+      end
+
+      def meta_property(page, property)
+        page.at_xpath("//meta[@property=\"#{property}\"]")&.attribute('content')&.value || page.at_xpath("//meta[@name=\"#{property}\"]")&.attribute('content')&.value
       end
     end
   end
