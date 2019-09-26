@@ -102,6 +102,11 @@ class Rack::Attack
     req.authenticated_user_id if req.post? && %r{\A/api/v1/accounts/[\d]+/follow}.match?(req.path)
   end
 
+  PAWOO_BLACKLIST_IPS = ENV['PAWOO_BLACKLIST_IPS'].presence&.split(' ') || []
+  Rack::Attack.blocklist('pawoo_block_spam') do |req|
+    PAWOO_BLACKLIST_IPS.include?(req.remote_ip)
+  end
+
   self.throttled_response = lambda do |env|
     now        = Time.now.utc
     match_data = env['rack.attack.match_data']
