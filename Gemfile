@@ -105,6 +105,7 @@ gem 'activerecord-import'
 gem 'elasticsearch-model', '~> 5.0'
 gem 'switch_point'
 gem 'exponent-server-sdk'
+gem "recaptcha"
 
 group :development, :test do
   gem 'spring'

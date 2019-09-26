@@ -7,6 +7,17 @@ module Pawoo::Auth::RegistrationsControllerConcern
     before_action :store_current_location, only: [:edit]
   end
 
+  def create
+    if verify_recaptcha
+      super
+    else
+      build_resource(sign_up_params)
+      resource.validate # Look for any other validation errors besides Recaptcha
+      set_minimum_password_length
+      render :new
+    end
+  end
+
   def update
     if current_user.initial_password_usage
       pawoo_send_reset_password_instructions
