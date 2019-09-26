@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 class Auth::RegistrationsController < Devise::RegistrationsController
+  include Pawoo::Auth::RegistrationsControllerConcern
+
   layout :determine_layout
 
   before_action :check_enabled_registrations, only: [:new, :create]
   before_action :configure_sign_up_params, only: [:create]
   before_action :set_sessions, only: [:edit, :update]
   before_action :set_instance_presenter, only: [:new, :create, :update]
-
-  include Pawoo::Auth::RegistrationsControllerConcern
 
   def destroy
     not_found
