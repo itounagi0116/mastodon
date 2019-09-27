@@ -1,16 +1,13 @@
+# frozen_string_literal: true
+
 module PixivUrl
   PIXIV_URLS = {
-    'www.pixiv.net' => %w(
-      /member.php
-      /member_illust.php
-      /novel/show.php
-      /novel/member.php
-    ),
-    'touch.pixiv.net' => %w(
-      /member_illust.php
-      /novel/member.php
-      /novel/show.php
-    )
+    'www.pixiv.net' => [
+      '/member_illust.php',
+      %r{\A/artworks/\d+\z},
+      %r{\A/en/artworks/\d+\z},
+      '/novel/show.php',
+    ].freeze,
   }.freeze
 
   PIXIV_IMAGE_HOSTS = %w(
@@ -19,16 +16,16 @@ module PixivUrl
   ).freeze
 
   def self.valid_pixiv_url?(url)
-    return false unless url.present?
+    return false if url.blank?
 
     uri = Addressable::URI.parse(url)
-    (PIXIV_URLS[uri.host] || []).include?(uri.path)
+    (PIXIV_URLS[uri.host] || []).any? { |path| path === uri.path } # rubocop:disable Style/CaseEquality
   rescue Addressable::URI::InvalidURIError, TypeError
     false
   end
 
-  def self.valid_twitter_image?(url)
-    return false unless url.present?
+  def self.valid_pixiv_image_url?(url)
+    return false if url.blank?
 
     uri = Addressable::URI.parse(url)
     PIXIV_IMAGE_HOSTS.include?(uri.host)

@@ -8,13 +8,13 @@ RSpec.describe PixivCardUpdateWorker do
 
     let!(:status) { Fabricate(:status) }
     let!(:pixiv_card) { Fabricate(:pixiv_card, url: url, status: status) }
-    let(:url) { 'https://www.pixiv.net/member.php?id=1' }
+    let(:url) { 'https://www.pixiv.net/novel/show.php?id=129' }
 
     before do
       allow(Rails.cache).to receive(:read_entry).and_return(nil)
 
       stub_request(:get, url)
-        .to_return(status: status_code, body: File.read('spec/fixtures/pixiv/user_page.html'))
+        .to_return(status: status_code, body: File.read('spec/fixtures/pixiv/novel_page.html'), headers: { 'Content-Type' => 'text/html' })
     end
 
     context 'successfully fetched html' do
