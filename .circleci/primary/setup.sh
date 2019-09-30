@@ -29,6 +29,7 @@ debs="\
   yarn \
   netcat-openbsd\
   file \
+  procps \
 "
 cat <<APT_CONF > /etc/apt/apt.conf.d/docker-mastodon-circleci.conf
 APT::Install-Recommends "0";

@@ -38,9 +38,9 @@ class ActivityPub::CollectionsController < Api::BaseController
   def scope_for_collection
     case params[:id]
     when 'featured'
-      @account.statuses.permitted_for(@account, signed_request_account).tap do |scope|
-        scope.merge!(@account.pinned_statuses)
-      end
+      return Status.none if @account.blocking?(signed_request_account)
+
+      @account.pinned_statuses
     else
       raise ActiveRecord::NotFound
     end

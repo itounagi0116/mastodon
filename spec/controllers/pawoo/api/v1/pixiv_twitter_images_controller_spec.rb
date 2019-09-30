@@ -8,27 +8,27 @@ RSpec.describe Pawoo::Api::V1::PixivTwitterImagesController, type: :controller d
 
     context 'with valid pixiv URL' do
       before do
-        stub_request(:get, 'https://www.pixiv.net/member.php?id=1')
-          .to_return(status: 200, body: File.read('spec/fixtures/pixiv/user_page.html'))
+        stub_request(:get, 'https://www.pixiv.net/novel/show.php?id=129')
+          .to_return(status: 200, body: File.read('spec/fixtures/pixiv/novel_page.html'), headers: { 'Content-Type' => 'text/html' })
       end
 
       subject do
-        post :create, params: { url: 'https://www.pixiv.net/member.php?id=1' }
+        post :create, params: { url: 'https://www.pixiv.net/novel/show.php?id=129' }
       end
 
       it 'does not enqueue FetchPixivTwitterImageWorker if it is already cached' do
-        PixivUrl::PixivTwitterImage.cache_or_fetch 'https://www.pixiv.net/member.php?id=1'
+        PixivUrl::PixivTwitterImage.cache_or_fetch 'https://www.pixiv.net/novel/show.php?id=129'
 
         Sidekiq::Testing.fake! do
           subject
-          expect(FetchPixivTwitterImageWorker).not_to have_enqueued_sidekiq_job 'https://www.pixiv.net/member.php?id=1'
+          expect(FetchPixivTwitterImageWorker).not_to have_enqueued_sidekiq_job 'https://www.pixiv.net/novel/show.php?id=129'
         end
       end
 
       it 'enqueues FetchPixivTwitterImageWorker' do
         Sidekiq::Testing.fake! do
           subject
-          expect(FetchPixivTwitterImageWorker).to have_enqueued_sidekiq_job 'https://www.pixiv.net/member.php?id=1'
+          expect(FetchPixivTwitterImageWorker).to have_enqueued_sidekiq_job 'https://www.pixiv.net/novel/show.php?id=129'
         end
       end
     end

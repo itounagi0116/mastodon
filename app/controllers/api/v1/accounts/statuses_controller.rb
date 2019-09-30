@@ -56,11 +56,11 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
     attachments = @account.media_attachments
 
     if params[:max_id].present?
-      attachments = attachments.where('media_attachments.status_id < ?', params[:max_id])
+      attachments = attachments.where(MediaAttachment.arel_table[:id].lt(params[:max_id]))
     end
 
     if params[:since_id].present?
-      attachments = attachments.where('media_attachments.status_id > ?', params[:since_id])
+      attachments = attachments.where(MediaAttachment.arel_table[:id].gt(params[:since_id]))
     end
 
     @account.statuses.joins(:media_attachments).merge(attachments).permitted_for(@account, current_account)
@@ -69,6 +69,8 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
   end
 
   def pinned_scope
+    return Status.none if @account.blocking?(current_account)
+
     @account.pinned_statuses
   end
 

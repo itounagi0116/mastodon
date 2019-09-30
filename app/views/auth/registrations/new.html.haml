@@ -18,6 +18,10 @@
   = f.input :password_confirmation, placeholder: t('simple_form.labels.defaults.confirm_password'), required: true, input_html: { 'aria-label' => t('simple_form.labels.defaults.confirm_password'), :autocomplete => 'off' }
   = f.input :invite_code, as: :hidden
 
+  .recaptcha
+    = flash[:recaptcha_error]
+    = recaptcha_tags
+
   .actions
     = f.button :button, t('auth.register'), type: :submit
 

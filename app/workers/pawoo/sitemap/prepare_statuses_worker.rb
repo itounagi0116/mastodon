@@ -4,7 +4,7 @@ class Pawoo::Sitemap::PrepareStatusesWorker
   include Sidekiq::Worker
   include Pawoo::SlaveReader
 
-  sidekiq_options queue: 'pull', unique: :until_executed
+  sidekiq_options queue: 'pull', unique: :until_executed, retry: 0
 
   def perform(page, continuously_key = nil)
     if continuously_key

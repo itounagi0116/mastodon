@@ -12,6 +12,7 @@ class ReportService < BaseService
 
     # 管理者権限を持つ全てのアカウントにメールが送信されるため一旦無効化
     # notify_staff!
+    enqueue_notify_report_worker
 
     forward_to_origin! if !@target_account.local? && ActiveModel::Type::Boolean.new.cast(@options[:forward])
 
@@ -35,6 +36,15 @@ class ReportService < BaseService
     User.staff.includes(:account).each do |u|
       AdminMailer.new_report(u.account, @report).deliver_later
     end
+  end
+
+  def enqueue_notify_report_worker
+    webhook_url = Rails.application.secrets.slack[:webhook_url]
+    report_channel = Rails.application.secrets.slack[:report_channel]
+    return if webhook_url.blank? || report_channel.blank?
+    return unless @report.pawoo_report_type == 'spam'
+
+    Pawoo::NotifyReportWorker.perform_async(@report.id)
   end
 
   def forward_to_origin!
@@ -61,21 +71,25 @@ class ReportService < BaseService
   def pawoo_report_targets
     return [] if @options[:pawoo_report_type].to_s == 'donotlike'
 
-    if @status_ids.present?
-      status_ids = @status_ids
-      resolved_target_ids = Pawoo::ReportTarget.where(state: :resolved, target_type: 'Status', target_id: status_ids).distinct(:target_id).pluck(:target_id)
-      status_ids -= resolved_target_ids
-
-      if @options[:pawoo_report_type].to_s == 'nsfw'
-        nsfw_status_ids = Status.where(sensitive: true, id: status_ids).pluck(:id)
-        status_ids -= nsfw_status_ids
+    if @status_ids.blank?
+      if @target_account.suspended?
+        return []
+      else
+        return [Pawoo::ReportTarget.new(target: @target_account)]
       end
+    end
 
-      status_ids.map do |status_id|
-        Pawoo::ReportTarget.new(target_type: 'Status', target_id: status_id, state: :unresolved)
-      end
-    else
-      [Pawoo::ReportTarget.new(target: @target_account)]
+    status_ids = Status.joins(:account).where(id: @status_ids).merge(Account.where(suspended: false)).pluck(:id)
+    resolved_target_ids = Pawoo::ReportTarget.where(state: :resolved, target_type: 'Status', target_id: status_ids).distinct(:target_id).pluck(:target_id)
+    status_ids -= resolved_target_ids
+
+    if @options[:pawoo_report_type].to_s == 'nsfw'
+      nsfw_status_ids = Status.where(sensitive: true, id: status_ids).pluck(:id)
+      status_ids -= nsfw_status_ids
+    end
+
+    status_ids.map do |status_id|
+      Pawoo::ReportTarget.new(target_type: 'Status', target_id: status_id, state: :unresolved)
     end
   end
 end
