@@ -33,6 +33,7 @@ ExceptionNotification.configure do |config|
       ThreadResolveWorker
       NotificationWorker
       Import::RelationshipWorker
+      Web::PushNotificationWorker
     ].freeze
 
     ignore_worker_errors = {
