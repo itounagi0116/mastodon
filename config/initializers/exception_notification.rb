@@ -21,6 +21,7 @@ ExceptionNotification.configure do |config|
     HTTP::Redirector::EndlessRedirectError
     OpenSSL::SSL::SSLError
     Stoplight::Error::RedLight
+    Net::ReadTimeout
   ].freeze
 
   def handle_sidekiq(exception_name, sidekiq, network_exceptions)
