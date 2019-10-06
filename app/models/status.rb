@@ -80,12 +80,9 @@ class Status < ApplicationRecord
   scope :remote, -> { where(local: false).or(where.not(uri: nil)) }
   scope :local,  -> { where(local: true).or(where(uri: nil)) }
 
-  scope :published, -> { where('statuses.created_at <= ?', Time.current) }
-  scope :scheduled, -> { where('statuses.created_at > ?', Time.current) }
-
   scope :without_replies, -> { where('statuses.reply = FALSE OR statuses.in_reply_to_account_id = statuses.account_id') }
   scope :without_reblogs, -> { where('statuses.reblog_of_id IS NULL') }
-  scope :with_public_visibility, -> { where(visibility: :public).published }
+  scope :with_public_visibility, -> { where(visibility: :public) }
   scope :tagged_with, ->(tag) { joins(:statuses_tags).where(statuses_tags: { tag_id: tag }) }
   scope :excluding_silenced_accounts, -> { left_outer_joins(:account).where(accounts: { silenced: false }) }
   scope :including_silenced_accounts, -> { left_outer_joins(:account).where(accounts: { silenced: true }) }
@@ -204,7 +201,6 @@ class Status < ApplicationRecord
 
     def as_home_timeline(account)
       where(account: [account] + account.following).where(visibility: [:public, :unlisted, :private])
-                                                   .published
     end
 
     def as_direct_timeline(account, limit = 20, max_id = nil, since_id = nil, cache_ids = false)
@@ -304,7 +300,7 @@ class Status < ApplicationRecord
       visibility = [:public, :unlisted]
 
       if account.nil?
-        where(visibility: visibility).published
+        where(visibility: visibility)
       elsif target_account.blocking?(account) # get rid of blocked peeps
         none
       elsif account.id == target_account.id # author can see own stuff
@@ -314,7 +310,7 @@ class Status < ApplicationRecord
         # non-followers can see everything that isn't private/direct, but can see stuff they are mentioned in.
         visibility.push(:private) if account.following?(target_account)
 
-        where(visibility: visibility).or(where(id: account.mentions.select(:status_id))).published
+        where(visibility: visibility).or(where(id: account.mentions.select(:status_id)))
       end
     end
 

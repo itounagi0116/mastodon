@@ -308,8 +308,6 @@ en:
       unresolved: Unresolved
       updated_at: Updated
       view: View
-    scheduled_statuses:
-      title: Scheduled Posts
     settings:
       activity_api_enabled:
         desc_html: Counts of locally posted statuses, active users, and new registrations in weekly buckets

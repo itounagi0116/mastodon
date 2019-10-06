@@ -52,50 +52,6 @@ describe 'Pawoo extensions of account page', type: :feature do
       end
     end
 
-    it 'shows published pinned statuses as "pinned"' do
-      status = Fabricate(:status, account: account, created_at: 1.day.ago, text: 'The text of the published pinned status.')
-      Fabricate(:status, account: account, created_at: 1.day.ago)
-      Fabricate(:status_pin, account: account, status: status)
-
-      visit '/@username'
-
-      entries = page.all('.entry')
-
-      pinned = entries.select do |entry|
-        entry.has_text?('The text of the published pinned status.')
-      end
-
-      expect(pinned.size).to eq 1
-      expect(pinned[0]).to have_text I18n.t('stream_entries.pinned')
-    end
-
-    it 'does not show unpublished pinned statuses' do
-      status = Fabricate(:status, account: account, created_at: 1.day.from_now, text: 'The text of the published pinned status.')
-      Fabricate(:status, account: account, created_at: 1.day.ago)
-      Fabricate(:status_pin, account: account, status: status)
-
-      visit '/@username'
-
-      entries = page.all('.entry')
-      pinned = entries.select do |entry|
-        entry.has_text?(I18n.t('stream_entries.pinned')) && entry.has_text?('The text of the published pinned status.')
-      end
-
-      expect(pinned.size).to eq 0
-    end
-
-    it 'shows published latest statuses' do
-      Fabricate(:status, account: account, created_at: 1.day.ago)
-      visit '/@username'
-      expect(page.all('.entry').size).to eq 1
-    end
-
-    it 'does not show unpublished latest statuses' do
-      Fabricate(:status, account: account, created_at: 1.day.from_now)
-      visit '/@username'
-      expect(page.all('.entry').size).to eq 0
-    end
-
     it 'shows the specified page' do
       stub_const 'AccountsController::PAGE_SIZE', 1
       Fabricate(:status, account: account, created_at: 2.day.ago, text: 'The text of the older status.')

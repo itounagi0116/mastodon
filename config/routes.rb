@@ -357,7 +357,6 @@ Rails.application.routes.draw do
 
     namespace :admin do
       resources :suggestion_tags, only: [:index, :new, :create, :edit, :update, :destroy]
-      resources :scheduled_statuses, only: [:index]
       resources :trend_ng_words, only: [:index, :new, :create, :edit, :update, :destroy]
       resources :oauth_authentications, only: [:destroy]
 

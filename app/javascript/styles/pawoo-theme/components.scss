@@ -193,28 +193,6 @@ $button-icon-scale-ration-on-pc: 0.85;
   }
 }
 
-.scheduled_statuses__container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  #mastodon-scheduled-statuses {
-    flex: 1;
-    display: flex;
-
-    .scheduled_statuses {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-
-      .scrollable {
-        flex: 1;
-        min-height: 0;
-      }
-    }
-  }
-}
-
 .suggested_account_media {
   padding-left: 13px;
   margin-top: 5px;

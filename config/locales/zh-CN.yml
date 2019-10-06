@@ -310,8 +310,6 @@ zh-CN:
       unresolved: 未处理
       updated_at: 更新时间
       view: 查看
-    scheduled_statuses:
-      title: 定时发送
     settings:
       activity_api_enabled:
         desc_html: 本站用户发布的嘟文数，以及本站的活跃用户数和一周内新用户数

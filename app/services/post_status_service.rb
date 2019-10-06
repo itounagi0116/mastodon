@@ -22,7 +22,6 @@ class PostStatusService < BaseService
     end
 
     media = validate_media!(options[:media_ids])
-    published = options[:published]
 
     status = nil
     text   = options.delete(:spoiler_text) if text.blank? && options[:spoiler_text].present?
@@ -32,7 +31,6 @@ class PostStatusService < BaseService
       status = account.statuses.create!(text: text,
                                         media_attachments: media || [],
                                         thread: in_reply_to,
-                                        created_at: published,
                                         sensitive: (options[:sensitive].nil? ? account.user&.setting_default_sensitive : options[:sensitive]),
                                         spoiler_text: options[:spoiler_text] || '',
                                         visibility: options[:visibility] || account.user&.setting_default_privacy,
@@ -47,11 +45,16 @@ class PostStatusService < BaseService
     PixivCardUpdateWorker.perform_async(status.id) if status.pixiv_cards.any?
     LinkCrawlWorker.perform_async(status.id) unless status.spoiler_text?
 
-    if published
-      ScheduledDistributionWorker.perform_at(published, status.id)
-    else
-      DistributionService.new.call(status)
-    end
+    # 抽出したハッシュタグを使用するため、ProcessHashtagsServiceの後に実行されなければならない
+    ProcessMentionsService.new.call(status)
+
+    DistributionWorker.perform_async(status.id)
+    Pubsubhubbub::DistributionWorker.perform_async(status.stream_entry.id)
+    ActivityPub::DistributionWorker.perform_async(status.id)
+    ActivityPub::ReplyDistributionWorker.perform_async(status.id) if status.reply? && status.thread.account.local?
+
+    time_limit = TimeLimit.from_status(status)
+    RemovalWorker.perform_in(time_limit.to_duration, status.id) if time_limit
 
     if options[:idempotency].present?
       redis.setex("idempotency:status:#{account.id}:#{options[:idempotency]}", 3_600, status.id)

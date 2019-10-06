@@ -2,7 +2,6 @@
 
 class Api::V1::StatusesController < Api::BaseController
   include Authorization
-  include Pawoo::Api::V1::StatusesControllerConcern
 
   before_action :authorize_if_got_token, except:            [:create, :destroy]
   before_action -> { doorkeeper_authorize! :write }, only:  [:create, :destroy]
@@ -50,7 +49,6 @@ class Api::V1::StatusesController < Api::BaseController
                                          status_params[:status],
                                          status_params[:in_reply_to_id].blank? ? nil : Status.find(status_params[:in_reply_to_id]),
                                          media_ids: status_params[:media_ids],
-                                         published: pawoo_published,
                                          sensitive: status_params[:sensitive],
                                          spoiler_text: status_params[:spoiler_text],
                                          visibility: status_params[:visibility],
@@ -80,7 +78,7 @@ class Api::V1::StatusesController < Api::BaseController
   end
 
   def status_params
-    params.permit(:status, :in_reply_to_id, :published, :sensitive, :spoiler_text, :visibility, media_ids: [])
+    params.permit(:status, :in_reply_to_id, :sensitive, :spoiler_text, :visibility, media_ids: [])
   end
 
   def pagination_params(core_params)

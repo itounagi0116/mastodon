@@ -11,7 +11,7 @@ module Pawoo::AccountsControllerConcern
   private
 
   def pawoo_statuses_from_pinned_status
-    @pawoo_statuses_from_pinned_status ||= @account.pinned_statuses.published
+    @pawoo_statuses_from_pinned_status ||= @account.pinned_statuses
   end
 
   def pawoo_filtered_status_page(params, page_size)

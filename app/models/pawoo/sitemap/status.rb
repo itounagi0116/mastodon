@@ -34,7 +34,7 @@ class Pawoo::Sitemap::Status < Pawoo::Sitemap
   private
 
   def status_scope
-    ::Status.local.without_reblogs.published
+    ::Status.local.without_reblogs
             .where(visibility: [:public, :unlisted])
             .where('statuses.reblogs_count >= ?', ALLOW_REBLOGS_COUNT)
             .reorder(nil)

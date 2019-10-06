@@ -73,13 +73,6 @@ RSpec.describe StatusPolicy, type: :model do
         expect(subject).to_not permit(viewer, status)
       end
     end
-
-    context 'with scheduled statuses' do
-      it 'denies access when viewer is not author' do
-        status.created_at = 1.day.from_now
-        expect(subject).to_not permit(bob, status)
-      end
-    end
   end
 
   permissions :reblog? do
