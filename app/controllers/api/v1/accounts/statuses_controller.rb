@@ -56,11 +56,11 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
     attachments = @account.media_attachments
 
     if params[:max_id].present?
-      attachments = attachments.where(MediaAttachment.arel_table[:id].lt(params[:max_id]))
+      attachments = attachments.where(MediaAttachment.arel_table[:status_id].lt(params[:max_id]))
     end
 
     if params[:since_id].present?
-      attachments = attachments.where(MediaAttachment.arel_table[:id].gt(params[:since_id]))
+      attachments = attachments.where(MediaAttachment.arel_table[:status_id].gt(params[:since_id]))
     end
 
     @account.statuses.joins(:media_attachments).merge(attachments).permitted_for(@account, current_account)
