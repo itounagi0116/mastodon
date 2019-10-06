@@ -15,8 +15,6 @@ RSpec.describe AccountsController, type: :controller do
     let!(:status6) { Status.create!(account: alice, text: 'Neko') }
     let!(:status7) { Status.create!(account: alice, text: 'Tanuki') }
 
-    let!(:status_created_at) { Status.create!(account: alice, text: 'Tanuki', created_at: 1.day.from_now) }
-
     let!(:status_pin1) { StatusPin.create!(account: alice, status: status5, created_at: 5.days.ago) }
     let!(:status_pin2) { StatusPin.create!(account: alice, status: status6, created_at: 2.years.ago) }
     let!(:status_pin3) { StatusPin.create!(account: alice, status: status7, created_at: 10.minutes.ago) }
