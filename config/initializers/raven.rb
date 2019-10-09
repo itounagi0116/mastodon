@@ -100,7 +100,7 @@ Raven.configure do |config|
     exception_name = message_or_exc.class.name
 
     # includes invalid characters
-    return false if exception_name == 'ActiveRecord::RecordInvalid' && exception.message.end_with?('includes invalid characters')
+    return false if exception_name == 'ActiveRecord::RecordInvalid' && message_or_exc.message.end_with?('includes invalid characters')
     return false if ignore_by_sidekiq(exception_name, network_exceptions)
     return false if ignore_by_controller(exception_name, network_exceptions)
 
