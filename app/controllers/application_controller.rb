@@ -25,6 +25,8 @@ class ApplicationController < ActionController::Base
   before_action :store_current_location, except: :raise_not_found, unless: :devise_controller?
   before_action :check_suspension, if: :user_signed_in?
 
+  before_action :set_pawoo_sentry_user
+
   def raise_not_found
     raise ActionController::RoutingError, "No route matches #{params[:unmatched_route]}"
   end
@@ -148,5 +150,9 @@ class ApplicationController < ActionController::Base
 
   def skip_session!
     request.session_options[:skip] = true
+  end
+
+  def set_pawoo_sentry_user
+    Raven.user_context(id: current_user.id) if current_user
   end
 end
