@@ -71,9 +71,8 @@ Raven.configure do |config|
     false
   end
 
-
   def ignore_by_controller(exception_name, network_exceptions)
-    controller_class = Raven::Context.current.rack_env['action_controller.instance']&.class
+    controller_class = Raven::Context.current.rack_env&.dig('action_controller.instance')&.class
     return false unless controller_class
 
     network_controllers_or_concerns = %w[
