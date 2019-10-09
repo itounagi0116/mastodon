@@ -76,8 +76,9 @@ Raven.configure do |config|
     controller_class = Raven::Context.current.rack_env['action_controller.instance']&.class
     return false unless controller_class
 
-    network_controllers = [
+    network_controllers_or_concerns = %w[
       RemoteFollowController
+      SignatureVerification
     ].freeze
 
     ignore_controller_errors = {
@@ -87,7 +88,7 @@ Raven.configure do |config|
     return true if ignore_controller_errors[controller_class.name]&.include?(exception_name)
 
     # SignatureVerificationがincludeされているコントローラ or 通信が頻繁に発生するコントローラではネットワーク系のエラーを無視
-    if controller_class.ancestors.include?(SignatureVerification) || network_controllers.include?(controller_class)
+    if controller_class.ancestors.any? { |klass| network_controllers_or_concerns.include?(klass.name) }
       return true if network_exceptions.include?(exception_name)
     end
 
