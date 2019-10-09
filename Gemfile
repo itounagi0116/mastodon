@@ -100,12 +100,13 @@ gem 'rdf-normalize', '~> 0.3'
 # pawoo extra
 gem 'exception_notification'
 gem 'slack-notifier'
+gem 'sentry-raven'
 gem 'type_attributes'
 gem 'activerecord-import'
 gem 'elasticsearch-model', '~> 5.0'
 gem 'switch_point'
 gem 'exponent-server-sdk'
-gem "recaptcha"
+gem 'recaptcha'
 
 group :development, :test do
   gem 'spring'
