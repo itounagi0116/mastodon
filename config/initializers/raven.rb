@@ -78,7 +78,7 @@ module PawooShouldCaptureChecker
       return true unless message_or_exc.is_a? Exception
 
       exception_name = message_or_exc.class.name
-      return false if ignore_record_invalid(exception_name, message_or_exc.message)
+      return false if ignore_by_record_invalid_message(exception_name, message_or_exc.message)
       return false if ignore_by_sidekiq(context, exception_name)
       return false if ignore_by_controller(context, exception_name)
 
