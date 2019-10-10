@@ -72,7 +72,6 @@
   "compose_form.placeholder": "O čem razmišljaš?",
   "compose_form.publish": "Tutni",
   "compose_form.publish_loud": "{publish}!",
-  "compose_form.schedule_placeholder": "Time to post",
   "compose_form.sensitive.marked": "Medij je označen kot občutljiv",
   "compose_form.sensitive.unmarked": "Medij ni označen kot občutljiv",
   "compose_form.sensitive_message": "Please be sure to click on the eye icon and set NSFW if the image you are trying to post is erotic content",

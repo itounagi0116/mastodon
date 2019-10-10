@@ -31,7 +31,6 @@ import {
   COMPOSE_RESET,
 } from '../actions/compose';
 import {
-  COMPOSE_DATE_TIME_CHANGE as PAWOO_COMPOSE_DATE_TIME_CHANGE,
   COMPOSE_TAG_INSERT as PAWOO_COMPOSE_TAG_INSERT,
 } from '../../pawoo/actions/extensions/compose';
 import { TIMELINE_DELETE } from '../actions/timelines';
@@ -62,7 +61,6 @@ const initialState = ImmutableMap({
   default_sensitive: false,
   resetFileKey: Math.floor((Math.random() * 0x10000)),
   idempotencyKey: null,
-  pawooPublished: null,
   pawooKeepCaretPosition: false,
   tagHistory: ImmutableList(),
 });
@@ -89,7 +87,6 @@ function statusToTextMentions(state, status) {
 function clearAll(state) {
   return state.withMutations(map => {
     map.set('text', '');
-    map.set('pawooPublished', null);
     map.set('pawooKeepCaretPosition', false);
     map.set('spoiler', false);
     map.set('spoiler_text', '');
@@ -318,8 +315,6 @@ export default function compose(state = initialState, action) {
 
         return item;
       }));
-  case PAWOO_COMPOSE_DATE_TIME_CHANGE:
-    return state.set('pawooPublished', action.value);
   case PAWOO_COMPOSE_TAG_INSERT:
     return pawooInsertTag(state, action.tag);
   default:

@@ -72,7 +72,6 @@
   "compose_form.placeholder": "你在想甚麼？",
   "compose_form.publish": "發文",
   "compose_form.publish_loud": "{publish}！",
-  "compose_form.schedule_placeholder": "Time to post",
   "compose_form.sensitive.marked": "媒體被標示為敏感",
   "compose_form.sensitive.unmarked": "媒體沒有被標示為敏感",
   "compose_form.sensitive_message": "Please be sure to click on the eye icon and set NSFW if the image you are trying to post is erotic content",

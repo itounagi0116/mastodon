@@ -72,7 +72,6 @@
   "compose_form.placeholder": "今なにしてる？",
   "compose_form.publish": "トゥート",
   "compose_form.publish_loud": "{publish}！",
-  "compose_form.schedule_placeholder": "投稿する時間",
   "compose_form.sensitive.marked": "メディアに閲覧注意が設定されています",
   "compose_form.sensitive.unmarked": "メディアに閲覧注意が設定されていません",
   "compose_form.sensitive_message": "R-18に限らず、エッチな画像のトゥート時は、👁マークを押して閲覧制限をつけてください",

@@ -14,7 +14,6 @@ class PostStatusService < BaseService
   # @option [String] :idempotency Optional idempotency key
   # @return [Status]
   #
-  # Models made by this class must be tracked in ScheduledDistributionWorker
   def call(account, text, in_reply_to = nil, **options)
     if options[:idempotency].present?
       existing_id = redis.get("idempotency:status:#{account.id}:#{options[:idempotency]}")

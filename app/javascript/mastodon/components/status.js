@@ -4,7 +4,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
 import Avatar from './avatar';
 import AvatarOverlay from './avatar_overlay';
-import Timestamp from './timestamp';
+import RelativeTimestamp from './relative_timestamp';
 import DisplayName from './display_name';
 import StatusContent from './status_content';
 import StatusActionBar from './status_action_bar';
@@ -43,7 +43,6 @@ export default class Status extends ImmutablePureComponent {
     onHeightChange: PropTypes.func,
     onToggleHidden: PropTypes.func,
     muted: PropTypes.bool,
-    schedule: PropTypes.bool,
     onPin: PropTypes.func,
     intersectionObserverWrapper: PropTypes.object,
     hidden: PropTypes.bool,
@@ -164,7 +163,7 @@ export default class Status extends ImmutablePureComponent {
 
     const { hidden, featured } = this.props;
 
-    let { status, account, schedule, pawooMediaScale, pawooWideMedia, ...other } = this.props;
+    let { status, account, pawooMediaScale, pawooWideMedia, ...other } = this.props;
 
     if (status === null) {
       return null;
@@ -274,7 +273,7 @@ export default class Status extends ImmutablePureComponent {
 
           <div className={classNames('status', `status-${status.get('visibility')}`, { muted: this.props.muted })} data-id={status.get('id')}>
             <div className='status__info'>
-              <a href={status.get('url')} className='status__time' target='_blank' rel='noopener'><Timestamp absolute={schedule} timestamp={status.get('created_at')} /></a>
+              <a href={status.get('url')} className='status__time' target='_blank' rel='noopener'><RelativeTimestamp timestamp={status.get('created_at')} /></a>
 
               <a onClick={this.handleAccountClick} target='_blank' data-id={status.getIn(['account', 'id'])} href={status.getIn(['account', 'url'])} title={status.getIn(['account', 'acct'])} className='status__display-name'>
                 <div className='status__avatar'>
@@ -289,7 +288,7 @@ export default class Status extends ImmutablePureComponent {
 
             {media}
 
-            <StatusActionBar status={status} account={account} schedule={schedule} {...other} />
+            <StatusActionBar status={status} account={account} {...other} />
           </div>
         </div>
       </HotKeys>

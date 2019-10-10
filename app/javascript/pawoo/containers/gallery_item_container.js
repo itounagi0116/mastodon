@@ -16,7 +16,7 @@ import { blacklistGallery } from '../actions/galleries';
 import { makeGetStatus } from '../../mastodon/selectors';
 import Permalink from '../../mastodon/components/permalink';
 import Avatar from '../../mastodon/components/avatar';
-import Timestamp from '../../mastodon/components/timestamp';
+import RelativeTimestamp from '../../mastodon/components/relative_timestamp';
 import DisplayName from '../../mastodon/components/display_name';
 import StatusContent from '../../mastodon/components/status_content';
 import IconButton from '../../mastodon/components/icon_button';
@@ -176,7 +176,7 @@ export default class GalleryItem extends ImmutablePureComponent {
             </div>
 
             <a href={status.get('url')} className='status__time' target='_blank' rel='noopener'>
-              <Timestamp timestamp={status.get('created_at')} />
+              <RelativeTimestamp timestamp={status.get('created_at')} />
             </a>
           </div>
           <div className='pawoo-gallery-item__body'>

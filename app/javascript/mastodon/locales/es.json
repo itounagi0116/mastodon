@@ -72,7 +72,6 @@
   "compose_form.placeholder": "¿En qué estás pensando?",
   "compose_form.publish": "Tootear",
   "compose_form.publish_loud": "{publish}!",
-  "compose_form.schedule_placeholder": "Time to post",
   "compose_form.sensitive.marked": "Material marcado como sensible",
   "compose_form.sensitive.unmarked": "Material no marcado como sensible",
   "compose_form.sensitive_message": "Please be sure to click on the eye icon and set NSFW if the image you are trying to post is erotic content",

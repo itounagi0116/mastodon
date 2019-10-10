@@ -12,7 +12,6 @@ import {
   insertEmojiCompose,
 } from '../../../actions/compose';
 import {
-  changeComposeDateTime,
   insertTagCompose,
 } from '../../../../pawoo/actions/extensions/compose';
 import { requestImageCache } from '../../../../pawoo/actions/pixiv_twitter_images';
@@ -21,7 +20,6 @@ const pawooGaCategory = 'Compose';
 
 const mapStateToProps = state => ({
   text: state.getIn(['compose', 'text']),
-  published: state.getIn(['compose', 'pawooPublished']),
   suggestion_token: state.getIn(['compose', 'suggestion_token']),
   suggestions: state.getIn(['compose', 'suggestions']),
   spoiler: state.getIn(['compose', 'spoiler']),
@@ -67,10 +65,6 @@ const mapDispatchToProps = (dispatch, { pawooOnSubmit }) => ({
 
   onSuggestionSelected (position, token, accountId) {
     dispatch(selectComposeSuggestion(position, token, accountId));
-  },
-
-  onChangeDateTime (dateTime) {
-    dispatch(changeComposeDateTime(dateTime));
   },
 
   onChangeSpoilerText (checked) {
