@@ -23,112 +23,110 @@ Raven.configure do |config|
   ]
 
   config.should_capture = ->(message_or_exc) do
-    Pawoo::ShouldCaptureChecker.should_capture(Raven::Context.current, message_or_exc)
+    PawooShouldCaptureChecker.should_capture(Raven::Context.current, message_or_exc)
   end
 end
 
-module Pawoo
-  module ShouldCaptureChecker
-    NETWORK_EXCEPTIONS = %w[
-      HTTP::StateError
-      HTTP::TimeoutError
-      HTTP::ConnectionError
-      HTTP::Redirector::TooManyRedirectsError
-      HTTP::Redirector::EndlessRedirectError
-      OpenSSL::SSL::SSLError
-      Stoplight::Error::RedLight
-      Net::ReadTimeout
-    ].freeze
+module PawooShouldCaptureChecker
+  NETWORK_EXCEPTIONS = %w[
+    HTTP::StateError
+    HTTP::TimeoutError
+    HTTP::ConnectionError
+    HTTP::Redirector::TooManyRedirectsError
+    HTTP::Redirector::EndlessRedirectError
+    OpenSSL::SSL::SSLError
+    Stoplight::Error::RedLight
+    Net::ReadTimeout
+  ].freeze
 
-    NETWORK_WORKERS = %w[
-      LinkCrawlWorker
-      ProcessingWorker
-      ThreadResolveWorker
-      NotificationWorker
-      Import::RelationshipWorker
-      Web::PushNotificationWorker
-    ].freeze
+  NETWORK_WORKERS = %w[
+    LinkCrawlWorker
+    ProcessingWorker
+    ThreadResolveWorker
+    NotificationWorker
+    Import::RelationshipWorker
+    Web::PushNotificationWorker
+  ].freeze
 
-    NETWORK_CONTROLLERS_OR_CONCERNS = %w[
-      RemoteFollowController
-      AuthorizeFollowsController
-      SignatureVerification
-    ].freeze
+  NETWORK_CONTROLLERS_OR_CONCERNS = %w[
+    RemoteFollowController
+    AuthorizeFollowsController
+    SignatureVerification
+  ].freeze
 
-    IGNORE_WORKER_ERRORS = {
-      'ActivityPub::ProcessingWorker' => ['ActiveRecord::RecordInvalid'],
-      'LinkCrawlWorker' => ['ActiveRecord::RecordInvalid'],
-    }.freeze
+  IGNORE_WORKER_ERRORS = {
+    'ActivityPub::ProcessingWorker' => ['ActiveRecord::RecordInvalid'],
+    'LinkCrawlWorker' => ['ActiveRecord::RecordInvalid'],
+  }.freeze
 
-    IGNORE_JOB_ERRORS = {
-      'ActionMailer::DeliveryJob' => ['ActiveJob::DeserializationError']
-    }.freeze
+  IGNORE_JOB_ERRORS = {
+    'ActionMailer::DeliveryJob' => ['ActiveJob::DeserializationError']
+  }.freeze
 
-    IGNORE_CONTROLLER_ERRORS = {
-      'MediaProxyController' => ['ActiveRecord::RecordInvalid'],
-    }.freeze
+  IGNORE_CONTROLLER_ERRORS = {
+    'MediaProxyController' => ['ActiveRecord::RecordInvalid'],
+  }.freeze
 
-    IGNORE_RECORD_INVALID_MESSAGES = [
-      'includes invalid characters',
-      'You cannot follow more than 5000 people',
-      'Uri has already been taken',
-    ].freeze
+  IGNORE_RECORD_INVALID_MESSAGES = [
+    'includes invalid characters',
+    'You cannot follow more than 5000 people',
+    'Uri has already been taken',
+  ].freeze
 
-    class << self
-      def should_capture(context, message_or_exc)
-        return true unless message_or_exc.is_a? Exception
+  class << self
+    def should_capture(context, message_or_exc)
+      return true unless message_or_exc.is_a? Exception
 
-        exception_name = message_or_exc.class.name
-        return false if ignore_record_invalid(exception_name, message_or_exc.message)
-        return false if ignore_by_sidekiq(context, exception_name)
-        return false if ignore_by_controller(context, exception_name)
+      exception_name = message_or_exc.class.name
+      return false if ignore_record_invalid(exception_name, message_or_exc.message)
+      return false if ignore_by_sidekiq(context, exception_name)
+      return false if ignore_by_controller(context, exception_name)
 
-        true
+      true
+    end
+
+    private
+
+    def ignore_by_record_invalid_message(exception_name, message)
+      return false if exception_name != 'ActiveRecord::RecordInvalid'
+
+      IGNORE_RECORD_INVALID_MESSAGES.any? do |ignore_message|
+        message.end_with?(ignore_message)
+      end
+    end
+
+    def ignore_by_sidekiq(context, exception_name)
+      sidekiq = context.extra.dig(:sidekiq)
+      return false unless sidekiq
+
+      worker_class = sidekiq.dig('class')
+      return true if IGNORE_WORKER_ERRORS[worker_class]&.include?(exception_name)
+
+      # ActivityPub or Pubsubhubbub or 通信が頻繁に発生するWorkerではネットワーク系の例外を無視
+      if worker_class.start_with?('ActivityPub::') || worker_class.start_with?('Pubsubhubbub::') || NETWORK_WORKERS.include?(worker_class)
+        return true if NETWORK_EXCEPTIONS.include?(exception_name)
       end
 
-      private
-
-      def ignore_by_record_invalid_message(exception_name, message)
-        return false if exception_name != 'ActiveRecord::RecordInvalid'
-
-        IGNORE_RECORD_INVALID_MESSAGES.any? do |ignore_message|
-          message.end_with?(ignore_message)
-        end
+      # ActiveJob
+      if worker_class == 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper'
+        return true if IGNORE_JOB_ERRORS[sidekiq.dig('wrapped')]&.include?(exception_name)
       end
 
-      def ignore_by_sidekiq(context, exception_name)
-        sidekiq = context.extra.dig(:sidekiq)
-        return false unless sidekiq
+      false
+    end
 
-        worker_class = sidekiq.dig('class')
-        return true if IGNORE_WORKER_ERRORS[worker_class]&.include?(exception_name)
+    def ignore_by_controller(context, exception_name)
+      controller_class = context.rack_env&.dig('action_controller.instance')&.class
+      return false unless controller_class
 
-        # ActivityPub or Pubsubhubbub or 通信が頻繁に発生するWorkerではネットワーク系の例外を無視
-        if worker_class.start_with?('ActivityPub::') || worker_class.start_with?('Pubsubhubbub::') || NETWORK_WORKERS.include?(worker_class)
-          return true if NETWORK_EXCEPTIONS.include?(exception_name)
-        end
+      return true if IGNORE_CONTROLLER_ERRORS[controller_class.name]&.include?(exception_name)
 
-        # ActiveJob
-        if worker_class == 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper'
-          return true if IGNORE_JOB_ERRORS[sidekiq.dig('wrapped')]&.include?(exception_name)
-        end
-
-        false
+      # SignatureVerificationがincludeされているコントローラ or 通信が頻繁に発生するコントローラではネットワーク系のエラーを無視
+      if controller_class.ancestors.any? { |klass| NETWORK_CONTROLLERS_OR_CONCERNS.include?(klass.name) }
+        return true if NETWORK_EXCEPTIONS.include?(exception_name)
       end
 
-      def ignore_by_controller(context, exception_name)
-        controller_class = context.rack_env&.dig('action_controller.instance')&.class
-        return false unless controller_class
-
-        return true if IGNORE_CONTROLLER_ERRORS[controller_class.name]&.include?(exception_name)
-
-        # SignatureVerificationがincludeされているコントローラ or 通信が頻繁に発生するコントローラではネットワーク系のエラーを無視
-        if controller_class.ancestors.any? { |klass| NETWORK_CONTROLLERS_OR_CONCERNS.include?(klass.name) }
-          return true if NETWORK_EXCEPTIONS.include?(exception_name)
-        end
-
-        false
-      end
+      false
     end
   end
 end
