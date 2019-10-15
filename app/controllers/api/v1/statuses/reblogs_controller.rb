@@ -26,7 +26,7 @@ class Api::V1::Statuses::ReblogsController < Api::BaseController
   private
 
   def status_for_reblog
-    Status.published.find params[:status_id]
+    Status.find params[:status_id]
   end
 
   def status_for_destroy

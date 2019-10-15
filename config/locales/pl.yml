@@ -309,8 +309,6 @@ pl:
       unresolved: Nierozwiązane
       updated_at: Zaktualizowano
       view: Wyświetl
-    scheduled_statuses:
-      title: Zaplanowane wpisy
     settings:
       activity_api_enabled:
         desc_html: Liczy publikowane lokalnie wpisy, aktywnych użytkowników i nowe rejestracje w ciągu danego tygodnia

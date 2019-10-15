@@ -357,7 +357,6 @@ Rails.application.routes.draw do
 
     namespace :admin do
       resources :suggestion_tags, only: [:index, :new, :create, :edit, :update, :destroy]
-      resources :scheduled_statuses, only: [:index]
       resources :trend_ng_words, only: [:index, :new, :create, :edit, :update, :destroy]
       resources :oauth_authentications, only: [:destroy]
 
@@ -375,7 +374,6 @@ Rails.application.routes.draw do
         resource :push_notification_preferences, only: [:show, :update]
         resources :trend_tags, only: [:index]
         resources :suggestion_tags, only: [:index]
-        resources :schedules, only: [:index]
         resources :pixiv_twitter_images, only: [:create]
         resources :firebase_cloud_messaging_tokens, only: [:create, :destroy], param: :platform
         resources :suggested_accounts, only: [:index]

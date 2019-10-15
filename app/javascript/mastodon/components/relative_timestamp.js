@@ -1,5 +1,5 @@
 import React from 'react';
-import { injectIntl, FormattedDate, defineMessages } from 'react-intl';
+import { injectIntl, defineMessages } from 'react-intl';
 import PropTypes from 'prop-types';
 
 const messages = defineMessages({
@@ -64,7 +64,6 @@ const getUnitDelay = units => {
 export default class RelativeTimestamp extends React.Component {
 
   static propTypes = {
-    absolute: PropTypes.bool,
     intl: PropTypes.object.isRequired,
     timestamp: PropTypes.string.isRequired,
     year: PropTypes.number.isRequired,
@@ -120,7 +119,7 @@ export default class RelativeTimestamp extends React.Component {
   }
 
   render () {
-    const { absolute, timestamp, intl, year } = this.props;
+    const { timestamp, intl, year } = this.props;
 
     const date  = new Date(timestamp);
     const delta = this.state.now - date.getTime();
@@ -147,13 +146,10 @@ export default class RelativeTimestamp extends React.Component {
 
     return (
       <time dateTime={timestamp} title={intl.formatDate(date, dateFormatOptions)}>
-        {absolute ? (
-          <FormattedDate {...dateFormatOptions} value={date} />
-        ) : (
-          relativeTime
-        )}
+        {relativeTime}
       </time>
     );
   }
 
 }
+

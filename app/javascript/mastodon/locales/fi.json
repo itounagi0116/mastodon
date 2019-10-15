@@ -72,7 +72,6 @@
   "compose_form.placeholder": "Mitä mietit?",
   "compose_form.publish": "Tuuttaa",
   "compose_form.publish_loud": "{publish}!",
-  "compose_form.schedule_placeholder": "Time to post",
   "compose_form.sensitive.marked": "Media on merkitty arkaluontoiseksi",
   "compose_form.sensitive.unmarked": "Mediaa ei ole merkitty arkaluontoiseksi",
   "compose_form.sensitive_message": "Please be sure to click on the eye icon and set NSFW if the image you are trying to post is erotic content",

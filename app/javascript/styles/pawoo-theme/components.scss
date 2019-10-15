@@ -1,21 +1,5 @@
 $button-icon-scale-ration-on-pc: 0.85;
 
-.compose-form__datetime {
-  padding-top: 10px;
-  margin-right: 10px;
-}
-
-.compose-form__datetime-input {
-  border: 0;
-  border-radius: 4px;
-  padding: 10px;
-  font-size: 14px;
-
-  @media screen and (max-width: 600px) {
-    font-size: 16px;
-  }
-}
-
 // 「Boostされました」のアイコンの色を変える
 .status__prepend {
   i.fa-retweet {
@@ -190,28 +174,6 @@ $button-icon-scale-ration-on-pc: 0.85;
   &:focus {
     color: lighten($ui-base-color, 8%);
     background: lighten($ui-base-color, 26%);
-  }
-}
-
-.scheduled_statuses__container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  #mastodon-scheduled-statuses {
-    flex: 1;
-    display: flex;
-
-    .scheduled_statuses {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-
-      .scrollable {
-        flex: 1;
-        min-height: 0;
-      }
-    }
   }
 }
 

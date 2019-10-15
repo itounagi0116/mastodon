@@ -72,7 +72,6 @@
   "compose_form.placeholder": "Worüber möchtest du schreiben?",
   "compose_form.publish": "Tröt",
   "compose_form.publish_loud": "{publish}!",
-  "compose_form.schedule_placeholder": "Time to post",
   "compose_form.sensitive.marked": "Medien sind als heikel markiert",
   "compose_form.sensitive.unmarked": "Medien sind nicht als heikel markiert",
   "compose_form.sensitive_message": "Please be sure to click on the eye icon and set NSFW if the image you are trying to post is erotic content",

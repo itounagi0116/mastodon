@@ -1,5 +1,4 @@
 import React from 'react';
-import DateTime from 'react-datetime';
 import CharacterCounter from './character_counter';
 import Button from '../../../components/button';
 import ImmutablePropTypes from 'react-immutable-proptypes';
@@ -24,18 +23,11 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { length } from 'stringz';
 import { countableText } from '../util/counter';
 
-// TODO: i18n
-// Moment is used by react-datetime, which is imported only by this module.
-// Fix the setting to ja for now because the default display is confusing for
-// Japanese people.
-import 'moment/locale/ja';
-
 const allowedAroundShortCode = '><\u0085\u0020\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029\u0009\u000a\u000b\u000c\u000d';
 
 const messages = defineMessages({
   placeholder: { id: 'compose_form.placeholder', defaultMessage: 'What is on your mind?' },
   spoiler_placeholder: { id: 'compose_form.spoiler_placeholder', defaultMessage: 'Write your warning here' },
-  schedule_placeholder: { id: 'compose_form.schedule_placeholder', defaultMessage: 'Time to post' },
   hashtag_editor_placeholder: { id: 'compose_form.hashtag_editor_placeholder', defaultMessage: 'Append tag (press enter to add)' },
   publish: { id: 'compose_form.publish', defaultMessage: 'Toot' },
   publishLoud: { id: 'compose_form.publish_loud', defaultMessage: '{publish}!' },
@@ -45,10 +37,8 @@ const messages = defineMessages({
 export default class ComposeForm extends ImmutablePureComponent {
 
   static propTypes = {
-    scheduling: PropTypes.bool,
     intl: PropTypes.object.isRequired,
     text: PropTypes.string.isRequired,
-    published: PropTypes.any,
     suggestion_token: PropTypes.string,
     suggestions: ImmutablePropTypes.list,
     spoiler: PropTypes.bool,
@@ -64,7 +54,6 @@ export default class ComposeForm extends ImmutablePureComponent {
     onClearSuggestions: PropTypes.func.isRequired,
     onFetchSuggestions: PropTypes.func.isRequired,
     onSuggestionSelected: PropTypes.func.isRequired,
-    onChangeDateTime: PropTypes.func.isRequired,
     onChangeSpoilerText: PropTypes.func.isRequired,
     onPaste: PropTypes.func.isRequired,
     onPickEmoji: PropTypes.func.isRequired,
@@ -102,7 +91,7 @@ export default class ComposeForm extends ImmutablePureComponent {
     const { is_submitting, is_uploading, anyMedia } = this.props;
     const fulltext = [this.props.spoiler_text, countableText(this.props.text)].join('');
 
-    if (is_submitting || is_uploading || length(fulltext) > 500 || (fulltext.length !== 0 && fulltext.trim().length === 0 && !anyMedia) || (this.props.scheduling && this.props.published === null)) {
+    if (is_submitting || is_uploading || length(fulltext) > 500 || (fulltext.length !== 0 && fulltext.trim().length === 0 && !anyMedia)) {
       return;
     }
 
@@ -189,11 +178,11 @@ export default class ComposeForm extends ImmutablePureComponent {
   }
 
   render () {
-    const { scheduling, intl, onPaste, showSearch, anyMedia } = this.props;
+    const { intl, onPaste, showSearch, anyMedia } = this.props;
     const { tagSuggestionFrom } = this.state;
     const disabled = this.props.is_submitting;
     const text     = [this.props.spoiler_text, countableText(this.props.text)].join('');
-    const disabledButton = disabled || this.props.is_uploading || typeof this.props.published === 'string' || length(text) > 500 || (text.length !== 0 && text.trim().length === 0 && !anyMedia);
+    const disabledButton = disabled || this.props.is_uploading || length(text) > 500 || (text.length !== 0 && text.trim().length === 0 && !anyMedia);
     let publishText = '';
 
     if (this.props.privacy === 'private' || this.props.privacy === 'direct') {
@@ -260,18 +249,6 @@ export default class ComposeForm extends ImmutablePureComponent {
         </div>
 
         <div className='compose-form__publish'>
-          {scheduling && (
-            <DateTime
-              className='compose-form__datetime'
-              inputProps={{
-                className: 'compose-form__datetime-input',
-                placeholder: intl.formatMessage(messages.schedule_placeholder),
-              }}
-              onChange={this.props.onChangeDateTime}
-              value={this.props.published}
-            />
-          )}
-
           <div className='compose-form__publish-button-wrapper'><Button text={publishText} onClick={this.handleSubmit} disabled={disabledButton} block /></div>
         </div>
 

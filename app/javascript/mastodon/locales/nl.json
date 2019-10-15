@@ -72,7 +72,6 @@
   "compose_form.placeholder": "Wat wil je kwijt?",
   "compose_form.publish": "Toot",
   "compose_form.publish_loud": "{publish}!",
-  "compose_form.schedule_placeholder": "Time to post",
   "compose_form.sensitive.marked": "Media is als gevoelig gemarkeerd",
   "compose_form.sensitive.unmarked": "Media is niet als gevoelig gemarkeerd",
   "compose_form.sensitive_message": "Please be sure to click on the eye icon and set NSFW if the image you are trying to post is erotic content",

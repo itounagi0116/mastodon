@@ -5,7 +5,7 @@ import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import Button from '../../../components/button';
 import StatusContent from '../../../components/status_content';
 import Avatar from '../../../components/avatar';
-import Timestamp from '../../../components/timestamp';
+import RelativeTimestamp from '../../../components/relative_timestamp';
 import DisplayName from '../../../components/display_name';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 
@@ -57,7 +57,7 @@ export default class BoostModal extends ImmutablePureComponent {
           <div className='status light'>
             <div className='boost-modal__status-header'>
               <div className='boost-modal__status-time'>
-                <a href={status.get('url')} className='status__time' target='_blank' rel='noopener'><Timestamp timestamp={status.get('created_at')} /></a>
+                <a href={status.get('url')} className='status__time' target='_blank' rel='noopener'><RelativeTimestamp timestamp={status.get('created_at')} /></a>
               </div>
 
               <a onClick={this.handleAccountClick} href={status.getIn(['account', 'url'])} className='status__display-name'>

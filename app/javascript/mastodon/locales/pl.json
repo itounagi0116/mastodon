@@ -72,7 +72,6 @@
   "compose_form.placeholder": "Co Ci chodzi po głowie?",
   "compose_form.publish": "Wyślij",
   "compose_form.publish_loud": "{publish}!",
-  "compose_form.schedule_placeholder": "Data zaplanowanej publikacji",
   "compose_form.sensitive.marked": "Zawartość multimedia jest oznaczona jako wrażliwa",
   "compose_form.sensitive.unmarked": "Zawartość multimedialna nie jest oznaczona jako wrażliwa",
   "compose_form.sensitive_message": "Upewnij się, że zaznaczyłeś ikonę oka i ustawiłeś flagę NSFW, jeżeli umieszczany obraz zawiera treści erotyczne",

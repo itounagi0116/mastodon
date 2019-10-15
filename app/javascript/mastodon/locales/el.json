@@ -72,7 +72,6 @@
   "compose_form.placeholder": "Τι σκέφτεσαι;",
   "compose_form.publish": "Τουτ",
   "compose_form.publish_loud": "{publish}!",
-  "compose_form.schedule_placeholder": "Time to post",
   "compose_form.sensitive.marked": "Το πολυμέσο έχει σημειωθεί ως ευαίσθητο",
   "compose_form.sensitive.unmarked": "Το πολυμέσο δεν έχει σημειωθεί ως ευαίσθητο",
   "compose_form.sensitive_message": "Please be sure to click on the eye icon and set NSFW if the image you are trying to post is erotic content",

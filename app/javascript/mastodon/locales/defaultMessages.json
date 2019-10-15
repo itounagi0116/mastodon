@@ -338,7 +338,7 @@
         "id": "relative_time.days"
       }
     ],
-    "path": "app/javascript/mastodon/components/timestamp.json"
+    "path": "app/javascript/mastodon/components/relative_timestamp.json"
   },
   {
     "descriptors": [
@@ -620,10 +620,6 @@
       {
         "defaultMessage": "Write your warning here",
         "id": "compose_form.spoiler_placeholder"
-      },
-      {
-        "defaultMessage": "Time to post",
-        "id": "compose_form.schedule_placeholder"
       },
       {
         "defaultMessage": "Append tag (press enter to add)",

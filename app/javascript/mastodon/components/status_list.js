@@ -24,7 +24,6 @@ export default class StatusList extends ImmutablePureComponent {
     hasMore: PropTypes.bool,
     prepend: PropTypes.node,
     emptyMessage: PropTypes.node,
-    schedule: PropTypes.bool,
     pawooMediaScale: PropTypes.string,
     pawooWideMedia: PropTypes.bool,
   };
@@ -72,7 +71,7 @@ export default class StatusList extends ImmutablePureComponent {
   }
 
   render () {
-    const { statusIds, featuredStatusIds, onLoadMore, schedule, pawooMediaScale, pawooWideMedia, ...other }  = this.props;
+    const { statusIds, featuredStatusIds, onLoadMore, pawooMediaScale, pawooWideMedia, ...other }  = this.props;
     const { isLoading, isPartial } = other;
 
     if (isPartial) {
@@ -104,7 +103,6 @@ export default class StatusList extends ImmutablePureComponent {
           id={statusId}
           onMoveUp={this.handleMoveUp}
           onMoveDown={this.handleMoveDown}
-          schedule={schedule}
           pawooMediaScale={pawooMediaScale}
           pawooWideMedia={pawooWideMedia}
         />

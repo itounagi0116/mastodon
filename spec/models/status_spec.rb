@@ -245,28 +245,6 @@ RSpec.describe Status, type: :model do
     end
   end
 
-  describe '.published' do
-    it 'returns only statuses already published' do
-      published_status = Fabricate(:status, created_at: 1.day.ago)
-      scheduled_status = Fabricate(:status, created_at: 1.day.from_now)
-
-      results = described_class.published
-      expect(results).to include(published_status)
-      expect(results).not_to include(scheduled_status)
-    end
-  end
-
-  describe '.scheduled' do
-    it 'returns only scheduled statuses' do
-      published_status = Fabricate(:status, created_at: 1.day.ago)
-      scheduled_status = Fabricate(:status, created_at: 1.day.from_now)
-
-      results = described_class.scheduled
-      expect(results).not_to include(published_status)
-      expect(results).to include(scheduled_status)
-    end
-  end
-
   describe '.not_in_filtered_languages' do
     context 'for accounts with language filters' do
       let(:user) { Fabricate(:user, filtered_languages: ['en']) }
@@ -293,7 +271,6 @@ RSpec.describe Status, type: :model do
 
       @self_status = Fabricate(:status, account: account, visibility: :public)
       @self_direct_status = Fabricate(:status, account: account, visibility: :direct)
-      @self_scheduled_status = Fabricate(:status, account: account, created_at: 1.day.from_now)
       @followed_status = Fabricate(:status, account: followed, visibility: :public)
       @followed_direct_status = Fabricate(:status, account: followed, visibility: :direct)
       @not_followed_status = Fabricate(:status, account: not_followed, visibility: :public)
@@ -307,10 +284,6 @@ RSpec.describe Status, type: :model do
 
     it 'does not include direct statuses from self' do
       expect(@results).to_not include(@self_direct_status)
-    end
-
-    it 'does not include scheduled statuses from self' do
-      expect(@results).to_not include(@self_scheduled_status)
     end
 
     it 'includes statuses from followed' do
@@ -652,18 +625,6 @@ RSpec.describe Status, type: :model do
 
       context 'given unfollowed account' do
         it { is_expected.to eq(%w(direct unlisted public)) }
-      end
-    end
-
-    context 'with scheduled statuses' do
-      let!(:status) { Fabricate(:status, account: target_account, created_at: 1.day.from_now) }
-
-      it 'returns empty relation for public' do
-        expect(described_class.permitted_for(target_account, nil)).to be_empty
-      end
-
-      it 'returns empty relation for anyone except the author' do
-        expect(described_class.permitted_for(target_account, Fabricate(:account))).to be_empty
       end
     end
   end

@@ -3,45 +3,30 @@ require 'rails_helper'
 RSpec.describe PostStatusService, type: :service do
   subject { PostStatusService.new }
 
-  context 'with published option' do
-    it 'distributes at time specified by published option' do
-      account = Fabricate(:account)
-      published = 1.day.from_now
+  it 'processes mentions' do
+    mention_service = double(:process_mentions_service)
+    allow(mention_service).to receive(:call)
+    allow(ProcessMentionsService).to receive(:new).and_return(mention_service)
+    account = Fabricate(:account)
 
-      Sidekiq::Testing.fake! do
-        status = subject.call(account, 'text', nil, published: published)
-        expect(ScheduledDistributionWorker).to have_enqueued_sidekiq_job(status.id).at(published)
-      end
+    status = subject.call(account, "test status update")
 
-    end
+    expect(ProcessMentionsService).to have_received(:new)
+    expect(mention_service).to have_received(:call).with(status)
   end
 
-  context 'without published option' do
-    it 'processes mentions' do
-      mention_service = double(:process_mentions_service)
-      allow(mention_service).to receive(:call)
-      allow(ProcessMentionsService).to receive(:new).and_return(mention_service)
-      account = Fabricate(:account)
+  it 'pings PuSH hubs' do
+    allow(DistributionWorker).to receive(:perform_async)
+    allow(Pubsubhubbub::DistributionWorker).to receive(:perform_async)
+    allow(ActivityPub::DistributionWorker).to receive(:perform_async)
+    account = Fabricate(:account)
 
-      status = subject.call(account, "test status update")
+    status = subject.call(account, "test status update")
 
-      expect(ProcessMentionsService).to have_received(:new)
-      expect(mention_service).to have_received(:call).with(status)
-    end
-
-    it 'pings PuSH hubs' do
-      allow(DistributionWorker).to receive(:perform_async)
-      allow(Pubsubhubbub::DistributionWorker).to receive(:perform_async)
-      allow(ActivityPub::DistributionWorker).to receive(:perform_async)
-      account = Fabricate(:account)
-
-      status = subject.call(account, "test status update")
-
-      expect(DistributionWorker).to have_received(:perform_async).with(status.id)
-      expect(Pubsubhubbub::DistributionWorker).
-        to have_received(:perform_async).with(status.stream_entry.id)
-      expect(ActivityPub::DistributionWorker).to have_received(:perform_async).with(status.id)
-    end
+    expect(DistributionWorker).to have_received(:perform_async).with(status.id)
+    expect(Pubsubhubbub::DistributionWorker).
+    to have_received(:perform_async).with(status.stream_entry.id)
+    expect(ActivityPub::DistributionWorker).to have_received(:perform_async).with(status.id)
   end
 
   it 'creates a new status' do

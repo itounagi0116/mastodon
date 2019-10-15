@@ -10,8 +10,6 @@ import { updateTimeline } from './timelines';
 import { showAlertForError } from './alerts';
 import PawooGA from '../../pawoo/actions/ga';
 
-import { addScheduledStatuses as pawooAddScheduledStatuses } from '../../pawoo/actions/schedules';
-
 const pawooGaCategory = 'Compose';
 let cancelFetchComposeSuggestionsAccounts;
 
@@ -118,7 +116,6 @@ export function directCompose(account, router) {
 export function submitCompose() {
   return function (dispatch, getState) {
     const status = getState().getIn(['compose', 'text'], '');
-    const pawooPublished = getState().getIn(['compose', 'pawooPublished']);
     const media  = getState().getIn(['compose', 'media_attachments']);
 
     if ((!status || !status.length) && media.size === 0) {
@@ -136,7 +133,6 @@ export function submitCompose() {
       sensitive: getState().getIn(['compose', 'sensitive']),
       spoiler_text: getState().getIn(['compose', 'spoiler_text'], ''),
       visibility: getState().getIn(['compose', 'privacy']),
-      published: pawooPublished,
     }, {
       headers: {
         'Idempotency-Key': getState().getIn(['compose', 'idempotencyKey']),
@@ -154,11 +150,6 @@ export function submitCompose() {
       };
 
       insertIfOnline('home');
-
-      // Make the schedule list responsive as well
-      if (pawooPublished) {
-        dispatch(pawooAddScheduledStatuses([response.data]));
-      }
 
       if (response.data.in_reply_to_id === null && response.data.visibility === 'public') {
         insertIfOnline('community');

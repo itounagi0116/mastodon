@@ -38,7 +38,6 @@ SimpleNavigation::Configuration.run do |navigation|
     primary.item :admin, safe_join([fa_icon('cogs fw'), t('admin.title')]), proc { current_user.admin? ? edit_admin_settings_url : admin_custom_emojis_url }, if: proc { current_user.staff? } do |admin|
       admin.item :settings, safe_join([fa_icon('cogs fw'), t('admin.settings.title')]), edit_admin_settings_url, if: -> { current_user.admin? }
       admin.item :suggestion_tags, safe_join([fa_icon('tags fw'), t('admin.suggestion.title')]), admin_suggestion_tags_url, highlights_on: %r{/admin/suggestion_tags}
-      admin.item :scheduled_statuses, safe_join([fa_icon('clock-o fw'), t('admin.scheduled_statuses.title')]), admin_scheduled_statuses_url, highlights_on: %r{/admin/scheduled_statuses}
       admin.item :trend_ng_words, safe_join([fa_icon('ban fw'), t('admin.trend_ng_word.title')]), admin_trend_ng_words_url, highlights_on: %r{/admin/trend_ng_words}
       admin.item :galleries, safe_join([fa_icon('image fw'), 'ギャラリー']), admin_pawoo_galleries_url, highlights_on: %r{/admin/pawoo/galleries}
       admin.item :custom_emojis, safe_join([fa_icon('smile-o fw'), t('admin.custom_emojis.title')]), admin_custom_emojis_url, highlights_on: %r{/admin/custom_emojis}

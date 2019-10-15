@@ -4,7 +4,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import StatusContent from '../../../components/status_content';
 import Avatar from '../../../components/avatar';
-import Timestamp from '../../../components/timestamp';
+import RelativeTimestamp from '../../../components/relative_timestamp';
 import DisplayName from '../../../components/display_name';
 import IconButton from '../../../components/icon_button';
 import classNames from 'classnames';
@@ -44,7 +44,7 @@ export default class ActionsModal extends ImmutablePureComponent {
         <div className='boost-modal__status-header'>
           <div className='boost-modal__status-time'>
             <a href={this.props.status.get('url')} className='status__time' target='_blank' rel='noopener'>
-              <Timestamp timestamp={this.props.status.get('created_at')} />
+              <RelativeTimestamp timestamp={this.props.status.get('created_at')} />
             </a>
           </div>
 

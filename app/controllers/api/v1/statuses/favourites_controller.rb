@@ -33,6 +33,6 @@ class Api::V1::Statuses::FavouritesController < Api::BaseController
   end
 
   def requested_status
-    Status.published.find(params[:status_id])
+    Status.find(params[:status_id])
   end
 end
