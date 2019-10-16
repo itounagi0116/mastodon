@@ -98,7 +98,6 @@ gem 'json-ld', '~> 2.2'
 gem 'rdf-normalize', '~> 0.3'
 
 # pawoo extra
-gem 'exception_notification'
 gem 'slack-notifier'
 gem 'sentry-raven'
 gem 'type_attributes'

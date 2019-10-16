@@ -22,10 +22,6 @@ RSpec.describe Account, type: :model do
   describe '#check_to_add_blacklisted_url' do
     let(:account) { Fabricate.create(:account, note: 'hoge') }
 
-    before do
-      allow(Rails.application.secrets).to receive(:slack).and_return(webhook_url: 'url', report_channel: 'channel')
-    end
-
     context 'when note is not change' do
       it 'does not enqueue Pawoo::NotifySuspiciousAccountWorker' do
         expect(Pawoo::NotifySuspiciousAccountWorker).not_to receive(:perform_async)

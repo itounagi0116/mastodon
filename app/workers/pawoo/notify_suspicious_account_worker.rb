@@ -7,15 +7,13 @@ class Pawoo::NotifySuspiciousAccountWorker
   sidekiq_options queue: 'push', unique: :until_executed
 
   def perform(account_id, reason = '')
-    webhook_url = Rails.application.secrets.slack[:webhook_url]
-    report_channel = Rails.application.secrets.slack[:report_channel]
-    return if webhook_url.blank? || report_channel.blank?
+    return unless Pawoo::SlackNotifier.enabled?
 
     account = Account.find_by(id: account_id)
     return if account.nil?
 
-    client = Slack::Notifier.new(webhook_url, channel: report_channel)
-    client.post(username: 'Pawoo 怪しいアカウント', icon_emoji: :warning, text: '', attachments: [build_attachment(account, reason)])
+    client = Pawoo::SlackNotifier.client
+    client&.post(username: 'Pawoo 怪しいアカウント', icon_emoji: :warning, text: '', attachments: [build_attachment(account, reason)])
   end
 
   private

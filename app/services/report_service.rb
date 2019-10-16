@@ -39,9 +39,6 @@ class ReportService < BaseService
   end
 
   def enqueue_notify_report_worker
-    webhook_url = Rails.application.secrets.slack[:webhook_url]
-    report_channel = Rails.application.secrets.slack[:report_channel]
-    return if webhook_url.blank? || report_channel.blank?
     return unless @report.pawoo_report_type == 'spam'
 
     Pawoo::NotifyReportWorker.perform_async(@report.id)
