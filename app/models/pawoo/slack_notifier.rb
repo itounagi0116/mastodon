@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Pawoo::SlackNotifier
-  def enabled?
+  def self.enabled?
     Rails.application.secrets.slack[:webhook_url].present? && Rails.application.secrets.slack[:report_channel].present?
   end
 
