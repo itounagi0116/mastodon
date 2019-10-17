@@ -7,9 +7,7 @@ class Pawoo::NotifyReportWorker
   sidekiq_options queue: 'push', unique: :until_executed
 
   def perform(report_id)
-    webhook_url = Rails.application.secrets.slack[:webhook_url]
-    report_channel = Rails.application.secrets.slack[:report_channel]
-    return if webhook_url.blank? || report_channel.blank?
+    return unless Pawoo::SlackNotifier.enabled?
 
     report = Report.preload(pawoo_report_targets: :target).find_by(id: report_id)
     return if report.nil?
@@ -17,8 +15,8 @@ class Pawoo::NotifyReportWorker
     attachments = build_attachments(report)
     return if attachments.blank?
 
-    client = Slack::Notifier.new(webhook_url, channel: report_channel)
-    client.post(username: 'Pawoo 通報', icon_emoji: :rotating_light, text: '', attachments: attachments)
+    client = Pawoo::SlackNotifier.client
+    client&.post(username: 'Pawoo 通報', icon_emoji: :rotating_light, text: '', attachments: attachments)
   end
 
   private

@@ -17,7 +17,6 @@ module Pawoo::AccountExtension
     return unless saved_change_to_note?
     return unless local?
     return unless BLACKLIST_URLS.any? { |blacklist_url| note.include?(blacklist_url) }
-    return if Rails.application.secrets.slack[:webhook_url].blank? || Rails.application.secrets.slack[:report_channel].blank?
 
     Pawoo::NotifySuspiciousAccountWorker.perform_async(id, 'プロフィールに怪しいURLが設定された')
   end

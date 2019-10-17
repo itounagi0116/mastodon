@@ -6,7 +6,7 @@ RSpec.describe ReportService do
   let(:source_account) { Fabricate(:account) }
   let(:target_account) { Fabricate(:account) }
 
-  describe 'POST #create' do
+  describe '#call' do
     let!(:status1) { Fabricate(:status) }
     let!(:status2) { Fabricate(:status) }
     let(:status_ids) { [status1.id, status2.id] }
@@ -103,6 +103,40 @@ RSpec.describe ReportService do
 
     it 'creates a report with specified report type' do
       expect(subject.pawoo_report_type).to eq pawoo_report_type
+    end
+  end
+
+  describe '#enqueue_notify_report_worker' do
+    let!(:status1) { Fabricate(:status) }
+    let!(:status2) { Fabricate(:status) }
+    let(:status_ids) { [status1.id, status2.id] }
+
+    subject do
+      ReportService.new.call(
+        source_account,
+        target_account,
+        status_ids: status_ids,
+        pawoo_report_type: pawoo_report_type,
+        comment: 'reasons'
+      )
+    end
+
+    context 'when pawoo_report_type is not spam' do
+      let(:pawoo_report_type) { %w[other prohibited reproduction].sample }
+
+      it 'does not enqueue Pawoo::NotifySuspiciousAccountWorker' do
+        expect(Pawoo::NotifyReportWorker).not_to receive(:perform_async)
+        subject
+      end
+    end
+
+    context 'when pawoo_report_type is spam' do
+      let(:pawoo_report_type) { 'spam' }
+
+      it 'enqueues Pawoo::NotifySuspiciousAccountWorker' do
+        expect(Pawoo::NotifyReportWorker).to receive(:perform_async)
+        subject
+      end
     end
   end
 end
