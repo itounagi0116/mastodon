@@ -44,7 +44,6 @@ import {
   Lists,
   MediaTimeline,
   SuggestionTags,
-  StatusSearchResults,
   AccountMediaTimeline,
 } from './util/async-components';
 import { HotKeys } from 'react-hotkeys';
@@ -189,7 +188,6 @@ class SwitchingColumnsArea extends React.PureComponent {
           <WrappedRoute path='/timelines/public/media' component={MediaTimeline} content={children} />
           <WrappedRoute path='/suggested_accounts' component={SuggestedAccountsColumn} content={children} />
           <WrappedRoute path='/suggestion_tags/:type' component={SuggestionTags} content={children} />
-          <WrappedRoute path='/statuses/search/:keyword' component={StatusSearchResults} content={children} />
           <WrappedRoute path='/accounts/:accountId/media' component={AccountMediaTimeline} content={children} />
 
           <WrappedRoute component={GenericNotFound} content={children} />

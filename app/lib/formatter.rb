@@ -61,10 +61,6 @@ class Formatter
     Sanitize.fragment(html, config)
   end
 
-  def plaintext_for_elasticsearch(status)
-    strip_urls(strip_tags(status.text))
-  end
-
   def format_spoiler(status)
     html = encode(status.spoiler_text)
     html = encode_custom_emojis(html, status.emojis)

@@ -2,7 +2,6 @@
 
 class Api::V1::SearchController < Api::BaseController
   include Authorization
-  include Pawoo::Api::V1::SearchControllerConcern
 
   RESULTS_LIMIT = 5
 

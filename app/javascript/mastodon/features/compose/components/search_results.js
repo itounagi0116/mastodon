@@ -1,6 +1,5 @@
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import AccountContainer from '../../../containers/account_container';
 import StatusContainer from '../../../containers/status_container';
@@ -11,14 +10,12 @@ export default class SearchResults extends ImmutablePureComponent {
 
   static propTypes = {
     results: ImmutablePropTypes.map.isRequired,
-    isAdmin: PropTypes.bool,
-    searchKeyword: PropTypes.string,
   };
 
   render () {
-    const { results, searchKeyword, isAdmin } = this.props;
+    const { results } = this.props;
 
-    let accounts, statuses, hashtags, search_header;
+    let accounts, statuses, hashtags;
     let count = 0;
 
     if (results.get('accounts') && results.get('accounts').size > 0) {
@@ -58,24 +55,12 @@ export default class SearchResults extends ImmutablePureComponent {
       );
     }
 
-    if (isAdmin && searchKeyword.length > 0) {
-      search_header = (
-        <Link className='search-results__search-statuses' to={`/statuses/search/${searchKeyword}`}>
-          <i className='fa fa-fw fa-search search-results__search-statuses-icon' />
-          <FormattedMessage id='search_results.search_toots' defaultMessage='Search toots with "{keyword}"' values={{ keyword: searchKeyword }} />
-        </Link>
-      );
-    } else {
-      search_header = (
+    return (
+      <div className='search-results'>
         <div className='search-results__header'>
           <FormattedMessage id='search_results.total' defaultMessage='{count, number} {count, plural, one {result} other {results}}' values={{ count }} />
         </div>
-      );
-    }
 
-    return (
-      <div className='search-results'>
-        {search_header}
         {accounts}
         {statuses}
         {hashtags}

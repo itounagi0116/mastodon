@@ -12,10 +12,10 @@ require 'capybara/rspec'
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
 ActiveRecord::Migration.maintain_test_schema!
+WebMock.disable_net_connect!(allow: Chewy.settings[:host])
 Redis.current = Redis::Namespace.new("mastodon_test#{ENV['TEST_ENV_NUMBER']}", redis: Redis.current)
 Sidekiq::Testing.inline!
 Sidekiq::Logging.logger = nil
-Status.__elasticsearch__.create_index! force: true if ENV['TEST_ENV_NUMBER']
 
 Devise::Test::ControllerHelpers.module_eval do
   alias_method :original_sign_in, :sign_in

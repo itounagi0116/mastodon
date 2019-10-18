@@ -7,7 +7,6 @@
   - pull
   - mailers
   - remove
-  - elasticsearch
 :schedule:
   subscriptions_scheduler:
     cron: '0 4,9 * * * Asia/Tokyo'
@@ -39,9 +38,6 @@
   backup_cleanup_scheduler:
     cron: '<%= Random.rand(0..59) %> <%= Random.rand(3..5) %> * * * Asia/Tokyo'
     class: Scheduler::BackupCleanupScheduler
-  delete_elasticsearch_documents_worker:
-    cron: '*/2 * * * *'
-    class: Scheduler::DeleteElasticsearchDocumentsWorker
   trend_tag_scheduler:
     cron: '*/30 * * * *'
     class: Scheduler::TrendTagScheduler

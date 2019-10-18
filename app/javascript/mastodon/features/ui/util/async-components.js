@@ -98,10 +98,6 @@ export function SuggestionTags () {
   return import(/* webpackChunkName: "features/suggestion_tags" */'../../suggestion_tags');
 }
 
-export function StatusSearchResults () {
-  return import(/* webpackChunkName: "features/status_search_results" */'../../status_search_results');
-}
-
 export function AccountMediaTimeline () {
   return import(/* webpackChunkName: "features/account_media_timeline" */'../../account_media_timeline');
 }

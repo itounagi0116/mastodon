@@ -258,7 +258,6 @@ Rails.application.routes.draw do
       resources :custom_emojis, only: [:index]
 
       get '/search', to: 'search#index', as: :search
-      get '/search/statuses/:query', to: 'search#statuses', as: :status_search_timeline
 
       resources :follows,    only: [:create]
       resources :media,      only: [:create, :update]
