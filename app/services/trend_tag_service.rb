@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class TrendTagService < BaseService
-  include Pawoo::SlaveReader
-
   SPAN = 60.minutes
   TREND_HISTORIES_KEY = 'trend_histories'
   TREND_LENGTH = 3
@@ -49,24 +47,22 @@ class TrendTagService < BaseService
   end
 
   def call(time = Time.current)
-    read_from_slave do
-      statuses = recent_public_statuses(time)
-      current_tag_scores = build_tag_scores_from_statuses(statuses)
-      lpush_current_tag_scores(current_tag_scores)
+    statuses = recent_public_statuses(time)
+    current_tag_scores = build_tag_scores_from_statuses(statuses)
+    lpush_current_tag_scores(current_tag_scores)
 
-      # 履歴の数がHISTORY_COUNTより少ない場合はトレンドを出すことができないため、空配列を返す
-      return [] if redis.llen(TREND_HISTORIES_KEY) + 1 < HISTORY_COUNT
+    # 履歴の数がHISTORY_COUNTより少ない場合はトレンドを出すことができないため、空配列を返す
+    return [] if redis.llen(TREND_HISTORIES_KEY) + 1 < HISTORY_COUNT
 
-      # historyから過去のcurrent_tag_scoresを取り出す
-      tag_score_histories = redis.lrange(TREND_HISTORIES_KEY, 1, -1).map do |history_tag_score|
-        JSON.parse(history_tag_score).map { |tag_score_attributes| TagScore.new(tag_score_attributes) }
-      end
+    # historyから過去のcurrent_tag_scoresを取り出す
+    tag_score_histories = redis.lrange(TREND_HISTORIES_KEY, 1, -1).map do |history_tag_score|
+      JSON.parse(history_tag_score).map { |tag_score_attributes| TagScore.new(tag_score_attributes) }
+    end
 
-      # 現在のトレンドを計算する
-      tag_scores = current_trend_tag_scores(current_tag_scores, tag_score_histories)
-      tag_scores.map(&:tag_name).tap do |tag_names|
-        TrendTag.update_trend_tags(tag_names)
-      end
+    # 現在のトレンドを計算する
+    tag_scores = current_trend_tag_scores(current_tag_scores, tag_score_histories)
+    tag_scores.map(&:tag_name).tap do |tag_names|
+      TrendTag.update_trend_tags(tag_names)
     end
   end
 

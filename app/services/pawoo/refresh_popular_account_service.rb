@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Pawoo::RefreshPopularAccountService
-  include Pawoo::SlaveReader
-
   ACTIVE_ACCOUNT_DURATION = 2.weeks
   RECENT_MEDIA_DURATION = 1.month
   REDIS_KEY = 'pawoo:popular_account_ids'
@@ -14,18 +12,16 @@ class Pawoo::RefreshPopularAccountService
   end
 
   def call
-    read_from_slave do
-      load_active_accounts
-      load_pixiv_followers_count
-      load_latest_media_statuses
+    load_active_accounts
+    load_pixiv_followers_count
+    load_latest_media_statuses
 
-      popular_account_tuples = []
-      @accounts_infomations.each do |account_id, info|
-        score = calc_score(info)
-        popular_account_tuples << [score, account_id] if score > MIN_SCORE
-      end
-      store_to_redis(popular_account_tuples)
+    popular_account_tuples = []
+    @accounts_infomations.each do |account_id, info|
+      score = calc_score(info)
+      popular_account_tuples << [score, account_id] if score > MIN_SCORE
     end
+    store_to_redis(popular_account_tuples)
   end
 
   private

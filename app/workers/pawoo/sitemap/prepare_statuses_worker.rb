@@ -2,7 +2,6 @@
 
 class Pawoo::Sitemap::PrepareStatusesWorker
   include Sidekiq::Worker
-  include Pawoo::SlaveReader
 
   sidekiq_options queue: 'pull', unique: :until_executed, retry: 0
 
@@ -39,14 +38,10 @@ class Pawoo::Sitemap::PrepareStatusesWorker
   end
 
   def prepare_sitemap(page)
-    read_from_slave do
-      Pawoo::Sitemap::Status.new(page).prepare
-    end
+    Pawoo::Sitemap::Status.new(page).prepare
   end
 
   def page_count
-    read_from_slave do
-      Pawoo::Sitemap::Status.page_count
-    end
+    Pawoo::Sitemap::Status.page_count
   end
 end
