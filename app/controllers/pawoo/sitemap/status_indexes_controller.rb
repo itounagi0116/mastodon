@@ -8,6 +8,6 @@ class Pawoo::Sitemap::StatusIndexesController < ApplicationController
   def show
     page = params[:page]
     sitemap = Pawoo::Sitemap::Status.new(page)
-    @accounts = sitemap.cached? ? sitemap.query.load : []
+    @status_pages = sitemap.cached? ? sitemap.query.load : []
   end
 end
