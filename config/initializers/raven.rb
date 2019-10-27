@@ -34,6 +34,7 @@ module PawooShouldCaptureChecker
     HTTP::ConnectionError
     HTTP::Redirector::TooManyRedirectsError
     HTTP::Redirector::EndlessRedirectError
+    HTTP::Request::UnsupportedSchemeError
     OpenSSL::SSL::SSLError
     Stoplight::Error::RedLight
     Net::ReadTimeout
