@@ -2,12 +2,11 @@
 
 class Api::V1::SearchController < Api::BaseController
   include Authorization
-  include Pawoo::Api::V1::SearchControllerConcern
 
   RESULTS_LIMIT = 5
 
   before_action -> { doorkeeper_authorize! :read }
-  before_action :require_user!, only: [:statuses]
+  before_action :require_user!
 
   respond_to :json
 

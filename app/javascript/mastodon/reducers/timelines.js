@@ -13,10 +13,6 @@ import {
   ACCOUNT_UNFOLLOW_SUCCESS,
 } from '../actions/accounts';
 import {
-  STATUS_SEARCH_TIMELINE_REFRESH_SUCCESS as PAWOO_STATUS_SEARCH_TIMELINE_REFRESH_SUCCESS,
-  STATUS_SEARCH_TIMELINE_EXPAND_SUCCESS as PAWOO_STATUS_SEARCH_TIMELINE_EXPAND_SUCCESS,
-} from '../../pawoo/actions/extensions/search';
-import {
   PIN_SUCCESS,
   UNPIN_SUCCESS,
 } from '../actions/interactions';
@@ -156,16 +152,6 @@ export default function timelines(state = initialState, action) {
   case UNPIN_SUCCESS:
     return state.updateIn([`account:${action.status.getIn(['account', 'id'])}:pinned`], initialTimeline, map => map
       .update('items', ImmutableList(), list => list.filter((id) => id !== action.status.get('id'))));
-  case PAWOO_STATUS_SEARCH_TIMELINE_REFRESH_SUCCESS:
-    return state.update(action.timeline, initialTimeline, map => map
-      .set('isLoading', false)
-      .set('loaded', true)
-      .set('page', action.page)
-      .set('hitsTotal', action.hitsTotal));
-  case PAWOO_STATUS_SEARCH_TIMELINE_EXPAND_SUCCESS:
-    return state.update(action.timeline, initialTimeline, map => map
-      .set('isLoading', false)
-      .set('page', action.page));
   default:
     return state;
   }

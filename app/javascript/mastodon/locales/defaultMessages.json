@@ -771,10 +771,6 @@
         "id": "search_results.hashtags"
       },
       {
-        "defaultMessage": "Search toots with \"{keyword}\"",
-        "id": "search_results.search_toots"
-      },
-      {
         "defaultMessage": "{count, number} {count, plural, one {result} other {results}}",
         "id": "search_results.total"
       }
@@ -1483,19 +1479,6 @@
       }
     ],
     "path": "app/javascript/mastodon/features/standalone/public_timeline/index.json"
-  },
-  {
-    "descriptors": [
-      {
-        "defaultMessage": "Search: \"{keyword}\"",
-        "id": "column.search_toots"
-      },
-      {
-        "defaultMessage": "No toots found.",
-        "id": "empty_column.search_toots"
-      }
-    ],
-    "path": "app/javascript/mastodon/features/status_search_results/index.json"
   },
   {
     "descriptors": [

@@ -7,7 +7,6 @@ aliases:
     environment:
       CONTINUOUS_INTEGRATION: true # for fuubar gem
       DB_HOST: 127.0.0.1
-      ELASTICSEARCH_HOST: 127.0.0.1
       LOCAL_DOMAIN: cb6e6126.ngrok.io
       LOCAL_HTTPS: true
       NODE_ENV: test
@@ -99,34 +98,10 @@ jobs:
         environment:
           POSTGRES_USER: root
       - image: redis:3.2.4
-      - image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
-        environment:
-          ES_JAVA_OPTS: -Xms256m -Xmx256m
-        entrypoint:
-          - /bin/sh
-          - -c
-          - >
-            elasticsearch-plugin remove x-pack &&
-            elasticsearch-plugin install analysis-kuromoji &&
-            elasticsearch-plugin install analysis-icu &&
-            elasticsearch
 
     steps:
       - *attach_workspace
       - run: ./.circleci/primary/setup.sh
-
-      # - run:
-      #     name: Check vm.max_map_count for elasticsearch container
-      #     command: |
-      #       vm_max_map_count=$(sysctl --values vm.max_map_count)
-      #       if [ $vm_max_map_count -ge 262144 ]; then
-      #         exit 0
-      #       fi
-      #       >&2 echo "Error: elasticsearch container requires vm.max_map_count >= 262144 but $vm_max_map_count now."
-      #       >&2 echo "Please execute 'sudo sysctl --write vm.max_map_count=262144' to raise that value on your docker host."
-      #       >&2 echo "See https://www.elastic.co/guide/en/elasticsearch/reference/5.4/docker.html#docker-cli-run-prod-mode"
-      #       exit 1
-
       - run:
           command: ./bin/spring server
           background: true
@@ -200,8 +175,6 @@ jobs:
 
       # Wait redis
       - run: ./.circleci/wait_for_connection.sh tcp://127.0.0.1:6379 30
-      # Wait Elasticsearch
-      - run: ./.circleci/wait_for_connection.sh http://$ELASTICSEARCH_HOST:9200 30
 
       # Run rspec
       - run: bundle exec parallel_test --group-by filesize --type rspec -- --profile -- $(circleci tests glob 'spec/**/*_spec.rb' | circleci tests split --split-by=filesize)

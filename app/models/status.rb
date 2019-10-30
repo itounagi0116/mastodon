@@ -30,7 +30,6 @@ class Status < ApplicationRecord
   include Streamable
   include Cacheable
   include StatusThreadingConcern
-  include StatusSearchable
 
   # If `override_timestamps` is set at creation time, Snowflake ID creation
   # will be based on current time instead of `created_at`
@@ -181,9 +180,6 @@ class Status < ApplicationRecord
 
   after_create_commit :store_uri, if: :local?
   after_create_commit :update_statistics, if: :local?
-
-  after_create_commit :pawoo_post_status_to_es, if: :postable_to_es?
-  after_destroy_commit :pawoo_remove_status_to_es, if: :postable_to_es?
 
   around_create Mastodon::Snowflake::Callbacks
 
