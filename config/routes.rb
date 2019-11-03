@@ -379,7 +379,6 @@ Rails.application.routes.draw do
         resources :oauth_authentications, only: [:show], param: :uid
 
         scope :pawoo, as: :pawoo do
-          resource :expo_push_tokens, only: [:create, :destroy]
           resources :followers_you_follow, only: [:show], param: :account_id
           resources :galleries, only: [:show], param: :tag do
             resources :blacklist, only: :update, controller: :gallery_blacklisted_statuses

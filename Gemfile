@@ -102,7 +102,6 @@ gem 'slack-notifier'
 gem 'sentry-raven'
 gem 'type_attributes'
 gem 'activerecord-import'
-gem 'exponent-server-sdk'
 gem 'recaptcha'
 
 group :development, :test do

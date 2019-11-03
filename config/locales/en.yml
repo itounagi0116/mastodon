@@ -621,12 +621,6 @@ en:
     prev: Prev
     truncate: "&hellip;"
   pawoo:
-    expo_push_notifications:
-      favourite: "%{name} favorited your toot"
-      follow: "%{name} followed you"
-      follow_request: "%{name} requested to follow you"
-      mention: "%{name} mentioned you"
-      reblog: "%{name} boosted your toot"
     extensions:
       statuses:
         pin_errors:
