@@ -617,12 +617,6 @@ zh-CN:
     prev: 上一页
     truncate: "…"
   pawoo:
-    expo_push_notifications:
-      favourite: "%{name} 收藏了你的嘟文"
-      follow: "%{name} 关注了你"
-      follow_request: "%{name} 向你发送了关注请求"
-      mention: "%{name} 提到了你"
-      reblog: "%{name} 转嘟了你的嘟文"
     extensions:
       statuses:
         pin_errors:

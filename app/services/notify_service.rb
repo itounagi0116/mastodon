@@ -12,7 +12,6 @@ class NotifyService < BaseService
     push_notification if @notification.browserable?
     send_email if email_enabled?
     send_firebase_cloud_messaging if firebase_cloud_messaging_enabled?
-    send_pawoo_expo_push if pawoo_expo_push_enabled?
   rescue ActiveRecord::RecordInvalid
     return
   end
@@ -139,14 +138,5 @@ class NotifyService < BaseService
   def firebase_cloud_messaging_enabled?
     @recipient.user.settings.notification_firebase_cloud_messagings[@notification.type.to_s] &&
       @recipient.user.firebase_cloud_messaging_tokens.exists?
-  end
-
-  def send_pawoo_expo_push
-    Pawoo::ExpoPushWorker.perform_async(@notification.id, @recipient.id)
-  end
-
-  def pawoo_expo_push_enabled?
-    @recipient.user.settings.notification_pawoo_expo_pushes[@notification.type.to_s] &&
-      @recipient.user.expo_push_tokens.exists?
   end
 end
