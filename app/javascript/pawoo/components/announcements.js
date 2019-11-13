@@ -15,7 +15,7 @@ const messages = defineMessages({
   dismiss: { id: 'pawoo.announcements.dismiss', defaultMessage: 'Dismiss' },
 });
 
-// NOTE: id: 21 まで使用した
+// NOTE: id: 22 まで使用した
 const announcements = [
   {
     id: 7,
@@ -27,6 +27,19 @@ const announcements = [
         inline: false,
         href: '/suggested_accounts',
         body: 'おすすめユーザー（実験中）',
+      },
+    ],
+  },
+  {
+    id: 22,
+    icon,
+    body: 'Pawoo事業譲渡のお知らせ',
+    link: [
+      {
+        reactRouter: true,
+        inline: false,
+        href: '/statuses/103128619742175257',
+        body: '確認する',
       },
     ],
   },
