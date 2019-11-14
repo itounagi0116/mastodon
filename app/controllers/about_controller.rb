@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class AboutController < ApplicationController
-  include Pawoo::AboutControllerConcern
-
   before_action :set_body_classes
   before_action :set_instance_presenter, only: [:show, :more, :terms]
 
